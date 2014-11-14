@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DD5DAC31-3CA0-4B79-8340-BDD68724A697}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BinarySerialization</RootNamespace>
+    <AssemblyName>BinarySerializer</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\BinarySerializer.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BinarySerializer.cs" />
+    <Compile Include="Bytes.cs" />
+    <Compile Include="EnumMemberSerializationInfo.cs" />
+    <Compile Include="EnumerableExtensionMethods.cs" />
+    <Compile Include="ILengthAttribute.cs" />
+    <Compile Include="NullStream.cs" />
+    <Compile Include="StreamKeeper.cs" />
+    <Compile Include="StreamLimiter.cs" />
+    <Compile Include="SubtypeAttribute.cs" />
+    <Compile Include="SerializeUntilAttribute.cs" />
+    <Compile Include="ItemSerializeUntilAttribute.cs" />
+    <Compile Include="IValueConverter.cs" />
+    <Compile Include="MemberBinding.cs" />
+    <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="SerializeWhenAttribute.cs" />
+    <Compile Include="FieldLengthAttribute.cs" />
+    <Compile Include="IBinarySerializable.cs" />
+    <Compile Include="FieldOffsetAttribute.cs" />
+    <Compile Include="IgnoreAttribute.cs" />
+    <Compile Include="SerializeAsEnumAttribute.cs" />
+    <Compile Include="ItemLengthAttribute.cs" />
+    <Compile Include="ReflectionExtensionMethods.cs" />
+    <Compile Include="FieldCountAttribute.cs" />
+    <Compile Include="EndianAwareBinaryReader.cs" />
+    <Compile Include="EndianAwareBinaryWriter.cs" />
+    <Compile Include="Endianness.cs" />
+    <Compile Include="MemberSerializationInfo.cs" />
+    <Compile Include="MemberSerializedEventArgs.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializeAsAttribute.cs" />
+    <Compile Include="MemberSerializationInfoComparer.cs" />
+    <Compile Include="SerializedType.cs" />
+    <Compile Include="BinarySerializationContext.cs" />
+    <Compile Include="RelativeSourceMode.cs" />
+    <Compile Include="FieldBindingBaseAttribute.cs" />
+    <Compile Include="IBindableFieldAttribute.cs" />
+    <Compile Include="Streamlet.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
