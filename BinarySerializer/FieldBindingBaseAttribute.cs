@@ -42,7 +42,7 @@ namespace BinarySerialization
             set { Binding.AncestorLevel = value; }
         }
 
-        public string AncestorType
+        public Type AncestorType
         {
             get { return Binding.AncestorType; }
             set { Binding.AncestorType = value; }

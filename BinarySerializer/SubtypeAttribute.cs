@@ -22,7 +22,7 @@ namespace BinarySerialization
         }
 		
         /// <summary>
-        /// The value to be used in determining if the subtype should be used.
+        /// The value that defines the subtype mapping.
         /// </summary>
         public object Value { get; private set; }
 

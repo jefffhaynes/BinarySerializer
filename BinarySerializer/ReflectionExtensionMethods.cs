@@ -146,14 +146,21 @@ namespace BinarySerialization
                                                        attributes.OfType<FieldOffsetAttribute>().SingleOrDefault(),
                                                        attributes.OfType<FieldLengthAttribute>().SingleOrDefault(),
                                                        attributes.OfType<FieldCountAttribute>().SingleOrDefault(),
-                                                       attributes.OfType<SerializeWhenAttribute>().SingleOrDefault(),
+                                                       attributes.OfType<SerializeWhenAttribute>().ToArray(),
                                                        attributes.OfType<SerializeUntilAttribute>().SingleOrDefault(),
                                                        attributes.OfType<ItemLengthAttribute>().SingleOrDefault(),
                                                        attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault(),
                                                        attributes.OfType<SubtypeAttribute>().ToArray());
                 });
 
-            return membersSerializationInfo.OrderBy(info => info, new MemberSerializationInfoComparer());
+            var orderedMembers = membersSerializationInfo.OrderBy(info => info, new MemberSerializationInfoComparer()).ToList();
+
+            var lastMember = orderedMembers.LastOrDefault(member => member.IgnoreAttribute == null);
+
+            if (lastMember != null)
+                lastMember.IsLastMember = true;
+
+            return orderedMembers;
         }
 
         public static IEnumerable<EnumMemberSerializationInfo> GetEnumMembersSerializationInfo(this Type type)

@@ -23,16 +23,16 @@ namespace BinarySerialization
         /// <summary>
         /// The name of the member.
         /// </summary>
-        public string MemberName { get; set; }
+        public string MemberName { get; private set; }
 
         /// <summary>
         /// The member value.
         /// </summary>
-        public object Value { get; set; }
+        public object Value { get; private set; }
 
         /// <summary>
         /// The current serialization context.
         /// </summary>
-        public BinarySerializationContext Context { get; set; }
+        public BinarySerializationContext Context { get; private set; }
     }
 }

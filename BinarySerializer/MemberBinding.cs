@@ -46,7 +46,7 @@ namespace BinarySerialization
         /// <param name="path">The path to the source member.</param>
         /// <param name="ancestorType">The type of the ancestor to look for.</param>
         /// <param name="converterType">An optional converter.</param>
-        public MemberBinding(string path, string ancestorType, Type converterType = null)
+        public MemberBinding(string path, Type ancestorType, Type converterType = null)
             : this(path, RelativeSourceMode.FindAncestor, converterType)
         {
             AncestorType = ancestorType;
@@ -80,7 +80,7 @@ namespace BinarySerialization
         /// <summary>
         /// Gets or sets the type of ancestor to look for.
         /// </summary>
-        public string AncestorType { get; set; }
+        public Type AncestorType { get; set; }
 
         /// <summary>
         /// Gets or sets a <see cref="RelativeSourceMode"/> value that describes the location of the

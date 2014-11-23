@@ -66,16 +66,27 @@ namespace BinarySerialization
         public event EventHandler<MemberSerializedEventArgs> MemberDeserialized;
 
         /// <summary>
+        /// Occurrs before a member has been serialized.
+        /// </summary>
+        public event EventHandler<MemberSerializingEventArgs> MemberSerializing;
+
+        /// <summary>
+        /// Occurrs before a member has been deserialized.
+        /// </summary>
+        public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
+ 
+        /// <summary>
         /// Serializes the object, or graph of objects with the specified top (root), to the given stream.
         /// </summary>
         /// <param name="stream">The stream to which the graph is to be serialized.</param>
         /// <param name="graph">The object at the root of the graph to serialize.</param>
-        public void Serialize(Stream stream, object graph)
+        /// <param name="context">An optional serialization context.</param>
+        public void Serialize(Stream stream, object graph, BinarySerializationContext context = null)
         {
-            if(stream == null)
+            if (stream == null)
                 throw new ArgumentNullException("stream");
 
-            if(graph == null)
+            if (graph == null)
                 throw new ArgumentNullException("graph", "Object graph cannot be null.");
 
             var graphType = graph.GetType();
@@ -90,11 +101,11 @@ namespace BinarySerialization
                 _firstPass = true;
 
                 /* First pass to update source bindings */
-                WriteMembers(new NullStream(), graph, graphType, null);
+                WriteMembers(new NullStream(), graph, graphType, context);
                 _firstPass = false;
 
                 /* Ok, serialize. */
-                WriteMembers(stream, graph, graphType, null);
+                WriteMembers(stream, graph, graphType, context);
             }
         }
 
@@ -125,6 +136,10 @@ namespace BinarySerialization
                         WriteMember(stream, memberSerializationInfo, o, serializationContext);
                     }
 #if !DEBUG
+                    catch (IOException)
+                    {
+                        throw;
+                    }
                     catch (Exception e)
                     {
                         var message = string.Format("Error serializing {0}.  See inner exception for detail.", 
@@ -136,27 +151,32 @@ namespace BinarySerialization
             }
         }
 
-        private void WriteMember(Stream stream, MemberSerializationInfo memberSerializationInfo, object o,
+        private void WriteMember(Stream stream, MemberSerializationInfo memberSerializationInfo, object member,
                                  BinarySerializationContext ctx)
         {
-            if (stream == null)
-                throw new ArgumentNullException("stream");
-
             if (memberSerializationInfo == null)
                 throw new ArgumentNullException("memberSerializationInfo");
 
-            if (o is IDictionary)
+            if (stream == null)
+                throw new ArgumentNullException("stream");
+
+            if (member is IDictionary)
                 throw new InvalidOperationException("Cannot serialize objects that implement IDictionary.");
 
-            if (o == null)
+            if (memberSerializationInfo.IgnoreAttribute != null)
+                return;
+
+            if (member == null && !memberSerializationInfo.IsLastMember)
             {
-                var message = string.Format("Objects in graph cannot be null.  Member name: {0}.",
+                var message = string.Format("'{0}' cannot be null.  Only the final object in a class can be null.",
                                             memberSerializationInfo.Member.Name);
-                throw new ArgumentNullException("o", message);
+                throw new ArgumentNullException("member", message);
             }
 
-            if (!IsSerializable(memberSerializationInfo, o, ctx))
+            if (!IsSerializable(memberSerializationInfo, member, ctx))
                 return;
+
+            OnMemberSerializing(memberSerializationInfo.Member.Name, ctx);
 
             var originalPosition = InvalidFieldOffset;
             FieldOffsetAttribute fieldOffsetAttribute = memberSerializationInfo.FieldOffsetAttribute;
@@ -166,11 +186,11 @@ namespace BinarySerialization
                 if(!stream.CanSeek)
                     throw new InvalidOperationException("FieldOffsetAttribute not supported for non-seekable streams");
                 originalPosition = stream.Position;
-                stream.Position = GetOffset(fieldOffsetAttribute, o, ctx);
+                stream.Position = GetOffset(fieldOffsetAttribute, member, ctx);
             }
 
-            object value = memberSerializationInfo.Member.GetValue(o);
-            WriteValue(stream, memberSerializationInfo, o, ctx, value);
+            object value = memberSerializationInfo.Member.GetValue(member);
+            WriteValue(stream, memberSerializationInfo, member, ctx, value);
 
             /* If we got here via a field offset, restore to original position */
             if (fieldOffsetAttribute != null)
@@ -184,7 +204,10 @@ namespace BinarySerialization
         {
             if (value == null)
             {
-                var message = string.Format("Objects in graph cannot be null.  Member name: {0}.",
+                if (memberSerializationInfo.IsLastMember)
+                    return;
+
+                var message = string.Format("'{0}' cannot be null.  Only the final object in a class can be null.",
                                             memberSerializationInfo.Member.Name);
                 throw new ArgumentNullException("value", message);
             }
@@ -231,7 +254,7 @@ namespace BinarySerialization
             }
             else
             {
-                WritePrimitive(streamKeeper, value, valueType, serializedType, encoding, constLength, endianness, ctx);
+                WriteValue(streamKeeper, value, valueType, serializedType, encoding, constLength, endianness, ctx);
             }
 
             /* Back-annotate binding source if necessary (used for first pass) or enforce const */
@@ -294,7 +317,7 @@ namespace BinarySerialization
             foreach(var item in list)
             {
                 var itemPosition = streamKeeper.RelativePosition;
-                WritePrimitive(streamKeeper, item, itemValueType, serializedType, encoding, constItemLength, endianness, ctx);
+                WriteValue(streamKeeper, item, itemValueType, serializedType, encoding, constItemLength, endianness, ctx);
                 var itemLength = streamKeeper.RelativePosition - itemPosition;
                 itemLengths.Add(itemLength);
                 ctx.PreviousItem = item;
@@ -320,17 +343,20 @@ namespace BinarySerialization
             if (serializeUntilAttribute != null)
             {
                 var terminationValue = serializeUntilAttribute.Value;
-                WritePrimitive(streamKeeper, terminationValue, terminationValue.GetType(), SerializedType.Default,
+                WriteValue(streamKeeper, terminationValue, terminationValue.GetType(), SerializedType.Default,
                                encoding, constLength, endianness, ctx);
             }
 
             ctx.PreviousItem = null;
         }
 
-        private void WritePrimitive(StreamKeeper stream, object value, Type valueType, SerializedType serializedType,
+        private void WriteValue(StreamKeeper stream, object value, Type valueType, SerializedType serializedType,
                                 Encoding encoding, long constLength, Endianness endianness, BinarySerializationContext ctx)
         {
-            if (valueType.IsPrimitive || valueType.IsEnum || valueType == typeof (string) || valueType == typeof (byte[]))
+            var underlyingNullableType = Nullable.GetUnderlyingType(valueType);
+
+            if (valueType.IsPrimitive || valueType.IsEnum || valueType == typeof (string) || valueType == typeof (byte[]) ||
+                underlyingNullableType != null)
             {
                 if (valueType.IsEnum)
                 {
@@ -349,6 +375,10 @@ namespace BinarySerialization
                         Type underlyingType = Enum.GetUnderlyingType(valueType);
                         serializedType = DefaultSerializedTypes[underlyingType];
                     }
+                }
+                else if (underlyingNullableType != null)
+                {
+                    serializedType = DefaultSerializedTypes[underlyingNullableType];
                 }
                 else if (serializedType == SerializedType.Default)
                 {
@@ -458,8 +488,9 @@ namespace BinarySerialization
         /// </summary>
         /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(Stream stream) where T : new()
+        public T Deserialize<T>(Stream stream, BinarySerializationContext context = null) where T : new()
         {
             var graphType = typeof (T);
 
@@ -475,7 +506,7 @@ namespace BinarySerialization
                     "Collections cannot be directly deserialized (they should be contained).");
 
             var o = new T();
-            ReadMembers(stream, o, graphType, null);
+            ReadMembers(stream, o, graphType, context);
             return o;
         }
 
@@ -484,10 +515,11 @@ namespace BinarySerialization
         /// </summary>
         /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="data">The byte array from which to deserialize the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(byte[] data) where T : new()
+        public T Deserialize<T>(byte[] data, BinarySerializationContext context = null) where T : new()
         {
-            return Deserialize<T>(new MemoryStream(data));
+            return Deserialize<T>(new MemoryStream(data), context);
         }
 
         private void ReadMembers(Stream stream, object o, Type objectType, BinarySerializationContext ctx)
@@ -510,6 +542,15 @@ namespace BinarySerialization
                         ReadMember(stream, memberSerializationInfo, o, serializationContext);
                     }
 #if !DEBUG
+                    catch (EndOfStreamException e)
+                    {
+                        var message = string.Format("Error deserializing {0}.", memberSerializationInfo.Member.Name);
+                        throw new InvalidOperationException(message, e);
+                    }
+                    catch (IOException)
+                    {
+                        throw;
+                    }
                     catch (Exception e)
                     {
                         var message = string.Format("Error deserializing {0}.", memberSerializationInfo.Member.Name);
@@ -520,23 +561,28 @@ namespace BinarySerialization
             }
         }
 
-        private void ReadMember(Stream stream, MemberSerializationInfo memberSerializationInfo, object o,
+        private void ReadMember(Stream stream, MemberSerializationInfo memberSerializationInfo, object member,
                                 BinarySerializationContext ctx)
         {
-            if (stream == null)
-                throw new ArgumentNullException("stream");
-
             if (memberSerializationInfo == null)
                 throw new ArgumentNullException("memberSerializationInfo");
 
-            if (o == null)
-                throw new ArgumentNullException("o");
+            if (stream == null)
+                throw new ArgumentNullException("stream");
 
-            if (o is IDictionary)
+            if (member == null)
+                throw new ArgumentNullException("member");
+
+            if (member is IDictionary)
                 throw new InvalidOperationException("Cannot deserialize objects that implement IDictionary.");
 
-            if (!IsSerializable(memberSerializationInfo, o, ctx))
+            if (memberSerializationInfo.IgnoreAttribute != null)
                 return;
+
+            if (!IsSerializable(memberSerializationInfo, member, ctx))
+                return;
+
+            OnMemberDeserializing(memberSerializationInfo.Member.Name, ctx);
 
             long originalPosition = InvalidFieldOffset;
             FieldOffsetAttribute fieldOffsetAttribute = memberSerializationInfo.FieldOffsetAttribute;
@@ -546,7 +592,7 @@ namespace BinarySerialization
                 if(!stream.CanSeek)
                     throw new InvalidOperationException("FieldOffsetAttribute not supported for non-seekable streams");
                 originalPosition = stream.Position;
-                stream.Position = GetOffset(fieldOffsetAttribute, o, ctx);
+                stream.Position = GetOffset(fieldOffsetAttribute, member, ctx);
             }
 
             Type valueType = memberSerializationInfo.Member.GetMemberType();
@@ -554,7 +600,7 @@ namespace BinarySerialization
             /* Look for subtype, if specified */
             var subtypeAttributes = memberSerializationInfo.SubtypeAttributes;
             if (subtypeAttributes.Any())
-                valueType = GetSubtype(subtypeAttributes, valueType, o, ctx);
+                valueType = GetSubtype(subtypeAttributes, valueType, member, ctx);
 
             var serializedType = SerializedType.Default;
             Encoding encoding = DefaultEncoding;
@@ -577,7 +623,7 @@ namespace BinarySerialization
 
             if (fieldLengthAttribute != null)
             {
-                length = GetLength(fieldLengthAttribute, o, ctx);
+                length = GetLength(fieldLengthAttribute, member, ctx);
 
                 if(length == InvalidFieldLength)
                     throw new InvalidOperationException("Unable to resolve field length.");
@@ -589,13 +635,13 @@ namespace BinarySerialization
 
             if (isList)
             {
-                ReadCollection(stream, memberSerializationInfo, o, ctx, valueType, serializedType, encoding, endianness);
+                ReadCollection(stream, memberSerializationInfo, member, ctx, valueType, serializedType, encoding, endianness);
             }
             else
             {
                 object value = ReadValue(stream, valueType, serializedType, encoding, length, endianness, ctx);
 
-                memberSerializationInfo.Member.SetValue(o, value);
+                memberSerializationInfo.Member.SetValue(member, value);
                 OnMemberDeserialized(memberSerializationInfo.Member.Name, value, ctx);
             }
 
@@ -671,7 +717,7 @@ namespace BinarySerialization
                 {
                     if (!stream.CanSeek)
                         throw new InvalidOperationException(
-                            "SerializeUntil not supported for non-seekable streams as it requires look-ahead.");
+                            "SerializeUntil not supported for non-seekable streams as it requires peek-ahead.");
 
                     var terminationValue = serializeUntilAttribute.Value;
                     var terminationValueType = terminationValue.GetType();
@@ -701,9 +747,20 @@ namespace BinarySerialization
             if (valueType == null)
                 return null;
 
+            var underlyingNullableType = Nullable.GetUnderlyingType(valueType);
+
             if (valueType.IsPrimitive || valueType.IsEnum || valueType == typeof (string) ||
-                valueType == typeof (byte[]))
+                valueType == typeof (byte[]) || underlyingNullableType != null)
             {
+                /* This allows for nullable "optional" members at the end of a length-controlled section */
+                var isEndOfStream = (stream.CanSeek && stream.Position >= stream.Length) ||
+                                    (stream is StreamLimiter && (stream as StreamLimiter).Position >= stream.Length);
+
+                /* In the implicit termination case just stop if we hit the end of the stream.  
+                     * If the stream isn't seekable, this doesn't apply. */
+                if (isEndOfStream)
+                    return null;
+
                 if (valueType.IsEnum)
                 {
                     SerializedType enumSerializedType;
@@ -717,6 +774,11 @@ namespace BinarySerialization
                         Type underlyingType = Enum.GetUnderlyingType(valueType);
                         serializedType = DefaultSerializedTypes[underlyingType];
                     }
+                }
+                else if (underlyingNullableType != null)
+                {
+                    if (serializedType == SerializedType.Default)
+                        serializedType = DefaultSerializedTypes[underlyingNullableType];
                 }
                 else if (serializedType == SerializedType.Default)
                 {
@@ -845,18 +907,20 @@ namespace BinarySerialization
         private static bool IsSerializable(MemberSerializationInfo memberSerializationInfo, object o,
                                            BinarySerializationContext ctx)
         {
-            if (memberSerializationInfo.IgnoreAttribute != null)
-                return false;
+            SerializeWhenAttribute[] serializeWhenAttributes = memberSerializationInfo.SerializeWhenAttributes;
 
-            SerializeWhenAttribute serializeWhenAttribute = memberSerializationInfo.SerializeWhenAttribute;
+            if (serializeWhenAttributes.Length == 0)
+                return true;
 
-            if (serializeWhenAttribute != null)
+            return serializeWhenAttributes.Any(serializeWhenAttribute =>
             {
                 object value = ctx.GetValue(o, serializeWhenAttribute.Binding);
-                return value.Equals(serializeWhenAttribute.Value);
-            }
 
-            return true;
+                if (value == null)
+                    return false;
+
+                return value.Equals(serializeWhenAttribute.Value);
+            });
         }
         
         private static IList GetList(MemberSerializationInfo memberSerializationInfo,
@@ -889,7 +953,6 @@ namespace BinarySerialization
                 {
                     list = (IList) Activator.CreateInstance(valueType);
                     memberSerializationInfo.Member.SetValue(o, list);
-
                 }
             }
             return list;
@@ -929,6 +992,11 @@ namespace BinarySerialization
         }
 
         private static void SetValue(MemberBinding binding, object o, BinarySerializationContext ctx, long value)
+        {
+            ctx.SetValue(o, binding, value);
+        }
+
+        private static void SetValue(MemberBinding binding, object o, BinarySerializationContext ctx, string value)
         {
             ctx.SetValue(o, binding, value);
         }
@@ -1012,15 +1080,29 @@ namespace BinarySerialization
             var matchingSubtypes = subtypeAttributes.Where(a => a.Subtype == type).ToList();
 
             if (matchingSubtypes.Count == 0)
-                throw new InvalidOperationException("No matching subtype attribute.");
+            {
+                /* Try to fall back on base types */
+                matchingSubtypes = subtypeAttributes.Where(a => a.Subtype.IsAssignableFrom(type)).ToList();
+
+                if (matchingSubtypes.Count == 0)
+                    throw new InvalidOperationException(
+                        string.Format("No matching subtype attribute for type '{0}'.", type));
+            }
 
             if (matchingSubtypes.Count > 1)
                 throw new ArgumentException("Subtypes must have unique values.", "subtypeAttributes");
 
             var subtypeAttribute = matchingSubtypes[0];
-            var value = Convert.ToInt64(subtypeAttribute.Value);
 
-            SetValue(subtypeAttribute.Binding, o, ctx, value);
+            if (subtypeAttribute.Value is string)
+            {
+                SetValue(subtypeAttribute.Binding, o, ctx, subtypeAttribute.Value as string);
+            }
+            else
+            {
+                var value = Convert.ToInt64(subtypeAttribute.Value);
+                SetValue(subtypeAttribute.Binding, o, ctx, value);
+            }
         }
 
 
@@ -1042,16 +1124,28 @@ namespace BinarySerialization
             return s.TrimEnd('\0');
         }
 
-        protected void OnMemberSerialized(string memberName, object value, BinarySerializationContext context)
+        private void OnMemberSerialized(string memberName, object value, BinarySerializationContext context)
         {
             if (MemberSerialized != null)
                 MemberSerialized(this, new MemberSerializedEventArgs(memberName, value, context));
         }
 
-        protected void OnMemberDeserialized(string memberName, object value, BinarySerializationContext context)
+        private void OnMemberDeserialized(string memberName, object value, BinarySerializationContext context)
         {
             if (MemberDeserialized != null)
                 MemberDeserialized(this, new MemberSerializedEventArgs(memberName, value, context));
+        }
+
+        private void OnMemberSerializing(string memberName, BinarySerializationContext context)
+        {
+            if(MemberSerializing != null)
+                MemberSerializing(this, new MemberSerializingEventArgs(memberName, context));
+        }
+
+        private void OnMemberDeserializing(string memberName, BinarySerializationContext context)
+        {
+            if(MemberDeserializing != null)
+                MemberDeserializing(this, new MemberSerializingEventArgs(memberName, context));
         }
     }
 }

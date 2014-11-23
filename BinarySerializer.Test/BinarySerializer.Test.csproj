@@ -64,7 +64,14 @@
     <Compile Include="Count\BoundCountClass.cs" />
     <Compile Include="Count\ConstCountClass.cs" />
     <Compile Include="Count\CountTests.cs" />
-    <Compile Include="Empty.cs" />
+    <Compile Include="Misc\CountTests.cs" />
+    <Compile Include="Misc\EmptyClass.cs" />
+    <Compile Include="Misc\EmptyClassTest.cs" />
+    <Compile Include="Misc\IOExceptionTest.cs" />
+    <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
+    <Compile Include="Misc\NullTrailingMemberTests.cs" />
+    <Compile Include="Misc\UnreadableStream.cs" />
+    <Compile Include="NullArrayClass.cs" />
     <Compile Include="DoubleOutlierConverter.cs" />
     <Compile Include="Enums\BaseTypeEnumClass.cs" />
     <Compile Include="Enums\BaseTypeEnumValues.cs" />
@@ -84,7 +91,9 @@
     <Compile Include="Length\ConstLengthClass.cs" />
     <Compile Include="Length\ContainedCollection.cs" />
     <Compile Include="Length\LengthTests.cs" />
-    <Compile Include="Misc\MiscTests.cs" />
+    <Compile Include="Misc\DictionaryMemberClass.cs" />
+    <Compile Include="Misc\NullTrailingMemberClass.cs" />
+    <Compile Include="Misc\NullTrailingMemberClassContainer.cs" />
     <Compile Include="NonSeekableStream.cs" />
     <Compile Include="NutritionalInformation.cs" />
     <Compile Include="Offset\BoundOffsetClass.cs" />
@@ -97,6 +106,7 @@
     <Compile Include="Streams\StreamTests.cs" />
     <Compile Include="Subtype\IncompleteSubtypeClass.cs" />
     <Compile Include="Subtype\SubclassA.cs" />
+    <Compile Include="Subtype\UnspecifiedSubclass.cs" />
     <Compile Include="Subtype\SubclassB.cs" />
     <Compile Include="Subtype\SubclassType.cs" />
     <Compile Include="Subtype\SubSubclassC.cs" />

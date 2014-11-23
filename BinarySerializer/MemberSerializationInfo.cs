@@ -13,7 +13,7 @@ namespace BinarySerialization
                                        IgnoreAttribute ignoreAttribute, FieldOffsetAttribute fieldOffsetAttribute,
                                        FieldLengthAttribute fieldLengthAttribute,
                                        FieldCountAttribute fieldCountAttribute,
-                                       SerializeWhenAttribute serializeWhenAttribute,
+                                       SerializeWhenAttribute[] serializeWhenAttributes,
                                        SerializeUntilAttribute serializeUntilAttribute,
                                        ItemLengthAttribute itemLengthAttribute,
                                        ItemSerializeUntilAttribute itemSerializeUntilAttribute,
@@ -25,7 +25,7 @@ namespace BinarySerialization
             FieldOffsetAttribute = fieldOffsetAttribute;
             FieldLengthAttribute = fieldLengthAttribute;
             FieldCountAttribute = fieldCountAttribute;
-            SerializeWhenAttribute = serializeWhenAttribute;
+            SerializeWhenAttributes = serializeWhenAttributes;
             SerializeUntilAttribute = serializeUntilAttribute;
             ItemLengthAttribute = itemLengthAttribute;
             ItemSerializeUntilAttribute = itemSerializeUntilAttribute;
@@ -38,10 +38,12 @@ namespace BinarySerialization
         public FieldOffsetAttribute FieldOffsetAttribute { get; set; }
         public FieldLengthAttribute FieldLengthAttribute { get; set; }
         public FieldCountAttribute FieldCountAttribute { get; set; }
-        public SerializeWhenAttribute SerializeWhenAttribute { get; set; }
+        public SerializeWhenAttribute[] SerializeWhenAttributes { get; set; }
         public SerializeUntilAttribute SerializeUntilAttribute { get; set; }
         public ItemLengthAttribute ItemLengthAttribute { get; set; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; set; }
         public SubtypeAttribute[] SubtypeAttributes { get; set; }
+
+        public bool IsLastMember { get; set; }
     }
 }

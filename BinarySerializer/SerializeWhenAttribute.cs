@@ -5,7 +5,7 @@ namespace BinarySerialization
     /// <summary>
     /// Used to control conditional serialization of members.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=true)]
     public sealed class SerializeWhenAttribute : FieldBindingBaseAttribute
     {
         /// <summary>

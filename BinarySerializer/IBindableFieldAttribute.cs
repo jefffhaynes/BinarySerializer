@@ -26,7 +26,7 @@ namespace BinarySerialization
         /// <summary>
         /// Gets or sets the type of ancestor to look for.
         /// </summary>
-		string AncestorType { get; set; }
+        Type AncestorType { get; set; }
 
         /// <summary>
         /// Gets or sets a <see cref="RelativeSourceMode"/> value that describes the location of the

@@ -15,7 +15,7 @@ namespace BinarySerializer.Test
         [SerializeAs(Order=0)]
         public uint VitaminB { get; set; }
 
-        [FieldCount("OtherStuffCount", Mode = RelativeSourceMode.FindAncestor, AncestorType = "Cereal")]
+        [FieldCount("OtherStuffCount", Mode = RelativeSourceMode.FindAncestor, AncestorType = typeof(Cereal))]
         public List<string> OtherNestedStuff { get; set; }
 
         [FieldCount("OtherStuffCount", Mode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]

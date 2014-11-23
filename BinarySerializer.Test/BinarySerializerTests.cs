@@ -204,7 +204,7 @@ namespace BinarySerializer.Test
         public void NullMemberSerializationShouldThrowException()
         {
             var serializer = new BinarySerialization.BinarySerializer();
-            serializer.Serialize(new MemoryStream(), new Empty());
+            serializer.Serialize(new MemoryStream(), new NullArrayClass());
         }
 
         [TestMethod]

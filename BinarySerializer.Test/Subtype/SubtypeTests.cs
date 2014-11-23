@@ -33,5 +33,15 @@ namespace BinarySerializer.Test.Subtype
             var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
             Roundtrip(expected);
         }
+
+        [TestMethod]
+        public void BestFitSubtypeTest()
+        {
+            var expected = new SubtypeClass { Field = new UnspecifiedSubclass() };
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(SubclassType.B, actual.Subtype);
+            Assert.IsInstanceOfType(actual.Field, typeof(SubclassB));
+        }
     }
 }

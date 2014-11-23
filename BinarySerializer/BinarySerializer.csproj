@@ -45,6 +45,7 @@
     <Compile Include="EnumMemberSerializationInfo.cs" />
     <Compile Include="EnumerableExtensionMethods.cs" />
     <Compile Include="ILengthAttribute.cs" />
+    <Compile Include="MemberSerializingEventArgs.cs" />
     <Compile Include="NullStream.cs" />
     <Compile Include="StreamKeeper.cs" />
     <Compile Include="StreamLimiter.cs" />
@@ -78,8 +79,20 @@
     <Compile Include="IBindableFieldAttribute.cs" />
     <Compile Include="Streamlet.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="nuget\BinarySerializer.dll.nuspec">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="nuget\nuget.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>nuget\nuget pack "$(ProjectPath)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -18,7 +18,7 @@ namespace BinarySerialization
         /// <param name="parent">The parent of this object in the object graph.</param>
         /// <param name="parentType">The type of the parent object.</param>
         /// <param name="parentContext">The parent object serialization context.</param>
-		public BinarySerializationContext(object parent, Type parentType, BinarySerializationContext parentContext)
+        internal BinarySerializationContext(object parent, Type parentType, BinarySerializationContext parentContext)
         {
             Parent = parent;
             ParentType = parentType;
@@ -32,12 +32,22 @@ namespace BinarySerialization
         /// <param name="parent"></param>
         /// <param name="parentContext"></param>
         /// <exception cref="NullReferenceException">Thrown if the parent is null.</exception>
-        public BinarySerializationContext(object parent, BinarySerializationContext parentContext)
+        internal BinarySerializationContext(object parent, BinarySerializationContext parentContext)
             : this(parent, parent.GetType(), parentContext)
         {
             
         }
-		
+
+        /// <summary>
+        /// Initializes a new instance of the BinarySerializationContext class with a parent.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <exception cref="NullReferenceException">Thrown if the parent is null.</exception>
+        public BinarySerializationContext(object parent)
+            : this(parent, parent.GetType(), null)
+        {
+        }
+
         /// <summary>
         /// The parent in the object graph of the object being serialized.
         /// </summary>
@@ -115,7 +125,7 @@ namespace BinarySerialization
         /// <param name="binding">The target binding.</param>
         /// <param name="memberInfo">The target site.</param>
         /// <returns></returns>
-        public object GetValue(object source, MemberBinding binding, out MemberInfo memberInfo)
+        private object GetValue(object source, MemberBinding binding, out MemberInfo memberInfo)
         {
             object relativeSource = null;
 
@@ -211,7 +221,7 @@ namespace BinarySerialization
             BinarySerializationContext parentCtx = this;
             while (parentCtx != null)
             {
-                if (binding.AncestorLevel == level || parentCtx.ParentType.Name == binding.AncestorType)
+                if (binding.AncestorLevel == level || parentCtx.ParentType == binding.AncestorType)
                 {
                     return parentCtx.Parent;
                 }
