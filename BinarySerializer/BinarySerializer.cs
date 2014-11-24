@@ -231,7 +231,8 @@ namespace BinarySerialization
             if (serializeAsAttribute != null)
             {
                 serializedType = serializeAsAttribute.SerializedType;
-                encoding = serializeAsAttribute.Encoding ?? encoding;
+                if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
+                    encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
 
                 if (serializeAsAttribute.Endianness != Endianness.Inherit)
                     endianness = serializeAsAttribute.Endianness;
@@ -604,7 +605,8 @@ namespace BinarySerialization
             if (serializeAsAttribute != null)
             {
                 serializedType = serializeAsAttribute.SerializedType;
-                encoding = serializeAsAttribute.Encoding ?? encoding;
+                if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
+                    encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
 
                 if (serializeAsAttribute.Endianness != Endianness.Inherit)
                     endianness = serializeAsAttribute.Endianness;

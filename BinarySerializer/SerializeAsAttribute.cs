@@ -38,7 +38,7 @@ namespace BinarySerialization
         /// <summary>
         /// Specifies the encoding to use when serializing strings.
         /// </summary>
-        public Encoding Encoding { get; set; }
+        public string Encoding { get; set; }
 
         /// <summary>
         /// Specifies the endianness to use when serializing the decorated member.
