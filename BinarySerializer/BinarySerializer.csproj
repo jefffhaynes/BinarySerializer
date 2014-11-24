@@ -83,7 +83,7 @@
     <None Include="nuget\BinarySerializer.dll.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="nuget\nuget.exe" />
+    <None Include="nuget\nuget.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
