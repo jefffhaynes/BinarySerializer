@@ -80,18 +80,14 @@
     <Compile Include="Streamlet.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="nuget\BinarySerializer.dll.nuspec">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="nuget\BinarySerializer.dll.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="nuget\nuget.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="nuget\nuget.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>nuget\nuget pack "$(ProjectPath)"</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)\nuget\nuget.exe" pack "$(ProjectPath)" -Prop Configuration=Release</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
