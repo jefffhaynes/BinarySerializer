@@ -353,10 +353,7 @@ namespace BinarySerialization
         private void WriteValue(StreamKeeper stream, object value, Type valueType, SerializedType serializedType,
                                 Encoding encoding, long constLength, Endianness endianness, BinarySerializationContext ctx)
         {
-            var underlyingNullableType = Nullable.GetUnderlyingType(valueType);
-
-            if (valueType.IsPrimitive || valueType.IsEnum || valueType == typeof (string) || valueType == typeof (byte[]) ||
-                underlyingNullableType != null)
+            if (valueType.IsPrimitive || valueType.IsEnum || valueType == typeof (string) || valueType == typeof (byte[]))
             {
                 if (valueType.IsEnum)
                 {
@@ -375,10 +372,6 @@ namespace BinarySerialization
                         Type underlyingType = Enum.GetUnderlyingType(valueType);
                         serializedType = DefaultSerializedTypes[underlyingType];
                     }
-                }
-                else if (underlyingNullableType != null)
-                {
-                    serializedType = DefaultSerializedTypes[underlyingNullableType];
                 }
                 else if (serializedType == SerializedType.Default)
                 {
@@ -749,8 +742,13 @@ namespace BinarySerialization
 
             var underlyingNullableType = Nullable.GetUnderlyingType(valueType);
 
+            if (underlyingNullableType != null)
+            {
+                valueType = underlyingNullableType;
+            }
+
             if (valueType.IsPrimitive || valueType.IsEnum || valueType == typeof (string) ||
-                valueType == typeof (byte[]) || underlyingNullableType != null)
+                valueType == typeof (byte[]))
             {
                 /* This allows for nullable "optional" members at the end of a length-controlled section */
                 var isEndOfStream = (stream.CanSeek && stream.Position >= stream.Length) ||
@@ -774,11 +772,6 @@ namespace BinarySerialization
                         Type underlyingType = Enum.GetUnderlyingType(valueType);
                         serializedType = DefaultSerializedTypes[underlyingType];
                     }
-                }
-                else if (underlyingNullableType != null)
-                {
-                    if (serializedType == SerializedType.Default)
-                        serializedType = DefaultSerializedTypes[underlyingNullableType];
                 }
                 else if (serializedType == SerializedType.Default)
                 {
