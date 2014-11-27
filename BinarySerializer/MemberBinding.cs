@@ -11,7 +11,7 @@ namespace BinarySerialization
         /// <summary>
         /// Initializes a new MemberBinding.
         /// </summary>
-        public MemberBinding()
+        internal MemberBinding()
         {
         }
 
@@ -21,11 +21,13 @@ namespace BinarySerialization
         /// <param name="path">The path to the source member.</param>
         /// <param name="mode">The source mode.</param>
         /// <param name="converterType">An optional converter.</param>
-        public MemberBinding(string path, RelativeSourceMode mode, Type converterType = null)
+        /// <param name="converterParameter">An optional converter parameter.</param>
+        internal MemberBinding(string path, RelativeSourceMode mode, Type converterType = null, object converterParameter = null)
         {
             Path = path;
             Mode = mode;
             ConverterType = converterType;
+            ConverterParameter = converterParameter;
         }
 
         /// <summary>
@@ -34,36 +36,10 @@ namespace BinarySerialization
         /// </summary>
         /// <param name="path">The path to the source member.</param>
         /// <param name="converterType">An optional converter.</param>
-        public MemberBinding(string path, Type converterType = null)
-            : this(path, RelativeSourceMode.Self, converterType)
+        /// <param name="converterParameter">An optional converter parameter.</param>
+        internal MemberBinding(string path, Type converterType = null, object converterParameter = null)
+            : this(path, RelativeSourceMode.Self, converterType, converterParameter)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new MemberBinding with a path, an ancestor type, and an 
-        /// optional converter using mode <see cref="RelativeSourceMode.FindAncestor"/>.
-        /// </summary>
-        /// <param name="path">The path to the source member.</param>
-        /// <param name="ancestorType">The type of the ancestor to look for.</param>
-        /// <param name="converterType">An optional converter.</param>
-        public MemberBinding(string path, Type ancestorType, Type converterType = null)
-            : this(path, RelativeSourceMode.FindAncestor, converterType)
-        {
-            AncestorType = ancestorType;
-        }
-
-        /// <summary>
-        /// Initializes a new MemberBinding with a path, an ancestor level, and an 
-        /// optional converter using mode <see cref="RelativeSourceMode.FindAncestor"/>.
-        /// </summary>
-        /// <param name="path">The path to the source member.</param>
-        /// <param name="ancestorLevel">The level of the ancestor to look for.  
-        /// Use 1 to indicate the one nearest to the binding target element.</param>
-        /// <param name="converterType">An optional converter.</param>
-        public MemberBinding(string path, int ancestorLevel, Type converterType = null) 
-            : this(path, RelativeSourceMode.FindAncestor, converterType)
-        {
-            AncestorLevel = ancestorLevel;
         }
 
         /// <summary>
@@ -92,5 +68,10 @@ namespace BinarySerialization
         /// An optional converter to be used converting from the source value to the target binding.
         /// </summary>
         public Type ConverterType { get; set; }
+
+        /// <summary>
+        /// An optional converter parameter to be passed to the converter.
+        /// </summary>
+        public object ConverterParameter { get; set; }
     }
 }

@@ -112,7 +112,7 @@ namespace BinarySerialization
         /// <param name="source">The source object.</param>
         /// <param name="binding">The target binding.</param>
         /// <returns></returns>
-        public object GetValue(object source, MemberBinding binding)
+        internal object GetValue(object source, MemberBinding binding)
         {
             MemberInfo memberInfo;
             return GetValue(source, binding, out memberInfo);
@@ -165,7 +165,7 @@ namespace BinarySerialization
                 throw new InvalidOperationException(message);
             }
 
-            return converter.Convert(value, this);
+            return converter.Convert(value, binding.ConverterParameter, this);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace BinarySerialization
         /// <param name="binding">The target binding.</param>
         /// <param name="value">The value to set.</param>
         /// <returns></returns>
-        public void SetValue(object source, MemberBinding binding, object value)
+        internal void SetValue(object source, MemberBinding binding, object value)
         {
             object relativeSource = null;
 
@@ -209,7 +209,7 @@ namespace BinarySerialization
                     throw new InvalidOperationException(message);
                 }
 
-                value = converter.ConvertBack(value, this);
+                value = converter.ConvertBack(value, binding.ConverterParameter, this);
             }
 
             SetValue(path, relativeSource, value);

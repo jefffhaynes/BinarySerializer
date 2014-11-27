@@ -4,7 +4,7 @@ namespace Iso9660
 {
     class SectorByteConverter : IValueConverter
     {
-        public object Convert(object value, BinarySerializationContext ctx)
+        public object Convert(object value, object converterParameter, BinarySerializationContext ctx)
         {
             var sector = (uint) value;
             var iso = ctx.FindAncestor<Iso9660>();
@@ -12,7 +12,7 @@ namespace Iso9660
             return sector*sectorSize;
         }
 
-        public object ConvertBack(object value, BinarySerializationContext ctx)
+        public object ConvertBack(object value, object converterParameter, BinarySerializationContext ctx)
         {
             throw new System.NotImplementedException();
         }
