@@ -35,7 +35,7 @@ namespace BinarySerializer.Test
 
         public CerealShape DefinitelyNotTheShape { get; set; }
 
-        [SerializeWhen("Shape", CerealShape.Square)]
+        [SerializeWhen("Shape", "Square")]
         public string DontSerializeMe { get; set; }
 
         [SerializeWhen("Shape", CerealShape.Circular)]
