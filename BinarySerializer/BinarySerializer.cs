@@ -916,7 +916,8 @@ namespace BinarySerialization
                 if (value == null)
                     return false;
 
-                return value.Equals(serializeWhenAttribute.Value);
+                var comparissonValue = value.ConvertTo(serializeWhenAttribute.Value.GetType());
+                return comparissonValue.Equals(serializeWhenAttribute.Value);
             });
         }
         

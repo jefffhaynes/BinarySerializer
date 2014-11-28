@@ -60,6 +60,12 @@ namespace BinarySerialization
             set { Binding.ConverterType = value; }
         }
 
+        public object ConverterParameter
+        {
+            get { return Binding.ConverterParameter; }
+            set { Binding.ConverterParameter = value; }
+        }
+
         internal bool IsConst
         {
             get { return IsConstSupported && string.IsNullOrEmpty(Path); }

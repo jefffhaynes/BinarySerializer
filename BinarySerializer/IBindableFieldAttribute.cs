@@ -38,6 +38,11 @@ namespace BinarySerialization
         /// The optional IValueConverter to use when converting from the binding source.
         /// </summary>
         Type ConverterType { get; set; }
+
+        /// <summary>
+        /// An optional parameter to be passed to the converter.
+        /// </summary>
+        object ConverterParameter { get; set; }
 	}
 }
 
