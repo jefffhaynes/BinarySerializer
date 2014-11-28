@@ -197,10 +197,11 @@ namespace BinarySerialization
         /// <summary>
         /// Closes the <see cref="Streamlet" /> object.
         /// </summary>
-        public override void Close()
+        /// <param name="disposing"></param>
+        protected override void Dispose(bool disposing)
         {
-            base.Close();
-            Source.Close();
+            base.Dispose(disposing);
+            Source.Dispose();
         }
     }
 }

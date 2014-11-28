@@ -483,8 +483,10 @@ namespace BinarySerialization
         /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
+        /// <param name="formatProvider">An optional formatter.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(Stream stream, BinarySerializationContext context = null) where T : new()
+        public T Deserialize<T>(Stream stream, BinarySerializationContext context = null,
+                                IFormatProvider formatProvider = null) where T : new()
         {
             var graphType = typeof (T);
 
@@ -492,7 +494,7 @@ namespace BinarySerialization
             {
                 var primitive = ReadPrimitive(new EndianAwareBinaryReader(stream), DefaultSerializedTypes[graphType],
                                   DefaultEncoding);
-                return (T)Convert.ChangeType(primitive, graphType);
+                return (T)Convert.ChangeType(primitive, graphType, formatProvider);
             }
 
             if (graphType.IsList())
@@ -865,7 +867,7 @@ namespace BinarySerialization
                 case SerializedType.NullTerminatedString:
                     {
                         byte[] data = ReadNullTerminatedString(reader).ToArray();
-                        value = encoding.GetString(data);
+                        value = encoding.GetString(data, 0, data.Length);
                         break;
                     }
                 case SerializedType.SizedString:
@@ -876,7 +878,7 @@ namespace BinarySerialization
                                 "Fields with serialized type SizedString must have a FieldLengthAttribute");
                         }
                         byte[] data = reader.ReadBytes((int) length);
-                        value = TrimNulls(encoding.GetString(data));
+                        value = TrimNulls(encoding.GetString(data, 0, data.Length));
                         break;
                     }
                 case SerializedType.LengthPrefixedString:
