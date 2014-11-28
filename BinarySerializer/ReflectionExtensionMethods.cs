@@ -9,51 +9,60 @@ namespace BinarySerialization
     {
         public static object GetValue(this MemberInfo memberInfo, object o)
         {
-            switch (memberInfo.MemberType)
+            var propertyInfo = memberInfo as PropertyInfo;
+            var fieldInfo = memberInfo as FieldInfo;
+
+            if (propertyInfo != null)
             {
-                case MemberTypes.Property:
-                    return ((PropertyInfo) memberInfo).GetValue(o, null);
-                case MemberTypes.Field:
-                    return ((FieldInfo) memberInfo).GetValue(o);
-                default:
-                    throw new NotSupportedException(string.Format("{0} not supported", memberInfo.MemberType));
+                return propertyInfo.GetValue(o, null);
             }
+
+            if (fieldInfo != null)
+            {
+                return fieldInfo.GetValue(o);
+            }
+
+            throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
         }
 
         public static void SetValue(this MemberInfo memberInfo, object o, object value)
         {
-            switch (memberInfo.MemberType)
+            var propertyInfo = memberInfo as PropertyInfo;
+            var fieldInfo = memberInfo as FieldInfo;
+
+            if (propertyInfo != null)
             {
-                case MemberTypes.Property:
-                    {
-                        var propertyInfo = ((PropertyInfo) memberInfo);
-                        var convertedValue = value.ConvertTo(propertyInfo.PropertyType);
-                        propertyInfo.SetValue(o, convertedValue, null);
-                        break;
-                    }
-                case MemberTypes.Field:
-                    {
-                        var fieldInfo = ((FieldInfo) memberInfo);
-                        var convertedValue = value.ConvertTo(fieldInfo.FieldType);
-                        fieldInfo.SetValue(o, convertedValue);
-                        break;
-                    }
-                default:
-                    throw new NotSupportedException(string.Format("{0} not supported", memberInfo.MemberType));
+                var convertedValue = value.ConvertTo(propertyInfo.PropertyType);
+                propertyInfo.SetValue(o, convertedValue, null);
+                return;
             }
+
+            if (fieldInfo != null)
+            {
+                var convertedValue = value.ConvertTo(fieldInfo.FieldType);
+                fieldInfo.SetValue(o, convertedValue);
+                return;
+            }
+
+            throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
         }
 
         public static Type GetMemberType(this MemberInfo memberInfo)
         {
-            switch (memberInfo.MemberType)
+            var propertyInfo = memberInfo as PropertyInfo;
+            var fieldInfo = memberInfo as FieldInfo;
+
+            if (propertyInfo != null)
             {
-                case MemberTypes.Property:
-                    return ((PropertyInfo) memberInfo).PropertyType;
-                case MemberTypes.Field:
-                    return ((FieldInfo) memberInfo).FieldType;
-                default:
-                    throw new NotSupportedException(string.Format("{0} not supported", memberInfo.MemberType));
+                return propertyInfo.PropertyType;
             }
+
+            if (fieldInfo != null)
+            {
+                return fieldInfo.FieldType;
+            }
+
+            throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
         }
 
         public static T GetAttribute<T>(this Type type)
