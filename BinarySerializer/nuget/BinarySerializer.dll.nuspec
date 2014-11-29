@@ -2,13 +2,13 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>$version$</version>
+    <version>2.6.0.0</version>
     <authors>Jeff Haynes</authors>
     <owners></owners>
     <projectUrl>https://github.com/jefffhaynes/BinarySerializer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level.</description>
-    <releaseNotes>Improved SerializeWhen comparisson.</releaseNotes>
+    <releaseNotes>Changed to portable class library (PCL).</releaseNotes>
     <copyright>Copyright 2014</copyright>
     <tags>Serialization</tags>
     <!--<dependencies>
