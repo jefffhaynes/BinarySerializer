@@ -3,29 +3,30 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using BinarySerialization;
 
 namespace GraphGen
 {
-    public class ObjectNode : Node
+    internal class ObjectNode : Node
     {
         private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public;
 
-        public ObjectNode(Type type) : base(null)
+        public ObjectNode(Type type) : base(null, type)
         {
-            Type = type;
-            Children = GenerateChildren(type).ToList();
+            var children = GenerateChildren(type);
+            Children.AddRange(children);
         }
 
-        public ObjectNode(Node parent = null, MemberInfo memberInfo = null) : base(parent, memberInfo)
+        public ObjectNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
             if (memberInfo == null)
                 return;
 
             var type = GetMemberType(memberInfo);
-            Children = GenerateChildren(type).ToList();
+            var children = GenerateChildren(type);
+            Children.AddRange(children);
         }
-
 
         public override object Value
         {
@@ -46,17 +47,24 @@ namespace GraphGen
             }
         }
 
-        public List<Node> Children { get; set; }
+        private IEnumerable<Node> GetSerializableChildren()
+        {
+            return Children.Where(child => !child.Ignore);
+        }
 
         public override void Serialize(Stream stream)
         {
-            foreach (var child in Children)
+            var serializableChildren = GetSerializableChildren();
+
+            foreach (var child in serializableChildren)
                 child.Serialize(stream);
         }
 
         public override void Deserialize(Stream stream)
         {
-            foreach (var child in Children)
+            var serializableChildren = GetSerializableChildren();
+
+            foreach (var child in serializableChildren)
                 child.Deserialize(stream);
         }
 
@@ -76,19 +84,6 @@ namespace GraphGen
             if (memberType.IsPrimitive || memberType == typeof(string))
                 node = new ValueNode(this, memberInfo);
             else node = new ObjectNode(this, memberInfo);
-
-            var attributes = memberInfo.GetCustomAttributes(true);
-
-            node.SerializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
-            node.IgnoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
-            node.FieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
-            node.FieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
-            node.FieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
-            node.SerializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
-            node.SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
-            node.ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
-            node.ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
-            node.SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
 
             return node;
         }

@@ -292,7 +292,7 @@ namespace BinarySerialization
             {
                 if (fieldCountAttribute.IsConst)
                 {
-                    if (fieldCountAttribute.ConstCount != list.Count)
+                    if (fieldCountAttribute.ConstCount != (ulong)list.Count)
                     {
                         var message = string.Format(
                                 "List count value does not match FieldCountAttribute const value.  Expected {0} but was {1}.",
@@ -989,12 +989,12 @@ namespace BinarySerialization
             return (long)Convert.ToUInt64(value);
         }
 
-        private static void SetValue(MemberBinding binding, object o, BinarySerializationContext ctx, long value)
+        private static void SetValue(BindingInfo binding, object o, BinarySerializationContext ctx, long value)
         {
             ctx.SetValue(o, binding, value);
         }
 
-        private static void SetValue(MemberBinding binding, object o, BinarySerializationContext ctx, string value)
+        private static void SetValue(BindingInfo binding, object o, BinarySerializationContext ctx, string value)
         {
             ctx.SetValue(o, binding, value);
         }
@@ -1007,7 +1007,7 @@ namespace BinarySerialization
             var binding = countAttribute.Binding;
 
             if (binding.Path == null)
-                return countAttribute.ConstCount;
+                return (int)countAttribute.ConstCount;
 
             object value = ctx.GetValue(o, binding);
             return Convert.ToInt32(value);

@@ -45,6 +45,7 @@
     <Compile Include="Bytes.cs" />
     <Compile Include="EnumMemberSerializationInfo.cs" />
     <Compile Include="EnumerableExtensionMethods.cs" />
+    <Compile Include="IIntegerAttribute.cs" />
     <Compile Include="ILengthAttribute.cs" />
     <Compile Include="MemberSerializingEventArgs.cs" />
     <Compile Include="NullStream.cs" />
@@ -54,7 +55,7 @@
     <Compile Include="SerializeUntilAttribute.cs" />
     <Compile Include="ItemSerializeUntilAttribute.cs" />
     <Compile Include="IValueConverter.cs" />
-    <Compile Include="MemberBinding.cs" />
+    <Compile Include="BindingInfo.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="SerializeWhenAttribute.cs" />
     <Compile Include="FieldLengthAttribute.cs" />

@@ -16,7 +16,7 @@ namespace BinarySerialization
         /// </summary>
 		protected FieldBindingBaseAttribute()
 		{
-		    Binding = new MemberBinding();
+		    Binding = new BindingInfo();
 		}
 
         /// <summary>
@@ -25,10 +25,10 @@ namespace BinarySerialization
         /// </summary>
 		protected FieldBindingBaseAttribute(string path)
 		{
-            Binding = new MemberBinding(path);
+            Binding = new BindingInfo(path);
 		}
 
-        public MemberBinding Binding { get; set; }
+        public BindingInfo Binding { get; set; }
 
         public string Path
         {

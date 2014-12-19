@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace GraphGen
             var node = new ObjectNode(graph.GetType());
 
             node.Value = graph;
+
+            node.Serialize(new MemoryStream());
         }
     }
 }

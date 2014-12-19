@@ -6,23 +6,23 @@ namespace BinarySerialization
     /// Defines a binding to a member.
     /// </summary>
     /// <seealso cref="BinarySerializer"/>
-    public class MemberBinding
+    public class BindingInfo
     {
         /// <summary>
-        /// Initializes a new MemberBinding.
+        /// Initializes a new BindingInfo.
         /// </summary>
-        internal MemberBinding()
+        internal BindingInfo()
         {
         }
 
         /// <summary>
-        /// Initializes a new MemberBinding with a path, a source binding mode, and an optional converter. 
+        /// Initializes a new BindingInfo with a path, a source binding mode, and an optional converter. 
         /// </summary>
         /// <param name="path">The path to the source member.</param>
         /// <param name="mode">The source mode.</param>
         /// <param name="converterType">An optional converter.</param>
         /// <param name="converterParameter">An optional converter parameter.</param>
-        internal MemberBinding(string path, RelativeSourceMode mode, Type converterType = null, object converterParameter = null)
+        internal BindingInfo(string path, RelativeSourceMode mode, Type converterType = null, object converterParameter = null)
         {
             Path = path;
             Mode = mode;
@@ -31,13 +31,13 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Initializes a new MemberBinding with a path and an optional converter.
+        /// Initializes a new BindingInfo with a path and an optional converter.
         /// using mode <see cref="RelativeSourceMode.Self"/>.
         /// </summary>
         /// <param name="path">The path to the source member.</param>
         /// <param name="converterType">An optional converter.</param>
         /// <param name="converterParameter">An optional converter parameter.</param>
-        internal MemberBinding(string path, Type converterType = null, object converterParameter = null)
+        internal BindingInfo(string path, Type converterType = null, object converterParameter = null)
             : this(path, RelativeSourceMode.Self, converterType, converterParameter)
         {
         }

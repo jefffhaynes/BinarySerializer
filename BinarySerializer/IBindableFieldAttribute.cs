@@ -10,7 +10,7 @@ namespace BinarySerialization
         /// <summary>
         /// The field binding.
         /// </summary>
-        MemberBinding Binding { get; set; }
+        BindingInfo Binding { get; set; }
 
         /// <summary>
         /// Gets or sets the path to the binding source member.

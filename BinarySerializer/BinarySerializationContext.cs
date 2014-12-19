@@ -112,7 +112,7 @@ namespace BinarySerialization
         /// <param name="source">The source object.</param>
         /// <param name="binding">The target binding.</param>
         /// <returns></returns>
-        internal object GetValue(object source, MemberBinding binding)
+        internal object GetValue(object source, BindingInfo binding)
         {
             MemberInfo memberInfo;
             return GetValue(source, binding, out memberInfo);
@@ -125,7 +125,7 @@ namespace BinarySerialization
         /// <param name="binding">The target binding.</param>
         /// <param name="memberInfo">The target site.</param>
         /// <returns></returns>
-        private object GetValue(object source, MemberBinding binding, out MemberInfo memberInfo)
+        private object GetValue(object source, BindingInfo binding, out MemberInfo memberInfo)
         {
             object relativeSource = null;
 
@@ -175,7 +175,7 @@ namespace BinarySerialization
         /// <param name="binding">The target binding.</param>
         /// <param name="value">The value to set.</param>
         /// <returns></returns>
-        internal void SetValue(object source, MemberBinding binding, object value)
+        internal void SetValue(object source, BindingInfo binding, object value)
         {
             object relativeSource = null;
 
@@ -215,7 +215,7 @@ namespace BinarySerialization
             SetValue(path, relativeSource, value);
         }
 
-        private object FindAncestor(MemberBinding binding)
+        private object FindAncestor(BindingInfo binding)
         {
             int level = 1;
             BinarySerializationContext parentCtx = this;

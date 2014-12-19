@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace GraphGen
 {
-    public interface IBindingSource
+    internal class AttributeEvaluator
     {
-        Binding Binding { get; set; }
     }
 }

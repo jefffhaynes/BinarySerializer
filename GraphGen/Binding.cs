@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GraphGen
 {
-    public class Binding
+    internal class Binding
     {
+        public Binding(Func<object> targetValueGetter)
+        {
+            TargetValueGetter = targetValueGetter;
+        }
+
+        public Func<object> TargetValueGetter { get; private set; }
     }
 }

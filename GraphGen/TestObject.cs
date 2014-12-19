@@ -9,7 +9,9 @@ namespace GraphGen
 {
     class TestObject
     {
-        [FieldLength(6)]
+        public int NameLength { get; set; }
+
+        [FieldLength("NameLength")]
         public string Name { get; set; }
 
         public uint Age { get; set; }

@@ -30,3 +30,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("BinarySerializer.Test")]
 [assembly: InternalsVisibleTo("BinarySerializer.Performance")]
+[assembly: InternalsVisibleTo("GraphGen")]

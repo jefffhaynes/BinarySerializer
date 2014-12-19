@@ -41,9 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributeEvaluator.cs" />
     <Compile Include="Binding.cs" />
+    <Compile Include="BindingException.cs" />
     <Compile Include="GraphWrapper.cs" />
-    <Compile Include="IBindingSource.cs" />
+    <Compile Include="IntegerAttributeEvaluator.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="ObjectNode.cs" />
     <Compile Include="ValueNode.cs" />
