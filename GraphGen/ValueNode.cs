@@ -10,6 +10,24 @@ namespace GraphGen
     internal class ValueNode : Node
     {
         private object _value;
+
+        private static readonly Dictionary<Type, Func<object, object>> TypeConverters =
+            new Dictionary<Type, Func<object, object>>
+            {
+                {typeof (char), o => Convert.ToChar(o)},
+                {typeof (byte), o => Convert.ToByte(o)},
+                {typeof (sbyte), o => Convert.ToSByte(o)},
+                {typeof (bool), o => Convert.ToBoolean(o)},
+                {typeof (Int16), o => Convert.ToInt16(o)},
+                {typeof (Int32), o => Convert.ToInt32(o)},
+                {typeof (Int64), o => Convert.ToInt64(o)},
+                {typeof (UInt16), o => Convert.ToUInt16(o)},
+                {typeof (UInt32), o => Convert.ToUInt32(o)},
+                {typeof (UInt64), o => Convert.ToUInt64(o)},
+                {typeof (Single), o => Convert.ToSingle(o)},
+                {typeof (Double), o => Convert.ToDouble(o)},
+                {typeof (string), Convert.ToString}
+            };
  
         public ValueNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
@@ -35,23 +53,53 @@ namespace GraphGen
         {
             get
             {
-                if (!Bindings.Any())
-                    return _value;
+                var value = _value;
 
-                var firstValue = Bindings[0].TargetValueGetter();
+                if (Bindings.Any())
+                {
+                    value = Bindings[0].TargetValueGetter();
 
-                if (Bindings.Count == 1)
-                    return firstValue;
+                    if (Bindings.Count != 1)
+                    {
+                        var targetValues = Bindings.Select(binding => binding.TargetValueGetter()).ToArray();
 
-                var targetValues = Bindings.Select(binding => binding.TargetValueGetter()).ToArray();
+                        if (targetValues.Any(v => !value.Equals(v)))
+                            throw new BindingException(
+                                "Multiple bindings to a single source must have equivalent target values.");
+                    }
+                }
 
-                if (targetValues.Any(value => !firstValue.Equals(value)))
-                    throw new BindingException("Multiple bindings to a single source must have equivalent target values.");
-
-                return firstValue;
+                return ConvertToFieldType(value);
             }
 
             set { _value = value; }
+        }
+
+        private object ConvertToFieldType(object value)
+        {
+            if (value == null)
+                return null;
+
+            var type = value.GetType();
+
+            if (type == Type)
+                return value;
+
+            /* Special handling for strings */
+            if (type == typeof (string) && Type.IsPrimitive)
+            {
+                if (string.IsNullOrWhiteSpace(value.ToString()))
+                    value = 0;
+            }
+
+            Func<object, object> converter;
+            if (TypeConverters.TryGetValue(Type, out converter))
+                return converter(value);
+
+            if (Type.IsEnum && value.GetType().IsPrimitive)
+                return Enum.ToObject(Type, value);
+
+            return value;
         }
 
         public override void Serialize(Stream stream)
@@ -131,7 +179,6 @@ namespace GraphGen
         {
             var reader = new EndianAwareBinaryReader(stream);
 
-            object value;
             switch (SerializedType)
             {
                 case SerializedType.Int1:

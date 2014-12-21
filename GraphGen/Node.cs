@@ -14,7 +14,7 @@ namespace GraphGen
     {
         private const char PathSeparator = '.';
 
-        private static readonly Encoding DefaultEncoding = System.Text.Encoding.UTF8;
+        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
         private const Endianness DefaultEndianness = Endianness.Little;
 
         private static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
@@ -52,6 +52,7 @@ namespace GraphGen
         private readonly IntegerAttributeEvaluator _fieldLengthEvaluator;
         private readonly IntegerAttributeEvaluator _fieldCountEvaluator;
         private readonly IntegerAttributeEvaluator _fieldOffsetEvaluator;
+        private readonly ConditionalAttributeEvaluator _whenEvaluator;
             
 
 
@@ -115,12 +116,20 @@ namespace GraphGen
             if(fieldCountAttribute != null)
                 _fieldCountEvaluator = new IntegerAttributeEvaluator(this, fieldCountAttribute);
 
-            //var fieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
-            //node.SerializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
+            var fieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
+            if(fieldOffsetAttribute != null)
+                _fieldOffsetEvaluator = new IntegerAttributeEvaluator(this, fieldOffsetAttribute);
+
+            var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
+            if(serializeWhenAttributes.Length > 0)
+                _whenEvaluator = new ConditionalAttributeEvaluator(this, serializeWhenAttributes);
+
+            //node.SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
+
+
             //node.SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             //node.ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
             //node.ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
-            //node.SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
         }
 
         protected Node Parent { get; private set; }
@@ -139,10 +148,10 @@ namespace GraphGen
 
         public List<Binding> Bindings { get { return _lazyBindings.Value; } }
 
-        public FieldOffsetAttribute FieldOffsetAttribute { get; set; }
         public IntegerAttributeEvaluator FieldLengthEvaluator { get { return _fieldLengthEvaluator; } }
-        public FieldCountAttribute FieldCountAttribute { get; set; }
-        public SerializeWhenAttribute[] SerializeWhenAttributes { get; set; }
+
+        public IntegerAttributeEvaluator FieldOffsetEvaluator { get { return _fieldOffsetEvaluator; } }
+
         public SerializeUntilAttribute SerializeUntilAttribute { get; set; }
         public ItemLengthAttribute ItemLengthAttribute { get; set; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; set; }
@@ -196,7 +205,16 @@ namespace GraphGen
             get { return _order ?? 0; }
         }
 
-        public bool Ignore { get { return _ignore; } }
+        public bool ShouldSerialize
+        {
+            get
+            {
+                if (_ignore)
+                    return false;
+
+                return _whenEvaluator == null || _whenEvaluator.Value;
+            }
+        }
 
         public abstract void Serialize(Stream stream);
 

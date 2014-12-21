@@ -1021,7 +1021,7 @@ namespace BinarySerialization
             var binding = fieldOffsetAttribute.Binding;
 
             if (binding.Path == null)
-                return fieldOffsetAttribute.ConstOffset;
+                return (long)fieldOffsetAttribute.ConstOffset;
 
             object value = ctx.GetValue(o, binding);
 

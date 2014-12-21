@@ -49,7 +49,7 @@ namespace GraphGen
 
         private IEnumerable<Node> GetSerializableChildren()
         {
-            return Children.Where(child => !child.Ignore);
+            return Children.Where(child => child.ShouldSerialize);
         }
 
         public override void Serialize(Stream stream)
@@ -57,7 +57,8 @@ namespace GraphGen
             var serializableChildren = GetSerializableChildren();
 
             foreach (var child in serializableChildren)
-                child.Serialize(stream);
+                using (new StreamPositioner(stream, child.FieldOffsetEvaluator))
+                    child.Serialize(stream);
         }
 
         public override void Deserialize(Stream stream)
@@ -65,7 +66,8 @@ namespace GraphGen
             var serializableChildren = GetSerializableChildren();
 
             foreach (var child in serializableChildren)
-                child.Deserialize(stream);
+                using (new StreamPositioner(stream, child.FieldOffsetEvaluator))
+                    child.Deserialize(stream);
         }
 
         private IEnumerable<Node> GenerateChildren(Type type)
