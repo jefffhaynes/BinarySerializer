@@ -20,6 +20,11 @@ namespace GraphGen
             }
         }
 
+        public bool IsConst
+        {
+            get { return _constValue.HasValue; }
+        }
+
         public ulong Value
         {
             get

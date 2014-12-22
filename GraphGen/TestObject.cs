@@ -13,6 +13,7 @@ namespace GraphGen
         {
             TestObject2 = new TestObject2();
             Items = new List<int>();
+            StringArray = new[] {"hello", "world"};
         }
 
         public int NameLength { get; set; }
@@ -26,6 +27,9 @@ namespace GraphGen
 
         [FieldCount(3)]
         public List<int> Items;
+
+        [FieldCount("Age")]
+        public string[] StringArray { get; set; }
 
         //[Subtype("Age", 0, typeof(SubtypeChildClassA))]
         //[Subtype("Age", 1, typeof(SubtypeChildClassA))]

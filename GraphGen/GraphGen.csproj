@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayNode.cs" />
+    <Compile Include="CollectionNode.cs" />
     <Compile Include="IAttributeEvaluator.cs" />
     <Compile Include="Binding.cs" />
     <Compile Include="BindingException.cs" />
