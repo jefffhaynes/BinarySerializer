@@ -9,8 +9,6 @@ namespace GraphGen
 {
     internal class ValueNode : Node
     {
-        private object _value;
-
         private static readonly Dictionary<Type, Func<object, object>> TypeConverters =
             new Dictionary<Type, Func<object, object>>
             {
@@ -28,7 +26,11 @@ namespace GraphGen
                 {typeof (Double), o => Convert.ToDouble(o)},
                 {typeof (string), Convert.ToString}
             };
- 
+
+        public ValueNode(Node parent, Type type) : base(parent, type)
+        {
+        }
+
         public ValueNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
             if (FieldLengthEvaluator != null)
@@ -49,11 +51,11 @@ namespace GraphGen
             throw new NotImplementedException();
         }
 
-        public override object Value
+        public override object BoundValue
         {
             get
             {
-                var value = _value;
+                var value = Value;
 
                 if (Bindings.Any())
                 {
@@ -71,8 +73,6 @@ namespace GraphGen
 
                 return ConvertToFieldType(value);
             }
-
-            set { _value = value; }
         }
 
         private object ConvertToFieldType(object value)
@@ -109,40 +109,40 @@ namespace GraphGen
             switch (SerializedType)
             {
                 case SerializedType.Int1:
-                    writer.Write(Convert.ToSByte(Value));
+                    writer.Write(Convert.ToSByte(BoundValue));
                     break;
                 case SerializedType.UInt1:
-                    writer.Write(Convert.ToByte(Value));
+                    writer.Write(Convert.ToByte(BoundValue));
                     break;
                 case SerializedType.Int2:
-                    writer.Write(Convert.ToInt16(Value));
+                    writer.Write(Convert.ToInt16(BoundValue));
                     break;
                 case SerializedType.UInt2:
-                    writer.Write(Convert.ToUInt16(Value));
+                    writer.Write(Convert.ToUInt16(BoundValue));
                     break;
                 case SerializedType.Int4:
-                    writer.Write(Convert.ToInt32(Value));
+                    writer.Write(Convert.ToInt32(BoundValue));
                     break;
                 case SerializedType.UInt4:
-                    writer.Write(Convert.ToUInt32(Value));
+                    writer.Write(Convert.ToUInt32(BoundValue));
                     break;
                 case SerializedType.Int8:
-                    writer.Write(Convert.ToInt64(Value));
+                    writer.Write(Convert.ToInt64(BoundValue));
                     break;
                 case SerializedType.UInt8:
-                    writer.Write(Convert.ToUInt64(Value));
+                    writer.Write(Convert.ToUInt64(BoundValue));
                     break;
                 case SerializedType.Float4:
-                    writer.Write(Convert.ToSingle(Value));
+                    writer.Write(Convert.ToSingle(BoundValue));
                     break;
                 case SerializedType.Float8:
-                    writer.Write(Convert.ToDouble(Value));
+                    writer.Write(Convert.ToDouble(BoundValue));
                     break;
                 case SerializedType.ByteArray:
                 {
-                    var data = (byte[]) Value;
+                    var data = (byte[]) BoundValue;
                     var length = FieldLengthEvaluator != null
-                        ? (int) FieldLengthEvaluator.Value
+                        ? (int) FieldLengthEvaluator.BoundValue
                         : data.Length;
 
                     writer.Write(data, 0, length);
@@ -150,25 +150,25 @@ namespace GraphGen
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    byte[] data = Encoding.GetBytes(Value.ToString());
+                    byte[] data = Encoding.GetBytes(BoundValue.ToString());
                     writer.Write(data);
                     writer.Write((byte) 0);
                     break;
                 }
                 case SerializedType.SizedString:
                 {
-                    byte[] data = Encoding.GetBytes(Value.ToString());
+                    byte[] data = Encoding.GetBytes(BoundValue.ToString());
 
                     if (FieldLengthEvaluator == null)
                         throw new InvalidOperationException("No field length specified on sized string.");
 
-                    Array.Resize(ref data, (int) FieldLengthEvaluator.Value);
+                    Array.Resize(ref data, (int) FieldLengthEvaluator.BoundValue);
 
                     writer.Write(data);
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
-                    writer.Write(Value.ToString());
+                    writer.Write(BoundValue.ToString());
                     break;
                 default:
                     throw new NotSupportedException();

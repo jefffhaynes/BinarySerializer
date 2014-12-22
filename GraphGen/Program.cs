@@ -11,13 +11,20 @@ namespace GraphGen
     {
         static void Main(string[] args)
         {
-            var graph = new TestObject {Name = "bob", Details = new SubtypeChildClassB()};
+            var graph = new TestObject {Name = "bob"};//, Details = new SubtypeChildClassB()};
 
             var node = new ObjectNode(graph.GetType());
 
             node.Value = graph;
 
-            node.Serialize(new MemoryStream());
+            var stream = new MemoryStream();
+            node.Serialize(stream);
+            stream.Position = 0;
+
+            var node2 = new ObjectNode(graph.GetType());
+            node2.Deserialize(stream);
+
+            var value = node2.Value;
         }
     }
 }

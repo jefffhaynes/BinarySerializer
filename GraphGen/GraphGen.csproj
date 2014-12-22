@@ -41,15 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttributeEvaluator.cs" />
+    <Compile Include="ArrayNode.cs" />
+    <Compile Include="IAttributeEvaluator.cs" />
     <Compile Include="Binding.cs" />
     <Compile Include="BindingException.cs" />
+    <Compile Include="ListNode.cs" />
+    <Compile Include="ContainerNode.cs" />
     <Compile Include="GraphWrapper.cs" />
     <Compile Include="ConditionalAttributeEvaluator.cs" />
     <Compile Include="IntegerAttributeEvaluator.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="ObjectNode.cs" />
     <Compile Include="StreamPositioner.cs" />
+    <Compile Include="TestObject2.cs" />
     <Compile Include="ValueNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

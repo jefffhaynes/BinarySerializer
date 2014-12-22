@@ -72,6 +72,9 @@ namespace GraphGen
 
         protected Node(Node parent, MemberInfo memberInfo) : this(parent)
         {
+            if (memberInfo == null)
+                return;
+
             Name = memberInfo.Name;
 
             var propertyInfo = memberInfo as PropertyInfo;
@@ -144,11 +147,15 @@ namespace GraphGen
 
         public virtual object Value { get; set; }
 
+        public abstract object BoundValue { get; }
+
         protected List<Node> Children { get { return _lazyChildren.Value; } }
 
         public List<Binding> Bindings { get { return _lazyBindings.Value; } }
 
         public IntegerAttributeEvaluator FieldLengthEvaluator { get { return _fieldLengthEvaluator; } }
+
+        public IntegerAttributeEvaluator FieldCountEvaluator { get { return _fieldCountEvaluator; } }
 
         public IntegerAttributeEvaluator FieldOffsetEvaluator { get { return _fieldOffsetEvaluator; } }
 

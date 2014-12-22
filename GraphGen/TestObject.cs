@@ -9,6 +9,12 @@ namespace GraphGen
 {
     class TestObject
     {
+        public TestObject()
+        {
+            TestObject2 = new TestObject2();
+            Items = new List<int>();
+        }
+
         public int NameLength { get; set; }
 
         [FieldLength("NameLength")]
@@ -16,8 +22,13 @@ namespace GraphGen
 
         public uint Age { get; set; }
 
-        [Subtype("Age", 0, typeof(SubtypeChildClassA))]
-        [Subtype("Age", 1, typeof(SubtypeChildClassA))]
-        public SubtypeBaseClass Details { get; set; }
+        public TestObject2 TestObject2 { get; set; }
+
+        [FieldCount(3)]
+        public List<int> Items;
+
+        //[Subtype("Age", 0, typeof(SubtypeChildClassA))]
+        //[Subtype("Age", 1, typeof(SubtypeChildClassA))]
+        //public SubtypeBaseClass Details { get; set; }
     }
 }

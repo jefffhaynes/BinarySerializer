@@ -3,7 +3,7 @@ using BinarySerialization;
 
 namespace GraphGen
 {
-    internal class IntegerAttributeEvaluator
+    internal class IntegerAttributeEvaluator : IAttributeEvaluator<ulong>
     {
         private readonly ulong? _constValue;
         private readonly Node _source;
@@ -25,6 +25,14 @@ namespace GraphGen
             get
             {
                 return _constValue.HasValue ? _constValue.Value : Convert.ToUInt64(_source.Value);
+            }
+        }
+
+        public ulong BoundValue
+        {
+            get
+            {
+                return _constValue.HasValue ? _constValue.Value : Convert.ToUInt64(_source.BoundValue);
             }
         }
 

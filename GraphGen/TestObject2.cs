@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace GraphGen
 {
-    internal class AttributeEvaluator
+    public class TestObject2
     {
+        public byte ByteMe { get; set; }
     }
 }

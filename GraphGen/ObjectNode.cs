@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using BinarySerialization;
 
 namespace GraphGen
 {
-    internal class ObjectNode : Node
+    internal class ObjectNode : ContainerNode
     {
         private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public;
 
-        public ObjectNode(Type type) : base(null, type)
+        public ObjectNode(Type type) : this(null, type)
+        {
+        }
+
+        public ObjectNode(Node parent, Type type) : base(parent, type)
         {
             var children = GenerateChildren(type);
             Children.AddRange(children);
@@ -42,6 +44,9 @@ namespace GraphGen
 
             set
             {
+                if(value == null)
+                    throw new NotImplementedException("Value cannot be null.");
+
                 foreach (var child in Children)
                     child.Value = child.ValueGetter(value);
             }
@@ -77,61 +82,5 @@ namespace GraphGen
             IEnumerable<MemberInfo> all = properties.Union(fields);
             return all.Select(GenerateChild);
         }
-
-        private Node GenerateChild(MemberInfo memberInfo)
-        {
-            var memberType = GetMemberType(memberInfo);
-
-            Node node;
-            if (memberType.IsPrimitive || memberType == typeof(string))
-                node = new ValueNode(this, memberInfo);
-            else node = new ObjectNode(this, memberInfo);
-
-            return node;
-        }
-
-        private static Type GetMemberType(MemberInfo memberInfo)
-        {
-            var propertyInfo = memberInfo as PropertyInfo;
-            var fieldInfo = memberInfo as FieldInfo;
-            
-            if (propertyInfo != null)
-            {
-                return propertyInfo.PropertyType;
-            }
-
-            if (fieldInfo != null)
-            {
-                return fieldInfo.FieldType;
-            }
-
-            throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
-        }
-
-
-
-        //public static void SetValue(MemberInfo memberInfo, object definingValue, object value)
-        //{
-        //    var propertyInfo = memberInfo as PropertyInfo;
-        //    var fieldInfo = memberInfo as FieldInfo;
-
-        //    if (propertyInfo != null)
-        //    {
-        //        //var convertedValue = value.ConvertTo(propertyInfo.PropertyType);
-        //        //propertyInfo.SetValue(definingValue, convertedValue, null);
-        //        propertyInfo.SetValue(definingValue, value, null);
-        //        return;
-        //    }
-
-        //    if (fieldInfo != null)
-        //    {
-        //        //var convertedValue = value.ConvertTo(fieldInfo.FieldType);
-        //        //fieldInfo.SetValue(definingValue, convertedValue);
-        //        fieldInfo.SetValue(definingValue, value);
-        //        return;
-        //    }
-
-        //    throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
-        //}
     }
 }

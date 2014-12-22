@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BinarySerialization;
 
 namespace GraphGen
 {
-    internal class ConditionalAttributeEvaluator
+    internal class ConditionalAttributeEvaluator : IAttributeEvaluator<bool>
     {
         private readonly Dictionary<Node, object> _sourceValue = new Dictionary<Node, object>();
 
@@ -17,7 +16,12 @@ namespace GraphGen
 
         public bool Value
         {
-            get { return _sourceValue.Any(sourceValue => sourceValue.Key.Value.Equals(sourceValue.Value)); }
+            get { return _sourceValue.Any(sourceValue => sourceValue.Value.Equals(sourceValue.Key.Value)); }
+        }
+
+        public bool BoundValue
+        {
+            get { return _sourceValue.Any(sourceValue => sourceValue.Value.Equals(sourceValue.Key.BoundValue)); }
         }
     }
 }
