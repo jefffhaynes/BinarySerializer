@@ -1,4 +1,4 @@
-﻿namespace GraphGen
+﻿namespace BinarySerialization
 {
     public class GraphWrapper<TGraph>
     {

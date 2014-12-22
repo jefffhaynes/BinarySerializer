@@ -2,7 +2,7 @@
 using System.Linq;
 using BinarySerialization;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     internal class ConditionalAttributeEvaluator : IAttributeEvaluator<bool>
     {

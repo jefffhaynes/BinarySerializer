@@ -1,7 +1,6 @@
 ﻿using System;
-using BinarySerialization;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     internal class IntegerAttributeEvaluator : IAttributeEvaluator<ulong>
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BinarySerialization;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     class TestObject
     {

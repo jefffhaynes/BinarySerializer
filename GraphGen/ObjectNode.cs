@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using BinarySerialization;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     internal class ObjectNode : ContainerNode
     {

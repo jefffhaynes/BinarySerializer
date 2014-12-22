@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     internal class StreamPositioner : IDisposable
     {

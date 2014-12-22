@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     internal class Binding
     {

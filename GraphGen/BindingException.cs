@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     [Serializable]
     public class BindingException : Exception

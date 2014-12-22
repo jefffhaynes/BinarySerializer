@@ -1,9 +1,7 @@
 using System;
-using System.IO;
 using System.Reflection;
-using BinarySerialization;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     internal abstract class ContainerNode : Node
     {
@@ -14,6 +12,20 @@ namespace GraphGen
 
         protected ContainerNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
+            if (FieldLengthEvaluator != null)
+            {
+                var source = FieldLengthEvaluator.Source;
+                if (source != null)
+                {
+                    source.Bindings.Add(new Binding(() =>
+                    {
+                        var nullStream = new NullStream();
+                        var streamKeeper = new StreamKeeper(nullStream);
+                        Serialize(streamKeeper);
+                        return streamKeeper.RelativePosition;
+                    }));
+                }
+            }
         }
 
         public override object BoundValue

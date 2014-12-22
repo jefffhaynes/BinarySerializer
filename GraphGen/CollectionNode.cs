@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using BinarySerialization;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     internal abstract class CollectionNode : ContainerNode
     {

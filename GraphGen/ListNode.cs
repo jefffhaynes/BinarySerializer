@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 
-namespace GraphGen
+namespace BinarySerialization
 {
     internal class ListNode : CollectionNode
     {

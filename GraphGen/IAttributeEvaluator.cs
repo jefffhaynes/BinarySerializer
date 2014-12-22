@@ -1,4 +1,4 @@
-﻿namespace GraphGen
+﻿namespace BinarySerialization
 {
     internal interface IAttributeEvaluator<out TValue>
     {
