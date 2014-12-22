@@ -225,7 +225,7 @@ namespace GraphGen
 
         public abstract void Serialize(Stream stream);
 
-        public abstract void Deserialize(Stream stream);
+        public abstract void Deserialize(StreamLimiter stream);
 
         public Node GetBindingSource(BindingInfo binding)
         {

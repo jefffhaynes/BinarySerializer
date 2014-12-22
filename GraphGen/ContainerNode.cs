@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Reflection;
 using BinarySerialization;
 
@@ -66,6 +67,14 @@ namespace GraphGen
             }
 
             throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
+        }
+
+        protected static bool ShouldTerminate(StreamLimiter stream)
+        {
+            if (stream.IsAtLimit)
+                return true;
+
+            return stream.CanSeek && stream.Position >= stream.Length;
         }
     }
 }

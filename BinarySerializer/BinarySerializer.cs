@@ -675,7 +675,7 @@ namespace BinarySerialization
             for (int i = 0; i < count; i++)
             {
                 var isEndOfStream = (stream.CanSeek && stream.Position >= stream.Length) ||
-                                    (stream is StreamLimiter && (stream as StreamLimiter).Position >= stream.Length);
+                                    (stream is StreamLimiter && (stream as StreamLimiter).Position >= (stream as StreamLimiter).MaxLength);
 
                 /* In the implicit termination case just stop if we hit the end of the stream.  
                      * If the stream isn't seekable, this doesn't apply. */

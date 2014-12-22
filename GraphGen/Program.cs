@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BinarySerialization;
 
 namespace GraphGen
 {
@@ -22,7 +23,7 @@ namespace GraphGen
             stream.Position = 0;
 
             var node2 = new ObjectNode(graph.GetType());
-            node2.Deserialize(stream);
+            node2.Deserialize(new StreamLimiter(stream));
 
             var value = node2.Value;
         }

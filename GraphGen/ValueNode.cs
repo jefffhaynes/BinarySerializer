@@ -175,7 +175,7 @@ namespace GraphGen
             }
         }
 
-        public override void Deserialize(Stream stream)
+        public override void Deserialize(StreamLimiter stream)
         {
             var reader = new EndianAwareBinaryReader(stream);
 

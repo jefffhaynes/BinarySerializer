@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
+using BinarySerialization;
 
 namespace GraphGen
 {
@@ -34,20 +34,23 @@ namespace GraphGen
                 child.Serialize(stream);
         }
 
-        public override void Deserialize(Stream stream)
+        public override void Deserialize(StreamLimiter stream)
         {
-            // TODO StreamLimiter
+            if (FieldLengthEvaluator != null)
+                stream = new StreamLimiter(stream, (long)FieldLengthEvaluator.Value);
+
             Children.Clear();
 
             var count = FieldCountEvaluator.Value;
             for (ulong i = 0; i < count; i++)
             {
-                var node = GenerateChild(LazyChildType.Value);
-                Children.Add(node);
-            }
-
-            foreach (var child in Children)
+                var child = GenerateChild(LazyChildType.Value);
+                Children.Add(child);
                 child.Deserialize(stream);
+
+                if (ShouldTerminate(stream))
+                    break;
+            }
         }
 
 

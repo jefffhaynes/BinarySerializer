@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BinarySerialization;
 
 namespace GraphGen
 {
@@ -66,13 +67,21 @@ namespace GraphGen
                     child.Serialize(stream);
         }
 
-        public override void Deserialize(Stream stream)
+        public override void Deserialize(StreamLimiter stream)
         {
             var serializableChildren = GetSerializableChildren();
 
+            if (FieldLengthEvaluator != null)
+                stream = new StreamLimiter(stream, (long) FieldLengthEvaluator.Value);
+
             foreach (var child in serializableChildren)
+            {
+                if (ShouldTerminate(stream))
+                    break;
+
                 using (new StreamPositioner(stream, child.FieldOffsetEvaluator))
                     child.Deserialize(stream);
+            }
         }
 
         private IEnumerable<Node> GenerateChildren(Type type)
