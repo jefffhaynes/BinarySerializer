@@ -4,7 +4,7 @@ using BinarySerialization;
 
 namespace BinarySerialization
 {
-    internal class ConditionalAttributeEvaluator : IAttributeEvaluator<bool>
+    internal class ConditionalAttributeEvaluator
     {
         private readonly Dictionary<Node, object> _sourceValue = new Dictionary<Node, object>();
 

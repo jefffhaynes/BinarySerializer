@@ -32,24 +32,24 @@ namespace BinarySerialization
 
         public ValueNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
-            if (FieldLengthEvaluator != null)
-            {
-                var source = FieldLengthEvaluator.Source;
-                if (source != null)
-                {
-                    source.Bindings.Add(new Binding(() => (object)GetValueLength()));
-                }
-            }
+            //if (FieldLengthEvaluator != null)
+            //{
+            //    var source = FieldLengthEvaluator.Source;
+            //    if (source != null)
+            //    {
+            //        source.Bindings.Add(new Binding(() => (object)GetValueLength()));
+            //    }
+            //}
         }
 
         private ulong GetValueLength()
         {
             switch (SerializedType)
             {
-                    case SerializedType.NullTerminatedString:
-                    return (ulong)Encoding.GetByteCount((string) Value) + 1;
-                    case SerializedType.SizedString:
+                case SerializedType.NullTerminatedString:
                     return (ulong) Encoding.GetByteCount((string) Value) + 1;
+                case SerializedType.SizedString:
+                    return (ulong) Encoding.GetByteCount((string) Value);
                 default:
                     throw new NotSupportedException();
             }
@@ -164,12 +164,14 @@ namespace BinarySerialization
                 }
                 case SerializedType.SizedString:
                 {
-                    byte[] data = Encoding.GetBytes(BoundValue.ToString());
+                    var value = BoundValue.ToString();
+                    byte[] data = Encoding.GetBytes(value);
 
                     if (FieldLengthEvaluator == null)
                         throw new InvalidOperationException("No field length specified on sized string.");
 
-                    Array.Resize(ref data, (int) FieldLengthEvaluator.BoundValue);
+                    if(FieldLengthEvaluator.IsConst)
+                        Array.Resize(ref data, (int) FieldLengthEvaluator.BoundValue);
 
                     writer.Write(data);
                     break;
@@ -185,38 +187,38 @@ namespace BinarySerialization
         public override void Deserialize(StreamLimiter stream)
         {
             var reader = new EndianAwareBinaryReader(stream);
-
+            object value;
             switch (SerializedType)
             {
                 case SerializedType.Int1:
-                    Value = reader.ReadSByte();
+                    value = reader.ReadSByte();
                     break;
                 case SerializedType.UInt1:
-                    Value = reader.ReadByte();
+                    value = reader.ReadByte();
                     break;
                 case SerializedType.Int2:
-                    Value = reader.ReadInt16();
+                    value = reader.ReadInt16();
                     break;
                 case SerializedType.UInt2:
-                    Value = reader.ReadUInt16();
+                    value = reader.ReadUInt16();
                     break;
                 case SerializedType.Int4:
-                    Value = reader.ReadInt32();
+                    value = reader.ReadInt32();
                     break;
                 case SerializedType.UInt4:
-                    Value = reader.ReadUInt32();
+                    value = reader.ReadUInt32();
                     break;
                 case SerializedType.Int8:
-                    Value = reader.ReadInt64();
+                    value = reader.ReadInt64();
                     break;
                 case SerializedType.UInt8:
-                    Value = reader.ReadUInt64();
+                    value = reader.ReadUInt64();
                     break;
                 case SerializedType.Float4:
-                    Value = reader.ReadSingle();
+                    value = reader.ReadSingle();
                     break;
                 case SerializedType.Float8:
-                    Value = reader.ReadDouble();
+                    value = reader.ReadDouble();
                     break;
                 case SerializedType.ByteArray:
                     {
@@ -225,13 +227,13 @@ namespace BinarySerialization
 
                         // TODO StreamLimiter
 
-                        Value = reader.ReadBytes((int)FieldLengthEvaluator.Value);
+                        value = reader.ReadBytes((int)FieldLengthEvaluator.Value);
                         break;
                     }
                 case SerializedType.NullTerminatedString:
                     {
                         byte[] data = ReadNullTerminatedString(reader).ToArray();
-                        Value = Encoding.GetString(data, 0, data.Length);
+                        value = Encoding.GetString(data, 0, data.Length);
                         break;
                     }
                 case SerializedType.SizedString:
@@ -240,15 +242,18 @@ namespace BinarySerialization
                             throw new InvalidOperationException("No length specified on sized string.");
 
                         byte[] data = reader.ReadBytes((int)FieldLengthEvaluator.Value);
-                        Value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
+                        value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
                         break;
                     }
                 case SerializedType.LengthPrefixedString:
-                    Value = reader.ReadString();
+                    value = reader.ReadString();
                     break;
                 default:
                     throw new NotSupportedException();
             }
+
+            Func<object, object> converter;
+            Value = TypeConverters.TryGetValue(Type, out converter) ? converter(value) : value;
         }
 
         private static IEnumerable<byte> ReadNullTerminatedString(BinaryReader reader)

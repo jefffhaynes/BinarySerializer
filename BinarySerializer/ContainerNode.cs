@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Reflection;
 
 namespace BinarySerialization
@@ -12,20 +13,6 @@ namespace BinarySerialization
 
         protected ContainerNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
-            if (FieldLengthEvaluator != null)
-            {
-                var source = FieldLengthEvaluator.Source;
-                if (source != null)
-                {
-                    source.Bindings.Add(new Binding(() =>
-                    {
-                        var nullStream = new NullStream();
-                        var streamKeeper = new StreamKeeper(nullStream);
-                        Serialize(streamKeeper);
-                        return streamKeeper.RelativePosition;
-                    }));
-                }
-            }
         }
 
         public override object BoundValue
@@ -35,6 +22,9 @@ namespace BinarySerialization
 
         protected Node GenerateChild(Type type)
         {
+            if(typeof(IDictionary).IsAssignableFrom(type))
+                throw new InvalidOperationException("Cannot serialize objects that implement IDictionary.");
+
             Node node;
             if (type.IsPrimitive || type == typeof(string) || type == typeof(byte[]))
                 node = new ValueNode(this, type);
@@ -50,6 +40,9 @@ namespace BinarySerialization
         protected Node GenerateChild(MemberInfo memberInfo)
         {
             var memberType = GetMemberType(memberInfo);
+
+            if (typeof(IDictionary).IsAssignableFrom(memberType))
+                throw new InvalidOperationException("Cannot serialize objects that implement IDictionary.");
 
             Node node;
             if (memberType.IsPrimitive || memberType == typeof(string) || memberType == typeof(byte[]))

@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace BinarySerializer.Test.Misc
 {
     [TestClass]
-    public class CountTests : TestBase
+    public class DictionaryTests : TestBase
     {
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]

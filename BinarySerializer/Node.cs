@@ -109,7 +109,21 @@ namespace BinarySerialization
             
             var fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
             if(fieldLengthAttribute != null)
+            {
                 _fieldLengthEvaluator = new IntegerAttributeEvaluator(this, fieldLengthAttribute);
+
+                var source = FieldLengthEvaluator.Source;
+                if (source != null)
+                {
+                    source.Bindings.Add(new Binding(() =>
+                    {
+                        var nullStream = new NullStream();
+                        var streamKeeper = new StreamKeeper(nullStream);
+                        Serialize(streamKeeper);
+                        return streamKeeper.RelativePosition;
+                    }));
+                }
+            }
 
             var fieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
             if(fieldCountAttribute != null)

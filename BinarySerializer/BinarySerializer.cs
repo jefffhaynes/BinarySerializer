@@ -1,9 +1,13 @@
-﻿using System;
+﻿
+#define NEW
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 
 namespace BinarySerialization
 {
@@ -91,27 +95,29 @@ namespace BinarySerialization
 
             var graphType = graph.GetType();
 
+#if NEW
             // TODO ONCE!
             var root = new RootNode(graphType);
             root.Value = graph;
             root.Serialize(stream);
+#else
+            if (graphType.IsPrimitive)
+                WritePrimitive(new EndianAwareBinaryWriter(stream), graph, DefaultSerializedTypes[graphType],
+                    InvalidFieldLength, DefaultEncoding);
+            else if (graphType.IsList())
+                throw new NotSupportedException("Collections cannot be directly serialized (they should be contained).");
+            else
+            {
+                _firstPass = true;
 
-            //if (graphType.IsPrimitive)
-            //    WritePrimitive(new EndianAwareBinaryWriter(stream), graph, DefaultSerializedTypes[graphType],
-            //        InvalidFieldLength, DefaultEncoding);
-            //else if (graphType.IsList())
-            //    throw new NotSupportedException("Collections cannot be directly serialized (they should be contained).");
-            //else
-            //{
-            //    _firstPass = true;
+                /* First pass to update source bindings */
+                WriteMembers(new NullStream(), graph, graphType, context);
+                _firstPass = false;
 
-            //    /* First pass to update source bindings */
-            //    WriteMembers(new NullStream(), graph, graphType, context);
-            //    _firstPass = false;
-
-            //    /* Ok, serialize. */
-            //    WriteMembers(stream, graph, graphType, context);
-            //}
+                /* Ok, serialize. */
+                WriteMembers(stream, graph, graphType, context);
+            }
+#endif
         }
 
         private void WriteMembers(Stream stream, object o, Type objectType, BinarySerializationContext ctx)
@@ -495,25 +501,27 @@ namespace BinarySerialization
         {
             var graphType = typeof (T);
 
+#if NEW
             // TODO ONCE!
             var root = new RootNode(graphType);
             root.Deserialize(new StreamLimiter(stream));
             return (T) root.Value;
+#else
+            if (graphType.IsPrimitive)
+            {
+                var primitive = ReadPrimitive(new EndianAwareBinaryReader(stream), DefaultSerializedTypes[graphType],
+                                  DefaultEncoding);
+                return (T)Convert.ChangeType(primitive, graphType, formatProvider);
+            }
 
-            //if (graphType.IsPrimitive)
-            //{
-            //    var primitive = ReadPrimitive(new EndianAwareBinaryReader(stream), DefaultSerializedTypes[graphType],
-            //                      DefaultEncoding);
-            //    return (T)Convert.ChangeType(primitive, graphType, formatProvider);
-            //}
+            if (graphType.IsList())
+                throw new NotSupportedException(
+                    "Collections cannot be directly deserialized (they should be contained).");
 
-            //if (graphType.IsList())
-            //    throw new NotSupportedException(
-            //        "Collections cannot be directly deserialized (they should be contained).");
-
-            //var o = new T();
-            //ReadMembers(stream, o, graphType, context);
-            //return o;
+            var o = new T();
+            ReadMembers(stream, o, graphType, context);
+            return o;
+#endif
         }
 
         /// <summary>

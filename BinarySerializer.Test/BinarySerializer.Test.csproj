@@ -64,7 +64,7 @@
     <Compile Include="Count\BoundCountClass.cs" />
     <Compile Include="Count\ConstCountClass.cs" />
     <Compile Include="Count\CountTests.cs" />
-    <Compile Include="Misc\CountTests.cs" />
+    <Compile Include="Misc\DictionaryTests.cs" />
     <Compile Include="Misc\EmptyClass.cs" />
     <Compile Include="Misc\EmptyClassTest.cs" />
     <Compile Include="Misc\IOExceptionTest.cs" />

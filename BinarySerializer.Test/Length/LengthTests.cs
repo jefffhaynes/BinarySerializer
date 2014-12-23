@@ -20,7 +20,7 @@ namespace BinarySerializer.Test.Length
         {
             var expected = new BoundLengthClass<string> {Field = "FieldValue"};
             var actual = Roundtrip(expected);
-            Assert.AreEqual(expected.Field.Length + 1, actual.FieldLengthField);
+            Assert.AreEqual(expected.Field.Length, actual.FieldLengthField);
             Assert.AreEqual(expected.Field, actual.Field);
         }
 
