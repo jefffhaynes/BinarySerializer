@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializer.Test", "Bi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializer.Performance", "BinarySerializer.Performance\BinarySerializer.Performance.csproj", "{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphGen", "GraphGen\GraphGen.csproj", "{7E01B89E-4BC0-4E09-932C-9613C8A3F095}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,16 +73,6 @@ Global
 		{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}.Release|x86.ActiveCfg = Release|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{7E01B89E-4BC0-4E09-932C-9613C8A3F095}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

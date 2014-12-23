@@ -115,13 +115,7 @@ namespace BinarySerialization
                 var source = FieldLengthEvaluator.Source;
                 if (source != null)
                 {
-                    source.Bindings.Add(new Binding(() =>
-                    {
-                        var nullStream = new NullStream();
-                        var streamKeeper = new StreamKeeper(nullStream);
-                        Serialize(streamKeeper);
-                        return streamKeeper.RelativePosition;
-                    }));
+                    source.Bindings.Add(new Binding(OnMeasureNode));
                 }
             }
 
@@ -143,6 +137,14 @@ namespace BinarySerialization
             //node.SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             //node.ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
             //node.ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
+        }
+
+        protected virtual object OnMeasureNode()
+        {
+            var nullStream = new NullStream();
+            var streamKeeper = new StreamKeeper(nullStream);
+            Serialize(streamKeeper);
+            return streamKeeper.RelativePosition;
         }
 
         protected Node Parent { get; private set; }

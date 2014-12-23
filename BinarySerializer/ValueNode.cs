@@ -148,11 +148,7 @@ namespace BinarySerialization
                 case SerializedType.ByteArray:
                 {
                     var data = (byte[]) BoundValue;
-                    var length = FieldLengthEvaluator != null
-                        ? (int) FieldLengthEvaluator.BoundValue
-                        : data.Length;
-
-                    writer.Write(data, 0, length);
+                    writer.Write(data, 0, data.Length);
                     break;
                 }
                 case SerializedType.NullTerminatedString:

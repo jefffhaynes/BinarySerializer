@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 using System.Reflection;
 
 namespace BinarySerialization
@@ -22,40 +23,43 @@ namespace BinarySerialization
 
         protected Node GenerateChild(Type type)
         {
-            if(typeof(IDictionary).IsAssignableFrom(type))
-                throw new InvalidOperationException("Cannot serialize objects that implement IDictionary.");
+            ThrowOnBadType(type);
 
-            Node node;
-            if (type.IsPrimitive || type == typeof(string) || type == typeof(byte[]))
-                node = new ValueNode(this, type);
-            else if (type.IsArray)
-                node = new ArrayNode(this, type);
-            else if (type.IsList())
-                node = new ListNode(this, type);
-            else node = new ObjectNode(this, type);
-
-            return node;
+            var nodeType = GetNodeType(type);
+            return Activator.CreateInstance(nodeType, this, type) as Node;
         }
 
         protected Node GenerateChild(MemberInfo memberInfo)
         {
             var memberType = GetMemberType(memberInfo);
 
-            if (typeof(IDictionary).IsAssignableFrom(memberType))
+            ThrowOnBadType(memberType);
+
+            var nodeType = GetNodeType(memberType);
+            return Activator.CreateInstance(nodeType, this, memberInfo) as Node;
+        }
+
+// ReSharper disable UnusedParameter.Local
+        private static void ThrowOnBadType(Type type)
+        {
+            if (typeof(IDictionary).IsAssignableFrom(type))
                 throw new InvalidOperationException("Cannot serialize objects that implement IDictionary.");
+        }
+// ReSharper restore UnusedParameter.Local
 
-            Node node;
-            if (memberType.IsPrimitive || memberType == typeof(string) || memberType == typeof(byte[]))
-                node = new ValueNode(this, memberInfo);
-            else if(Nullable.GetUnderlyingType(memberType) != null)
-                node = new ValueNode(this, memberInfo);
-            else if(memberType.IsArray)
-                node = new ArrayNode(this, memberInfo);
-            else if(memberType.IsList())
-                node = new ListNode(this, memberInfo);
-            else node = new ObjectNode(this, memberInfo);
-
-            return node;
+        private static Type GetNodeType(Type type)
+        {
+            if (type.IsPrimitive || type == typeof (string) || type == typeof (byte[]))
+                return typeof (ValueNode);
+            if (Nullable.GetUnderlyingType(type) != null)
+                return typeof (ValueNode);
+            if (type.IsArray)
+                return typeof (ArrayNode);
+            if (type.IsList())
+                return typeof (ListNode);
+            if (typeof (Stream).IsAssignableFrom(type))
+                return typeof (StreamNode);
+            return typeof (ObjectNode);
         }
 
         protected static Type GetMemberType(MemberInfo memberInfo)

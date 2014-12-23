@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerializer.Test.Length
@@ -22,6 +23,15 @@ namespace BinarySerializer.Test.Length
             var actual = Roundtrip(expected);
             Assert.AreEqual(expected.Field.Length, actual.FieldLengthField);
             Assert.AreEqual(expected.Field, actual.Field);
+        }
+
+        [TestMethod]
+        public void LengthBindingTest2()
+        {
+            var expected = new BoundLengthClass<byte[]> { Field = Encoding.ASCII.GetBytes("FieldValue") };
+            var actual = Roundtrip(expected);
+            Assert.AreEqual(expected.Field.Length, actual.FieldLengthField);
+            Assert.IsTrue(expected.Field.SequenceEqual(actual.Field));
         }
 
         [TestMethod]
