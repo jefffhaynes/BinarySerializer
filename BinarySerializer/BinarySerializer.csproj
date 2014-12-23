@@ -41,16 +41,30 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayNode.cs" />
     <Compile Include="BinarySerializer.cs" />
+    <Compile Include="Binding.cs" />
+    <Compile Include="BindingException.cs" />
     <Compile Include="Bytes.cs" />
+    <Compile Include="CollectionNode.cs" />
+    <Compile Include="ConditionalAttributeEvaluator.cs" />
+    <Compile Include="ContainerNode.cs" />
     <Compile Include="EnumMemberSerializationInfo.cs" />
     <Compile Include="EnumerableExtensionMethods.cs" />
+    <Compile Include="IAttributeEvaluator.cs" />
     <Compile Include="IIntegerAttribute.cs" />
     <Compile Include="ILengthAttribute.cs" />
+    <Compile Include="IntegerAttributeEvaluator.cs" />
+    <Compile Include="ListNode.cs" />
     <Compile Include="MemberSerializingEventArgs.cs" />
+    <Compile Include="Node.cs" />
+    <Compile Include="NodeFactory.cs" />
     <Compile Include="NullStream.cs" />
+    <Compile Include="ObjectNode.cs" />
+    <Compile Include="RootNode.cs" />
     <Compile Include="StreamKeeper.cs" />
     <Compile Include="StreamLimiter.cs" />
+    <Compile Include="StreamPositioner.cs" />
     <Compile Include="SubtypeAttribute.cs" />
     <Compile Include="SerializeUntilAttribute.cs" />
     <Compile Include="ItemSerializeUntilAttribute.cs" />
@@ -80,6 +94,7 @@
     <Compile Include="FieldBindingBaseAttribute.cs" />
     <Compile Include="IBindableFieldAttribute.cs" />
     <Compile Include="Streamlet.cs" />
+    <Compile Include="ValueNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget\BinarySerializer.dll.nuspec" />

@@ -7,7 +7,7 @@ namespace BinarySerializer.Test
     {
         private static readonly BinarySerialization.BinarySerializer Serializer = new BinarySerialization.BinarySerializer();
 
-        protected static readonly string[] TestSequence = new[] { "a", "b", "c" };
+        protected static readonly string[] TestSequence = { "a", "b", "c" };
 
         private T Roundtrip<T>(T o, out long length) where T : new()
         {

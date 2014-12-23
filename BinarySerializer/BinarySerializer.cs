@@ -91,22 +91,27 @@ namespace BinarySerialization
 
             var graphType = graph.GetType();
 
-            if (graphType.IsPrimitive)
-                WritePrimitive(new EndianAwareBinaryWriter(stream), graph, DefaultSerializedTypes[graphType],
-                    InvalidFieldLength, DefaultEncoding);
-            else if (graphType.IsList())
-                throw new NotSupportedException("Collections cannot be directly serialized (they should be contained).");
-            else
-            {
-                _firstPass = true;
+            // TODO ONCE!
+            var root = new RootNode(graphType);
+            root.Value = graph;
+            root.Serialize(stream);
 
-                /* First pass to update source bindings */
-                WriteMembers(new NullStream(), graph, graphType, context);
-                _firstPass = false;
+            //if (graphType.IsPrimitive)
+            //    WritePrimitive(new EndianAwareBinaryWriter(stream), graph, DefaultSerializedTypes[graphType],
+            //        InvalidFieldLength, DefaultEncoding);
+            //else if (graphType.IsList())
+            //    throw new NotSupportedException("Collections cannot be directly serialized (they should be contained).");
+            //else
+            //{
+            //    _firstPass = true;
 
-                /* Ok, serialize. */
-                WriteMembers(stream, graph, graphType, context);
-            }
+            //    /* First pass to update source bindings */
+            //    WriteMembers(new NullStream(), graph, graphType, context);
+            //    _firstPass = false;
+
+            //    /* Ok, serialize. */
+            //    WriteMembers(stream, graph, graphType, context);
+            //}
         }
 
         private void WriteMembers(Stream stream, object o, Type objectType, BinarySerializationContext ctx)
@@ -490,20 +495,25 @@ namespace BinarySerialization
         {
             var graphType = typeof (T);
 
-            if (graphType.IsPrimitive)
-            {
-                var primitive = ReadPrimitive(new EndianAwareBinaryReader(stream), DefaultSerializedTypes[graphType],
-                                  DefaultEncoding);
-                return (T)Convert.ChangeType(primitive, graphType, formatProvider);
-            }
+            // TODO ONCE!
+            var root = new RootNode(graphType);
+            root.Deserialize(new StreamLimiter(stream));
+            return (T) root.Value;
 
-            if (graphType.IsList())
-                throw new NotSupportedException(
-                    "Collections cannot be directly deserialized (they should be contained).");
+            //if (graphType.IsPrimitive)
+            //{
+            //    var primitive = ReadPrimitive(new EndianAwareBinaryReader(stream), DefaultSerializedTypes[graphType],
+            //                      DefaultEncoding);
+            //    return (T)Convert.ChangeType(primitive, graphType, formatProvider);
+            //}
 
-            var o = new T();
-            ReadMembers(stream, o, graphType, context);
-            return o;
+            //if (graphType.IsList())
+            //    throw new NotSupportedException(
+            //        "Collections cannot be directly deserialized (they should be contained).");
+
+            //var o = new T();
+            //ReadMembers(stream, o, graphType, context);
+            //return o;
         }
 
         /// <summary>

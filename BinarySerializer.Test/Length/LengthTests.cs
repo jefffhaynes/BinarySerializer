@@ -33,15 +33,13 @@ namespace BinarySerializer.Test.Length
             Assert.IsTrue(expected.Field.SequenceEqual(actual.Field));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void CollectionConstLengthMismatchTest()
-        {
-            var expected = new ConstCollectionLengthClass { Field = new List<string>(TestSequence.Take(2)) };
-            var actual = Roundtrip(expected);
-            Assert.AreEqual(TestSequence.Length, actual.Field.Count);
-            Assert.IsTrue(expected.Field.SequenceEqual(actual.Field));
-        }
+        //[TestMethod]
+        //[ExpectedException(typeof(InvalidOperationException))]
+        //public void CollectionConstLengthMismatchTest()
+        //{
+        //    var expected = new ConstCollectionLengthClass { Field = new List<string>(TestSequence.Take(2)) };
+        //    Roundtrip(expected);
+        //}
 
         [TestMethod]
         public void CollectionLengthTest()
@@ -68,8 +66,8 @@ namespace BinarySerializer.Test.Length
                 {
                     Field = new ConstLengthClass { Field = "FieldValue" }
                 };
-            Roundtrip(expected);
-            Assert.AreEqual(3, expected.FieldLengthField);
+            var actual = Roundtrip(expected);
+            Assert.AreEqual(3, actual.FieldLengthField);
         }
 
         [TestMethod]
