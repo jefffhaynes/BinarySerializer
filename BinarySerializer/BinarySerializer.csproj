@@ -52,6 +52,7 @@
     <Compile Include="EnumMemberSerializationInfo.cs" />
     <Compile Include="EnumerableExtensionMethods.cs" />
     <Compile Include="AttributeEvaluator.cs" />
+    <Compile Include="EnumNode.cs" />
     <Compile Include="IIntegerAttribute.cs" />
     <Compile Include="ILengthAttribute.cs" />
     <Compile Include="IntegerAttributeEvaluator.cs" />

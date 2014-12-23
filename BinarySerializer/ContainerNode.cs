@@ -49,6 +49,8 @@ namespace BinarySerialization
 
         private static Type GetNodeType(Type type)
         {
+            if (type.IsEnum)
+                return typeof (EnumNode);
             if (type.IsPrimitive || type == typeof (string) || type == typeof (byte[]))
                 return typeof (ValueNode);
             if (Nullable.GetUnderlyingType(type) != null)

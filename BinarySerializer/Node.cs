@@ -14,7 +14,7 @@ namespace BinarySerialization
         private static readonly Encoding DefaultEncoding = Encoding.UTF8;
         private const Endianness DefaultEndianness = Endianness.Little;
 
-        private static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
+        public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
         new Dictionary<Type, SerializedType>
                 {
                     {typeof (bool), SerializedType.Int1},
@@ -200,7 +200,7 @@ namespace BinarySerialization
                     return serializedType;
                 }
 
-                throw new NotSupportedException("Not defined for this type.");
+                return SerializedType.Default;
             }
         }
 
