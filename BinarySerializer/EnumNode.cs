@@ -27,7 +27,7 @@ namespace BinarySerialization
 
         public override void Serialize(Stream stream)
         {
-            var value = _enumValues != null ? _enumValues[(Enum) Value] : Value;
+            var value = _enumValues != null ? _enumValues[(Enum)BoundValue] : BoundValue;
             Serialize(stream, value, _serializedType);
         }
 

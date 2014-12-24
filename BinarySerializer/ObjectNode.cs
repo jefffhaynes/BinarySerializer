@@ -9,6 +9,7 @@ namespace BinarySerialization
     internal class ObjectNode : ContainerNode
     {
         private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public;
+        private Type _subtype;
 
         public ObjectNode(Type type) : this(null, type)
         {
@@ -34,7 +35,11 @@ namespace BinarySerialization
         {
             get
             {
-                var value = Activator.CreateInstance(Type);
+                Type type = SubtypeBinding != null && SubtypeBinding.Value != null
+                    ? SubtypeAttributes.Single(attribute => attribute.Value.Equals(SubtypeBinding.Value)).Subtype
+                    : Type;
+
+                var value = Activator.CreateInstance(type);
 
                 foreach (var child in Children)
                     child.ValueSetter(value, child.Value);
@@ -49,6 +54,8 @@ namespace BinarySerialization
 
                 foreach (var child in Children)
                     child.Value = child.ValueGetter(value);
+
+                ValueType = value.GetType();
             }
         }
 
@@ -73,11 +80,8 @@ namespace BinarySerialization
             if (FieldLengthBinding != null)
                 stream = new StreamLimiter(stream, (long) FieldLengthBinding.Value);
 
-            foreach (var child in serializableChildren)
+            foreach (var child in serializableChildren.TakeWhile(child => !ShouldTerminate(stream)))
             {
-                if (ShouldTerminate(stream))
-                    break;
-
                 using (new StreamPositioner(stream, child.FieldOffsetBinding))
                     child.Deserialize(stream);
             }

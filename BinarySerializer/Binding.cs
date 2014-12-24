@@ -2,13 +2,13 @@
 
 namespace BinarySerialization
 {
-    internal class Binding
+    internal abstract class Binding
     {
         private readonly IValueConverter _valueConverter;
         private readonly object _converterParameter;
         private readonly Func<object> _targetEvaluator;
 
-        public Binding(Node targetNode, IBindableFieldAttribute attribute, Func<object> targetEvaluator = null)
+        protected Binding(Node targetNode, IBindableFieldAttribute attribute, Func<object> targetEvaluator = null)
         {
             if (string.IsNullOrEmpty(attribute.Path))
                 return;

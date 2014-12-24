@@ -16,11 +16,6 @@ namespace BinarySerialization
         {
         }
 
-        public override object BoundValue
-        {
-            get { throw new BindingException("Cannot bind to a reference type."); }
-        }
-
         protected Node GenerateChild(Type type)
         {
             ThrowOnBadType(type);

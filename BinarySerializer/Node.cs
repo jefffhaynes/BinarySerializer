@@ -51,7 +51,7 @@ namespace BinarySerialization
         private readonly IntegerBinding _fieldCountBinding;
         private readonly IntegerBinding _fieldOffsetBinding;
         private readonly IntegerBinding _itemLengthBinding;
-        private readonly Binding _subtypeBinding;
+        private readonly ObjectBinding _subtypeBinding;
         private readonly ConditionalAttributeEvaluator _whenEvaluator;
             
 
@@ -135,13 +135,20 @@ namespace BinarySerialization
             if (serializeWhenAttributes.Length > 0)
                 _whenEvaluator = new ConditionalAttributeEvaluator(this, serializeWhenAttributes);
 
-            var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
-            if (subtypeAttributes.Length != 0)
+            SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
+            if (SubtypeAttributes.Length != 0)
             {
                 var subtypeBindings =
-                    subtypeAttributes.Select(subtypeAttribute => new Binding(this, subtypeAttributes[0], () =>
+                    SubtypeAttributes.Select(subtypeAttribute => new ObjectBinding(this, SubtypeAttributes[0], () =>
                     {
-                        var subtype = subtypeAttributes.Single(attribute => attribute.Subtype == Type);
+                        if (ValueType == null)
+                            return null;
+
+                        var subtype = SubtypeAttributes.SingleOrDefault(attribute => attribute.Subtype == ValueType);
+
+                        if (subtype == null)
+                            throw new BindingException("No matching subtype.");
+
                         return subtype.Value;
                     })).ToList();
 
@@ -150,7 +157,7 @@ namespace BinarySerialization
                 if(subtypeBindingSourceGroups.Count() > 1)
                     throw new BindingException("Subtypes must all bind to a single source.");
 
-                var subtypePathGroups = subtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Path);
+                var subtypePathGroups = SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Path);
 
                 if(subtypePathGroups.Count() > 1)
                     throw new BindingException("Subtypes must all bind to the same path.");
@@ -198,7 +205,9 @@ namespace BinarySerialization
 
         public virtual object Value { get; set; }
 
-        public abstract object BoundValue { get; }
+        public Type ValueType { get; set; }
+
+        public virtual object BoundValue { get { return Value; } }
 
         protected List<Node> Children { get { return _lazyChildren.Value; } }
 
@@ -253,7 +262,7 @@ namespace BinarySerialization
 
         public IntegerBinding ItemLengthBinding { get { return _itemLengthBinding; } }
 
-        public Binding SubtypeBinding { get { return _subtypeBinding; } }
+        public ObjectBinding SubtypeBinding { get { return _subtypeBinding; } }
 
         public SerializeUntilAttribute SerializeUntilAttribute { get; set; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; set; }
