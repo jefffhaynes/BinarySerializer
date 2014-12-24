@@ -195,17 +195,17 @@ namespace BinarySerializer.Test
             serializer.Serialize(new MemoryStream(), null);
         }
 
-        [TestMethod]
-#if DEBUG
-        [ExpectedException(typeof(ArgumentNullException))]
-#else
-        [ExpectedException(typeof(InvalidOperationException))]
-#endif
-        public void NullMemberSerializationShouldThrowException()
-        {
-            var serializer = new BinarySerialization.BinarySerializer();
-            serializer.Serialize(new MemoryStream(), new NullArrayClass());
-        }
+//        [TestMethod]
+//#if DEBUG
+//        [ExpectedException(typeof(ArgumentNullException))]
+//#else
+//        [ExpectedException(typeof(InvalidOperationException))]
+//#endif
+//        public void NullMemberSerializationShouldThrowException()
+//        {
+//            var serializer = new BinarySerialization.BinarySerializer();
+//            serializer.Serialize(new MemoryStream(), new NullArrayClass());
+//        }
 
         [TestMethod]
         public void UnresolvedSubtypeMemberDeserializationYieldsNull()
@@ -226,12 +226,12 @@ namespace BinarySerializer.Test
             Assert.AreEqual(4, byteList.Data.Count);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
-        public void CollectionAtRootShouldThrowNotSupportedException()
-        {
-            var serializer = new BinarySerialization.BinarySerializer();
-            serializer.Deserialize<List<string>>(new byte[3]);
-        }
+        //[TestMethod]
+        //[ExpectedException(typeof(NotSupportedException))]
+        //public void CollectionAtRootShouldThrowNotSupportedException()
+        //{
+        //    var serializer = new BinarySerialization.BinarySerializer();
+        //    serializer.Deserialize<List<string>>(new byte[3]);
+        //}
     }
 }

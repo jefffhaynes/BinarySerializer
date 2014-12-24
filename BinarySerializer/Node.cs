@@ -122,24 +122,12 @@ namespace BinarySerialization
             _ignore = ignoreAttribute != null;
             
             var fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
-            if(fieldLengthAttribute != null)
-            {
+            if (fieldLengthAttribute != null)
                 _fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, () => OnMeasureNode());
-
-                //_fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, OnMeasureNode);
-
-                //var source = FieldLengthBinding.Source;
-                //if (source != null)
-                //{
-                //    source.Bindings.Add(new Binding(OnMeasureNode));
-                //}
-            }
 
             var fieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
             if (fieldCountAttribute != null)
-            {
                 _fieldCountBinding = new IntegerBinding(this, fieldCountAttribute, () => OnCountNode());
-            }
 
             var fieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
             if (fieldOffsetAttribute != null)
@@ -149,7 +137,7 @@ namespace BinarySerialization
             if (serializeWhenAttributes.Length > 0)
                 _whenEvaluator = new ConditionalAttributeEvaluator(this, serializeWhenAttributes);
 
-            //node.SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
+            var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
 
 
             //node.SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
