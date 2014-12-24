@@ -140,16 +140,14 @@ namespace BinarySerialization
             {
                 _fieldCountBinding = new IntegerBinding(this, fieldCountAttribute, () => OnCountNode());
             }
-            //if(fieldCountAttribute != null)
-            //    _fieldCountBinding = new IntegerBinding(this, fieldCountAttribute);
 
             var fieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
             if (fieldOffsetAttribute != null)
                 _fieldOffsetBinding = new IntegerBinding(this, fieldOffsetAttribute);
 
             var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
-            //if(serializeWhenAttributes.Length > 0)
-            //    _whenEvaluator = new ConditionalAttributeEvaluator(this, serializeWhenAttributes);
+            if (serializeWhenAttributes.Length > 0)
+                _whenEvaluator = new ConditionalAttributeEvaluator(this, serializeWhenAttributes);
 
             //node.SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
 
