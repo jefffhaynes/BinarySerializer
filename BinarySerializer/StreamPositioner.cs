@@ -12,7 +12,7 @@ namespace BinarySerialization
         private readonly ulong? _position;
         private readonly Stream _stream;
 
-        public StreamPositioner(Stream stream, IntegerAttributeEvaluator fieldOffsetEvaluator)
+        public StreamPositioner(Stream stream, IntegerBinding fieldOffsetEvaluator)
         {
             _stream = stream;
             if (fieldOffsetEvaluator != null)

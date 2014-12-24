@@ -14,16 +14,21 @@ namespace BinarySerialization
 
         protected CollectionNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
-            if (FieldCountEvaluator != null)
-            {
-                var source = FieldCountEvaluator.Source;
-                if (source != null)
-                {
-                    source.Bindings.Add(new Binding(() => Children.Count));
-                }
-            }
+            //if (FieldCountBinding != null)
+            //{
+            //    var source = FieldCountBinding.Source;
+            //    if (source != null)
+            //    {
+            //        source.Bindings.Add(new Binding(() => Children.Count));
+            //    }
+            //}
 
             LazyChildType = new Lazy<Type>(() => GetChildType(Type));
+        }
+
+        protected override long OnCountNode()
+        {
+            return Children.Count;
         }
 
         public override void Serialize(Stream stream)
@@ -34,12 +39,12 @@ namespace BinarySerialization
 
         public override void Deserialize(StreamLimiter stream)
         {
-            if (FieldLengthEvaluator != null)
-                stream = new StreamLimiter(stream, (long)FieldLengthEvaluator.Value);
+            if (FieldLengthBinding != null)
+                stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);
 
             Children.Clear();
 
-            var count = FieldCountEvaluator != null ? FieldCountEvaluator.Value : ulong.MaxValue;
+            var count = FieldCountBinding != null ? FieldCountBinding.Value : ulong.MaxValue;
             for (ulong i = 0; i < count; i++)
             {
                 if (ShouldTerminate(stream))
@@ -47,7 +52,12 @@ namespace BinarySerialization
 
                 var child = GenerateChild(LazyChildType.Value);
                 Children.Add(child);
-                child.Deserialize(stream);
+
+                var childStream = ItemLengthBinding != null
+                    ? new StreamLimiter(stream, (long) ItemLengthBinding.Value)
+                    : stream;
+
+                child.Deserialize(childStream);
             }
         }
 

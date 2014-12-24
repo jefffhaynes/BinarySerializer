@@ -38,6 +38,7 @@ namespace BinarySerialization
         private readonly Lazy<List<Node>> _lazyChildren; 
         private readonly Lazy<List<Binding>> _lazyBindings;
 
+
         private readonly SerializedType? _serializedType;
         private readonly Endianness? _endianness;
         private readonly Encoding _encoding;
@@ -46,9 +47,10 @@ namespace BinarySerialization
 
         private readonly bool _ignore;
 
-        private readonly IntegerAttributeEvaluator _fieldLengthEvaluator;
-        private readonly IntegerAttributeEvaluator _fieldCountEvaluator;
-        private readonly IntegerAttributeEvaluator _fieldOffsetEvaluator;
+        private readonly IntegerBinding _fieldLengthBinding;
+        private readonly IntegerBinding _fieldCountBinding;
+        private readonly IntegerBinding _fieldOffsetBinding;
+        private readonly IntegerBinding _itemLengthBinding;
         private readonly ConditionalAttributeEvaluator _whenEvaluator;
             
 
@@ -59,6 +61,18 @@ namespace BinarySerialization
 
             _lazyChildren = new Lazy<List<Node>>();
             _lazyBindings = new Lazy<List<Binding>>();
+
+            if (Parent is CollectionNode && Parent.ItemLengthAttribute != null)
+            {
+                _itemLengthBinding = new IntegerBinding(Parent, Parent.ItemLengthAttribute,
+                    () => OnMeasureNode());
+
+                //var source = Parent.ItemLengthBinding.Source;
+                //if (source != null)
+                //{
+                //    source.Bindings.Add(new Binding(OnMeasureNode));
+                //}
+            }
         }
 
         protected Node(Node parent, Type type) : this(parent)
@@ -110,41 +124,55 @@ namespace BinarySerialization
             var fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
             if(fieldLengthAttribute != null)
             {
-                _fieldLengthEvaluator = new IntegerAttributeEvaluator(this, fieldLengthAttribute);
+                _fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, () => OnMeasureNode());
 
-                var source = FieldLengthEvaluator.Source;
-                if (source != null)
-                {
-                    source.Bindings.Add(new Binding(OnMeasureNode));
-                }
+                //_fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, OnMeasureNode);
+
+                //var source = FieldLengthBinding.Source;
+                //if (source != null)
+                //{
+                //    source.Bindings.Add(new Binding(OnMeasureNode));
+                //}
             }
 
             var fieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
-            if(fieldCountAttribute != null)
-                _fieldCountEvaluator = new IntegerAttributeEvaluator(this, fieldCountAttribute);
+            if (fieldCountAttribute != null)
+            {
+                _fieldCountBinding = new IntegerBinding(this, fieldCountAttribute, () => OnCountNode());
+            }
+            //if(fieldCountAttribute != null)
+            //    _fieldCountBinding = new IntegerBinding(this, fieldCountAttribute);
 
             var fieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
-            if(fieldOffsetAttribute != null)
-                _fieldOffsetEvaluator = new IntegerAttributeEvaluator(this, fieldOffsetAttribute);
+            if (fieldOffsetAttribute != null)
+                _fieldOffsetBinding = new IntegerBinding(this, fieldOffsetAttribute);
 
             var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
-            if(serializeWhenAttributes.Length > 0)
-                _whenEvaluator = new ConditionalAttributeEvaluator(this, serializeWhenAttributes);
+            //if(serializeWhenAttributes.Length > 0)
+            //    _whenEvaluator = new ConditionalAttributeEvaluator(this, serializeWhenAttributes);
 
             //node.SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
 
 
             //node.SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
-            //node.ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
+            ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
+            //if (ItemLengthAttribute != null)
+            //    _itemLengthBinding = new IntegerBinding(this, ItemLengthAttribute, null);
+
             //node.ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
         }
 
-        protected virtual object OnMeasureNode()
+        protected virtual long OnMeasureNode()
         {
             var nullStream = new NullStream();
             var streamKeeper = new StreamKeeper(nullStream);
             Serialize(streamKeeper);
             return streamKeeper.RelativePosition;
+        }
+
+        protected virtual long OnCountNode()
+        {
+            throw new NotImplementedException();
         }
 
         protected Node Parent { get; private set; }
@@ -172,14 +200,23 @@ namespace BinarySerialization
 
         public List<Binding> Bindings { get { return _lazyBindings.Value; } }
 
-        public IntegerAttributeEvaluator FieldLengthEvaluator { get { return _fieldLengthEvaluator; } }
+        //public FieldLengthAttribute FieldLengthAttribute { get; private set; }
 
-        public IntegerAttributeEvaluator FieldCountEvaluator { get { return _fieldCountEvaluator; } }
+        //public FieldCountAttribute FieldCountAttribute { get; private set; }
 
-        public IntegerAttributeEvaluator FieldOffsetEvaluator { get { return _fieldOffsetEvaluator; } }
+        //public FieldOffsetAttribute FieldOffsetAttribute { get; private set; }
+
+        public ItemLengthAttribute ItemLengthAttribute { get; private set; }
+
+        public IntegerBinding FieldLengthBinding { get { return _fieldLengthBinding; } }
+
+        public IntegerBinding FieldCountBinding { get { return _fieldCountBinding; } }
+
+        public IntegerBinding FieldOffsetBinding { get { return _fieldOffsetBinding; } }
+
+        public IntegerBinding ItemLengthBinding { get { return _itemLengthBinding; } }
 
         public SerializeUntilAttribute SerializeUntilAttribute { get; set; }
-        public ItemLengthAttribute ItemLengthAttribute { get; set; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; set; }
         public SubtypeAttribute[] SubtypeAttributes { get; set; }
 
@@ -194,7 +231,10 @@ namespace BinarySerialization
                 if (DefaultSerializedTypes.TryGetValue(Type, out serializedType))
                 {
                     /* Special cases */
-                    if(serializedType == SerializedType.NullTerminatedString && FieldLengthEvaluator != null)
+                    if(serializedType == SerializedType.NullTerminatedString && FieldLengthBinding != null)
+                        serializedType = SerializedType.SizedString;
+
+                    if(serializedType == SerializedType.NullTerminatedString && Parent.ItemLengthAttribute != null)
                         serializedType = SerializedType.SizedString;
 
                     return serializedType;

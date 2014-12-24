@@ -22,12 +22,12 @@ namespace BinarySerialization
             get { throw new BindingException("Cannot bind to a stream."); }
         }
 
-        protected override object OnMeasureNode()
+        protected override long OnMeasureNode()
         {
             var valueStream = (Stream) Value;
 
-            if (FieldLengthEvaluator.IsConst)
-                return FieldLengthEvaluator.Value;
+            if (FieldLengthBinding.IsConst)
+                return (long)FieldLengthBinding.Value;
 
             if (valueStream.CanSeek)
                 return valueStream.Length;
@@ -39,8 +39,8 @@ namespace BinarySerialization
         {
             var valueStream = (Stream) Value;
 
-            var valueStreamlet = FieldLengthEvaluator.IsConst
-                ? new Streamlet(valueStream, valueStream.Position, (long) FieldLengthEvaluator.Value)
+            var valueStreamlet = FieldLengthBinding.IsConst
+                ? new Streamlet(valueStream, valueStream.Position, (long)FieldLengthBinding.Value)
                 : new Streamlet(valueStream);
 
             valueStreamlet.CopyTo(stream);
@@ -53,12 +53,12 @@ namespace BinarySerialization
             while (baseStream is StreamLimiter)
                 baseStream = (baseStream as StreamLimiter).Source;
 
-            Value = FieldLengthEvaluator != null
-                ? new Streamlet(baseStream, baseStream.Position, (long)FieldLengthEvaluator.Value)
+            Value = FieldLengthBinding != null
+                ? new Streamlet(baseStream, baseStream.Position, (long)FieldLengthBinding.Value)
                 : new Streamlet(baseStream, baseStream.Position);
 
-            if (FieldLengthEvaluator != null)
-                stream.Seek((long) FieldLengthEvaluator.Value, SeekOrigin.Current);
+            if (FieldLengthBinding != null)
+                stream.Seek((long) FieldLengthBinding.Value, SeekOrigin.Current);
             else stream.Seek(0, SeekOrigin.End);
         }
     }

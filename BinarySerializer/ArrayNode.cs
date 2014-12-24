@@ -28,10 +28,10 @@ namespace BinarySerialization
             {
                 var array = (Array)value;
 
-                if (FieldCountEvaluator.IsConst)
+                if (FieldCountBinding.IsConst)
                 {
                     /* Pad out const-sized array */
-                    var count = (int)FieldCountEvaluator.Value;
+                    var count = (int)FieldCountBinding.Value;
                     var valueArray = Array.CreateInstance(LazyChildType.Value, count);
                     Array.Copy(array, valueArray, array.Length);
                     array = valueArray;

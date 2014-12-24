@@ -42,11 +42,11 @@ namespace BinarySerialization
 
                 if (Bindings.Any())
                 {
-                    value = Bindings[0].TargetValueGetter();
+                    value = Bindings[0].GetTargetValue();
 
                     if (Bindings.Count != 1)
                     {
-                        var targetValues = Bindings.Select(binding => binding.TargetValueGetter()).ToArray();
+                        var targetValues = Bindings.Select(binding => binding.GetTargetValue()).ToArray();
 
                         if (targetValues.Any(v => !value.Equals(v)))
                             throw new BindingException(
@@ -119,11 +119,18 @@ namespace BinarySerialization
                 {
                     byte[] data = Encoding.GetBytes(value.ToString());
 
-                    if (FieldLengthEvaluator == null)
-                        throw new InvalidOperationException("No field length specified on sized string.");
+                    if (FieldLengthBinding != null)
+                    {
 
-                    if (FieldLengthEvaluator.IsConst)
-                        Array.Resize(ref data, (int) FieldLengthEvaluator.BoundValue);
+                        if (FieldLengthBinding.IsConst)
+                            Array.Resize(ref data, (int) FieldLengthBinding.BoundValue);
+                    }
+                    else if (ItemLengthBinding != null)
+                    {
+                        if (ItemLengthBinding.IsConst)
+                            Array.Resize(ref data, (int) ItemLengthBinding.BoundValue);
+                    }
+                    else throw new InvalidOperationException("No field length specified on sized string.");
 
                     writer.Write(data);
                     break;
@@ -182,12 +189,12 @@ namespace BinarySerialization
                     break;
                 case SerializedType.ByteArray:
                 {
-                    if (FieldLengthEvaluator == null)
+                    if (FieldLengthBinding == null)
                         throw new InvalidOperationException("No length specified on byte array.");
 
                     // TODO StreamLimiter
                     
-                    value = reader.ReadBytes((int) FieldLengthEvaluator.Value);
+                    value = reader.ReadBytes((int) FieldLengthBinding.Value);
                     break;
                 }
                 case SerializedType.NullTerminatedString:
@@ -198,10 +205,15 @@ namespace BinarySerialization
                 }
                 case SerializedType.SizedString:
                 {
-                    if (FieldLengthEvaluator == null && length == null)
-                        throw new InvalidOperationException("No length specified on sized string.");
+                    int effectiveLength;
+                    if (length != null)
+                        effectiveLength = length.Value;
+                    else if (FieldLengthBinding != null)
+                        effectiveLength = (int)FieldLengthBinding.Value;
+                    else if (ItemLengthBinding != null)
+                        effectiveLength = (int) ItemLengthBinding.Value;
+                    else throw new InvalidOperationException("No length specified on sized string.");
 
-                    var effectiveLength = length == null ? (int)FieldLengthEvaluator.Value : length.Value;
                     byte[] data = reader.ReadBytes(effectiveLength);
                     value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
                     break;

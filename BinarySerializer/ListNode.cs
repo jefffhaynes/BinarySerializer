@@ -32,10 +32,10 @@ namespace BinarySerialization
             {
                 var list = (IList) value;
 
-                if (FieldCountEvaluator != null && FieldCountEvaluator.IsConst)
+                if (FieldCountBinding != null && FieldCountBinding.IsConst)
                 {
                     /* Pad out const-sized list */
-                    var count = (int)FieldCountEvaluator.Value;
+                    var count = (int)FieldCountBinding.Value;
                     if (list.Count < count)
                     {
 

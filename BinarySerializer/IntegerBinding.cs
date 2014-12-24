@@ -2,11 +2,12 @@
 
 namespace BinarySerialization
 {
-    internal class IntegerAttributeEvaluator : AttributeEvaluator<ulong>
+    internal class IntegerBinding : Binding
     {
         private readonly ulong? _constValue;
  
-        public IntegerAttributeEvaluator(Node node, IIntegerAttribute attribute) : base(node, attribute)
+        public IntegerBinding(Node targetNode, IIntegerAttribute attribute, Func<object> targetEvaluator = null) 
+            : base(targetNode, attribute, targetEvaluator)
         {
             if (string.IsNullOrEmpty(attribute.Path))
             {
@@ -19,19 +20,19 @@ namespace BinarySerialization
             get { return _constValue.HasValue; }
         }
 
-        public override ulong Value
+        public ulong Value
         {
             get
             {
-                return _constValue.HasValue ? _constValue.Value : Convert.ToUInt64(GetValue());
+                return _constValue.HasValue ? _constValue.Value : System.Convert.ToUInt64(GetValue());
             }
         }
 
-        public override ulong BoundValue
+        public ulong BoundValue
         {
             get
             {
-                return _constValue.HasValue ? _constValue.Value : Convert.ToUInt64(GetBoundValue());
+                return _constValue.HasValue ? _constValue.Value : System.Convert.ToUInt64(GetBoundValue());
             }
         }
     }

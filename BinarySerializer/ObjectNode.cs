@@ -63,7 +63,7 @@ namespace BinarySerialization
             var serializableChildren = GetSerializableChildren();
 
             foreach (var child in serializableChildren)
-                using (new StreamPositioner(stream, child.FieldOffsetEvaluator))
+                using (new StreamPositioner(stream, child.FieldOffsetBinding))
                     child.Serialize(stream);
         }
 
@@ -71,15 +71,15 @@ namespace BinarySerialization
         {
             var serializableChildren = GetSerializableChildren();
 
-            if (FieldLengthEvaluator != null)
-                stream = new StreamLimiter(stream, (long) FieldLengthEvaluator.Value);
+            if (FieldLengthBinding != null)
+                stream = new StreamLimiter(stream, (long) FieldLengthBinding.Value);
 
             foreach (var child in serializableChildren)
             {
                 if (ShouldTerminate(stream))
                     break;
 
-                using (new StreamPositioner(stream, child.FieldOffsetEvaluator))
+                using (new StreamPositioner(stream, child.FieldOffsetBinding))
                     child.Deserialize(stream);
             }
         }

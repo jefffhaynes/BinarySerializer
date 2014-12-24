@@ -99,9 +99,9 @@ namespace BinarySerialization
 
             /* If a field length is specified to be less than the max enum value length, we can't reliably recover the enum
              * values on deserialization. */
-            if (_enumValueLength != null && FieldLengthEvaluator.IsConst)
+            if (_enumValueLength != null && FieldLengthBinding.IsConst)
             {
-                if ((int)FieldLengthEvaluator.Value < _enumValueLength.Value)
+                if ((int)FieldLengthBinding.Value < _enumValueLength.Value)
                     throw new InvalidOperationException("Field length cannot be less than max");
             }
 

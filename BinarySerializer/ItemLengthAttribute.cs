@@ -6,7 +6,7 @@ namespace BinarySerialization
     /// Used to specify the length of fixed-length collection items such as byte arrays and fixed-length strings.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-    public sealed class ItemLengthAttribute : FieldBindingBaseAttribute, ILengthAttribute
+    public sealed class ItemLengthAttribute : FieldBindingBaseAttribute, ILengthAttribute, IIntegerAttribute
     {
         /// <summary>
         /// Initializes a new instance of the ItemLength class with a constant length.
@@ -34,6 +34,11 @@ namespace BinarySerialization
         internal override bool IsConstSupported
         {
             get { return true; }
+        }
+
+        public ulong GetConstValue()
+        {
+            return ConstLength;
         }
     }
 }
