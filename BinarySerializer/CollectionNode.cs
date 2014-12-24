@@ -14,15 +14,6 @@ namespace BinarySerialization
 
         protected CollectionNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
-            //if (FieldCountBinding != null)
-            //{
-            //    var source = FieldCountBinding.Source;
-            //    if (source != null)
-            //    {
-            //        source.Bindings.Add(new Binding(() => Children.Count));
-            //    }
-            //}
-
             LazyChildType = new Lazy<Type>(() => GetChildType(Type));
         }
 
@@ -42,7 +33,9 @@ namespace BinarySerialization
             if (FieldLengthBinding != null)
                 stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);
 
+            Unbind();
             Children.Clear();
+            Bind();
 
             var count = FieldCountBinding != null ? FieldCountBinding.Value : ulong.MaxValue;
             for (ulong i = 0; i < count; i++)
@@ -51,16 +44,16 @@ namespace BinarySerialization
                     break;
 
                 var child = GenerateChild(LazyChildType.Value);
+                child.Bind();
                 Children.Add(child);
 
-                var childStream = ItemLengthBinding != null
-                    ? new StreamLimiter(stream, (long) ItemLengthBinding.Value)
+                var childStream = child.ItemLengthBinding != null
+                    ? new StreamLimiter(stream, (long) child.ItemLengthBinding.Value)
                     : stream;
 
                 child.Deserialize(childStream);
             }
         }
-
 
         protected abstract Type GetChildType(Type collectionType);
     }

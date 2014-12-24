@@ -26,7 +26,9 @@ namespace BinarySerialization
             ThrowOnBadType(type);
 
             var nodeType = GetNodeType(type);
-            return Activator.CreateInstance(nodeType, this, type) as Node;
+            var node = (Node) Activator.CreateInstance(nodeType, this, type);
+            node.Bind();
+            return node;
         }
 
         protected Node GenerateChild(MemberInfo memberInfo)

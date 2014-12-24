@@ -2,23 +2,18 @@
 
 namespace BinarySerialization
 {
-    internal abstract class Binding
+    internal class Binding
     {
         private readonly IValueConverter _valueConverter;
         private readonly object _converterParameter;
         private readonly Func<object> _targetEvaluator;
 
-        protected Binding(Node targetNode, IBindableFieldAttribute attribute, Func<object> targetEvaluator = null)
+        public Binding(Node targetNode, IBindableFieldAttribute attribute, Func<object> targetEvaluator = null)
         {
             if (string.IsNullOrEmpty(attribute.Path))
                 return;
 
             Source = targetNode.GetBindingSource(attribute.Binding);
-
-            if (Source != null && targetEvaluator != null)
-            {
-                Source.Bindings.Add(this);
-            }
 
             if (attribute.ConverterType != null)
             {
@@ -38,6 +33,23 @@ namespace BinarySerialization
         }
 
         public Node Source { get; private set; }
+
+        public void Bind()
+        {
+            if (Source != null && _targetEvaluator != null)
+            {
+                if(!Source.Bindings.Contains(this))
+                    Source.Bindings.Add(this);
+            }
+        }
+
+        public void Unbind()
+        {
+            if (Source != null)
+            {
+                Source.Bindings.Remove(this);
+            }
+        }
 
         protected object GetValue()
         {

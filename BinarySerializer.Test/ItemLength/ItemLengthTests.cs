@@ -13,9 +13,9 @@ namespace BinarySerializer.Test.ItemLength
 
     public class ItemBoundLengthClass
     {
-        public int Count { get; set; }
+        public int ItemLength { get; set; }
 
-        [ItemLength("Count")]
+        [ItemLength("ItemLength")]
         public List<string> List { get; set; } 
     }
 

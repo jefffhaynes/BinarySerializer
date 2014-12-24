@@ -38,7 +38,7 @@ namespace BinarySerialization
         {
             get
             {
-                var value = Value;
+                object value;
 
                 if (Bindings.Any())
                 {
@@ -53,6 +53,7 @@ namespace BinarySerialization
                                 "Multiple bindings to a single source must have equivalent target values.");
                     }
                 }
+                else value = Value;
 
                 return ConvertToFieldType(value);
             }

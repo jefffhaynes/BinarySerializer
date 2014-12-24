@@ -51,6 +51,7 @@ namespace BinarySerialization
         private readonly IntegerBinding _fieldCountBinding;
         private readonly IntegerBinding _fieldOffsetBinding;
         private readonly IntegerBinding _itemLengthBinding;
+        private readonly Binding _subtypeBinding;
         private readonly ConditionalAttributeEvaluator _whenEvaluator;
             
 
@@ -66,13 +67,10 @@ namespace BinarySerialization
             {
                 _itemLengthBinding = new IntegerBinding(Parent, Parent.ItemLengthAttribute,
                     () => OnMeasureNode());
-
-                //var source = Parent.ItemLengthBinding.Source;
-                //if (source != null)
-                //{
-                //    source.Bindings.Add(new Binding(OnMeasureNode));
-                //}
             }
+
+
+            Bind();
         }
 
         protected Node(Node parent, Type type) : this(parent)
@@ -138,7 +136,27 @@ namespace BinarySerialization
                 _whenEvaluator = new ConditionalAttributeEvaluator(this, serializeWhenAttributes);
 
             var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
+            if (subtypeAttributes.Length != 0)
+            {
+                var subtypeBindings =
+                    subtypeAttributes.Select(subtypeAttribute => new Binding(this, subtypeAttributes[0], () =>
+                    {
+                        var subtype = subtypeAttributes.Single(attribute => attribute.Subtype == Type);
+                        return subtype.Value;
+                    })).ToList();
 
+                var subtypeBindingSourceGroups = subtypeBindings.GroupBy(subtypeBinding => subtypeBinding.Source);
+
+                if(subtypeBindingSourceGroups.Count() > 1)
+                    throw new BindingException("Subtypes must all bind to a single source.");
+
+                var subtypePathGroups = subtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Path);
+
+                if(subtypePathGroups.Count() > 1)
+                    throw new BindingException("Subtypes must all bind to the same path.");
+
+                _subtypeBinding = subtypeBindings.First();
+            }
 
             //node.SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
@@ -186,11 +204,44 @@ namespace BinarySerialization
 
         public List<Binding> Bindings { get { return _lazyBindings.Value; } }
 
-        //public FieldLengthAttribute FieldLengthAttribute { get; private set; }
+        public void Bind()
+        {
+            if(FieldLengthBinding != null)
+                FieldLengthBinding.Bind();
 
-        //public FieldCountAttribute FieldCountAttribute { get; private set; }
+            if(FieldCountBinding != null)
+                FieldCountBinding.Bind();
 
-        //public FieldOffsetAttribute FieldOffsetAttribute { get; private set; }
+            if(FieldOffsetBinding != null)
+                FieldOffsetBinding.Bind();
+            
+            if(ItemLengthBinding != null)
+                ItemLengthBinding.Bind();
+            
+            if(SubtypeBinding != null)
+                SubtypeBinding.Bind();
+
+            foreach(var child in Children)
+                child.Bind();
+        }
+
+        public void Unbind()
+        {
+            if (FieldLengthBinding != null)
+                FieldLengthBinding.Unbind();
+
+            if (FieldCountBinding != null)
+                FieldCountBinding.Unbind();
+
+            if (FieldOffsetBinding != null)
+                FieldOffsetBinding.Unbind();
+
+            if (ItemLengthBinding != null)
+                ItemLengthBinding.Unbind();
+
+            if (SubtypeBinding != null)
+                SubtypeBinding.Unbind();
+        }
 
         public ItemLengthAttribute ItemLengthAttribute { get; private set; }
 
@@ -201,6 +252,8 @@ namespace BinarySerialization
         public IntegerBinding FieldOffsetBinding { get { return _fieldOffsetBinding; } }
 
         public IntegerBinding ItemLengthBinding { get { return _itemLengthBinding; } }
+
+        public Binding SubtypeBinding { get { return _subtypeBinding; } }
 
         public SerializeUntilAttribute SerializeUntilAttribute { get; set; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; set; }
