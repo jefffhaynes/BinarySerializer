@@ -66,7 +66,7 @@ namespace BinarySerialization
             if (Parent is CollectionNode && Parent.ItemLengthAttribute != null)
             {
                 _itemLengthBinding = new IntegerBinding(Parent, Parent.ItemLengthAttribute,
-                    () => OnMeasureNode());
+                    () => MeasureNodeOverride());
             }
 
 
@@ -121,11 +121,11 @@ namespace BinarySerialization
             
             var fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
             if (fieldLengthAttribute != null)
-                _fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, () => OnMeasureNode());
+                _fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, () => MeasureNodeOverride());
 
             var fieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
             if (fieldCountAttribute != null)
-                _fieldCountBinding = new IntegerBinding(this, fieldCountAttribute, () => OnCountNode());
+                _fieldCountBinding = new IntegerBinding(this, fieldCountAttribute, () => CountNodeOverride());
 
             var fieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
             if (fieldOffsetAttribute != null)
@@ -141,10 +141,12 @@ namespace BinarySerialization
                 var subtypeBindings =
                     SubtypeAttributes.Select(subtypeAttribute => new ObjectBinding(this, SubtypeAttributes[0], () =>
                     {
-                        if (ValueType == null)
+                        var valueType = GetValueTypeOverride();
+
+                        if (valueType == null)
                             return null;
 
-                        var subtype = SubtypeAttributes.SingleOrDefault(attribute => attribute.Subtype == ValueType);
+                        var subtype = SubtypeAttributes.SingleOrDefault(attribute => attribute.Subtype == valueType);
 
                         if (subtype == null)
                             throw new BindingException("No matching subtype.");
@@ -173,7 +175,7 @@ namespace BinarySerialization
             //node.ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
         }
 
-        protected virtual long OnMeasureNode()
+        protected virtual long MeasureNodeOverride()
         {
             var nullStream = new NullStream();
             var streamKeeper = new StreamKeeper(nullStream);
@@ -181,7 +183,12 @@ namespace BinarySerialization
             return streamKeeper.RelativePosition;
         }
 
-        protected virtual long OnCountNode()
+        protected virtual long CountNodeOverride()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual Type GetValueTypeOverride()
         {
             throw new NotImplementedException();
         }
@@ -204,8 +211,6 @@ namespace BinarySerialization
         public Func<object, object> ValueGetter { get; private set; }
 
         public virtual object Value { get; set; }
-
-        public Type ValueType { get; set; }
 
         public virtual object BoundValue { get { return Value; } }
 

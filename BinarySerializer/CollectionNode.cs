@@ -17,7 +17,7 @@ namespace BinarySerialization
             LazyChildType = new Lazy<Type>(() => GetChildType(Type));
         }
 
-        protected override long OnCountNode()
+        protected override long CountNodeOverride()
         {
             return Children.Count;
         }

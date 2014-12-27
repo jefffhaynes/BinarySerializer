@@ -9,7 +9,8 @@ namespace BinarySerialization
     internal class ObjectNode : ContainerNode
     {
         private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public;
-        private Type _subtype;
+
+        public Type ValueType { get; private set; }
 
         public ObjectNode(Type type) : this(null, type)
         {
@@ -102,6 +103,11 @@ namespace BinarySerialization
             }).OrderBy(keyValue => keyValue.Value).Select(keyValue => keyValue.Key);
 
             return orderedMembers.Select(GenerateChild);
+        }
+
+        protected override Type GetValueTypeOverride()
+        {
+            return ValueType;
         }
     }
 }

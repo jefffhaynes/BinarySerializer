@@ -22,7 +22,7 @@ namespace BinarySerialization
             get { throw new BindingException("Cannot bind to a stream."); }
         }
 
-        protected override long OnMeasureNode()
+        protected override long MeasureNodeOverride()
         {
             var valueStream = (Stream) Value;
 
