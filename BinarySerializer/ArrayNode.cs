@@ -28,7 +28,7 @@ namespace BinarySerialization
             {
                 var array = (Array)value;
 
-                if (FieldCountBinding.IsConst)
+                if (FieldCountBinding != null && FieldCountBinding.IsConst)
                 {
                     /* Pad out const-sized array */
                     var count = (int)FieldCountBinding.Value;

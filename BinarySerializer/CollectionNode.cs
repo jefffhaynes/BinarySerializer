@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace BinarySerialization
@@ -10,6 +11,7 @@ namespace BinarySerialization
 
         protected CollectionNode(Node parent, Type type) : base(parent, type)
         {
+            LazyChildType = new Lazy<Type>(() => GetChildType(Type));
         }
 
         protected CollectionNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
@@ -21,6 +23,13 @@ namespace BinarySerialization
         {
             return Children.Count;
         }
+
+        //protected override object GetLastItemValueOverride()
+        //{
+        //    var lastItem = Children.Last();
+
+        //    //var lastItemValue = lastItem.Children.Where(child => child.Name.Equals(ItemSerializeUntilAttribute.))
+        //}
 
         public override void Serialize(Stream stream)
         {

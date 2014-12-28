@@ -498,7 +498,7 @@ namespace BinarySerialization
         /// <param name="formatProvider">An optional formatter.</param>
         /// <returns>The deserialized object graph.</returns>
         public T Deserialize<T>(Stream stream, BinarySerializationContext context = null,
-                                IFormatProvider formatProvider = null) where T : new()
+                                IFormatProvider formatProvider = null) 
         {
             var graphType = typeof (T);
 
@@ -533,10 +533,11 @@ namespace BinarySerialization
         /// <param name="data">The byte array from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(byte[] data, BinarySerializationContext context = null) where T : new()
+        public T Deserialize<T>(byte[] data, BinarySerializationContext context = null) 
         {
             return Deserialize<T>(new MemoryStream(data), context);
         }
+
 
         private void ReadMembers(Stream stream, object o, Type objectType, BinarySerializationContext ctx)
         {

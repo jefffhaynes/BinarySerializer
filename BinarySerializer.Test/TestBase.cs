@@ -9,7 +9,7 @@ namespace BinarySerializer.Test
 
         protected static readonly string[] TestSequence = { "a", "b", "c" };
 
-        private T Roundtrip<T>(T o, out long length) where T : new()
+        private T Roundtrip<T>(T o, out long length)
         {
             var stream = new MemoryStream();
             Serializer.Serialize(stream, o);
@@ -20,7 +20,7 @@ namespace BinarySerializer.Test
             return Serializer.Deserialize<T>(stream);
         }
 
-        protected T Roundtrip<T>(T o) where T : new()
+        protected T Roundtrip<T>(T o) 
         {
             long length;
             return Roundtrip(o, out length);

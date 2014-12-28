@@ -52,6 +52,7 @@ namespace BinarySerialization
         private readonly IntegerBinding _fieldOffsetBinding;
         private readonly IntegerBinding _itemLengthBinding;
         private readonly ObjectBinding _subtypeBinding;
+        private readonly ObjectBinding _itemSerializeUntilBinding;
         private readonly ConditionalAttributeEvaluator _whenEvaluator;
             
 
@@ -180,10 +181,13 @@ namespace BinarySerialization
 
             //node.SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
-            //if (ItemLengthAttribute != null)
-            //    _itemLengthBinding = new IntegerBinding(this, ItemLengthAttribute, null);
 
-            //node.ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
+            ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
+
+            if (ItemSerializeUntilAttribute != null)
+            {
+                _itemSerializeUntilBinding = new ObjectBinding(this, ItemSerializeUntilAttribute, GetLastItemValueOverride);
+            }
         }
 
         protected virtual long MeasureNodeOverride()
@@ -200,6 +204,11 @@ namespace BinarySerialization
         }
 
         protected virtual Type GetValueTypeOverride()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual object GetLastItemValueOverride()
         {
             throw new NotImplementedException();
         }
@@ -225,7 +234,7 @@ namespace BinarySerialization
 
         public virtual object BoundValue { get { return Value; } }
 
-        protected List<Node> Children { get { return _lazyChildren.Value; } }
+        public List<Node> Children { get { return _lazyChildren.Value; } }
 
         public List<Binding> Bindings { get { return _lazyBindings.Value; } }
 
@@ -279,6 +288,8 @@ namespace BinarySerialization
         public IntegerBinding ItemLengthBinding { get { return _itemLengthBinding; } }
 
         public ObjectBinding SubtypeBinding { get { return _subtypeBinding; } }
+
+        public ObjectBinding ItemSerializeUntilBinding { get { return _itemSerializeUntilBinding; } }
 
         public SerializeUntilAttribute SerializeUntilAttribute { get; set; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; set; }

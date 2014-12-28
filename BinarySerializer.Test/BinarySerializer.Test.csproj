@@ -64,6 +64,7 @@
     <Compile Include="Count\BoundCountClass.cs" />
     <Compile Include="Count\ConstCountClass.cs" />
     <Compile Include="Count\CountTests.cs" />
+    <Compile Include="Misc\CollectionMiscTests.cs" />
     <Compile Include="Misc\DictionaryTests.cs" />
     <Compile Include="Misc\EmptyClass.cs" />
     <Compile Include="Misc\EmptyClassTest.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="Offset\BoundOffsetClass.cs" />
     <Compile Include="Offset\ConstOffsetClass.cs" />
     <Compile Include="Offset\OffsetTests.cs" />
-    <Compile Include="Primitives\PrimitiveContainer.cs" />
     <Compile Include="Primitives\PrimitiveTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreamletTest.cs" />
@@ -115,6 +115,9 @@
     <Compile Include="Subtype\Superclass.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="Toy.cs" />
+    <Compile Include="UntilItem\UntilItemClass.cs" />
+    <Compile Include="UntilItem\UntilItemContainer.cs" />
+    <Compile Include="UntilItem\UntilItemTests.cs" />
     <Compile Include="Zinc.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -123,7 +126,9 @@
       <Name>BinarySerializer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Until\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
