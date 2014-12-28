@@ -61,10 +61,10 @@ namespace BinarySerialization
 
         public override void SerializeOverride(Stream stream)
         {
-            Serialize(stream, BoundValue, SerializedType);
+            Serialize(stream, BoundValue, GetSerializedType());
         }
 
-        protected void Serialize(Stream stream, object value, SerializedType serializedType)
+        protected void Serialize(Stream stream, object value, SerializedType serializedType, int? length = null)
         {
             if (value == null)
                 return;
@@ -120,9 +120,12 @@ namespace BinarySerialization
                 {
                     byte[] data = Encoding.GetBytes(value.ToString());
 
-                    if (FieldLengthBinding != null)
+                    if (length != null)
                     {
-
+                        Array.Resize(ref data, length.Value);
+                    }
+                    else if (FieldLengthBinding != null)
+                    {
                         if (FieldLengthBinding.IsConst)
                             Array.Resize(ref data, (int) FieldLengthBinding.BoundValue);
                     }
@@ -146,7 +149,7 @@ namespace BinarySerialization
 
         public override void DeserializeOverride(StreamLimiter stream)
         {
-            var value = Deserialize(stream, SerializedType);
+            var value = Deserialize(stream, GetSerializedType());
 
             Func<object, object> converter;
             Value = TypeConverters.TryGetValue(Type, out converter) ? converter(value) : value;

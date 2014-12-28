@@ -28,7 +28,7 @@ namespace BinarySerialization
         public override void SerializeOverride(Stream stream)
         {
             var value = _enumValues != null ? _enumValues[(Enum)BoundValue] : BoundValue;
-            Serialize(stream, value, _serializedType);
+            Serialize(stream, value, _serializedType, _enumValueLength);
         }
 
         public override void DeserializeOverride(StreamLimiter stream)
@@ -47,8 +47,10 @@ namespace BinarySerialization
 
         private void InitializeEnumValues()
         {
-            if (SerializedType != SerializedType.Default && SerializedType != SerializedType.LengthPrefixedString &&
-                SerializedType != SerializedType.NullTerminatedString && SerializedType != SerializedType.SizedString)
+            var serializedType = GetSerializedType();
+
+            if (serializedType != SerializedType.Default && serializedType != SerializedType.LengthPrefixedString &&
+                serializedType != SerializedType.NullTerminatedString && serializedType != SerializedType.SizedString)
                 return;
 
             var values = Enum.GetValues(Type).Cast<Enum>();
@@ -80,7 +82,7 @@ namespace BinarySerialization
                         .GroupBy(value => value.Length).ToList();
 
                 /* If the type isn't specified, let's try to guess it smartly */
-                if (SerializedType == SerializedType.Default)
+                if (serializedType == SerializedType.Default)
                 {
                     /* If everything is the same length, assume fixed length */
                     if (lengthGroups.Count == 1)
@@ -90,7 +92,7 @@ namespace BinarySerialization
                     }
                     else _serializedType = SerializedType.NullTerminatedString;
                 }
-                else if (SerializedType == SerializedType.SizedString)
+                else if (serializedType == SerializedType.SizedString)
                 {
                     /* If fixed size is specified, get max length in order to accomodate all values */
                     _enumValueLength = lengthGroups[0].Max(lengthGroup => lengthGroup.Length);
@@ -99,18 +101,17 @@ namespace BinarySerialization
 
             /* If a field length is specified to be less than the max enum value length, we can't reliably recover the enum
              * values on deserialization. */
-            if (_enumValueLength != null && FieldLengthBinding.IsConst)
+            if (_enumValueLength != null && FieldLengthBinding != null && FieldLengthBinding.IsConst)
             {
                 if ((int)FieldLengthBinding.Value < _enumValueLength.Value)
-                    throw new InvalidOperationException("Field length cannot be less than max");
+                    throw new InvalidOperationException("Field length cannot be less than max enum name length.");
             }
 
             _underlyingType = Enum.GetUnderlyingType(Type);
 
             if (_serializedType == SerializedType.Default)
             {
-                if (!DefaultSerializedTypes.TryGetValue(_underlyingType, out _serializedType))
-                    throw new InvalidOperationException("Unsupported underlying type.");
+                _serializedType = GetSerializedType(_underlyingType);
             }
         }
     }

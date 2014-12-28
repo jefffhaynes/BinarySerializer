@@ -29,5 +29,15 @@ namespace BinarySerialization
         {
             _child.Deserialize(stream);
         }
+
+        public override void Serialize(Stream stream)
+        {
+            SerializeOverride(stream);
+        }
+
+        public override void Deserialize(StreamLimiter stream)
+        {
+            DeserializeOverride(stream);
+        }
     }
 }

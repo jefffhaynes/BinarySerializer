@@ -47,7 +47,7 @@ namespace BinarySerialization
             }
             catch (Exception exception)
             {
-                var message = string.Format("There was an error reflecting type '{0}'", memberType);
+                var message = string.Format("There was an error reflecting member '{0}'", memberInfo.Name);
                 throw new InvalidOperationException(message, exception);
             }
         }

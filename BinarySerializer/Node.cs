@@ -295,28 +295,28 @@ namespace BinarySerialization
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; set; }
         public SubtypeAttribute[] SubtypeAttributes { get; set; }
 
-        public SerializedType SerializedType
+        public SerializedType GetSerializedType(Type referenceType = null)
         {
-            get
+            if (referenceType == null)
+                referenceType = Type;
+
+            if (_serializedType != null && _serializedType.Value != SerializedType.Default)
+                return _serializedType.Value;
+
+            SerializedType serializedType;
+            if (DefaultSerializedTypes.TryGetValue(referenceType, out serializedType))
             {
-                if (_serializedType != null && _serializedType.Value != SerializedType.Default)
-                    return _serializedType.Value;
+                /* Special cases */
+                if (serializedType == SerializedType.NullTerminatedString && FieldLengthBinding != null)
+                    serializedType = SerializedType.SizedString;
 
-                SerializedType serializedType;
-                if (DefaultSerializedTypes.TryGetValue(Type, out serializedType))
-                {
-                    /* Special cases */
-                    if(serializedType == SerializedType.NullTerminatedString && FieldLengthBinding != null)
-                        serializedType = SerializedType.SizedString;
+                if (serializedType == SerializedType.NullTerminatedString && Parent.ItemLengthAttribute != null)
+                    serializedType = SerializedType.SizedString;
 
-                    if(serializedType == SerializedType.NullTerminatedString && Parent.ItemLengthAttribute != null)
-                        serializedType = SerializedType.SizedString;
-
-                    return serializedType;
-                }
-
-                return SerializedType.Default;
+                return serializedType;
             }
+
+            return SerializedType.Default;
         }
 
         public Endianness Endianness
@@ -357,7 +357,7 @@ namespace BinarySerialization
             }
         }
 
-        public void Serialize(Stream stream)
+        public virtual void Serialize(Stream stream)
         {
             try
             {
@@ -369,12 +369,13 @@ namespace BinarySerialization
             }
             catch (Exception e)
             {
-                var message = string.Format("Error serializing {0}.  See inner exception for detail.", Name);
+                var reference = Name == null ? string.Format("type '{0}'", _type) : string.Format("member '{0}'", Name);
+                var message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
             }
         }
 
-        public void Deserialize(StreamLimiter stream)
+        public virtual void Deserialize(StreamLimiter stream)
         {
             try
             {
@@ -382,7 +383,8 @@ namespace BinarySerialization
             }
             catch (EndOfStreamException e)
             {
-                var message = string.Format("Error deserializing {0}.", Name);
+                var reference = Name == null ? string.Format("type '{0}'", _type) : string.Format("member '{0}'", Name);
+                var message = string.Format("Error deserializing '{0}'.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
             }
             catch (IOException)
@@ -455,7 +457,7 @@ namespace BinarySerialization
             {
                 if (binding.AncestorLevel == level || parent._type == binding.AncestorType)
                 {
-                    return Parent;
+                    return parent;
                 }
 
                 parent = parent.Parent;

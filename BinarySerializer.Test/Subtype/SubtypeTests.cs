@@ -1,4 +1,5 @@
 ﻿using System;
+using BinarySerialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerializer.Test.Subtype
@@ -27,7 +28,7 @@ namespace BinarySerializer.Test.Subtype
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof(BindingException))]
         public void MissingSubtypeTest()
         {
             var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
