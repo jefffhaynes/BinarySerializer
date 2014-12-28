@@ -30,13 +30,13 @@ namespace BinarySerialization
             return lastItem.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
         }
 
-        public override void Serialize(Stream stream)
+        public override void SerializeOverride(Stream stream)
         {
             foreach (var child in Children)
                 child.Serialize(stream);
         }
 
-        public override void Deserialize(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream)
         {
             if (FieldLengthBinding != null)
                 stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);

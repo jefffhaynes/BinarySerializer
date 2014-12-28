@@ -25,13 +25,13 @@ namespace BinarySerialization
             InitializeEnumValues();
         }
 
-        public override void Serialize(Stream stream)
+        public override void SerializeOverride(Stream stream)
         {
             var value = _enumValues != null ? _enumValues[(Enum)BoundValue] : BoundValue;
             Serialize(stream, value, _serializedType);
         }
 
-        public override void Deserialize(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream)
         {
             var value = Deserialize(stream, _serializedType, _enumValueLength);
 

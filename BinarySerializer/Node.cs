@@ -357,9 +357,48 @@ namespace BinarySerialization
             }
         }
 
-        public abstract void Serialize(Stream stream);
+        public void Serialize(Stream stream)
+        {
+            try
+            {
+                SerializeOverride(stream);
+            }
+            catch (IOException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                var message = string.Format("Error serializing {0}.  See inner exception for detail.", Name);
+                throw new InvalidOperationException(message, e);
+            }
+        }
 
-        public abstract void Deserialize(StreamLimiter stream);
+        public void Deserialize(StreamLimiter stream)
+        {
+            try
+            {
+                DeserializeOverride(stream);
+            }
+            catch (EndOfStreamException e)
+            {
+                var message = string.Format("Error deserializing {0}.", Name);
+                throw new InvalidOperationException(message, e);
+            }
+            catch (IOException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                var message = string.Format("Error deserializing {0}.", Name);
+                throw new InvalidOperationException(message, e);
+            }
+        }
+
+        public abstract void SerializeOverride(Stream stream);
+
+        public abstract void DeserializeOverride(StreamLimiter stream);
 
         public Node GetBindingSource(BindingInfo binding)
         {

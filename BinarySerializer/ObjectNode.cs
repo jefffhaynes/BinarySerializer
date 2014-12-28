@@ -65,7 +65,7 @@ namespace BinarySerialization
             return Children.Where(child => child.ShouldSerialize);
         }
 
-        public override void Serialize(Stream stream)
+        public override void SerializeOverride(Stream stream)
         {
             var serializableChildren = GetSerializableChildren();
 
@@ -74,7 +74,7 @@ namespace BinarySerialization
                     child.Serialize(stream);
         }
 
-        public override void Deserialize(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream)
         {
             var serializableChildren = GetSerializableChildren();
 

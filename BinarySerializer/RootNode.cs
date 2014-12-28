@@ -20,12 +20,12 @@ namespace BinarySerialization
             set { _child.Value = value; }
         }
 
-        public override void Serialize(Stream stream)
+        public override void SerializeOverride(Stream stream)
         {
             _child.Serialize(stream);
         }
 
-        public override void Deserialize(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream)
         {
             _child.Deserialize(stream);
         }

@@ -59,7 +59,7 @@ namespace BinarySerialization
             }
         }
 
-        public override void Serialize(Stream stream)
+        public override void SerializeOverride(Stream stream)
         {
             Serialize(stream, BoundValue, SerializedType);
         }
@@ -144,7 +144,7 @@ namespace BinarySerialization
             }
         }
 
-        public override void Deserialize(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream)
         {
             var value = Deserialize(stream, SerializedType);
 

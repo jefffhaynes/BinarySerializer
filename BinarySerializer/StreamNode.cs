@@ -35,7 +35,7 @@ namespace BinarySerialization
             throw new InvalidOperationException("Cannot bind non-seekable stream.");
         }
 
-        public override void Serialize(Stream stream)
+        public override void SerializeOverride(Stream stream)
         {
             var valueStream = (Stream) Value;
 
@@ -46,7 +46,7 @@ namespace BinarySerialization
             valueStreamlet.CopyTo(stream);
         }
 
-        public override void Deserialize(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream)
         {
             /* This is weird but we need to find the base stream so we can reference it directly */
             Stream baseStream = stream;

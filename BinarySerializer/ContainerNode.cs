@@ -18,21 +18,38 @@ namespace BinarySerialization
 
         protected Node GenerateChild(Type type)
         {
-            ThrowOnBadType(type);
+            try
+            {
+                ThrowOnBadType(type);
 
-            var nodeType = GetNodeType(type);
-            var node = (Node) Activator.CreateInstance(nodeType, this, type);
-            return node;
+                var nodeType = GetNodeType(type);
+
+                return (Node)Activator.CreateInstance(nodeType, this, type);
+            }
+            catch (Exception exception)
+            {
+                var message = string.Format("There was an error reflecting type '{0}'", type);
+                throw new InvalidOperationException(message, exception);
+            }
         }
 
         protected Node GenerateChild(MemberInfo memberInfo)
         {
             var memberType = GetMemberType(memberInfo);
 
-            ThrowOnBadType(memberType);
+            try
+            {
+                ThrowOnBadType(memberType);
 
-            var nodeType = GetNodeType(memberType);
-            return Activator.CreateInstance(nodeType, this, memberInfo) as Node;
+                var nodeType = GetNodeType(memberType);
+
+                return (Node) Activator.CreateInstance(nodeType, this, memberInfo);
+            }
+            catch (Exception exception)
+            {
+                var message = string.Format("There was an error reflecting type '{0}'", memberType);
+                throw new InvalidOperationException(message, exception);
+            }
         }
 
 // ReSharper disable UnusedParameter.Local
