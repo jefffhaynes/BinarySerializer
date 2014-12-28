@@ -6,12 +6,12 @@ namespace BinarySerialization
     {
         private readonly ulong? _constValue;
  
-        public IntegerBinding(Node targetNode, IIntegerAttribute attribute, Func<object> targetEvaluator = null) 
+        public IntegerBinding(Node targetNode, IConstAttribute attribute, Func<object> targetEvaluator = null) 
             : base(targetNode, attribute, targetEvaluator)
         {
             if (string.IsNullOrEmpty(attribute.Path))
             {
-                _constValue = attribute.GetConstValue();
+                _constValue = (ulong) attribute.GetConstValue();
             }
         }
 

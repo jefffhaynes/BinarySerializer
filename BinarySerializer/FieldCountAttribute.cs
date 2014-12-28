@@ -6,7 +6,7 @@ namespace BinarySerialization
     /// Specifies the number of items in a collection or array.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=false)]
-    public sealed class FieldCountAttribute : FieldBindingBaseAttribute, IIntegerAttribute
+    public sealed class FieldCountAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>
         /// Initializes a new instance of the FieldCount class.
@@ -43,7 +43,7 @@ namespace BinarySerialization
             get { return true; }
         }
 
-        public ulong GetConstValue()
+        public object GetConstValue()
         {
             return ConstCount;
         }

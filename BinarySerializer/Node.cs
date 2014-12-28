@@ -386,13 +386,23 @@ namespace BinarySerialization
             if (!memberNames.Any())
                 throw new BindingException("Path cannot be empty.");
 
-            Node sourceChild = source;
+            return source.GetChild(binding.Path);
+        }
+
+        public Node GetChild(string path)
+        {
+            string[] memberNames = path.Split(PathSeparator);
+
+            if (!memberNames.Any())
+                throw new BindingException("Path cannot be empty.");
+
+            Node sourceChild = this;
             foreach (var name in memberNames)
             {
                 sourceChild = sourceChild.Children.SingleOrDefault(c => c.Name == name);
 
-                if(sourceChild == null)
-                    throw new BindingException(string.Format("No member found at '{0}'.", binding.Path));
+                if (sourceChild == null)
+                    throw new BindingException(string.Format("No member found at '{0}'.", path));
             }
 
             return sourceChild;

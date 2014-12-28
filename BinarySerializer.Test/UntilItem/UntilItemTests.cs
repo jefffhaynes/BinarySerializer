@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerializer.Test.UntilItem
@@ -12,36 +7,36 @@ namespace BinarySerializer.Test.UntilItem
     public class UntilItemTests : TestBase
     {
         [TestMethod]
-        public void UntilItemTest()
+        public void UntilItemConstTest()
         {
-            var expected = new UntilItemContainer
+            var items = new List<UntilItemClass>
             {
-                Items = new List<UntilItemClass>
+                new UntilItemClass
                 {
-                    new UntilItemClass
-                    {
-                        Name = "Alice",
-                        LastItem = "Nope",
-                        Description = "She's just a girl in the world"
-                    },
-                    new UntilItemClass
-                    {
-                        Name = "Bob",
-                        LastItem = "Not yet",
-                        Description = "Well, he's just this guy, you know?"
-                    },
-                    new UntilItemClass
-                    {
-                        Name = "Charlie",
-                        LastItem = "Yep",
-                        Description = "What??  That's a great idea!"
-                    }
+                    Name = "Alice",
+                    LastItem = "Nope",
+                    Description = "She's just a girl in the world"
+                },
+                new UntilItemClass
+                {
+                    Name = "Bob",
+                    LastItem = "Not yet",
+                    Description = "Well, he's just this guy, you know?"
+                },
+                new UntilItemClass
+                {
+                    Name = "Charlie",
+                    LastItem = "Yep",
+                    Description = "What??  That's a great idea!"
                 }
             };
+
+            var expected = new UntilItemContainer {Items = items, ItemsLastItemExcluded = items};
 
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(expected.Items.Count, actual.Items.Count);
+            Assert.AreEqual(expected.ItemsLastItemExcluded.Count - 1, actual.ItemsLastItemExcluded.Count);
         }
     }
 }

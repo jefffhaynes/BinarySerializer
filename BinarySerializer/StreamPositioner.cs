@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BinarySerialization
 {
@@ -12,18 +8,18 @@ namespace BinarySerialization
         private readonly ulong? _position;
         private readonly Stream _stream;
 
-        public StreamPositioner(Stream stream, IntegerBinding fieldOffsetEvaluator)
+        public StreamPositioner(Stream stream, IntegerBinding fieldOffsetBinding)
         {
             _stream = stream;
-            if (fieldOffsetEvaluator != null)
+
+            if (fieldOffsetBinding != null)
             {
                 if (!stream.CanSeek)
                     throw new InvalidOperationException("FieldOffsetAttribute not supported for non-seekable streams");
 
-                _position = fieldOffsetEvaluator.Value;
-                _stream.Position = (long)fieldOffsetEvaluator.Value;
+                _position = fieldOffsetBinding.Value;
+                _stream.Position = (long)fieldOffsetBinding.Value;
             }
-
         }
 
         public void Dispose()

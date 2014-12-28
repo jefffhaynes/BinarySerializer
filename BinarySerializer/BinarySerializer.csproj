@@ -52,7 +52,7 @@
     <Compile Include="EnumerableExtensionMethods.cs" />
     <Compile Include="Binding.cs" />
     <Compile Include="EnumNode.cs" />
-    <Compile Include="IIntegerAttribute.cs" />
+    <Compile Include="IConstAttribute.cs" />
     <Compile Include="ILengthAttribute.cs" />
     <Compile Include="ObjectBinding.cs" />
     <Compile Include="IntegerBinding.cs" />

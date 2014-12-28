@@ -32,7 +32,7 @@ namespace BinarySerialization
     /// item in the collection.  See <see cref="SerializeUntilAttribute"/> for more information.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=false)]
-    public sealed class ItemSerializeUntilAttribute : FieldBindingBaseAttribute
+    public sealed class ItemSerializeUntilAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemSerializeUntilAttribute"/> class with a
@@ -41,17 +41,19 @@ namespace BinarySerialization
         /// <param name="itemValuePath">The path to the member within the item to be used as a
         /// termination condition.</param>
         /// <param name="value">The value to use in the termination comparison.</param>
-        public ItemSerializeUntilAttribute(string itemValuePath, object value)
-            : base(itemValuePath)
+        public ItemSerializeUntilAttribute(string itemValuePath, object constValue)
         {
-            Value = value;
+            ItemValuePath = itemValuePath;
+            ConstValue = constValue;
         }
+
+        public string ItemValuePath { get; set; }
 		
         /// <summary>
         /// The value to use in the termination comparison.  If the item value referenced in the value path
         /// matches this value, serialization of the collection will be terminated.
         /// </summary>
-        public object Value { get; set; }
+        public object ConstValue { get; set; }
 
         /// <summary>
         /// Used to specify whether the terminating item should be included in the collection.
@@ -61,6 +63,11 @@ namespace BinarySerialization
         internal override bool IsConstSupported
         {
             get { return false; }
+        }
+
+        public object GetConstValue()
+        {
+            return ConstValue;
         }
     }
 }

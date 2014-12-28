@@ -713,7 +713,7 @@ namespace BinarySerialization
                 {
                     object untilValue = new BinarySerializationContext(o, ctx).GetValue(value,
                                                                                         itemSerializeUntilAttribute.Binding);
-                    if (untilValue.Equals(itemSerializeUntilAttribute.Value))
+                    if (untilValue.Equals(itemSerializeUntilAttribute.ConstValue))
                     {
                         if (!itemSerializeUntilAttribute.ExcludeLastItem)
                         {

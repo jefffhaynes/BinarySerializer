@@ -6,7 +6,7 @@ namespace BinarySerialization
     /// Specifies an absolute offset of a member in the stream.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-    public sealed class FieldOffsetAttribute : FieldBindingBaseAttribute, IIntegerAttribute
+    public sealed class FieldOffsetAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>
         /// Initializes a new instance of the FieldOffset class.
@@ -42,7 +42,7 @@ namespace BinarySerialization
             get { return true; }
         }
 
-        public ulong GetConstValue()
+        public object GetConstValue()
         {
             return ConstOffset;
         }

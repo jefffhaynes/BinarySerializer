@@ -6,7 +6,7 @@ namespace BinarySerialization
     /// Specifies the length of a member or object subgraph.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-    public sealed class FieldLengthAttribute : FieldBindingBaseAttribute, ILengthAttribute, IIntegerAttribute
+    public sealed class FieldLengthAttribute : FieldBindingBaseAttribute, ILengthAttribute, IConstAttribute
     {
         /// <summary>
         /// Initializes a new instance of the FieldLength class.
@@ -43,7 +43,7 @@ namespace BinarySerialization
             get { return true; }
         }
 
-        public ulong GetConstValue()
+        public object GetConstValue()
         {
             return ConstLength;
         }

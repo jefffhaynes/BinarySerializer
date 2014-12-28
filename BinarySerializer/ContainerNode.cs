@@ -22,7 +22,6 @@ namespace BinarySerialization
 
             var nodeType = GetNodeType(type);
             var node = (Node) Activator.CreateInstance(nodeType, this, type);
-            node.Bind();
             return node;
         }
 

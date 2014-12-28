@@ -10,6 +10,9 @@ namespace BinarySerializer.Test.UntilItem
         [ItemSerializeUntil("LastItem", "Yep")]
         public List<UntilItemClass> Items { get; set; }
 
+        [ItemSerializeUntil("LastItem", "Yep", ExcludeLastItem = true)]
+        public List<UntilItemClass> ItemsLastItemExcluded { get; set; }
+
         public uint StuffAfter { get; set; }
     }
 }

@@ -24,12 +24,11 @@ namespace BinarySerialization
             return Children.Count;
         }
 
-        //protected override object GetLastItemValueOverride()
-        //{
-        //    var lastItem = Children.Last();
-
-        //    //var lastItemValue = lastItem.Children.Where(child => child.Name.Equals(ItemSerializeUntilAttribute.))
-        //}
+        protected override object GetLastItemValueOverride()
+        {
+            var lastItem = Children.Last();
+            return lastItem.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
+        }
 
         public override void Serialize(Stream stream)
         {
@@ -53,14 +52,32 @@ namespace BinarySerialization
                     break;
 
                 var child = GenerateChild(LazyChildType.Value);
+
                 child.Bind();
-                Children.Add(child);
 
                 var childStream = child.ItemLengthBinding != null
                     ? new StreamLimiter(stream, (long) child.ItemLengthBinding.Value)
                     : stream;
 
                 child.Deserialize(childStream);
+
+                /* Check item termination case */
+                if (ItemSerializeUntilBinding != null)
+                {
+                    var terminationValue = ItemSerializeUntilBinding.Value;
+                    var terminationChild = child.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
+
+                    if (terminationChild.Value.Equals(terminationValue))
+                    {
+                        if (!ItemSerializeUntilAttribute.ExcludeLastItem)
+                        {
+                            Children.Add(child);
+                        }
+                        break;
+                    }
+                }
+
+                Children.Add(child);
             }
         }
 
