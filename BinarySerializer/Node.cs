@@ -146,12 +146,23 @@ namespace BinarySerialization
                         if (valueType == null)
                             return null;
 
-                        var subtype = SubtypeAttributes.SingleOrDefault(attribute => attribute.Subtype == valueType);
+                        var matchingSubtypes =
+                            SubtypeAttributes.Where(attribute => attribute.Subtype == valueType).ToList();
 
-                        if (subtype == null)
-                            throw new BindingException("No matching subtype.");
+                        if (!matchingSubtypes.Any())
+                        {
+                            /* Try to fall back on base types */
+                            matchingSubtypes =
+                                SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType)).ToList();
 
-                        return subtype.Value;
+                            if (!matchingSubtypes.Any())
+                                throw new BindingException("No matching subtype.");
+                        }
+
+                        if(matchingSubtypes.Count() > 1)
+                            throw new BindingException("Subtypes must have unique types.");
+
+                        return matchingSubtypes.Single().Value;
                     })).ToList();
 
                 var subtypeBindingSourceGroups = subtypeBindings.GroupBy(subtypeBinding => subtypeBinding.Source);
