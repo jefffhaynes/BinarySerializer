@@ -98,7 +98,7 @@ namespace BinarySerialization
 #if NEW
             // TODO ONCE!
             var root = new RootNode(graphType);
-            root.Bind();
+            //root.Bind();
             root.Value = graph;
             root.Serialize(stream);
 #else
@@ -505,7 +505,7 @@ namespace BinarySerialization
 #if NEW
             // TODO ONCE!
             var root = new RootNode(graphType);
-            root.Bind();
+            //root.Bind();
             root.Deserialize(new StreamLimiter(stream));
             return (T) root.Value;
 #else

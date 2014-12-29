@@ -278,24 +278,30 @@ namespace BinarySerialization
         protected void AddChild(Node child)
         {
             _lazyChildren.Value.Add(child);
+            child.Bind();
+            AddEvents(child);
         }
 
         protected void AddChildren(IEnumerable<Node> children)
         {
-            _lazyChildren.Value.AddRange(children);
+            foreach(var child in children)
+                AddChild(child);
         }
 
         protected void ClearChildren()
         {
             foreach (var child in Children)
+            {
                 child.Unbind();
+                RemoveEvents(child);
+            }
 
             _lazyChildren.Value.Clear();
         }
 
         protected int ChildCount { get { return _lazyChildren.Value.Count; } }
 
-        public void Bind()
+        private void Bind()
         {
             if (FieldLengthBinding != null)
                 FieldLengthBinding.Bind();
@@ -316,7 +322,7 @@ namespace BinarySerialization
                 child.Bind();
         }
 
-        public void Unbind()
+        private void Unbind()
         {
             if (FieldLengthBinding != null)
                 FieldLengthBinding.Unbind();
@@ -550,6 +556,22 @@ namespace BinarySerialization
                 return new BinarySerializationContext(null, null, null);
 
             return new BinarySerializationContext(Parent.Value, Parent.Type, Parent.CreateSerializationContext());
+        }
+
+        private void AddEvents(Node child)
+        {
+            child.MemberSerializing += MemberSerializing;
+            child.MemberSerialized += MemberSerialized;
+            child.MemberDeserializing += MemberDeserializing;
+            child.MemberDeserialized += MemberDeserialized;
+        }
+
+        private void RemoveEvents(Node child)
+        {
+            child.MemberSerializing -= MemberSerializing;
+            child.MemberSerialized -= MemberSerialized;
+            child.MemberDeserializing -= MemberDeserializing;
+            child.MemberDeserialized -= MemberDeserialized;
         }
 
         protected void OnMemberSerialized(string memberName, object value, BinarySerializationContext context)

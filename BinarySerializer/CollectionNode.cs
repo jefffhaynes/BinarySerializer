@@ -52,8 +52,6 @@ namespace BinarySerialization
                 // TODO why am I generating the same type information over and over?
                 var child = GenerateChild(LazyChildType.Value);
 
-                child.Bind();
-
                 var childStream = child.ItemLengthBinding != null
                     ? new StreamLimiter(stream, (long) child.ItemLengthBinding.Value)
                     : stream;
