@@ -186,15 +186,11 @@ namespace BinarySerialization
                         return matchingSubtypes.Single().Value;
                     })).ToList();
 
-                //var subtypeBindingSourceGroups = subtypeBindings.GroupBy(subtypeBinding => subtypeBinding.GetSource());
 
-                //if (subtypeBindingSourceGroups.Count() > 1)
-                //    throw new BindingException("Subtypes must all bind to a single source.");
+                var bindingGroups = SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
 
-                var subtypePathGroups = SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Path);
-
-                if (subtypePathGroups.Count() > 1)
-                    throw new BindingException("Subtypes must all bind to the same path.");
+                if (bindingGroups.Count() > 1)
+                    throw new BindingException("Subtypes must all use the same binding configuration.");
 
                 _subtypeBinding = subtypeBindings.First();
             }

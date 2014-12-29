@@ -22,7 +22,8 @@ namespace BinarySerialization
         /// <param name="mode">The source mode.</param>
         /// <param name="converterType">An optional converter.</param>
         /// <param name="converterParameter">An optional converter parameter.</param>
-        internal BindingInfo(string path, RelativeSourceMode mode, Type converterType = null, object converterParameter = null)
+        internal BindingInfo(string path, RelativeSourceMode mode, Type converterType = null,
+            object converterParameter = null)
         {
             Path = path;
             Mode = mode;
@@ -73,5 +74,34 @@ namespace BinarySerialization
         /// An optional converter parameter to be passed to the converter.
         /// </summary>
         public object ConverterParameter { get; set; }
+
+        protected bool Equals(BindingInfo other)
+        {
+            return string.Equals(Path, other.Path) && AncestorLevel == other.AncestorLevel &&
+                   AncestorType == other.AncestorType && ConverterType == other.ConverterType && Mode == other.Mode &&
+                   Equals(ConverterParameter, other.ConverterParameter);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((BindingInfo) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (Path != null ? Path.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ AncestorLevel;
+                hashCode = (hashCode*397) ^ (AncestorType != null ? AncestorType.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (ConverterType != null ? ConverterType.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (int) Mode;
+                hashCode = (hashCode*397) ^ (ConverterParameter != null ? ConverterParameter.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
     }
 }
