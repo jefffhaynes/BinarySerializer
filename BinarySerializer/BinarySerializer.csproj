@@ -66,7 +66,7 @@
     <Compile Include="StreamKeeper.cs" />
     <Compile Include="StreamLimiter.cs" />
     <Compile Include="StreamNode.cs" />
-    <Compile Include="StreamPositioner.cs" />
+    <Compile Include="StreamResetter.cs" />
     <Compile Include="SubtypeAttribute.cs" />
     <Compile Include="SerializeUntilAttribute.cs" />
     <Compile Include="ItemSerializeUntilAttribute.cs" />

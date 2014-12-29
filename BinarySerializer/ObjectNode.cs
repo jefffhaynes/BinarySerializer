@@ -10,7 +10,35 @@ namespace BinarySerialization
     {
         private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public;
 
-        public Type ValueType { get; private set; }
+        private readonly Dictionary<Type, List<Node>> _typeChildren = new Dictionary<Type, List<Node>>();
+
+        private Type _valueType;
+
+        public Type ValueType
+        {
+            get { return _valueType; }
+
+            private set
+            {
+                if (_valueType != value)
+                {
+                    ClearChildren();
+                    if (value != null)
+                    {
+                        List<Node> children;
+                        if (!_typeChildren.TryGetValue(value, out children))
+                        {
+                            /* Previously unseen type */
+                            GenerateChildren(value);
+                            children = _typeChildren[value];
+                        }
+
+                        AddChildren(children);
+                    }
+                    _valueType = value;
+                }
+            }
+        }
 
         public ObjectNode(Type type) : this(null, type)
         {
@@ -18,8 +46,8 @@ namespace BinarySerialization
 
         public ObjectNode(Node parent, Type type) : base(parent, type)
         {
-            var children = GenerateChildren(type);
-            Children.AddRange(children);
+            GenerateChildren(type);
+            ValueType = type;
         }
 
         public ObjectNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
@@ -28,15 +56,24 @@ namespace BinarySerialization
                 return;
 
             var type = GetMemberType(memberInfo);
-            var children = GenerateChildren(type);
-            Children.AddRange(children);
+            GenerateChildren(type);
+
+            ValueType = type;
+
+            if (SubtypeAttributes.Length <= 0) 
+                return;
+
+            var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
+
+            foreach(var subType in subTypes)
+                GenerateChildren(subType);
         }
 
         public override object Value
         {
             get
             {
-                Type type;
+                //Type type;
                 if (SubtypeBinding != null && SubtypeBinding.Value != null)
                 {
                     var matchingAttribute =
@@ -46,11 +83,14 @@ namespace BinarySerialization
                     if (matchingAttribute == null)
                         return null;
 
-                    type = matchingAttribute.Subtype;
+                    ValueType = matchingAttribute.Subtype;
                 }
-                else type = Type;
+                else ValueType = Type;
 
-                var value = Activator.CreateInstance(type);
+                var value = Activator.CreateInstance(ValueType);
+
+                //ClearChildren();
+                //AddChildren(TypeChildren[ValueType]);
 
                 foreach (var child in Children)
                     child.ValueSetter(value, child.Value);
@@ -61,12 +101,15 @@ namespace BinarySerialization
             set
             {
                 if (value == null)
+                {
+                    ValueType = null;
                     return;
+                }
+
+                ValueType = value.GetType();
 
                 foreach (var child in Children)
                     child.Value = child.ValueGetter(value);
-
-                ValueType = value.GetType();
             }
         }
 
@@ -80,8 +123,15 @@ namespace BinarySerialization
             var serializableChildren = GetSerializableChildren();
 
             foreach (var child in serializableChildren)
-                using (new StreamPositioner(stream, child.FieldOffsetBinding))
+            {
+                using (new StreamResetter(stream, child.FieldOffsetBinding != null))
+                {
+                    if (child.FieldOffsetBinding != null)
+                        stream.Position = (long)child.FieldOffsetBinding.Value;
+
                     child.Serialize(stream);
+                }
+            }
         }
 
         public override void DeserializeOverride(StreamLimiter stream)
@@ -93,12 +143,17 @@ namespace BinarySerialization
 
             foreach (var child in serializableChildren.TakeWhile(child => !ShouldTerminate(stream)))
             {
-                using (new StreamPositioner(stream, child.FieldOffsetBinding))
+                using (new StreamResetter(stream, child.FieldOffsetBinding != null))
+                {
+                    if (child.FieldOffsetBinding != null)
+                        stream.Position = (long) child.FieldOffsetBinding.Value;
+
                     child.Deserialize(stream);
+                }
             }
         }
 
-        private IEnumerable<Node> GenerateChildren(Type type)
+        private void GenerateChildren(Type type)
         {
             IEnumerable<MemberInfo> properties = type.GetProperties(MemberBindingFlags);
             IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);
@@ -112,7 +167,9 @@ namespace BinarySerialization
                 return new KeyValuePair<MemberInfo, int>(member, order);
             }).OrderBy(keyValue => keyValue.Value).Select(keyValue => keyValue.Key);
 
-            return orderedMembers.Select(GenerateChild);
+            var children = orderedMembers.Select(GenerateChild).ToList();
+
+            _typeChildren.Add(type, children);
         }
 
         protected override Type GetValueTypeOverride()

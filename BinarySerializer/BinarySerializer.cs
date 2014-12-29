@@ -355,7 +355,7 @@ namespace BinarySerialization
             /* Handle explicit termination case */
             if (serializeUntilAttribute != null)
             {
-                var terminationValue = serializeUntilAttribute.Value;
+                var terminationValue = serializeUntilAttribute.ConstValue;
                 WriteValue(streamKeeper, terminationValue, terminationValue.GetType(), SerializedType.Default,
                                encoding, constLength, endianness, ctx);
             }
@@ -737,7 +737,7 @@ namespace BinarySerialization
                         throw new InvalidOperationException(
                             "SerializeUntil not supported for non-seekable streams as it requires peek-ahead.");
 
-                    var terminationValue = serializeUntilAttribute.Value;
+                    var terminationValue = serializeUntilAttribute.ConstValue;
                     var terminationValueType = terminationValue.GetType();
 
                     var pos = stream.Position;

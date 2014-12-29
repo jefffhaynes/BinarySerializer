@@ -15,27 +15,27 @@ namespace BinarySerialization
         private const Endianness DefaultEndianness = Endianness.Little;
 
         public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
-        new Dictionary<Type, SerializedType>
-                {
-                    {typeof (bool), SerializedType.Int1},
-                    {typeof (sbyte), SerializedType.Int1},
-                    {typeof (byte), SerializedType.UInt1},
-                    {typeof (char), SerializedType.UInt2},
-                    {typeof (short), SerializedType.Int2},
-                    {typeof (ushort), SerializedType.UInt2},
-                    {typeof (int), SerializedType.Int4},
-                    {typeof (uint), SerializedType.UInt4},
-                    {typeof (long), SerializedType.Int8},
-                    {typeof (ulong), SerializedType.UInt8},
-                    {typeof (float), SerializedType.Float4},
-                    {typeof (double), SerializedType.Float8},
-                    {typeof (string), SerializedType.NullTerminatedString},
-                    {typeof (byte[]), SerializedType.ByteArray}
-                };
+            new Dictionary<Type, SerializedType>
+            {
+                {typeof (bool), SerializedType.Int1},
+                {typeof (sbyte), SerializedType.Int1},
+                {typeof (byte), SerializedType.UInt1},
+                {typeof (char), SerializedType.UInt2},
+                {typeof (short), SerializedType.Int2},
+                {typeof (ushort), SerializedType.UInt2},
+                {typeof (int), SerializedType.Int4},
+                {typeof (uint), SerializedType.UInt4},
+                {typeof (long), SerializedType.Int8},
+                {typeof (ulong), SerializedType.UInt8},
+                {typeof (float), SerializedType.Float4},
+                {typeof (double), SerializedType.Float8},
+                {typeof (string), SerializedType.NullTerminatedString},
+                {typeof (byte[]), SerializedType.ByteArray}
+            };
 
         private readonly Type _type;
 
-        private readonly Lazy<List<Node>> _lazyChildren; 
+        private readonly Lazy<List<Node>> _lazyChildren;
         private readonly Lazy<List<Binding>> _lazyBindings;
 
 
@@ -52,10 +52,29 @@ namespace BinarySerialization
         private readonly IntegerBinding _fieldOffsetBinding;
         private readonly IntegerBinding _itemLengthBinding;
         private readonly ObjectBinding _subtypeBinding;
+        private readonly ObjectBinding _serializeUntilBinding;
         private readonly ObjectBinding _itemSerializeUntilBinding;
         private readonly ConditionalAttributeEvaluator _whenEvaluator;
-            
 
+        /// <summary>
+        /// Occurrs after a member has been serialized.
+        /// </summary>
+        public event EventHandler<MemberSerializedEventArgs> MemberSerialized;
+
+        /// <summary>
+        /// Occurrs after a member has been deserialized.
+        /// </summary>
+        public event EventHandler<MemberSerializedEventArgs> MemberDeserialized;
+
+        /// <summary>
+        /// Occurrs before a member has been serialized.
+        /// </summary>
+        public event EventHandler<MemberSerializingEventArgs> MemberSerializing;
+
+        /// <summary>
+        /// Occurrs before a member has been deserialized.
+        /// </summary>
+        public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 
         protected Node(Node parent)
         {
@@ -111,15 +130,15 @@ namespace BinarySerialization
                 _serializedType = serializeAsAttribute.SerializedType;
                 _endianness = serializeAsAttribute.Endianness;
 
-                if(!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
-                _encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
+                if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
+                    _encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
 
                 _order = serializeAsAttribute.Order;
             }
 
             var ignoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
             _ignore = ignoreAttribute != null;
-            
+
             var fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
             if (fieldLengthAttribute != null)
                 _fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, () => MeasureNodeOverride());
@@ -154,39 +173,47 @@ namespace BinarySerialization
                         {
                             /* Try to fall back on base types */
                             matchingSubtypes =
-                                SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType)).ToList();
+                                SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType))
+                                    .ToList();
 
                             if (!matchingSubtypes.Any())
                                 throw new BindingException("No matching subtype.");
                         }
 
-                        if(matchingSubtypes.Count() > 1)
+                        if (matchingSubtypes.Count() > 1)
                             throw new BindingException("Subtypes must have unique types.");
 
                         return matchingSubtypes.Single().Value;
                     })).ToList();
 
-                var subtypeBindingSourceGroups = subtypeBindings.GroupBy(subtypeBinding => subtypeBinding.Source);
+                //var subtypeBindingSourceGroups = subtypeBindings.GroupBy(subtypeBinding => subtypeBinding.GetSource());
 
-                if(subtypeBindingSourceGroups.Count() > 1)
-                    throw new BindingException("Subtypes must all bind to a single source.");
+                //if (subtypeBindingSourceGroups.Count() > 1)
+                //    throw new BindingException("Subtypes must all bind to a single source.");
 
                 var subtypePathGroups = SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Path);
 
-                if(subtypePathGroups.Count() > 1)
+                if (subtypePathGroups.Count() > 1)
                     throw new BindingException("Subtypes must all bind to the same path.");
 
                 _subtypeBinding = subtypeBindings.First();
             }
 
-            //node.SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
+            SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
+            if (SerializeUntilAttribute != null)
+            {
+                _serializeUntilBinding = new ObjectBinding(this, SerializeUntilAttribute,
+                    () => { throw new NotSupportedException("Binding for this attribute not currently supported."); });
+            }
+
             ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
 
             ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
 
             if (ItemSerializeUntilAttribute != null)
             {
-                _itemSerializeUntilBinding = new ObjectBinding(this, ItemSerializeUntilAttribute, GetLastItemValueOverride);
+                _itemSerializeUntilBinding = new ObjectBinding(this, ItemSerializeUntilAttribute,
+                    GetLastItemValueOverride);
             }
         }
 
@@ -232,30 +259,64 @@ namespace BinarySerialization
 
         public virtual object Value { get; set; }
 
-        public virtual object BoundValue { get { return Value; } }
+        public virtual object BoundValue
+        {
+            get { return Value; }
+        }
 
-        public List<Node> Children { get { return _lazyChildren.Value; } }
+        public IEnumerable<Node> Children
+        {
+            get { return _lazyChildren.Value; }
+        }
 
-        public List<Binding> Bindings { get { return _lazyBindings.Value; } }
+        public List<Binding> Bindings
+        {
+            get { return _lazyBindings.Value; }
+        }
+
+        public IEnumerable<Node> Descendants
+        {
+            get { return _lazyChildren.Value.SelectMany(child => child.Descendants); }
+        }
+
+        protected void AddChild(Node child)
+        {
+            _lazyChildren.Value.Add(child);
+        }
+
+        protected void AddChildren(IEnumerable<Node> children)
+        {
+            _lazyChildren.Value.AddRange(children);
+        }
+
+        protected void ClearChildren()
+        {
+            foreach (var child in Children)
+                child.Unbind();
+
+            _lazyChildren.Value.Clear();
+        }
+
+        protected int ChildCount { get { return _lazyChildren.Value.Count; } }
 
         public void Bind()
         {
-            if(FieldLengthBinding != null)
+            if (FieldLengthBinding != null)
                 FieldLengthBinding.Bind();
 
-            if(FieldCountBinding != null)
+            if (FieldCountBinding != null)
                 FieldCountBinding.Bind();
 
-            if(FieldOffsetBinding != null)
+            if (FieldOffsetBinding != null)
                 FieldOffsetBinding.Bind();
-            
-            if(ItemLengthBinding != null)
+
+            if (ItemLengthBinding != null)
                 ItemLengthBinding.Bind();
-            
-            if(SubtypeBinding != null)
+
+            if (SubtypeBinding != null)
                 SubtypeBinding.Bind();
 
-            foreach(var child in Children)
+            foreach (var child in Children)
                 child.Bind();
         }
 
@@ -279,21 +340,41 @@ namespace BinarySerialization
 
         public ItemLengthAttribute ItemLengthAttribute { get; private set; }
 
-        public IntegerBinding FieldLengthBinding { get { return _fieldLengthBinding; } }
+        public IntegerBinding FieldLengthBinding
+        {
+            get { return _fieldLengthBinding; }
+        }
 
-        public IntegerBinding FieldCountBinding { get { return _fieldCountBinding; } }
+        public IntegerBinding FieldCountBinding
+        {
+            get { return _fieldCountBinding; }
+        }
 
-        public IntegerBinding FieldOffsetBinding { get { return _fieldOffsetBinding; } }
+        public IntegerBinding FieldOffsetBinding
+        {
+            get { return _fieldOffsetBinding; }
+        }
 
-        public IntegerBinding ItemLengthBinding { get { return _itemLengthBinding; } }
+        public IntegerBinding ItemLengthBinding
+        {
+            get { return _itemLengthBinding; }
+        }
 
-        public ObjectBinding SubtypeBinding { get { return _subtypeBinding; } }
+        public ObjectBinding SubtypeBinding
+        {
+            get { return _subtypeBinding; }
+        }
 
-        public ObjectBinding ItemSerializeUntilBinding { get { return _itemSerializeUntilBinding; } }
+        public ObjectBinding ItemSerializeUntilBinding
+        {
+            get { return _itemSerializeUntilBinding; }
+        }
 
-        public SerializeUntilAttribute SerializeUntilAttribute { get; set; }
-        public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; set; }
-        public SubtypeAttribute[] SubtypeAttributes { get; set; }
+        public SerializeUntilAttribute SerializeUntilAttribute { get; private set; }
+
+        public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; private set; }
+
+        public SubtypeAttribute[] SubtypeAttributes { get; private set; }
 
         public SerializedType GetSerializedType(Type referenceType = null)
         {
@@ -418,7 +499,7 @@ namespace BinarySerialization
                     throw new NotImplementedException();
             }
 
-            if(source == null)
+            if (source == null)
                 throw new BindingException(string.Format("No ancestor found."));
 
             /* Get various members along path */
@@ -465,6 +546,38 @@ namespace BinarySerialization
             }
 
             return null;
+        }
+
+        public BinarySerializationContext CreateSerializationContext()
+        {
+            if(Parent == null)
+                return new BinarySerializationContext(null, null, null);
+
+            return new BinarySerializationContext(Parent.Value, Parent.Type, Parent.CreateSerializationContext());
+        }
+
+        protected void OnMemberSerialized(string memberName, object value, BinarySerializationContext context)
+        {
+            if (MemberSerialized != null)
+                MemberSerialized(this, new MemberSerializedEventArgs(memberName, value, context));
+        }
+
+        protected void OnMemberDeserialized(string memberName, object value, BinarySerializationContext context)
+        {
+            if (MemberDeserialized != null)
+                MemberDeserialized(this, new MemberSerializedEventArgs(memberName, value, context));
+        }
+
+        protected void OnMemberSerializing(string memberName, BinarySerializationContext context)
+        {
+            if (MemberSerializing != null)
+                MemberSerializing(this, new MemberSerializingEventArgs(memberName, context));
+        }
+
+        protected void OnMemberDeserializing(string memberName, BinarySerializationContext context)
+        {
+            if (MemberDeserializing != null)
+                MemberDeserializing(this, new MemberSerializingEventArgs(memberName, context));
         }
 
         public override string ToString()

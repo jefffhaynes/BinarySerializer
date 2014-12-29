@@ -47,20 +47,30 @@ namespace BinarySerialization
     /// </code>
     /// </example>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=false)]
-    public sealed class SerializeUntilAttribute : Attribute
+    public sealed class SerializeUntilAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SerializeUntilAttribute"/> class with a terminating value.
+        /// Initializes a new instance of the <see cref="SerializeUntilAttribute"/> class with a terminating constValue.
         /// </summary>
-        /// <param name="value"></param>
-        public SerializeUntilAttribute(object value)
+        /// <param name="constValue"></param>
+        public SerializeUntilAttribute(object constValue)
         {
-            Value = value;
+            ConstValue = constValue;
         }
 		
         /// <summary>
-        /// The terminating value.
+        /// The terminating constValue.
         /// </summary>
-        public object Value { get; set; }
+        public object ConstValue { get; set; }
+
+        internal override bool IsConstSupported
+        {
+            get { return true; }
+        }
+
+        public object GetConstValue()
+        {
+            return ConstValue;
+        }
     }
 }

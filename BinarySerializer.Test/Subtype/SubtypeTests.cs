@@ -28,7 +28,7 @@ namespace BinarySerializer.Test.Subtype
         }
 
         [TestMethod]
-        [ExpectedException(typeof(BindingException))]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void MissingSubtypeTest()
         {
             var expected = new IncompleteSubtypeClass { Field = new SubclassB() };

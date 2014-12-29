@@ -40,7 +40,7 @@ namespace BinarySerialization
                     {
 
                         var extraChildren = Enumerable.Repeat(CreateChildValue(),
-                            count - Children.Count);
+                            count - ChildCount);
 
                         foreach (var extraChild in extraChildren)
                             list.Add(extraChild);
@@ -54,7 +54,7 @@ namespace BinarySerialization
                     return child;
                 });
 
-                Children.AddRange(children);
+                AddChildren(children);
             }
         }
 

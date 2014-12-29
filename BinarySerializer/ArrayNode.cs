@@ -18,7 +18,7 @@ namespace BinarySerialization
         {
             get
             {
-                var array = Array.CreateInstance(LazyChildType.Value, Children.Count);
+                var array = Array.CreateInstance(LazyChildType.Value, ChildCount);
                 var childValues = Children.Select(child => child.Value).ToArray();
                 Array.Copy(childValues, array, childValues.Length);
                 return array;
@@ -44,7 +44,7 @@ namespace BinarySerialization
                     return child;
                 });
 
-                Children.AddRange(children);
+                AddChildren(children);
             }
         }
 

@@ -40,7 +40,7 @@ namespace BinarySerialization
         /// </summary>
         /// <param name="itemValuePath">The path to the member within the item to be used as a
         /// termination condition.</param>
-        /// <param name="value">The value to use in the termination comparison.</param>
+        /// <param name="constValue">The value to use in the termination comparison.</param>
         public ItemSerializeUntilAttribute(string itemValuePath, object constValue)
         {
             ItemValuePath = itemValuePath;

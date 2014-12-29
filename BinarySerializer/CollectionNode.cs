@@ -21,7 +21,7 @@ namespace BinarySerialization
 
         protected override long CountNodeOverride()
         {
-            return Children.Count;
+            return ChildCount;
         }
 
         protected override object GetLastItemValueOverride()
@@ -41,9 +41,7 @@ namespace BinarySerialization
             if (FieldLengthBinding != null)
                 stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);
 
-            Unbind();
-            Children.Clear();
-            Bind();
+            ClearChildren();
 
             var count = FieldCountBinding != null ? FieldCountBinding.Value : ulong.MaxValue;
             for (ulong i = 0; i < count; i++)
@@ -51,6 +49,7 @@ namespace BinarySerialization
                 if (ShouldTerminate(stream))
                     break;
 
+                // TODO why am I generating the same type information over and over?
                 var child = GenerateChild(LazyChildType.Value);
 
                 child.Bind();
@@ -71,13 +70,13 @@ namespace BinarySerialization
                     {
                         if (!ItemSerializeUntilAttribute.ExcludeLastItem)
                         {
-                            Children.Add(child);
+                            AddChild(child);
                         }
                         break;
                     }
                 }
 
-                Children.Add(child);
+                AddChild(child);
             }
         }
 

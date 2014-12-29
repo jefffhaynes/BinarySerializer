@@ -7,13 +7,17 @@ namespace BinarySerialization
         private readonly IValueConverter _valueConverter;
         private readonly object _converterParameter;
         private readonly Func<object> _targetEvaluator;
+        private readonly Node _targetNode;
+        private readonly BindingInfo _bindingInfo;
 
         protected Binding(Node targetNode, IBindableFieldAttribute attribute, Func<object> targetEvaluator = null)
         {
             if (string.IsNullOrEmpty(attribute.Path))
                 return;
 
-            Source = targetNode.GetBindingSource(attribute.Binding);
+            ///// TODO Crap.  Can't bind to to source here because the source could change in object node subtypes.
+            _targetNode = targetNode;
+            _bindingInfo = attribute.Binding;
 
             if (attribute.ConverterType != null)
             {
@@ -32,33 +36,43 @@ namespace BinarySerialization
             _targetEvaluator = targetEvaluator;
         }
 
-        public Node Source { get; private set; }
+        public Node GetSource()
+        {
+            if (_bindingInfo == null)
+                return null;
+
+            return _targetNode.GetBindingSource(_bindingInfo);
+        }
 
         public void Bind()
         {
-            if (Source != null && _targetEvaluator != null)
+            var source = GetSource();
+
+            if (source != null && _targetEvaluator != null)
             {
-                if(!Source.Bindings.Contains(this))
-                    Source.Bindings.Add(this);
+                if (!source.Bindings.Contains(this))
+                    source.Bindings.Add(this);
             }
         }
 
         public void Unbind()
         {
-            if (Source != null)
+            var source = GetSource();
+
+            if (source != null)
             {
-                Source.Bindings.Remove(this);
+                source.Bindings.Remove(this);
             }
         }
 
         protected object GetValue()
         {
-            return Convert(Source.Value);
+            return Convert(GetSource().Value);
         }
 
         protected object GetBoundValue()
         {
-            return Convert(Source.BoundValue);
+            return Convert(GetSource().BoundValue);
         }
 
         public object GetTargetValue()

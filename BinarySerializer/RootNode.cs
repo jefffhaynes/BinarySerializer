@@ -10,7 +10,7 @@ namespace BinarySerialization
         public RootNode(Type type) : base(null, type)
         {
             var child = GenerateChild(type);
-            Children.Add(child);
+            AddChild(child);
             _child = child;
         }
 
