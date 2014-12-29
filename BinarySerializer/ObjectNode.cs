@@ -36,9 +36,19 @@ namespace BinarySerialization
         {
             get
             {
-                Type type = SubtypeBinding != null && SubtypeBinding.Value != null
-                    ? SubtypeAttributes.Single(attribute => attribute.Value.Equals(SubtypeBinding.Value)).Subtype
-                    : Type;
+                Type type;
+                if (SubtypeBinding != null && SubtypeBinding.Value != null)
+                {
+                    var matchingAttribute =
+                        SubtypeAttributes.SingleOrDefault(attribute => attribute.Value.Equals(SubtypeBinding.Value));
+
+                    /* If we can't find a match, default our value to null */
+                    if (matchingAttribute == null)
+                        return null;
+
+                    type = matchingAttribute.Subtype;
+                }
+                else type = Type;
 
                 var value = Activator.CreateInstance(type);
 
