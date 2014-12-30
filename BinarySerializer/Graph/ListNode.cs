@@ -2,9 +2,8 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
-using System.ServiceModel.Security;
 
-namespace BinarySerialization
+namespace BinarySerialization.Graph
 {
     internal class ListNode : CollectionNode
     {

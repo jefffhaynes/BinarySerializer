@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace BinarySerialization
+namespace BinarySerialization.Graph
 {
     internal class ArrayNode : CollectionNode
     {

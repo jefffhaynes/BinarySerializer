@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace BinarySerialization
+namespace BinarySerialization.Graph
 {
     internal class RootNode : ContainerNode
     {

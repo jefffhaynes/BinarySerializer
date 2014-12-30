@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace BinarySerialization
+namespace BinarySerialization.Graph
 {
     internal class StreamNode : Node
     {

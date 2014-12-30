@@ -41,31 +41,30 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayNode.cs" />
+    <Compile Include="Graph\ArrayNode.cs" />
     <Compile Include="BinarySerializer.cs" />
     <Compile Include="BindingException.cs" />
     <Compile Include="Bytes.cs" />
-    <Compile Include="CollectionNode.cs" />
+    <Compile Include="Graph\CollectionNode.cs" />
     <Compile Include="ConditionalBinding.cs" />
-    <Compile Include="ContainerNode.cs" />
+    <Compile Include="Graph\ContainerNode.cs" />
     <Compile Include="EnumMemberSerializationInfo.cs" />
     <Compile Include="EnumerableExtensionMethods.cs" />
     <Compile Include="Binding.cs" />
-    <Compile Include="EnumNode.cs" />
+    <Compile Include="Graph\EnumNode.cs" />
     <Compile Include="IConstAttribute.cs" />
     <Compile Include="ILengthAttribute.cs" />
     <Compile Include="ObjectBinding.cs" />
     <Compile Include="IntegerBinding.cs" />
-    <Compile Include="ListNode.cs" />
+    <Compile Include="Graph\ListNode.cs" />
     <Compile Include="MemberSerializingEventArgs.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="NodeFactory.cs" />
+    <Compile Include="Graph\Node.cs" />
     <Compile Include="NullStream.cs" />
-    <Compile Include="ObjectNode.cs" />
-    <Compile Include="RootNode.cs" />
+    <Compile Include="Graph\ObjectNode.cs" />
+    <Compile Include="Graph\RootNode.cs" />
     <Compile Include="StreamKeeper.cs" />
     <Compile Include="StreamLimiter.cs" />
-    <Compile Include="StreamNode.cs" />
+    <Compile Include="Graph\StreamNode.cs" />
     <Compile Include="StreamResetter.cs" />
     <Compile Include="SubtypeAttribute.cs" />
     <Compile Include="SerializeUntilAttribute.cs" />
@@ -96,7 +95,7 @@
     <Compile Include="FieldBindingBaseAttribute.cs" />
     <Compile Include="IBindableFieldAttribute.cs" />
     <Compile Include="Streamlet.cs" />
-    <Compile Include="ValueNode.cs" />
+    <Compile Include="Graph\ValueNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget\BinarySerializer.dll.nuspec" />

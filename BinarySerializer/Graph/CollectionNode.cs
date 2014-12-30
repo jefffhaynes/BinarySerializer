@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace BinarySerialization
+namespace BinarySerialization.Graph
 {
     internal abstract class CollectionNode : ContainerNode
     {

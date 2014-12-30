@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace BinarySerialization
+namespace BinarySerialization.Graph
 {
     internal abstract class Node
     {
