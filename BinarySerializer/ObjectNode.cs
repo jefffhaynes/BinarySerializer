@@ -109,6 +109,22 @@ namespace BinarySerialization
             }
         }
 
+        //public override object BoundValue
+        //{
+        //    get
+        //    {
+        //        if (ValueType == null)
+        //            return null;
+
+        //        var value = Activator.CreateInstance(ValueType);
+
+        //        foreach (var child in Children)
+        //            child.ValueSetter(value, child.BoundValue);
+
+        //        return value;
+        //    }
+        //}
+
         private IEnumerable<Node> GetSerializableChildren()
         {
             return Children.Where(child => child.ShouldSerialize);

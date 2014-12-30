@@ -562,10 +562,10 @@ namespace BinarySerialization
 
         public BinarySerializationContext CreateSerializationContext()
         {
-            if(Parent == null)
+            if (Parent == null)
                 return new BinarySerializationContext(null, null, null);
 
-            return new BinarySerializationContext(Parent.Value, Parent.Type, Parent.CreateSerializationContext());
+            return new BinarySerializationContext(null, Parent.Type, Parent.CreateSerializationContext());
         }
 
         private void AddEvents(Node child)

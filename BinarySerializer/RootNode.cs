@@ -20,6 +20,11 @@ namespace BinarySerialization
             set { _child.Value = value; }
         }
 
+        public override object BoundValue
+        {
+            get { return _child.BoundValue; }
+        }
+
         public override void SerializeOverride(Stream stream)
         {
             _child.Serialize(stream);
