@@ -116,14 +116,14 @@ namespace BinarySerializer.Test
                 Assert.AreEqual(1, cereal2.ArrayOfInts[0]);
                 Assert.AreEqual(2, cereal2.ArrayOfInts[1]);
                 Assert.AreEqual(3, cereal2.ArrayOfInts[2]);
-                Assert.AreEqual(cereal.Outlier, cereal2.Outlier);
+                Assert.AreEqual(cereal.NutritionalInformation.WeirdOutlierLengthedField.Length/2.0, cereal2.Outlier);
 
                 Assert.IsTrue(cereal.ExplicitlyTerminatedList.SequenceEqual(cereal2.ExplicitlyTerminatedList));
                 Assert.IsTrue(cereal.ImplicitlyTerminatedList.SequenceEqual(cereal2.ImplicitlyTerminatedList));
 
-                string weirdOutlierLengthedField = cereal.NutritionalInformation.WeirdOutlierLengthedField;
-                Assert.AreEqual(weirdOutlierLengthedField.Substring(0, (int)cereal.Outlier*2),
-                                cereal2.NutritionalInformation.WeirdOutlierLengthedField);
+                //string weirdOutlierLengthedField = cereal.NutritionalInformation.WeirdOutlierLengthedField;
+                //Assert.AreEqual(weirdOutlierLengthedField.Substring(0, (int)cereal.Outlier*2),
+                //                cereal2.NutritionalInformation.WeirdOutlierLengthedField);
 
                 var reader = new StreamReader(cereal2.Disclaimer);
                 Assert.AreEqual(Disclaimer, reader.ReadToEnd());

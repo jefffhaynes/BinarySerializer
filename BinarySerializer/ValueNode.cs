@@ -196,8 +196,6 @@ namespace BinarySerialization
                     if (FieldLengthBinding == null)
                         throw new InvalidOperationException("No length specified on byte array.");
 
-                    // TODO StreamLimiter
-                    
                     value = reader.ReadBytes((int) FieldLengthBinding.Value);
                     break;
                 }
@@ -264,6 +262,11 @@ namespace BinarySerialization
             byte b;
             while ((b = reader.ReadByte()) != 0)
                 yield return b;
+        }
+
+        public override string ToString()
+        {
+            return Name == null ? Value.ToString() : string.Format("{0}: {1}", Name, Value);
         }
     }
 }

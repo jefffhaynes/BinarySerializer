@@ -5,7 +5,7 @@ namespace BinarySerialization
 {
     internal class StreamResetter : IDisposable
     {
-        private readonly long? _position;
+        private long? _position;
         private readonly Stream _stream;
 
         public StreamResetter(Stream stream, bool resetOnDispose = true)
@@ -20,10 +20,17 @@ namespace BinarySerialization
             _position = _stream.Position;
         }
 
+        public void CancelReset()
+        {
+            _position = null;
+        }
+
         public void Dispose()
         {
-            if (_position != null)
-                _stream.Position = (long)_position;
+            if (_position == null)
+                return;
+
+            _stream.Position = (long)_position;
         }
     }
 }

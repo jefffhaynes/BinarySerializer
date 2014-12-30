@@ -118,6 +118,8 @@
     <Compile Include="UntilItem\UntilItemClass.cs" />
     <Compile Include="UntilItem\UntilItemContainer.cs" />
     <Compile Include="UntilItem\UntilItemTests.cs" />
+    <Compile Include="Until\UntilTestClass.cs" />
+    <Compile Include="Until\UntilTests.cs" />
     <Compile Include="When\WhenTestClass.cs" />
     <Compile Include="When\WhenTests.cs" />
     <Compile Include="Zinc.cs" />
@@ -128,9 +130,7 @@
       <Name>BinarySerializer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Until\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -17,7 +17,7 @@ namespace BinarySerializer.Test
 
         public ushort OtherStuffCount { get; set; }
 
-        [FieldOffset(1000)]
+        [FieldOffset(10000)]
         public double Outlier { get; set; }
 
         public NutritionalInformation NutritionalInformation { get; set; }
@@ -44,7 +44,7 @@ namespace BinarySerializer.Test
         [SerializeUntil((byte)0)]
         public List<string> ExplicitlyTerminatedList { get; set; }
 
-        [FieldLength(12)]
+        [FieldLength(9)]
         public List<CerealShape> ImplicitlyTerminatedList { get; set; }
 
         [FieldCount(3)]

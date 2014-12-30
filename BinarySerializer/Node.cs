@@ -616,7 +616,7 @@ namespace BinarySerialization
         {
             if (Name != null)
                 return Name;
-
+            
             return base.ToString();
         }
     }
