@@ -8,7 +8,7 @@ namespace BinarySerialization
 {
     internal class ObjectNode : ContainerNode
     {
-        private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public;
+        private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
         private readonly Dictionary<Type, List<Node>> _typeChildren = new Dictionary<Type, List<Node>>();
 
@@ -40,14 +40,15 @@ namespace BinarySerialization
             }
         }
 
-        public ObjectNode(Type type) : this(null, type)
-        {
-        }
-
         public ObjectNode(Node parent, Type type) : base(parent, type)
         {
             GenerateChildren(type);
             ValueType = type;
+        }
+
+        public ObjectNode(Type type)
+            : this(null, type)
+        {
         }
 
         public ObjectNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
@@ -73,19 +74,6 @@ namespace BinarySerialization
         {
             get
             {
-                //if (SubtypeBinding != null && SubtypeBinding.Value != null)
-                //{
-                //    var matchingAttribute =
-                //        SubtypeAttributes.SingleOrDefault(attribute => attribute.Value.Equals(SubtypeBinding.Value));
-
-                //    /* If we can't find a match, default our value to null */
-                //    if (matchingAttribute == null)
-                //        return null;
-
-                //    ValueType = matchingAttribute.Subtype;
-                //}
-                //else ValueType = Type;
-
                 var valueType = ResolveValueType();
                 if (valueType == null)
                     return null;
@@ -115,22 +103,6 @@ namespace BinarySerialization
             }
         }
 
-        //public override object BoundValue
-        //{
-        //    get
-        //    {
-        //        if (ValueType == null)
-        //            return null;
-
-        //        var value = Activator.CreateInstance(ValueType);
-
-        //        foreach (var child in Children)
-        //            child.ValueSetter(value, child.BoundValue);
-
-        //        return value;
-        //    }
-        //}
-
         private IEnumerable<Node> GetSerializableChildren()
         {
             return Children.Where(child => child.ShouldSerialize);
@@ -138,12 +110,6 @@ namespace BinarySerialization
 
         public override void SerializeOverride(Stream stream)
         {
-            var valueType = ResolveValueType();
-            if (valueType == null)
-                return;
-
-            ValueType = valueType;
-
             var serializableChildren = GetSerializableChildren();
 
             var serializationContext = CreateSerializationContext();
@@ -163,6 +129,15 @@ namespace BinarySerialization
 
         public override void DeserializeOverride(StreamLimiter stream)
         {
+            var valueType = ResolveValueType();
+            if (valueType == null)
+                return;
+
+            ValueType = valueType;
+
+            foreach (var child in Children)
+                child.Value = null;
+
             var serializableChildren = GetSerializableChildren();
 
             if (FieldLengthBinding != null)
@@ -185,12 +160,13 @@ namespace BinarySerialization
 
         private void GenerateChildren(Type type)
         {
+            //var members = type.GetMembers(MemberBindingFlags);
             IEnumerable<MemberInfo> properties = type.GetProperties(MemberBindingFlags);
-            IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);
-            IEnumerable<MemberInfo> all = properties.Union(fields);
+            //IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);
+            //IEnumerable<MemberInfo> all = properties.Union(fields);
 
             /* Because binding happens during construction, we have to check ordering here */
-            var orderedMembers = all.Select(member =>
+            var orderedMembers = properties.Select(member =>
             {
                 var serializeAsAttribute = member.GetAttribute<SerializeAsAttribute>();
                 var order = serializeAsAttribute != null ? serializeAsAttribute.Order : 0;

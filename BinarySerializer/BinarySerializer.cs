@@ -5,47 +5,59 @@ using System.IO;
 namespace BinarySerialization
 {
     /// <summary>
-    /// Declaratively serializes and deserializes an object, or a graph of connected objects, in binary format.
-    /// <seealso cref="IgnoreAttribute"/>
-    /// <seealso cref="SerializeAsAttribute"/>
-    /// <seealso cref="SerializeAsEnumAttribute"/>
-    /// <seealso cref="FieldOffsetAttribute"/>
-    /// <seealso cref="FieldLengthAttribute"/>
-    /// <seealso cref="FieldCountAttribute"/>
-    /// <seealso cref="SubtypeAttribute"/>
-    /// <seealso cref="SerializeWhenAttribute"/>
-    /// <seealso cref="SerializeUntilAttribute"/>
-    /// <seealso cref="ItemLengthAttribute"/>
-    /// <seealso cref="ItemSerializeUntilAttribute"/>
-    /// <seealso cref="IBinarySerializable"/>
+    ///     Declaratively serializes and deserializes an object, or a graph of connected objects, in binary format.
+    ///     <seealso cref="IgnoreAttribute" />
+    ///     <seealso cref="SerializeAsAttribute" />
+    ///     <seealso cref="SerializeAsEnumAttribute" />
+    ///     <seealso cref="FieldOffsetAttribute" />
+    ///     <seealso cref="FieldLengthAttribute" />
+    ///     <seealso cref="FieldCountAttribute" />
+    ///     <seealso cref="SubtypeAttribute" />
+    ///     <seealso cref="SerializeWhenAttribute" />
+    ///     <seealso cref="SerializeUntilAttribute" />
+    ///     <seealso cref="ItemLengthAttribute" />
+    ///     <seealso cref="ItemSerializeUntilAttribute" />
+    ///     <seealso cref="IBinarySerializable" />
     /// </summary>
     public class BinarySerializer
     {
         private readonly Dictionary<Type, Node> _graphCache = new Dictionary<Type, Node>();
- 
-        /// <summary>
-        /// The default <see cref="Endianness"/> to use during serialization or deserialization.
-        /// This property can be updated dynamically during serialization or deserialization.
-        /// </summary>
-        public Endianness Endianness { get; set; }
+        private Endianness _endianness;
 
         /// <summary>
-        /// Occurrs after a member has been serialized.
+        ///     The default <see cref="Endianness" /> to use during serialization or deserialization.
+        ///     This property can be updated dynamically during serialization or deserialization.
+        /// </summary>
+        public Endianness Endianness
+        {
+            get { return _endianness; }
+
+            set
+            {
+                _endianness = value;
+
+                foreach (Node graph in _graphCache.Values)
+                    graph.Endianness = _endianness;
+            }
+        }
+
+        /// <summary>
+        ///     Occurrs after a member has been serialized.
         /// </summary>
         public event EventHandler<MemberSerializedEventArgs> MemberSerialized;
 
         /// <summary>
-        /// Occurrs after a member has been deserialized.
+        ///     Occurrs after a member has been deserialized.
         /// </summary>
         public event EventHandler<MemberSerializedEventArgs> MemberDeserialized;
 
         /// <summary>
-        /// Occurrs before a member has been serialized.
+        ///     Occurrs before a member has been serialized.
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberSerializing;
 
         /// <summary>
-        /// Occurrs before a member has been deserialized.
+        ///     Occurrs before a member has been deserialized.
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 
@@ -59,15 +71,16 @@ namespace BinarySerialization
                 graph.Bind();
                 graph.MemberSerializing += OnMemberSerializing;
                 graph.MemberSerialized += OnMemberSerialized;
-                graph.MemberSerializing += OnMemberDeserializing;
-                graph.MemberSerialized += OnMemberDeserialized;
+                graph.MemberDeserializing += OnMemberDeserializing;
+                graph.MemberDeserialized += OnMemberDeserialized;
                 _graphCache.Add(valueType, graph);
             }
 
             return graph;
         }
+
         /// <summary>
-        /// Serializes the object, or graph of objects with the specified top (root), to the given stream.
+        ///     Serializes the object, or graph of objects with the specified top (root), to the given stream.
         /// </summary>
         /// <param name="stream">The stream to which the graph is to be serialized.</param>
         /// <param name="value">The object at the root of the graph to serialize.</param>
@@ -88,7 +101,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Calculates the serialized length of the object.
+        ///     Calculates the serialized length of the object.
         /// </summary>
         /// <param name="o">The object.</param>
         /// <returns>The length of the specified object graph when serialized.</returns>
@@ -98,9 +111,9 @@ namespace BinarySerialization
             Serialize(nullStream, o);
             return nullStream.Length;
         }
-        
+
         /// <summary>
-        /// Deserializes the specified stream into an object graph.
+        ///     Deserializes the specified stream into an object graph.
         /// </summary>
         /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
@@ -108,23 +121,23 @@ namespace BinarySerialization
         /// <param name="formatProvider">An optional formatter.</param>
         /// <returns>The deserialized object graph.</returns>
         public T Deserialize<T>(Stream stream, BinarySerializationContext context = null,
-                                IFormatProvider formatProvider = null) 
+            IFormatProvider formatProvider = null)
         {
-            Node graph = GetGraph(typeof(T));
+            Node graph = GetGraph(typeof (T));
 
             graph.Deserialize(new StreamLimiter(stream));
 
-            return (T)graph.Value;
+            return (T) graph.Value;
         }
 
         /// <summary>
-        /// Deserializes the specified stream into an object graph.
+        ///     Deserializes the specified stream into an object graph.
         /// </summary>
         /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="data">The byte array from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(byte[] data, BinarySerializationContext context = null) 
+        public T Deserialize<T>(byte[] data, BinarySerializationContext context = null)
         {
             return Deserialize<T>(new MemoryStream(data), context);
         }
@@ -132,28 +145,28 @@ namespace BinarySerialization
 
         private void OnMemberSerialized(object sender, MemberSerializedEventArgs e)
         {
-            var handler = MemberSerialized;
+            EventHandler<MemberSerializedEventArgs> handler = MemberSerialized;
             if (handler != null)
                 handler(sender, e);
         }
 
         private void OnMemberDeserialized(object sender, MemberSerializedEventArgs e)
         {
-            var handler = MemberDeserialized;
+            EventHandler<MemberSerializedEventArgs> handler = MemberDeserialized;
             if (handler != null)
                 handler(sender, e);
         }
 
         private void OnMemberSerializing(object sender, MemberSerializingEventArgs e)
         {
-            var handler = MemberSerializing;
+            EventHandler<MemberSerializingEventArgs> handler = MemberSerializing;
             if (handler != null)
                 handler(sender, e);
         }
 
         private void OnMemberDeserializing(object sender, MemberSerializingEventArgs e)
         {
-            var handler = MemberDeserializing;
+            EventHandler<MemberSerializingEventArgs> handler = MemberDeserializing;
             if (handler != null)
                 handler(sender, e);
         }

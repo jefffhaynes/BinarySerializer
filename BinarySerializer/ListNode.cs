@@ -32,6 +32,9 @@ namespace BinarySerialization
             {
                 ClearChildren();
 
+                if (value == null)
+                    return;
+
                 var list = (IList) value;
 
                 if (FieldCountBinding != null && FieldCountBinding.IsConst)

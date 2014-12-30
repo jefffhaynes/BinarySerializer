@@ -44,5 +44,7 @@ namespace BinarySerialization
         {
             DeserializeOverride(stream);
         }
+
+        public override Endianness Endianness { get; set; }
     }
 }

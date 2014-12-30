@@ -412,8 +412,10 @@ namespace BinarySerialization
             return SerializedType.Default;
         }
 
-        public Endianness Endianness
+        public virtual Endianness Endianness
         {
+            set { throw new NotSupportedException(); }
+
             get
             {
                 if (_endianness != null && _endianness.Value != Endianness.Inherit)
