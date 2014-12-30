@@ -17,11 +17,6 @@ namespace BinarySerialization
         {
         }
 
-        public override object BoundValue
-        {
-            get { throw new BindingException("Cannot bind to a stream."); }
-        }
-
         protected override long MeasureNodeOverride()
         {
             var valueStream = (Stream) Value;
