@@ -26,6 +26,8 @@ namespace BinarySerialization
 
             set
             {
+                ClearChildren();
+
                 var array = (Array)value;
 
                 if (FieldCountBinding != null && FieldCountBinding.IsConst)

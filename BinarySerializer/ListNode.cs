@@ -30,6 +30,8 @@ namespace BinarySerialization
 
             set
             {
+                ClearChildren();
+
                 var list = (IList) value;
 
                 if (FieldCountBinding != null && FieldCountBinding.IsConst)
@@ -38,7 +40,6 @@ namespace BinarySerialization
                     var count = (int)FieldCountBinding.Value;
                     if (list.Count < count)
                     {
-
                         var extraChildren = Enumerable.Repeat(CreateChildValue(),
                             count - ChildCount);
 
