@@ -189,11 +189,12 @@ namespace BinarySerializer.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentNullException))]
-        public void NullGraphSerializationShouldThrowNullArgumentException()
+        public void NullGraphSerializationShouldSerializeNothing()
         {
             var serializer = new BinarySerialization.BinarySerializer();
-            serializer.Serialize(new MemoryStream(), null);
+            var stream = new MemoryStream();
+            serializer.Serialize(stream, null);
+            Assert.AreEqual(0, stream.Length);
         }
 
 //        [TestMethod]

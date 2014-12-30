@@ -1,5 +1,4 @@
 ﻿using System;
-using BinarySerialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerializer.Test.Subtype
@@ -10,7 +9,7 @@ namespace BinarySerializer.Test.Subtype
         [TestMethod]
         public void SubtypeTest()
         {
-            var expected = new SubtypeClass {Field = new SubclassB()};
+            var expected = new SubtypeClass {Field = new SubclassB{SomethingForClassB = 33}};
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(SubclassType.B, actual.Subtype);

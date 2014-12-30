@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerializer.Test
@@ -8,6 +9,11 @@ namespace BinarySerializer.Test
         private static readonly BinarySerialization.BinarySerializer Serializer = new BinarySerialization.BinarySerializer();
 
         protected static readonly string[] TestSequence = { "a", "b", "c" };
+
+        static TestBase()
+        {
+            Serializer.MemberDeserialized += (sender, args) => Console.WriteLine(args.MemberName + ": " + args.Value);
+        }
 
         private T Roundtrip<T>(T o, out long length)
         {

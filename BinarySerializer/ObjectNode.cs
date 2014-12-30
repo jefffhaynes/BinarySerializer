@@ -73,18 +73,24 @@ namespace BinarySerialization
         {
             get
             {
-                if (SubtypeBinding != null && SubtypeBinding.Value != null)
-                {
-                    var matchingAttribute =
-                        SubtypeAttributes.SingleOrDefault(attribute => attribute.Value.Equals(SubtypeBinding.Value));
+                //if (SubtypeBinding != null && SubtypeBinding.Value != null)
+                //{
+                //    var matchingAttribute =
+                //        SubtypeAttributes.SingleOrDefault(attribute => attribute.Value.Equals(SubtypeBinding.Value));
 
-                    /* If we can't find a match, default our value to null */
-                    if (matchingAttribute == null)
-                        return null;
+                //    /* If we can't find a match, default our value to null */
+                //    if (matchingAttribute == null)
+                //        return null;
 
-                    ValueType = matchingAttribute.Subtype;
-                }
-                else ValueType = Type;
+                //    ValueType = matchingAttribute.Subtype;
+                //}
+                //else ValueType = Type;
+
+                var valueType = ResolveValueType();
+                if (valueType == null)
+                    return null;
+
+                ValueType = valueType;
 
                 var value = Activator.CreateInstance(ValueType);
 
@@ -132,11 +138,18 @@ namespace BinarySerialization
 
         public override void SerializeOverride(Stream stream)
         {
+            var valueType = ResolveValueType();
+            if (valueType == null)
+                return;
+
+            ValueType = valueType;
+
             var serializableChildren = GetSerializableChildren();
 
+            var serializationContext = CreateSerializationContext();
             foreach (var child in serializableChildren)
             {
-                OnMemberSerializing(this, new MemberSerializingEventArgs(child.Name, CreateSerializationContext()));
+                OnMemberSerializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
                 using (new StreamResetter(stream, child.FieldOffsetBinding != null))
                 {
                     if (child.FieldOffsetBinding != null)
@@ -144,7 +157,7 @@ namespace BinarySerialization
 
                     child.Serialize(stream);
                 }
-                OnMemberSerialized(this, new MemberSerializedEventArgs(child.Name, child.BoundValue, CreateSerializationContext()));
+                OnMemberSerialized(this, new MemberSerializedEventArgs(child.Name, child.BoundValue, serializationContext));
             }
         }
 
@@ -155,9 +168,10 @@ namespace BinarySerialization
             if (FieldLengthBinding != null)
                 stream = new StreamLimiter(stream, (long) FieldLengthBinding.Value);
 
+            var serializationContext = CreateSerializationContext();
             foreach (var child in serializableChildren.TakeWhile(child => !ShouldTerminate(stream)))
             {
-                OnMemberDeserializing(this, new MemberSerializingEventArgs(child.Name, CreateSerializationContext()));
+                OnMemberDeserializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
                 using (new StreamResetter(stream, child.FieldOffsetBinding != null))
                 {
                     if (child.FieldOffsetBinding != null)
@@ -165,7 +179,7 @@ namespace BinarySerialization
 
                     child.Deserialize(stream);
                 }
-                OnMemberDeserialized(this, new MemberSerializedEventArgs(child.Name, child.Value, CreateSerializationContext()));
+                OnMemberDeserialized(this, new MemberSerializedEventArgs(child.Name, child.Value, serializationContext));
             }
         }
 
@@ -186,6 +200,18 @@ namespace BinarySerialization
             var children = orderedMembers.Select(GenerateChild).ToList();
 
             _typeChildren.Add(type, children);
+        }
+
+        private Type ResolveValueType()
+        {
+            if (SubtypeBinding == null || SubtypeBinding.Value == null)
+                return Type;
+
+            var matchingAttribute =
+                SubtypeAttributes.SingleOrDefault(attribute => attribute.Value.Equals(SubtypeBinding.Value));
+
+            /* If we can't find a match, default our value to null */
+            return matchingAttribute == null ? null : matchingAttribute.Subtype;
         }
 
         protected override Type GetValueTypeOverride()
