@@ -76,6 +76,8 @@ namespace BinarySerialization
 
                 AddChild(child);
             }
+
+            Bind();
         }
 
         protected abstract Type GetChildType(Type collectionType);

@@ -54,7 +54,7 @@ namespace BinarySerialization
         private readonly ObjectBinding _subtypeBinding;
         private readonly ObjectBinding _serializeUntilBinding;
         private readonly ObjectBinding _itemSerializeUntilBinding;
-        private readonly ConditionalAttributeEvaluator _whenEvaluator;
+        private readonly ConditionalBinding[] _whenBindings;
 
         /// <summary>
         /// Occurrs after a member has been serialized.
@@ -153,7 +153,11 @@ namespace BinarySerialization
 
             var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
             if (serializeWhenAttributes.Length > 0)
-                _whenEvaluator = new ConditionalAttributeEvaluator(this, serializeWhenAttributes);
+            {
+                _whenBindings =
+                    serializeWhenAttributes.Select(
+                    attribute => new ConditionalBinding(this, attribute, null)).ToArray();
+            }
 
             SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
             if (SubtypeAttributes.Length != 0)
@@ -270,15 +274,9 @@ namespace BinarySerialization
             get { return _lazyBindings.Value; }
         }
 
-        public IEnumerable<Node> Descendants
-        {
-            get { return _lazyChildren.Value.SelectMany(child => child.Descendants); }
-        }
-
         protected void AddChild(Node child)
         {
             _lazyChildren.Value.Add(child);
-            child.Bind();
             AddEvents(child);
         }
 
@@ -301,7 +299,7 @@ namespace BinarySerialization
 
         protected int ChildCount { get { return _lazyChildren.Value.Count; } }
 
-        private void Bind()
+        public void Bind()
         {
             if (FieldLengthBinding != null)
                 FieldLengthBinding.Bind();
@@ -318,11 +316,17 @@ namespace BinarySerialization
             if (SubtypeBinding != null)
                 SubtypeBinding.Bind();
 
+            if(_whenBindings != null)
+            {
+                foreach (var conditionalBinding in _whenBindings)
+                    conditionalBinding.Bind();
+            }
+
             foreach (var child in Children)
                 child.Bind();
         }
 
-        private void Unbind()
+        public void Unbind()
         {
             if (FieldLengthBinding != null)
                 FieldLengthBinding.Unbind();
@@ -338,6 +342,12 @@ namespace BinarySerialization
 
             if (SubtypeBinding != null)
                 SubtypeBinding.Unbind();
+
+            if (_whenBindings != null)
+            {
+                foreach (var conditionalBinding in _whenBindings)
+                    conditionalBinding.Unbind();
+            }
         }
 
         public ItemLengthAttribute ItemLengthAttribute { get; private set; }
@@ -436,7 +446,7 @@ namespace BinarySerialization
                 if (_ignore)
                     return false;
 
-                return _whenEvaluator == null || _whenEvaluator.Value;
+                return _whenBindings == null || _whenBindings.Any(binding => binding.Value);
             }
         }
 
@@ -574,28 +584,28 @@ namespace BinarySerialization
             child.MemberDeserialized -= MemberDeserialized;
         }
 
-        protected void OnMemberSerialized(string memberName, object value, BinarySerializationContext context)
+        protected void OnMemberSerialized()
         {
             if (MemberSerialized != null)
-                MemberSerialized(this, new MemberSerializedEventArgs(memberName, value, context));
+                MemberSerialized(this, new MemberSerializedEventArgs(Name, Value, CreateSerializationContext()));
         }
 
-        protected void OnMemberDeserialized(string memberName, object value, BinarySerializationContext context)
+        protected void OnMemberDeserialized()
         {
             if (MemberDeserialized != null)
-                MemberDeserialized(this, new MemberSerializedEventArgs(memberName, value, context));
+                MemberDeserialized(this, new MemberSerializedEventArgs(Name, Value, CreateSerializationContext()));
         }
 
-        protected void OnMemberSerializing(string memberName, BinarySerializationContext context)
+        protected void OnMemberSerializing()
         {
             if (MemberSerializing != null)
-                MemberSerializing(this, new MemberSerializingEventArgs(memberName, context));
+                MemberSerializing(this, new MemberSerializingEventArgs(Name, CreateSerializationContext()));
         }
 
-        protected void OnMemberDeserializing(string memberName, BinarySerializationContext context)
+        protected void OnMemberDeserializing()
         {
             if (MemberDeserializing != null)
-                MemberDeserializing(this, new MemberSerializingEventArgs(memberName, context));
+                MemberDeserializing(this, new MemberSerializingEventArgs(Name, CreateSerializationContext()));
         }
 
         public override string ToString()

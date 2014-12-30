@@ -15,7 +15,6 @@ namespace BinarySerialization
             if (string.IsNullOrEmpty(attribute.Path))
                 return;
 
-            ///// TODO Crap.  Can't bind to to source here because the source could change in object node subtypes.
             _targetNode = targetNode;
             _bindingInfo = attribute.Binding;
 

@@ -73,7 +73,6 @@ namespace BinarySerialization
         {
             get
             {
-                //Type type;
                 if (SubtypeBinding != null && SubtypeBinding.Value != null)
                 {
                     var matchingAttribute =
@@ -88,9 +87,6 @@ namespace BinarySerialization
                 else ValueType = Type;
 
                 var value = Activator.CreateInstance(ValueType);
-
-                //ClearChildren();
-                //AddChildren(TypeChildren[ValueType]);
 
                 foreach (var child in Children)
                     child.ValueSetter(value, child.Value);
@@ -124,6 +120,7 @@ namespace BinarySerialization
 
             foreach (var child in serializableChildren)
             {
+                OnMemberSerializing();
                 using (new StreamResetter(stream, child.FieldOffsetBinding != null))
                 {
                     if (child.FieldOffsetBinding != null)
@@ -131,6 +128,7 @@ namespace BinarySerialization
 
                     child.Serialize(stream);
                 }
+                OnMemberSerialized();
             }
         }
 
@@ -143,6 +141,7 @@ namespace BinarySerialization
 
             foreach (var child in serializableChildren.TakeWhile(child => !ShouldTerminate(stream)))
             {
+                OnMemberDeserializing();
                 using (new StreamResetter(stream, child.FieldOffsetBinding != null))
                 {
                     if (child.FieldOffsetBinding != null)
@@ -150,6 +149,7 @@ namespace BinarySerialization
 
                     child.Deserialize(stream);
                 }
+                OnMemberDeserialized();
             }
         }
 

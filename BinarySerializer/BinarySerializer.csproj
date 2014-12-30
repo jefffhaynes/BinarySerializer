@@ -46,7 +46,7 @@
     <Compile Include="BindingException.cs" />
     <Compile Include="Bytes.cs" />
     <Compile Include="CollectionNode.cs" />
-    <Compile Include="ConditionalAttributeEvaluator.cs" />
+    <Compile Include="ConditionalBinding.cs" />
     <Compile Include="ContainerNode.cs" />
     <Compile Include="EnumMemberSerializationInfo.cs" />
     <Compile Include="EnumerableExtensionMethods.cs" />

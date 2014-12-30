@@ -118,6 +118,8 @@
     <Compile Include="UntilItem\UntilItemClass.cs" />
     <Compile Include="UntilItem\UntilItemContainer.cs" />
     <Compile Include="UntilItem\UntilItemTests.cs" />
+    <Compile Include="When\WhenTestClass.cs" />
+    <Compile Include="When\WhenTests.cs" />
     <Compile Include="Zinc.cs" />
   </ItemGroup>
   <ItemGroup>
