@@ -10,11 +10,11 @@ namespace BinarySerializer.Test.Misc
         {
             var container = new NullTrailingMemberClassContainer();
 
-            Roundtrip(container, 12);
+            Roundtrip(container, 8);
 
             container.Inner.OptionalParameter = 5;
 
-            Roundtrip(container, 13);
+            Roundtrip(container, 9);
         }
     }
 }
