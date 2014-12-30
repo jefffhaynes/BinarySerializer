@@ -120,7 +120,7 @@ namespace BinarySerialization
 
             foreach (var child in serializableChildren)
             {
-                OnMemberSerializing();
+                OnMemberSerializing(this, new MemberSerializingEventArgs(child.Name, CreateSerializationContext()));
                 using (new StreamResetter(stream, child.FieldOffsetBinding != null))
                 {
                     if (child.FieldOffsetBinding != null)
@@ -128,7 +128,7 @@ namespace BinarySerialization
 
                     child.Serialize(stream);
                 }
-                OnMemberSerialized();
+                OnMemberSerialized(this, new MemberSerializedEventArgs(child.Name, child.BoundValue, CreateSerializationContext()));
             }
         }
 
@@ -141,7 +141,7 @@ namespace BinarySerialization
 
             foreach (var child in serializableChildren.TakeWhile(child => !ShouldTerminate(stream)))
             {
-                OnMemberDeserializing();
+                OnMemberDeserializing(this, new MemberSerializingEventArgs(child.Name, CreateSerializationContext()));
                 using (new StreamResetter(stream, child.FieldOffsetBinding != null))
                 {
                     if (child.FieldOffsetBinding != null)
@@ -149,7 +149,7 @@ namespace BinarySerialization
 
                     child.Deserialize(stream);
                 }
-                OnMemberDeserialized();
+                OnMemberDeserialized(this, new MemberSerializedEventArgs(child.Name, child.Value, CreateSerializationContext()));
             }
         }
 

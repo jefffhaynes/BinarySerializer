@@ -570,42 +570,46 @@ namespace BinarySerialization
 
         private void AddEvents(Node child)
         {
-            child.MemberSerializing += MemberSerializing;
-            child.MemberSerialized += MemberSerialized;
-            child.MemberDeserializing += MemberDeserializing;
-            child.MemberDeserialized += MemberDeserialized;
+            child.MemberSerializing += OnMemberSerializing;
+            child.MemberSerialized += OnMemberSerialized;
+            child.MemberDeserializing += OnMemberDeserializing;
+            child.MemberDeserialized += OnMemberDeserialized;
         }
 
         private void RemoveEvents(Node child)
         {
-            child.MemberSerializing -= MemberSerializing;
-            child.MemberSerialized -= MemberSerialized;
-            child.MemberDeserializing -= MemberDeserializing;
-            child.MemberDeserialized -= MemberDeserialized;
+            child.MemberSerializing -= OnMemberSerializing;
+            child.MemberSerialized -= OnMemberSerialized;
+            child.MemberDeserializing -= OnMemberDeserializing;
+            child.MemberDeserialized -= OnMemberDeserialized;
         }
 
-        protected void OnMemberSerialized()
+        protected void OnMemberSerialized(object sender, MemberSerializedEventArgs e)
         {
-            if (MemberSerialized != null)
-                MemberSerialized(this, new MemberSerializedEventArgs(Name, Value, CreateSerializationContext()));
+            var handler = MemberSerialized;
+            if (handler != null)
+                handler(sender, e);
         }
 
-        protected void OnMemberDeserialized()
+        protected void OnMemberDeserialized(object sender, MemberSerializedEventArgs e)
         {
-            if (MemberDeserialized != null)
-                MemberDeserialized(this, new MemberSerializedEventArgs(Name, Value, CreateSerializationContext()));
+            var handler = MemberDeserialized;
+            if (handler != null)
+                handler(sender, e);
         }
 
-        protected void OnMemberSerializing()
+        protected void OnMemberSerializing(object sender, MemberSerializingEventArgs e)
         {
-            if (MemberSerializing != null)
-                MemberSerializing(this, new MemberSerializingEventArgs(Name, CreateSerializationContext()));
+            var handler = MemberSerializing;
+            if (handler != null)
+                handler(sender, e);
         }
 
-        protected void OnMemberDeserializing()
+        protected void OnMemberDeserializing(object sender, MemberSerializingEventArgs e)
         {
-            if (MemberDeserializing != null)
-                MemberDeserializing(this, new MemberSerializingEventArgs(Name, CreateSerializationContext()));
+            var handler = MemberDeserializing;
+            if (handler != null)
+                handler(sender, e);
         }
 
         public override string ToString()

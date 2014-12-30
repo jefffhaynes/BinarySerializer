@@ -98,6 +98,9 @@ namespace BinarySerialization
 #if NEW
             // TODO ONCE!
             var root = new RootNode(graphType);
+            root.MemberSerializing += OnMemberSerializing;
+            root.MemberSerialized += OnMemberSerialized;
+            
             root.Bind();
             root.Value = graph;
             root.Serialize(stream);
@@ -188,7 +191,7 @@ namespace BinarySerialization
             if (!IsSerializable(memberSerializationInfo, member, ctx))
                 return;
 
-            OnMemberSerializing(memberSerializationInfo.Member.Name, ctx);
+            //OnMemberSerializing(memberSerializationInfo.Member.Name, ctx);
 
             var originalPosition = InvalidFieldOffset;
             FieldOffsetAttribute fieldOffsetAttribute = memberSerializationInfo.FieldOffsetAttribute;
@@ -208,7 +211,7 @@ namespace BinarySerialization
             if (fieldOffsetAttribute != null)
                 stream.Position = originalPosition;
 
-            OnMemberSerialized(memberSerializationInfo.Member.Name, value, ctx);
+            //OnMemberSerialized(memberSerializationInfo.Member.Name, value, ctx);
         }
 
         private void WriteValue(Stream stream, MemberSerializationInfo memberSerializationInfo, object o,
@@ -505,6 +508,8 @@ namespace BinarySerialization
 #if NEW
             // TODO ONCE!
             var root = new RootNode(graphType);
+            root.MemberDeserializing += OnMemberDeserializing;
+            root.MemberDeserialized += OnMemberDeserialized;
             root.Bind();
             root.Deserialize(new StreamLimiter(stream));
             return (T) root.Value;
@@ -599,7 +604,7 @@ namespace BinarySerialization
             if (!IsSerializable(memberSerializationInfo, member, ctx))
                 return;
 
-            OnMemberDeserializing(memberSerializationInfo.Member.Name, ctx);
+            //OnMemberDeserializing(memberSerializationInfo.Member.Name, ctx);
 
             long originalPosition = InvalidFieldOffset;
             FieldOffsetAttribute fieldOffsetAttribute = memberSerializationInfo.FieldOffsetAttribute;
@@ -660,7 +665,7 @@ namespace BinarySerialization
                 object value = ReadValue(stream, valueType, serializedType, encoding, length, endianness, ctx);
 
                 memberSerializationInfo.Member.SetValue(member, value);
-                OnMemberDeserialized(memberSerializationInfo.Member.Name, value, ctx);
+                //OnMemberDeserialized(memberSerializationInfo.Member.Name, value, ctx);
             }
 
             /* If we got here via a field offset, restore to original position */
@@ -1143,28 +1148,32 @@ namespace BinarySerialization
             return s.TrimEnd('\0');
         }
 
-        private void OnMemberSerialized(string memberName, object value, BinarySerializationContext context)
+        private void OnMemberSerialized(object sender, MemberSerializedEventArgs e)
         {
-            if (MemberSerialized != null)
-                MemberSerialized(this, new MemberSerializedEventArgs(memberName, value, context));
+            var handler = MemberSerialized;
+            if (handler != null)
+                handler(sender, e);
         }
 
-        private void OnMemberDeserialized(string memberName, object value, BinarySerializationContext context)
+        private void OnMemberDeserialized(object sender, MemberSerializedEventArgs e)
         {
-            if (MemberDeserialized != null)
-                MemberDeserialized(this, new MemberSerializedEventArgs(memberName, value, context));
+            var handler = MemberDeserialized;
+            if (handler != null)
+                handler(sender, e);
         }
 
-        private void OnMemberSerializing(string memberName, BinarySerializationContext context)
+        private void OnMemberSerializing(object sender, MemberSerializingEventArgs e)
         {
-            if(MemberSerializing != null)
-                MemberSerializing(this, new MemberSerializingEventArgs(memberName, context));
+            var handler = MemberSerializing;
+            if (handler != null)
+                handler(sender, e);
         }
 
-        private void OnMemberDeserializing(string memberName, BinarySerializationContext context)
+        private void OnMemberDeserializing(object sender, MemberSerializingEventArgs e)
         {
-            if(MemberDeserializing != null)
-                MemberDeserializing(this, new MemberSerializingEventArgs(memberName, context));
+            var handler = MemberDeserializing;
+            if (handler != null)
+                handler(sender, e);
         }
     }
 }
