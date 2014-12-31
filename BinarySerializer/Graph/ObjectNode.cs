@@ -80,7 +80,7 @@ namespace BinarySerialization.Graph
 
                 var value = Activator.CreateInstance(ValueType);
 
-                foreach (var child in Children)
+                foreach (var child in Children.Where(child => !child.Ignore))
                     child.ValueSetter(value, child.Value);
 
                 return value;
