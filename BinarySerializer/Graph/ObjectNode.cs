@@ -23,7 +23,7 @@ namespace BinarySerialization.Graph
                 if (_valueType != value)
                 {
                     ClearChildren();
-                    if (value != null)
+                    if (value != null && !Ignore)
                     {
                         List<Node> children;
                         if (!_typeChildren.TryGetValue(value, out children))
@@ -42,7 +42,6 @@ namespace BinarySerialization.Graph
 
         public ObjectNode(Node parent, Type type) : base(parent, type)
         {
-            GenerateChildren(type);
             ValueType = type;
         }
 
@@ -57,7 +56,6 @@ namespace BinarySerialization.Graph
                 return;
 
             var type = GetMemberType(memberInfo);
-            GenerateChildren(type);
 
             ValueType = type;
 

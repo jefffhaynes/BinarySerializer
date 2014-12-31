@@ -440,6 +440,8 @@ namespace BinarySerialization.Graph
             get { return _order ?? 0; }
         }
 
+        public bool Ignore { get { return _ignore; } }
+
         public bool ShouldSerialize
         {
             get
