@@ -8,11 +8,7 @@ namespace BinarySerialization.Graph
 {
     internal class EnumNode : ValueNode
     {
-        private SerializedType _serializedType = SerializedType.Default;
-        private IDictionary<Enum, string> _enumValues;
-        private IDictionary<string, Enum> _valueEnums; 
-        private Type _underlyingType;
-        private int? _enumValueLength;
+        private static readonly IDictionary<Type, EnumInfo> EnumTypeInfo = new Dictionary<Type, EnumInfo>();
 
         public EnumNode(Node parent, Type type) : base(parent, type)
         {
@@ -26,31 +22,35 @@ namespace BinarySerialization.Graph
 
         public override void SerializeOverride(Stream stream)
         {
-            var value = _enumValues != null ? _enumValues[(Enum)BoundValue] : BoundValue;
-            Serialize(stream, value, _serializedType, _enumValueLength);
+            EnumInfo enumInfo = EnumTypeInfo[Type];
+            var value = enumInfo.EnumValues != null ? enumInfo.EnumValues[(Enum)BoundValue] : BoundValue;
+            Serialize(stream, value, enumInfo.SerializedType, enumInfo.EnumValueLength);
         }
 
         public override void DeserializeOverride(StreamLimiter stream)
         {
-            var value = Deserialize(stream, _serializedType, _enumValueLength);
+            EnumInfo enumInfo = EnumTypeInfo[Type];
+            var value = Deserialize(stream, enumInfo.SerializedType, enumInfo.EnumValueLength);
 
-            if (_valueEnums != null)
+            if (enumInfo.ValueEnums != null)
             {
-                value = _valueEnums[(string)value];
+                value = enumInfo.ValueEnums[(string) value];
             }
 
             Func<object, object> converter;
-            var underlyingValue = TypeConverters.TryGetValue(_underlyingType, out converter) ? converter(value) : value;
+            var underlyingValue = TypeConverters.TryGetValue(enumInfo.UnderlyingType, out converter)
+                ? converter(value)
+                : value;
+
             Value = Enum.ToObject(Type, underlyingValue);
         }
 
         private void InitializeEnumValues()
         {
-            var serializedType = GetSerializedType();
-
-            if (serializedType != SerializedType.Default && serializedType != SerializedType.LengthPrefixedString &&
-                serializedType != SerializedType.NullTerminatedString && serializedType != SerializedType.SizedString)
+            if (EnumTypeInfo.ContainsKey(Type))
                 return;
+
+            var serializedType = GetSerializedType();
 
             var values = Enum.GetValues(Type).Cast<Enum>();
 
@@ -63,22 +63,28 @@ namespace BinarySerialization.Graph
                     false).FirstOrDefault();
             });
 
+            var enumInfo = new EnumInfo();
+
             /* If any are specified, build dictionary of them one time */
             if (enumAttributes.Any(enumAttribute => enumAttribute.Value != null))
             {
-                _enumValues = enumAttributes.ToDictionary(enumAttribute => enumAttribute.Key,
+                enumInfo.EnumValues = enumAttributes.ToDictionary(enumAttribute => enumAttribute.Key,
                     enumAttribute =>
                     {
                         var attribute = enumAttribute.Value;
-                        return attribute != null && attribute.Value != null ? attribute.Value : enumAttribute.Key.ToString();
+                        return attribute != null && attribute.Value != null
+                            ? attribute.Value
+                            : enumAttribute.Key.ToString();
                     });
 
-                _valueEnums = _enumValues.ToDictionary(enumValue => enumValue.Value, enumValue => enumValue.Key);
+                enumInfo.ValueEnums = enumInfo.EnumValues.ToDictionary(enumValue => enumValue.Value,
+                    enumValue => enumValue.Key);
 
                 var lengthGroups =
-                    _enumValues.Where(enumValue => enumValue.Value != null)
+                    enumInfo.EnumValues.Where(enumValue => enumValue.Value != null)
                         .Select(enumValue => enumValue.Value)
                         .GroupBy(value => value.Length).ToList();
+
 
                 /* If the type isn't specified, let's try to guess it smartly */
                 if (serializedType == SerializedType.Default)
@@ -86,32 +92,34 @@ namespace BinarySerialization.Graph
                     /* If everything is the same length, assume fixed length */
                     if (lengthGroups.Count == 1)
                     {
-                        _serializedType = SerializedType.SizedString;
-                        _enumValueLength = lengthGroups[0].Key;
+                        enumInfo.SerializedType = SerializedType.SizedString;
+                        enumInfo.EnumValueLength = lengthGroups[0].Key;
                     }
-                    else _serializedType = SerializedType.NullTerminatedString;
+                    else enumInfo.SerializedType = SerializedType.NullTerminatedString;
                 }
                 else if (serializedType == SerializedType.SizedString)
                 {
                     /* If fixed size is specified, get max length in order to accomodate all values */
-                    _enumValueLength = lengthGroups[0].Max(lengthGroup => lengthGroup.Length);
+                    enumInfo.EnumValueLength = lengthGroups[0].Max(lengthGroup => lengthGroup.Length);
                 }
             }
 
             /* If a field length is specified to be less than the max enum value length, we can't reliably recover the enum
              * values on deserialization. */
-            if (_enumValueLength != null && FieldLengthBinding != null && FieldLengthBinding.IsConst)
+            if (enumInfo.EnumValueLength != null && FieldLengthBinding != null && FieldLengthBinding.IsConst)
             {
-                if ((int)FieldLengthBinding.Value < _enumValueLength.Value)
+                if ((int) FieldLengthBinding.Value < enumInfo.EnumValueLength.Value)
                     throw new InvalidOperationException("Field length cannot be less than max enum name length.");
             }
 
-            _underlyingType = Enum.GetUnderlyingType(Type);
+            enumInfo.UnderlyingType = Enum.GetUnderlyingType(Type);
 
-            if (_serializedType == SerializedType.Default)
+            if (enumInfo.SerializedType == SerializedType.Default)
             {
-                _serializedType = GetSerializedType(_underlyingType);
+                enumInfo.SerializedType = GetSerializedType(enumInfo.UnderlyingType);
             }
+
+            EnumTypeInfo.Add(Type, enumInfo);
         }
     }
 }

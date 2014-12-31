@@ -49,6 +49,7 @@
     <Compile Include="ConditionalBinding.cs" />
     <Compile Include="Graph\ContainerNode.cs" />
     <Compile Include="Binding.cs" />
+    <Compile Include="Graph\EnumInfo.cs" />
     <Compile Include="Graph\EnumNode.cs" />
     <Compile Include="IConstAttribute.cs" />
     <Compile Include="ILengthAttribute.cs" />
