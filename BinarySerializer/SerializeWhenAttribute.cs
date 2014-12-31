@@ -22,10 +22,5 @@ namespace BinarySerialization
         /// The value to be used in determining if the condition is true.
         /// </summary>
         public object Value { get; set; }
-
-        internal override bool IsConstSupported
-        {
-            get { return false; }
-        }
     }
 }

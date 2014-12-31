@@ -60,11 +60,6 @@ namespace BinarySerialization
         /// </summary>
         public bool ExcludeLastItem { get; set; }
 
-        internal override bool IsConstSupported
-        {
-            get { return false; }
-        }
-
         public object GetConstValue()
         {
             return ConstValue;

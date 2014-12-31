@@ -63,11 +63,6 @@ namespace BinarySerialization
         /// </summary>
         public object ConstValue { get; set; }
 
-        internal override bool IsConstSupported
-        {
-            get { return true; }
-        }
-
         public object GetConstValue()
         {
             return ConstValue;

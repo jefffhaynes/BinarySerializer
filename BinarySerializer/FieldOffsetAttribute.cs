@@ -37,11 +37,6 @@ namespace BinarySerialization
         /// </summary>
         public ulong ConstOffset { get; set; }
 
-        internal override bool IsConstSupported
-        {
-            get { return true; }
-        }
-
         public object GetConstValue()
         {
             return ConstOffset;

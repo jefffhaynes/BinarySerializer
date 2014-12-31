@@ -30,10 +30,5 @@ namespace BinarySerialization
         /// The subtype.
         /// </summary>
         public Type Subtype { get; private set; }
-
-        internal override bool IsConstSupported
-        {
-            get { return false; }
-        }
     }
 }

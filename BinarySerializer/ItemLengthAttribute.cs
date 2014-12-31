@@ -31,11 +31,6 @@ namespace BinarySerialization
         /// </summary>
         public ulong ConstLength { get; set; }
 
-        internal override bool IsConstSupported
-        {
-            get { return true; }
-        }
-
         public object GetConstValue()
         {
             return ConstLength;

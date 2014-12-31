@@ -76,7 +76,6 @@
     <Compile Include="DoubleOutlierConverter.cs" />
     <Compile Include="Enums\BaseTypeEnumClass.cs" />
     <Compile Include="Enums\BaseTypeEnumValues.cs" />
-    <Compile Include="Enums\EnumTests.cs" />
     <Compile Include="Enums\IncompleteEnumClass.cs" />
     <Compile Include="Enums\IncompleteEnumValues.cs" />
     <Compile Include="Enums\NamedEnumClass.cs" />
