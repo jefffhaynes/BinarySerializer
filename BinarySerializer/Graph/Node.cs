@@ -281,13 +281,17 @@ namespace BinarySerialization.Graph
 
         protected void AddChildren(IEnumerable<Node> children)
         {
-            _lazyChildren.Value.AddRange(children);
+            foreach(var child in children)
+                AddChild(child);
         }
 
         protected void ClearChildren()
         {
             foreach (var child in Children)
+            {
                 child.Unbind();
+                RemoveEvents(child);
+            }
 
             _lazyChildren.Value.Clear();
         }

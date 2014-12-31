@@ -97,6 +97,7 @@ namespace BinarySerialization
             Node graph = GetGraph(value.GetType());
 
             graph.Value = value;
+            graph.Bind();
 
             graph.Serialize(stream);
         }
