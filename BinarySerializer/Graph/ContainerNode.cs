@@ -84,17 +84,17 @@ namespace BinarySerialization.Graph
         protected static Type GetMemberType(MemberInfo memberInfo)
         {
             var propertyInfo = memberInfo as PropertyInfo;
-            var fieldInfo = memberInfo as FieldInfo;
+            //var fieldInfo = memberInfo as FieldInfo;
             
             if (propertyInfo != null)
             {
                 return propertyInfo.PropertyType;
             }
 
-            if (fieldInfo != null)
-            {
-                return fieldInfo.FieldType;
-            }
+            //if (fieldInfo != null)
+            //{
+            //    return fieldInfo.FieldType;
+            //}
 
             throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
         }
