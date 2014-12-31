@@ -25,50 +25,27 @@ namespace BinarySerialization
             throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
         }
 
-        public static void SetValue(this MemberInfo memberInfo, object o, object value)
-        {
-            var propertyInfo = memberInfo as PropertyInfo;
-            var fieldInfo = memberInfo as FieldInfo;
+        //public static void SetValue(this MemberInfo memberInfo, object o, object value)
+        //{
+        //    var propertyInfo = memberInfo as PropertyInfo;
+        //    var fieldInfo = memberInfo as FieldInfo;
 
-            if (propertyInfo != null)
-            {
-                var convertedValue = value.ConvertTo(propertyInfo.PropertyType);
-                propertyInfo.SetValue(o, convertedValue, null);
-                return;
-            }
+        //    if (propertyInfo != null)
+        //    {
+        //        var convertedValue = value.ConvertTo(propertyInfo.PropertyType);
+        //        propertyInfo.SetValue(o, convertedValue, null);
+        //        return;
+        //    }
 
-            if (fieldInfo != null)
-            {
-                var convertedValue = value.ConvertTo(fieldInfo.FieldType);
-                fieldInfo.SetValue(o, convertedValue);
-                return;
-            }
+        //    if (fieldInfo != null)
+        //    {
+        //        var convertedValue = value.ConvertTo(fieldInfo.FieldType);
+        //        fieldInfo.SetValue(o, convertedValue);
+        //        return;
+        //    }
 
-            throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
-        }
-
-        public static Type GetMemberType(this MemberInfo memberInfo)
-        {
-            var propertyInfo = memberInfo as PropertyInfo;
-            var fieldInfo = memberInfo as FieldInfo;
-
-            if (propertyInfo != null)
-            {
-                return propertyInfo.PropertyType;
-            }
-
-            if (fieldInfo != null)
-            {
-                return fieldInfo.FieldType;
-            }
-
-            throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
-        }
-
-        public static T GetAttribute<T>(this Type type)
-        {
-            return (T)type.GetCustomAttributes(typeof(T), true).SingleOrDefault();
-        }
+        //    throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
+        //}
 
         public static T GetAttribute<T>(this MemberInfo type)
         {
@@ -78,11 +55,6 @@ namespace BinarySerialization
         public static bool IsList(this Type type)
         {
             return type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IList<>));
-        }
-
-        public static bool IsByteArray(this Type type)
-        {
-            return type == typeof (byte[]);
         }
 
         public static object ConvertTo(this object value, Type valueType)
@@ -134,43 +106,6 @@ namespace BinarySerialization
             return value;
         }
 
-        private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public;
-
-        public static IEnumerable<MemberSerializationInfo> GetMembersSerializationInfo(this Type type)
-        {
-            IEnumerable<MemberInfo> properties = type.GetProperties(MemberBindingFlags);
-            IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);
-
-            IEnumerable<MemberInfo> all = properties.Union(fields);
-
-            IEnumerable<MemberSerializationInfo> membersSerializationInfo =
-                all.Select(m =>
-                {
-                    var attributes = m.GetCustomAttributes(true);
-
-                    // TODO probably a better way to do this
-                    return new MemberSerializationInfo(m,
-                                                       attributes.OfType<SerializeAsAttribute>().SingleOrDefault(),
-                                                       attributes.OfType<IgnoreAttribute>().SingleOrDefault(),
-                                                       attributes.OfType<FieldOffsetAttribute>().SingleOrDefault(),
-                                                       attributes.OfType<FieldLengthAttribute>().SingleOrDefault(),
-                                                       attributes.OfType<FieldCountAttribute>().SingleOrDefault(),
-                                                       attributes.OfType<SerializeWhenAttribute>().ToArray(),
-                                                       attributes.OfType<SerializeUntilAttribute>().SingleOrDefault(),
-                                                       attributes.OfType<ItemLengthAttribute>().SingleOrDefault(),
-                                                       attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault(),
-                                                       attributes.OfType<SubtypeAttribute>().ToArray());
-                });
-
-            var orderedMembers = membersSerializationInfo.OrderBy(info => info, new MemberSerializationInfoComparer()).ToList();
-
-            var lastMember = orderedMembers.LastOrDefault(member => member.IgnoreAttribute == null);
-
-            if (lastMember != null)
-                lastMember.IsLastMember = true;
-
-            return orderedMembers;
-        }
 
         public static IEnumerable<EnumMemberSerializationInfo> GetEnumMembersSerializationInfo(this Type type)
         {
@@ -219,11 +154,5 @@ namespace BinarySerialization
                                                enumAttributePair => (object)enumAttributePair.Key);
         }
 
-        public static IDictionary<object, Enum> GetValuesForSerializedEnum(this Type enumType)
-        {
-            SerializedType serializedType;
-            return enumType.GetEnumSerializedValues(out serializedType).
-                ToDictionary(enumValue => enumValue.Value, enumValue => enumValue.Key);
-        }
     }
 }

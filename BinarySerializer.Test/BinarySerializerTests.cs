@@ -70,7 +70,6 @@ namespace BinarySerializer.Test
         {
             Cereal cereal = Cerealize();
 
-            _serializer = new BinarySerialization.BinarySerializer();
             _serializer.MemberDeserialized += SerializerMemberDeserialized;
             _serializer.MemberSerialized += SerializerMemberSerialized;
 

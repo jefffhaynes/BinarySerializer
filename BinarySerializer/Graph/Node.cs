@@ -106,20 +106,20 @@ namespace BinarySerialization.Graph
             Name = memberInfo.Name;
 
             var propertyInfo = memberInfo as PropertyInfo;
-            var fieldInfo = memberInfo as FieldInfo;
+            //var fieldInfo = memberInfo as FieldInfo;
 
             if (propertyInfo != null)
             {
                 _type = propertyInfo.PropertyType;
                 ValueGetter = declaringValue => propertyInfo.GetValue(declaringValue, null);
-                ValueSetter = propertyInfo.SetValue;
+                ValueSetter = (obj, value) => propertyInfo.SetValue(obj, value, null);
             }
-            else if (fieldInfo != null)
-            {
-                _type = fieldInfo.FieldType;
-                ValueGetter = fieldInfo.GetValue;
-                ValueSetter = fieldInfo.SetValue;
-            }
+            //else if (fieldInfo != null)
+            //{
+            //    _type = fieldInfo.FieldType;
+            //    ValueGetter = fieldInfo.GetValue;
+            //    ValueSetter = fieldInfo.SetValue;
+            //}
             else throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
 
             var attributes = memberInfo.GetCustomAttributes(true);
