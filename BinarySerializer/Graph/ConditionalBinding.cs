@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BinarySerialization;
-using BinarySerialization.Graph;
 
-namespace BinarySerialization
+namespace BinarySerialization.Graph
 {
     internal class ConditionalBinding : Binding
     {

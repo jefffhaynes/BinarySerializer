@@ -4,11 +4,6 @@ namespace BinarySerializer.Test.Subtype
 {
     public class SubtypeClass
     {
-        public SubtypeClass()
-        {
-            SubtypeString = "B";
-        }
-
         public SubclassType Subtype { get; set; }
 
         [Subtype("Subtype", SubclassType.A, typeof(SubclassA))]

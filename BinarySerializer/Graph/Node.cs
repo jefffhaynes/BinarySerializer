@@ -156,7 +156,7 @@ namespace BinarySerialization.Graph
                                     .ToList();
 
                             if (!matchingSubtypes.Any())
-                                throw new BindingException("No matching subtype.");
+                                return null;
                         }
 
                         if (matchingSubtypes.Count() > 1)
@@ -574,7 +574,7 @@ namespace BinarySerialization.Graph
             if (Parent == null)
                 return null;
 
-            return new BinarySerializationContext(null, Parent.Type, Parent.CreateSerializationContext());
+            return new BinarySerializationContext(Parent.Value, Parent.Type, Parent.CreateSerializationContext());
         }
 
         protected void AddEvents(Node child)

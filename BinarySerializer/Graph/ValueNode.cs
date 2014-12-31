@@ -228,7 +228,7 @@ namespace BinarySerialization.Graph
             return value;
         }
 
-        private object ConvertToFieldType(object value)
+        public object ConvertToFieldType(object value)
         {
             if (value == null)
                 return null;

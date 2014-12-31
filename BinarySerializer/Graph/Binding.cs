@@ -1,7 +1,6 @@
 ﻿using System;
-using BinarySerialization.Graph;
 
-namespace BinarySerialization
+namespace BinarySerialization.Graph
 {
     internal abstract class Binding
     {

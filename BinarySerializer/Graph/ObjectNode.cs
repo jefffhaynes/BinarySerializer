@@ -78,6 +78,9 @@ namespace BinarySerialization.Graph
 
                 ValueType = valueType;
 
+                if (ValueType.IsAbstract)
+                    return null;
+
                 var value = Activator.CreateInstance(ValueType);
 
                 foreach (var child in Children.Where(child => !child.Ignore))
@@ -95,6 +98,8 @@ namespace BinarySerialization.Graph
                 }
 
                 ValueType = value.GetType();
+
+                UpdateValueType(ValueType);
 
                 foreach (var child in Children)
                     child.Value = child.ValueGetter(value);
@@ -178,6 +183,33 @@ namespace BinarySerialization.Graph
 
             /* If we can't find a match, default our value to null */
             return matchingAttribute == null ? null : matchingAttribute.Subtype;
+        }
+
+        private void UpdateValueType(Type valueType)
+        {
+            if (SubtypeBinding == null || SubtypeBinding.Value == null)
+                return;
+
+            List<SubtypeAttribute> matchingSubtypes =
+                         SubtypeAttributes.Where(attribute => attribute.Subtype == valueType).ToList();
+
+            if (!matchingSubtypes.Any())
+            {
+                /* Try to fall back on base types */
+                matchingSubtypes =
+                    SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType))
+                        .ToList();
+
+                if (!matchingSubtypes.Any())
+                    throw new BindingException("No matching subtype.");
+            }
+
+            if (matchingSubtypes.Count() > 1)
+                throw new BindingException("Subtypes must have unique types.");
+
+            var value = matchingSubtypes.Single().Value;
+            var source = (ValueNode)SubtypeBinding.GetSource();
+            source.Value = source.ConvertToFieldType(value);
         }
 
         protected override Type GetValueTypeOverride()
