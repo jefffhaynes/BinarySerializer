@@ -545,7 +545,7 @@ namespace BinarySerialization.Graph
                 sourceChild = sourceChild.Children.SingleOrDefault(c => c.Name == name);
 
                 if (sourceChild == null)
-                    throw new BindingException(string.Format("No member found at '{0}'.", path));
+                    throw new BindingException(string.Format("No property found at '{0}'.", path));
             }
 
             return sourceChild;
