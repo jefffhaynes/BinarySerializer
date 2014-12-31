@@ -257,9 +257,13 @@ namespace BinarySerialization.Graph
 
         private static IEnumerable<byte> ReadNullTerminatedString(BinaryReader reader)
         {
+            var buffer = new MemoryStream();
+
             byte b;
             while ((b = reader.ReadByte()) != 0)
-                yield return b;
+                buffer.WriteByte(b);
+
+            return buffer.ToArray();
         }
 
         public override string ToString()
