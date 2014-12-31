@@ -85,7 +85,7 @@ namespace BinarySerialization
             if (_valueConverter == null)
                 return value;
 
-            return _valueConverter.Convert(value, _converterParameter, null);
+            return _valueConverter.Convert(value, _converterParameter, _targetNode.CreateSerializationContext());
         }
 
         public object ConvertBack(object value)
@@ -93,7 +93,7 @@ namespace BinarySerialization
             if (_valueConverter == null)
                 return value;
 
-            return _valueConverter.ConvertBack(value, _converterParameter, null);
+            return _valueConverter.ConvertBack(value, _converterParameter, _targetNode.CreateSerializationContext());
         }
     }
 }

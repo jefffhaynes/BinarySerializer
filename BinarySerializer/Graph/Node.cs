@@ -11,8 +11,8 @@ namespace BinarySerialization.Graph
     {
         private const char PathSeparator = '.';
 
-        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
         private const Endianness DefaultEndianness = Endianness.Little;
+        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
         public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
             new Dictionary<Type, SerializedType>
@@ -33,48 +33,23 @@ namespace BinarySerialization.Graph
                 {typeof (byte[]), SerializedType.ByteArray}
             };
 
-        private readonly Type _type;
-
-        private readonly Lazy<List<Node>> _lazyChildren;
-        private readonly Lazy<List<Binding>> _lazyBindings;
-
-
-        private readonly SerializedType? _serializedType;
-        private readonly Endianness? _endianness;
         private readonly Encoding _encoding;
+        private readonly Endianness? _endianness;
 
-        private readonly int? _order;
-
-        private readonly bool _ignore;
-
-        private readonly IntegerBinding _fieldLengthBinding;
         private readonly IntegerBinding _fieldCountBinding;
+        private readonly IntegerBinding _fieldLengthBinding;
         private readonly IntegerBinding _fieldOffsetBinding;
+        private readonly bool _ignore;
         private readonly IntegerBinding _itemLengthBinding;
-        private readonly ObjectBinding _subtypeBinding;
         //private readonly ObjectBinding _serializeUntilBinding;
         private readonly ObjectBinding _itemSerializeUntilBinding;
+        private readonly Lazy<List<Binding>> _lazyBindings;
+        private readonly Lazy<List<Node>> _lazyChildren;
+        private readonly int? _order;
+        private readonly SerializedType? _serializedType;
+        private readonly ObjectBinding _subtypeBinding;
+        private readonly Type _type;
         private readonly ConditionalBinding[] _whenBindings;
-
-        /// <summary>
-        /// Occurrs after a member has been serialized.
-        /// </summary>
-        public event EventHandler<MemberSerializedEventArgs> MemberSerialized;
-
-        /// <summary>
-        /// Occurrs after a member has been deserialized.
-        /// </summary>
-        public event EventHandler<MemberSerializedEventArgs> MemberDeserialized;
-
-        /// <summary>
-        /// Occurrs before a member has been serialized.
-        /// </summary>
-        public event EventHandler<MemberSerializingEventArgs> MemberSerializing;
-
-        /// <summary>
-        /// Occurrs before a member has been deserialized.
-        /// </summary>
-        public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 
         protected Node(Node parent)
         {
@@ -114,17 +89,17 @@ namespace BinarySerialization.Graph
                 ValueGetter = declaringValue => propertyInfo.GetValue(declaringValue, null);
                 ValueSetter = (obj, value) => propertyInfo.SetValue(obj, value, null);
             }
-            //else if (fieldInfo != null)
-            //{
-            //    _type = fieldInfo.FieldType;
-            //    ValueGetter = fieldInfo.GetValue;
-            //    ValueSetter = fieldInfo.SetValue;
-            //}
+                //else if (fieldInfo != null)
+                //{
+                //    _type = fieldInfo.FieldType;
+                //    ValueGetter = fieldInfo.GetValue;
+                //    ValueSetter = fieldInfo.SetValue;
+                //}
             else throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
 
-            var attributes = memberInfo.GetCustomAttributes(true);
+            object[] attributes = memberInfo.GetCustomAttributes(true);
 
-            var serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
+            SerializeAsAttribute serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
             if (serializeAsAttribute != null)
             {
                 _serializedType = serializeAsAttribute.SerializedType;
@@ -136,41 +111,41 @@ namespace BinarySerialization.Graph
                 _order = serializeAsAttribute.Order;
             }
 
-            var ignoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
+            IgnoreAttribute ignoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
             _ignore = ignoreAttribute != null;
 
-            var fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
+            FieldLengthAttribute fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
             if (fieldLengthAttribute != null)
                 _fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, () => MeasureNodeOverride());
 
-            var fieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
+            FieldCountAttribute fieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
             if (fieldCountAttribute != null)
                 _fieldCountBinding = new IntegerBinding(this, fieldCountAttribute, () => CountNodeOverride());
 
-            var fieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
+            FieldOffsetAttribute fieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
             if (fieldOffsetAttribute != null)
                 _fieldOffsetBinding = new IntegerBinding(this, fieldOffsetAttribute);
 
-            var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
+            SerializeWhenAttribute[] serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
             if (serializeWhenAttributes.Length > 0)
             {
                 _whenBindings =
                     serializeWhenAttributes.Select(
-                    attribute => new ConditionalBinding(this, attribute, null)).ToArray();
+                        attribute => new ConditionalBinding(this, attribute, null)).ToArray();
             }
 
             SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
             if (SubtypeAttributes.Length != 0)
             {
-                var subtypeBindings =
+                List<ObjectBinding> subtypeBindings =
                     SubtypeAttributes.Select(subtypeAttribute => new ObjectBinding(this, SubtypeAttributes[0], () =>
                     {
-                        var valueType = GetValueTypeOverride();
+                        Type valueType = GetValueTypeOverride();
 
                         if (valueType == null)
                             return null;
 
-                        var matchingSubtypes =
+                        List<SubtypeAttribute> matchingSubtypes =
                             SubtypeAttributes.Where(attribute => attribute.Subtype == valueType).ToList();
 
                         if (!matchingSubtypes.Any())
@@ -191,7 +166,8 @@ namespace BinarySerialization.Graph
                     })).ToList();
 
 
-                var bindingGroups = SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
+                IEnumerable<IGrouping<BindingInfo, SubtypeAttribute>> bindingGroups =
+                    SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
 
                 if (bindingGroups.Count() > 1)
                     throw new BindingException("Subtypes must all use the same binding configuration.");
@@ -217,29 +193,6 @@ namespace BinarySerialization.Graph
             }
         }
 
-        protected virtual long MeasureNodeOverride()
-        {
-            var nullStream = new NullStream();
-            var streamKeeper = new StreamKeeper(nullStream);
-            Serialize(streamKeeper);
-            return streamKeeper.RelativePosition;
-        }
-
-        protected virtual long CountNodeOverride()
-        {
-            throw new NotSupportedException();
-        }
-
-        protected virtual Type GetValueTypeOverride()
-        {
-            throw new NotSupportedException();
-        }
-
-        protected virtual object GetLastItemValueOverride()
-        {
-            throw new NotSupportedException();
-        }
-
         protected Node Parent { get; private set; }
 
         public string Name { get; private set; }
@@ -248,7 +201,7 @@ namespace BinarySerialization.Graph
         {
             get
             {
-                var underlyingType = Nullable.GetUnderlyingType(_type);
+                Type underlyingType = Nullable.GetUnderlyingType(_type);
                 return underlyingType ?? _type;
             }
         }
@@ -274,79 +227,9 @@ namespace BinarySerialization.Graph
             get { return _lazyBindings.Value; }
         }
 
-        protected void AddChild(Node child)
+        protected int ChildCount
         {
-            _lazyChildren.Value.Add(child);
-        }
-
-        protected void AddChildren(IEnumerable<Node> children)
-        {
-            foreach(var child in children)
-                AddChild(child);
-        }
-
-        protected void ClearChildren()
-        {
-            foreach (var child in Children)
-            {
-                child.Unbind();
-                RemoveEvents(child);
-            }
-
-            _lazyChildren.Value.Clear();
-        }
-
-        protected int ChildCount { get { return _lazyChildren.Value.Count; } }
-
-        public void Bind()
-        {
-            if (FieldLengthBinding != null)
-                FieldLengthBinding.Bind();
-
-            if (FieldCountBinding != null)
-                FieldCountBinding.Bind();
-
-            if (FieldOffsetBinding != null)
-                FieldOffsetBinding.Bind();
-
-            if (ItemLengthBinding != null)
-                ItemLengthBinding.Bind();
-
-            if (SubtypeBinding != null)
-                SubtypeBinding.Bind();
-
-            if(_whenBindings != null)
-            {
-                foreach (var conditionalBinding in _whenBindings)
-                    conditionalBinding.Bind();
-            }
-
-            foreach (var child in Children)
-                child.Bind();
-        }
-
-        public void Unbind()
-        {
-            if (FieldLengthBinding != null)
-                FieldLengthBinding.Unbind();
-
-            if (FieldCountBinding != null)
-                FieldCountBinding.Unbind();
-
-            if (FieldOffsetBinding != null)
-                FieldOffsetBinding.Unbind();
-
-            if (ItemLengthBinding != null)
-                ItemLengthBinding.Unbind();
-
-            if (SubtypeBinding != null)
-                SubtypeBinding.Unbind();
-
-            if (_whenBindings != null)
-            {
-                foreach (var conditionalBinding in _whenBindings)
-                    conditionalBinding.Unbind();
-            }
+            get { return _lazyChildren.Value.Count; }
         }
 
         public ItemLengthAttribute ItemLengthAttribute { get; private set; }
@@ -387,30 +270,6 @@ namespace BinarySerialization.Graph
 
         public SubtypeAttribute[] SubtypeAttributes { get; private set; }
 
-        public SerializedType GetSerializedType(Type referenceType = null)
-        {
-            if (referenceType == null)
-                referenceType = Type;
-
-            if (_serializedType != null && _serializedType.Value != SerializedType.Default)
-                return _serializedType.Value;
-
-            SerializedType serializedType;
-            if (DefaultSerializedTypes.TryGetValue(referenceType, out serializedType))
-            {
-                /* Special cases */
-                if (serializedType == SerializedType.NullTerminatedString && FieldLengthBinding != null)
-                    serializedType = SerializedType.SizedString;
-
-                if (serializedType == SerializedType.NullTerminatedString && Parent.ItemLengthAttribute != null)
-                    serializedType = SerializedType.SizedString;
-
-                return serializedType;
-            }
-
-            return SerializedType.Default;
-        }
-
         public virtual Endianness Endianness
         {
             set { throw new NotSupportedException(); }
@@ -440,7 +299,10 @@ namespace BinarySerialization.Graph
             get { return _order ?? 0; }
         }
 
-        public bool Ignore { get { return _ignore; } }
+        public bool Ignore
+        {
+            get { return _ignore; }
+        }
 
         public bool ShouldSerialize
         {
@@ -451,6 +313,146 @@ namespace BinarySerialization.Graph
 
                 return _whenBindings == null || _whenBindings.Any(binding => binding.Value);
             }
+        }
+
+        /// <summary>
+        ///     Occurrs after a member has been serialized.
+        /// </summary>
+        public event EventHandler<MemberSerializedEventArgs> MemberSerialized;
+
+        /// <summary>
+        ///     Occurrs after a member has been deserialized.
+        /// </summary>
+        public event EventHandler<MemberSerializedEventArgs> MemberDeserialized;
+
+        /// <summary>
+        ///     Occurrs before a member has been serialized.
+        /// </summary>
+        public event EventHandler<MemberSerializingEventArgs> MemberSerializing;
+
+        /// <summary>
+        ///     Occurrs before a member has been deserialized.
+        /// </summary>
+        public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
+
+        protected virtual long MeasureNodeOverride()
+        {
+            var nullStream = new NullStream();
+            var streamKeeper = new StreamKeeper(nullStream);
+            Serialize(streamKeeper);
+            return streamKeeper.RelativePosition;
+        }
+
+        protected virtual long CountNodeOverride()
+        {
+            throw new NotSupportedException();
+        }
+
+        protected virtual Type GetValueTypeOverride()
+        {
+            throw new NotSupportedException();
+        }
+
+        protected virtual object GetLastItemValueOverride()
+        {
+            throw new NotSupportedException();
+        }
+
+        protected void AddChild(Node child)
+        {
+            _lazyChildren.Value.Add(child);
+        }
+
+        protected void AddChildren(IEnumerable<Node> children)
+        {
+            foreach (Node child in children)
+                AddChild(child);
+        }
+
+        protected void ClearChildren()
+        {
+            foreach (Node child in Children)
+            {
+                child.Unbind();
+                RemoveEvents(child);
+            }
+
+            _lazyChildren.Value.Clear();
+        }
+
+        public void Bind()
+        {
+            if (FieldLengthBinding != null)
+                FieldLengthBinding.Bind();
+
+            if (FieldCountBinding != null)
+                FieldCountBinding.Bind();
+
+            if (FieldOffsetBinding != null)
+                FieldOffsetBinding.Bind();
+
+            if (ItemLengthBinding != null)
+                ItemLengthBinding.Bind();
+
+            if (SubtypeBinding != null)
+                SubtypeBinding.Bind();
+
+            if (_whenBindings != null)
+            {
+                foreach (ConditionalBinding conditionalBinding in _whenBindings)
+                    conditionalBinding.Bind();
+            }
+
+            foreach (Node child in Children)
+                child.Bind();
+        }
+
+        public void Unbind()
+        {
+            if (FieldLengthBinding != null)
+                FieldLengthBinding.Unbind();
+
+            if (FieldCountBinding != null)
+                FieldCountBinding.Unbind();
+
+            if (FieldOffsetBinding != null)
+                FieldOffsetBinding.Unbind();
+
+            if (ItemLengthBinding != null)
+                ItemLengthBinding.Unbind();
+
+            if (SubtypeBinding != null)
+                SubtypeBinding.Unbind();
+
+            if (_whenBindings != null)
+            {
+                foreach (ConditionalBinding conditionalBinding in _whenBindings)
+                    conditionalBinding.Unbind();
+            }
+        }
+
+        public SerializedType GetSerializedType(Type referenceType = null)
+        {
+            if (referenceType == null)
+                referenceType = Type;
+
+            if (_serializedType != null && _serializedType.Value != SerializedType.Default)
+                return _serializedType.Value;
+
+            SerializedType serializedType;
+            if (DefaultSerializedTypes.TryGetValue(referenceType, out serializedType))
+            {
+                /* Special cases */
+                if (serializedType == SerializedType.NullTerminatedString && FieldLengthBinding != null)
+                    serializedType = SerializedType.SizedString;
+
+                if (serializedType == SerializedType.NullTerminatedString && Parent.ItemLengthAttribute != null)
+                    serializedType = SerializedType.SizedString;
+
+                return serializedType;
+            }
+
+            return SerializedType.Default;
         }
 
         public virtual void Serialize(Stream stream)
@@ -465,8 +467,10 @@ namespace BinarySerialization.Graph
             }
             catch (Exception e)
             {
-                var reference = Name == null ? string.Format("type '{0}'", _type) : string.Format("member '{0}'", Name);
-                var message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
+                string reference = Name == null
+                    ? string.Format("type '{0}'", _type)
+                    : string.Format("member '{0}'", Name);
+                string message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
             }
         }
@@ -479,8 +483,10 @@ namespace BinarySerialization.Graph
             }
             catch (EndOfStreamException e)
             {
-                var reference = Name == null ? string.Format("type '{0}'", _type) : string.Format("member '{0}'", Name);
-                var message = string.Format("Error deserializing '{0}'.  See inner exception for detail.", reference);
+                string reference = Name == null
+                    ? string.Format("type '{0}'", _type)
+                    : string.Format("member '{0}'", Name);
+                string message = string.Format("Error deserializing '{0}'.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
             }
             catch (IOException)
@@ -489,7 +495,7 @@ namespace BinarySerialization.Graph
             }
             catch (Exception e)
             {
-                var message = string.Format("Error deserializing {0}.", Name);
+                string message = string.Format("Error deserializing {0}.", Name);
                 throw new InvalidOperationException(message, e);
             }
         }
@@ -534,7 +540,7 @@ namespace BinarySerialization.Graph
                 throw new BindingException("Path cannot be empty.");
 
             Node sourceChild = this;
-            foreach (var name in memberNames)
+            foreach (string name in memberNames)
             {
                 sourceChild = sourceChild.Children.SingleOrDefault(c => c.Name == name);
 
@@ -548,7 +554,7 @@ namespace BinarySerialization.Graph
         private Node FindAncestor(BindingInfo binding)
         {
             int level = 1;
-            var parent = Parent;
+            Node parent = Parent;
             while (parent != null)
             {
                 if (binding.AncestorLevel == level || parent._type == binding.AncestorType)
@@ -566,7 +572,7 @@ namespace BinarySerialization.Graph
         public BinarySerializationContext CreateSerializationContext()
         {
             if (Parent == null)
-                return new BinarySerializationContext(null, null, null);
+                return null;
 
             return new BinarySerializationContext(null, Parent.Type, Parent.CreateSerializationContext());
         }
@@ -590,28 +596,28 @@ namespace BinarySerialization.Graph
 
         protected void OnMemberSerialized(object sender, MemberSerializedEventArgs e)
         {
-            var handler = MemberSerialized;
+            EventHandler<MemberSerializedEventArgs> handler = MemberSerialized;
             if (handler != null)
                 handler(sender, e);
         }
 
         protected void OnMemberDeserialized(object sender, MemberSerializedEventArgs e)
         {
-            var handler = MemberDeserialized;
+            EventHandler<MemberSerializedEventArgs> handler = MemberDeserialized;
             if (handler != null)
                 handler(sender, e);
         }
 
         protected void OnMemberSerializing(object sender, MemberSerializingEventArgs e)
         {
-            var handler = MemberSerializing;
+            EventHandler<MemberSerializingEventArgs> handler = MemberSerializing;
             if (handler != null)
                 handler(sender, e);
         }
 
         protected void OnMemberDeserializing(object sender, MemberSerializingEventArgs e)
         {
-            var handler = MemberDeserializing;
+            EventHandler<MemberSerializingEventArgs> handler = MemberDeserializing;
             if (handler != null)
                 handler(sender, e);
         }
@@ -620,7 +626,7 @@ namespace BinarySerialization.Graph
         {
             if (Name != null)
                 return Name;
-            
+
             return base.ToString();
         }
     }

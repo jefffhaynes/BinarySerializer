@@ -163,15 +163,7 @@ namespace BinarySerialization.Graph
             //IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);
             //IEnumerable<MemberInfo> all = properties.Union(fields);
 
-            /* Because binding happens during construction, we have to check ordering here */
-            var orderedMembers = properties.Select(member =>
-            {
-                var serializeAsAttribute = member.GetAttribute<SerializeAsAttribute>();
-                var order = serializeAsAttribute != null ? serializeAsAttribute.Order : 0;
-                return new KeyValuePair<MemberInfo, int>(member, order);
-            }).OrderBy(keyValue => keyValue.Value).Select(keyValue => keyValue.Key);
-
-            var children = orderedMembers.Select(GenerateChild).ToList();
+            var children = properties.Select(GenerateChild).OrderBy(child => child.Order).ToList();
 
             _typeChildren.Add(type, children);
         }
