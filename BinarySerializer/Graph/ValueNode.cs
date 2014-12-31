@@ -150,9 +150,7 @@ namespace BinarySerialization.Graph
         public override void DeserializeOverride(StreamLimiter stream)
         {
             var value = Deserialize(stream, GetSerializedType());
-
-            Func<object, object> converter;
-            Value = TypeConverters.TryGetValue(Type, out converter) ? converter(value) : value;
+            Value = ConvertToFieldType(value);
         }
 
         protected object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
