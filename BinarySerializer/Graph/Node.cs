@@ -52,7 +52,7 @@ namespace BinarySerialization.Graph
         private readonly IntegerBinding _fieldOffsetBinding;
         private readonly IntegerBinding _itemLengthBinding;
         private readonly ObjectBinding _subtypeBinding;
-        private readonly ObjectBinding _serializeUntilBinding;
+        //private readonly ObjectBinding _serializeUntilBinding;
         private readonly ObjectBinding _itemSerializeUntilBinding;
         private readonly ConditionalBinding[] _whenBindings;
 
@@ -200,11 +200,11 @@ namespace BinarySerialization.Graph
             }
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
-            if (SerializeUntilAttribute != null)
-            {
-                _serializeUntilBinding = new ObjectBinding(this, SerializeUntilAttribute,
-                    () => { throw new NotSupportedException("Binding for this attribute not currently supported."); });
-            }
+            //if (SerializeUntilAttribute != null)
+            //{
+            //    _serializeUntilBinding = new ObjectBinding(this, SerializeUntilAttribute,
+            //        () => { throw new NotSupportedException("Binding for this attribute not currently supported."); });
+            //}
 
             ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
 
@@ -227,17 +227,17 @@ namespace BinarySerialization.Graph
 
         protected virtual long CountNodeOverride()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         protected virtual Type GetValueTypeOverride()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         protected virtual object GetLastItemValueOverride()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         protected Node Parent { get; private set; }
@@ -277,22 +277,17 @@ namespace BinarySerialization.Graph
         protected void AddChild(Node child)
         {
             _lazyChildren.Value.Add(child);
-            AddEvents(child);
         }
 
         protected void AddChildren(IEnumerable<Node> children)
         {
-            foreach(var child in children)
-                AddChild(child);
+            _lazyChildren.Value.AddRange(children);
         }
 
         protected void ClearChildren()
         {
             foreach (var child in Children)
-            {
                 child.Unbind();
-                RemoveEvents(child);
-            }
 
             _lazyChildren.Value.Clear();
         }
@@ -570,8 +565,9 @@ namespace BinarySerialization.Graph
             return new BinarySerializationContext(null, Parent.Type, Parent.CreateSerializationContext());
         }
 
-        private void AddEvents(Node child)
+        protected void AddEvents(Node child)
         {
+            RemoveEvents(child);
             child.MemberSerializing += OnMemberSerializing;
             child.MemberSerialized += OnMemberSerialized;
             child.MemberDeserializing += OnMemberDeserializing;

@@ -13,6 +13,12 @@ namespace BinarySerializer.Test
         private const string Disclaimer = "This isn't really cereal";
         private BinarySerialization.BinarySerializer _serializer = new BinarySerialization.BinarySerializer();
 
+        public BinarySerializerTests()
+        {
+            _serializer.MemberDeserialized += SerializerMemberDeserialized;
+            _serializer.MemberSerialized += SerializerMemberSerialized;
+        }
+
         private static Cereal Cerealize()
         {
             var disclaimerStream = new MemoryStream();
@@ -54,7 +60,7 @@ namespace BinarySerializer.Test
                     DefinitelyNotTheShape = CerealShape.Square,
                     DontSerializeMe = "bro",
                     SerializeMe = "!",
-                    Outlier = 4,
+                    Outlier = 0,
                     ExplicitlyTerminatedList = new List<string> {"red", "white", "blue"},
                     ImplicitlyTerminatedList =
                         new List<CerealShape> {CerealShape.Circular, CerealShape.Circular, CerealShape.Square},
@@ -70,8 +76,6 @@ namespace BinarySerializer.Test
         {
             Cereal cereal = Cerealize();
 
-            _serializer.MemberDeserialized += SerializerMemberDeserialized;
-            _serializer.MemberSerialized += SerializerMemberSerialized;
 
             using (var stream = new MemoryStream())
             {
@@ -138,7 +142,7 @@ namespace BinarySerializer.Test
                     _serializer.Endianness = Endianness.Big;
             }
 
-            //Console.WriteLine("write {0}: {1}", e.MemberName, e.Value);
+            Console.WriteLine("write {0}: {1}", e.MemberName, e.Value);
         }
 
         private void SerializerMemberDeserialized(object sender, MemberSerializedEventArgs e)
@@ -150,7 +154,7 @@ namespace BinarySerializer.Test
                     _serializer.Endianness = Endianness.Big;
             }
 
-            //Console.WriteLine("read {0}: {1}", e.MemberName, e.Value);
+            Console.WriteLine("read {0}: {1}", e.MemberName, e.Value);
         }
 
         [TestMethod]

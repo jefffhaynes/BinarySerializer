@@ -24,7 +24,9 @@ namespace BinarySerialization.Graph
 
                 var nodeType = GetNodeType(type);
 
-                return (Node)Activator.CreateInstance(nodeType, this, type);
+                var child = (Node)Activator.CreateInstance(nodeType, this, type);
+                AddEvents(child);
+                return child;
             }
             catch (Exception exception)
             {
