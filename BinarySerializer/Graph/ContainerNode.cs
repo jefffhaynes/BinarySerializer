@@ -75,7 +75,9 @@ namespace BinarySerialization.Graph
             if (typeof(IList).IsAssignableFrom(type))
                 return typeof (ListNode);
             if (typeof (Stream).IsAssignableFrom(type))
-                return typeof (StreamNode);
+                return typeof(StreamNode);
+            if (typeof(IBinarySerializable).IsAssignableFrom(type))
+                return typeof(CustomNode);
             return typeof (ObjectNode);
         }
 
