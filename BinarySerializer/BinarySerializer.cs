@@ -8,7 +8,7 @@ namespace BinarySerialization
     /// <summary>
     ///     Declaratively serializes and deserializes an object, or a graph of connected objects, in binary format.
     ///     <seealso cref="IgnoreAttribute" />
-    ///     <seealso cref="SerializeAsAttribute" />
+    ///     <seealso cref="FieldOrderAttribute" />
     ///     <seealso cref="SerializeAsEnumAttribute" />
     ///     <seealso cref="FieldOffsetAttribute" />
     ///     <seealso cref="FieldLengthAttribute" />

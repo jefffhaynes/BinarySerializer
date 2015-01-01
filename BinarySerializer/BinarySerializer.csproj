@@ -41,6 +41,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SerializeAsAttribute.cs" />
     <Compile Include="Graph\ArrayNode.cs" />
     <Compile Include="BinarySerializer.cs" />
     <Compile Include="BindingException.cs" />
@@ -84,11 +85,9 @@
     <Compile Include="EndianAwareBinaryReader.cs" />
     <Compile Include="EndianAwareBinaryWriter.cs" />
     <Compile Include="Endianness.cs" />
-    <Compile Include="MemberSerializationInfo.cs" />
     <Compile Include="MemberSerializedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerializeAsAttribute.cs" />
-    <Compile Include="MemberSerializationInfoComparer.cs" />
+    <Compile Include="FieldOrderAttribute.cs" />
     <Compile Include="SerializedType.cs" />
     <Compile Include="BinarySerializationContext.cs" />
     <Compile Include="RelativeSourceMode.cs" />

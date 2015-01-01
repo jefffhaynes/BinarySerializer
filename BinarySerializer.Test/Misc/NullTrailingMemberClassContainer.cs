@@ -9,8 +9,10 @@ namespace BinarySerializer.Test.Misc
             Inner = new NullTrailingMemberClass();
         }
 
+        [FieldOrder(0)]
         public int InnerLength { get; set; }
 
+        [FieldOrder(1)]
         [FieldLength("InnerLength")]
         public NullTrailingMemberClass Inner { get; set; }
     }

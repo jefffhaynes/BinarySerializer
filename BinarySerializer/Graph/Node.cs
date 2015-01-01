@@ -81,7 +81,7 @@ namespace BinarySerialization.Graph
             Name = memberInfo.Name;
 
             var propertyInfo = memberInfo as PropertyInfo;
-            //var fieldInfo = memberInfo as FieldInfo;
+            var fieldInfo = memberInfo as FieldInfo;
 
             if (propertyInfo != null)
             {
@@ -89,30 +89,36 @@ namespace BinarySerialization.Graph
                 ValueGetter = declaringValue => propertyInfo.GetValue(declaringValue, null);
                 ValueSetter = (obj, value) => propertyInfo.SetValue(obj, value, null);
             }
-                //else if (fieldInfo != null)
-                //{
-                //    _type = fieldInfo.FieldType;
-                //    ValueGetter = fieldInfo.GetValue;
-                //    ValueSetter = fieldInfo.SetValue;
-                //}
+            else if (fieldInfo != null)
+            {
+                _type = fieldInfo.FieldType;
+                ValueGetter = fieldInfo.GetValue;
+                ValueSetter = fieldInfo.SetValue;
+            }
             else throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
 
             object[] attributes = memberInfo.GetCustomAttributes(true);
 
-            SerializeAsAttribute serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
-            if (serializeAsAttribute != null)
-            {
-                _serializedType = serializeAsAttribute.SerializedType;
-                _endianness = serializeAsAttribute.Endianness;
-
-                if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
-                    _encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
-
-                _order = serializeAsAttribute.Order;
-            }
-
             IgnoreAttribute ignoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
             _ignore = ignoreAttribute != null;
+
+            if (_ignore)
+                return;
+
+            FieldOrderAttribute fieldOrderAttribute = attributes.OfType<FieldOrderAttribute>().SingleOrDefault();
+            if (fieldOrderAttribute != null)
+                _order = fieldOrderAttribute.Order;
+
+            SerializeAsAttribute serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
+                if (serializeAsAttribute != null)
+                {
+                    _serializedType = serializeAsAttribute.SerializedType;
+                    _endianness = serializeAsAttribute.Endianness;
+
+                    if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
+                        _encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
+                }
+          
 
             FieldLengthAttribute fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
             if (fieldLengthAttribute != null)
@@ -294,9 +300,9 @@ namespace BinarySerialization.Graph
             }
         }
 
-        public int Order
+        public int? Order
         {
-            get { return _order ?? 0; }
+            get { return _order; }
         }
 
         public bool Ignore
@@ -545,7 +551,7 @@ namespace BinarySerialization.Graph
                 sourceChild = sourceChild.Children.SingleOrDefault(c => c.Name == name);
 
                 if (sourceChild == null)
-                    throw new BindingException(string.Format("No property found at '{0}'.", path));
+                    throw new BindingException(string.Format("No field found at '{0}'.", path));
             }
 
             return sourceChild;

@@ -1,25 +1,9 @@
 ﻿using System.IO;
 using System.Text;
-using BinarySerialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerializer.Test.Streams
 {
-    public class StreamClass
-    {
-        public StreamClass()
-        {
-            TrailingData = "blah blah";
-        }
-
-        public int FieldLength { get; set; }
-
-        [FieldLength("FieldLength")]
-        public Stream Field { get; set; }
-
-        public string TrailingData { get; set; }
-    }
-
     [TestClass]
     public class StreamTests : TestBase
     {

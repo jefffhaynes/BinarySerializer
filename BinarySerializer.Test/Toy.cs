@@ -1,4 +1,5 @@
 ﻿using System;
+using BinarySerialization;
 
 namespace BinarySerializer.Test
 {
@@ -22,7 +23,10 @@ namespace BinarySerializer.Test
             Last = last;
         }
 
+        [FieldOrder(0)]
         public string Name { get; set; }
+
+        [FieldOrder(1)]
         public bool Last { get; set; }
 
         public bool Equals(Toy other)

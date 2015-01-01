@@ -1,25 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BinarySerialization;
 
 namespace BinarySerializer.Test.ItemLength
 {
-    public class ItemConstLengthClass
-    {
-        [ItemLength(3)]
-        public List<string> List { get; set; } 
-    }
-
-    public class ItemBoundLengthClass
-    {
-        public int ItemLength { get; set; }
-
-        [ItemLength("ItemLength")]
-        public List<string> List { get; set; } 
-    }
-
-
     [TestClass]
     public class ItemLengthTests : TestBase
     {

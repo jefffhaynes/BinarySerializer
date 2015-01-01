@@ -163,14 +163,36 @@ namespace BinarySerialization.Graph
 
         private void GenerateChildren(Type type)
         {
-            //var members = type.GetMembers(MemberBindingFlags);
+            var children = GenerateChildrenImpl(type);
+            _typeChildren.Add(type, children.ToList());
+        }
+
+        private IEnumerable<Node> GenerateChildrenImpl(Type type)
+        { 
             IEnumerable<MemberInfo> properties = type.GetProperties(MemberBindingFlags);
-            //IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);
-            //IEnumerable<MemberInfo> all = properties.Union(fields);
+            IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);
+            IEnumerable<MemberInfo> all = properties.Union(fields);
 
-            var children = properties.Select(GenerateChild).OrderBy(child => child.Order).ToList();
+            var children = all.Select(GenerateChild).OrderBy(child => child.Order).ToList();
 
-            _typeChildren.Add(type, children);
+            if (children.Count > 1)
+            {
+                if(children.Any(child => child.Order == null))
+                    throw new InvalidOperationException("All serializable fields or properties in a class with more than one member must have a FieldOrder attribute.");
+
+                var orderGroups = children.GroupBy(child => child.Order);
+
+                if (orderGroups.Count() != children.Count)
+                    throw new InvalidOperationException("All fields must have a unique order number.");
+            }
+
+            if (type.BaseType != null)
+            {
+                var baseChildren = GenerateChildrenImpl(type.BaseType);
+                return baseChildren.Concat(children);
+            }
+
+            return children;
         }
 
         private Type ResolveValueType()

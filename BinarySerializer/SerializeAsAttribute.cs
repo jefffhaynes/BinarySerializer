@@ -24,12 +24,6 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// The order to be observed when serializing or deserializing
-        ///  this member compared to other members in the parent object.
-        /// </summary>
-        public int Order { get; set; }
-
-        /// <summary>
         /// Specifies the type to which to serialize the member.
         /// </summary>
         public SerializedType SerializedType { get; set; }
