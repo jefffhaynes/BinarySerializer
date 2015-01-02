@@ -84,7 +84,7 @@ namespace BinarySerializer.Test
 
                 Assert.AreEqual(Endianness.Big, _serializer.Endianness);
 
-                File.WriteAllBytes("c:\\temp\\out.bin", stream.ToArray());
+                //File.WriteAllBytes("c:\\temp\\out.bin", stream.ToArray());
 
 
                 var cereal2 = _serializer.Deserialize<Cereal>(stream);
@@ -142,7 +142,7 @@ namespace BinarySerializer.Test
                     _serializer.Endianness = Endianness.Big;
             }
 
-            Console.WriteLine("write {0}: {1}", e.MemberName, e.Value);
+            //Console.WriteLine("write {0}: {1}", e.MemberName, e.Value);
         }
 
         private void SerializerMemberDeserialized(object sender, MemberSerializedEventArgs e)
@@ -154,7 +154,7 @@ namespace BinarySerializer.Test
                     _serializer.Endianness = Endianness.Big;
             }
 
-            Console.WriteLine("read {0}: {1}", e.MemberName, e.Value);
+            //Console.WriteLine("read {0}: {1}", e.MemberName, e.Value);
         }
 
         [TestMethod]

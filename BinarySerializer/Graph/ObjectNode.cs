@@ -14,6 +14,9 @@ namespace BinarySerialization.Graph
 
         private Type _valueType;
 
+        private bool _isCacheDirty = true;
+        private object _cachedValue;
+
         public Type ValueType
         {
             get { return _valueType; }
@@ -22,6 +25,8 @@ namespace BinarySerialization.Graph
             {
                 if (_valueType != value)
                 {
+                    _cachedValue = null;
+
                     ClearChildren();
                     if (value != null && !Ignore)
                     {
@@ -72,6 +77,9 @@ namespace BinarySerialization.Graph
         {
             get
             {
+                if (!_isCacheDirty)
+                    return _cachedValue;
+
                 var valueType = ResolveValueType();
                 if (valueType == null)
                     return null;
@@ -86,11 +94,16 @@ namespace BinarySerialization.Graph
                 foreach (var child in Children.Where(child => !child.Ignore))
                     child.ValueSetter(value, child.Value);
 
+                _cachedValue = value;
+                _isCacheDirty = false;
+
                 return value;
             }
 
             set
             {
+                ClearCache();
+
                 if (value == null)
                 {
                     ValueType = null;
@@ -132,6 +145,8 @@ namespace BinarySerialization.Graph
 
         public override void DeserializeOverride(StreamLimiter stream)
         {
+            ClearCache();
+
             var valueType = ResolveValueType();
             if (valueType == null)
                 return;
@@ -156,9 +171,16 @@ namespace BinarySerialization.Graph
                         stream.Position = (long) child.FieldOffsetBinding.Value;
 
                     child.Deserialize(stream);
+
+                    ClearCache();
                 }
                 OnMemberDeserialized(this, new MemberSerializedEventArgs(child.Name, child.Value, serializationContext));
             }
+        }
+
+        private void ClearCache()
+        {
+            _isCacheDirty = true;
         }
 
         private void GenerateChildren(Type type)
