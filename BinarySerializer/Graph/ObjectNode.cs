@@ -25,7 +25,7 @@ namespace BinarySerialization.Graph
             {
                 if (_valueType != value)
                 {
-                    _cachedValue = null;
+                    ClearCache();
 
                     ClearChildren();
                     if (value != null && !Ignore)
@@ -77,14 +77,14 @@ namespace BinarySerialization.Graph
         {
             get
             {
-                if (!_isCacheDirty)
-                    return _cachedValue;
-
                 var valueType = ResolveValueType();
                 if (valueType == null)
                     return null;
 
                 ValueType = valueType;
+
+                if (!_isCacheDirty)
+                    return _cachedValue;
 
                 if (ValueType.IsAbstract)
                     return null;
