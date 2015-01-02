@@ -101,6 +101,12 @@
     <Compile Include="Offset\BoundOffsetClass.cs" />
     <Compile Include="Offset\ConstOffsetClass.cs" />
     <Compile Include="Offset\OffsetTests.cs" />
+    <Compile Include="Order\MutlipleMembersInvalidOrderClass.cs" />
+    <Compile Include="Order\OrderBaseClass.cs" />
+    <Compile Include="Order\OrderClass.cs" />
+    <Compile Include="Order\OrderDerivedClass.cs" />
+    <Compile Include="Order\OrderTests.cs" />
+    <Compile Include="Order\SingleMemberOrderClass.cs" />
     <Compile Include="Primitives\PrimitiveTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreamletTest.cs" />
