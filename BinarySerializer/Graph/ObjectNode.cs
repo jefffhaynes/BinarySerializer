@@ -59,7 +59,7 @@ namespace BinarySerialization.Graph
 
             ValueType = type;
 
-            if (SubtypeAttributes.Length <= 0) 
+            if (SubtypeAttributes == null || SubtypeAttributes.Length <= 0) 
                 return;
 
             var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
