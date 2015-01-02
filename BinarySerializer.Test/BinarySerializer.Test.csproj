@@ -70,7 +70,9 @@
     <Compile Include="Misc\DictionaryTests.cs" />
     <Compile Include="Misc\EmptyClass.cs" />
     <Compile Include="Misc\EmptyClassTest.cs" />
+    <Compile Include="Misc\IntArray64K.cs" />
     <Compile Include="Misc\IOExceptionTest.cs" />
+    <Compile Include="Misc\LargeArrayTests.cs" />
     <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
     <Compile Include="Misc\NullTrailingMemberTests.cs" />
     <Compile Include="Misc\UnreadableStream.cs" />
