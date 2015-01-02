@@ -367,6 +367,7 @@ namespace BinarySerialization.Graph
         protected void AddChild(Node child)
         {
             _lazyChildren.Value.Add(child);
+            AddEvents(child);
         }
 
         protected void AddChildren(IEnumerable<Node> children)

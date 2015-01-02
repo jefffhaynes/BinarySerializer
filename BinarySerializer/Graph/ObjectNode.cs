@@ -200,8 +200,12 @@ namespace BinarySerialization.Graph
             if (SubtypeBinding == null || SubtypeBinding.Value == null)
                 return Type;
 
+            var source = (ValueNode)SubtypeBinding.GetSource();
+            var bindingValue = SubtypeBinding.Value;
+
             var matchingAttribute =
-                SubtypeAttributes.SingleOrDefault(attribute => attribute.Value.Equals(SubtypeBinding.Value));
+                SubtypeAttributes.SingleOrDefault(
+                    attribute => source.ConvertToFieldType(attribute.Value).Equals(bindingValue));
 
             /* If we can't find a match, default our value to null */
             return matchingAttribute == null ? null : matchingAttribute.Subtype;

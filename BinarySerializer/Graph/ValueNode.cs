@@ -137,6 +137,7 @@ namespace BinarySerialization.Graph
                     else throw new InvalidOperationException("No field length specified on sized string.");
 
                     writer.Write(data);
+
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
