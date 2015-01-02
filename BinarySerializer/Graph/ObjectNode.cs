@@ -175,14 +175,22 @@ namespace BinarySerialization.Graph
 
             var children = all.Select(GenerateChild).OrderBy(child => child.Order).ToList();
 
-            if (children.Count > 1)
+            var serializableChildren = children.Where(child => !child.Ignore).ToList();
+
+            if (serializableChildren.Count > 1)
             {
-                if(children.Any(child => child.Order == null))
-                    throw new InvalidOperationException("All serializable fields or properties in a class with more than one member must have a FieldOrder attribute.");
+                var unorderedChild = serializableChildren.FirstOrDefault(child => child.Order == null);
 
-                var orderGroups = children.GroupBy(child => child.Order);
+                if (unorderedChild != null)
+                    throw new InvalidOperationException(
+                        string.Format(
+                            "'{0}' does not have a FieldOrder attribute.  " + 
+                            "All serializable fields or properties in a class with more than one member must specify a FieldOrder attribute.",
+                            unorderedChild.Name));
 
-                if (orderGroups.Count() != children.Count)
+                var orderGroups = serializableChildren.GroupBy(child => child.Order);
+
+                if (orderGroups.Count() != serializableChildren.Count)
                     throw new InvalidOperationException("All fields must have a unique order number.");
             }
 
