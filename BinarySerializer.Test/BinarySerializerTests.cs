@@ -82,7 +82,7 @@ namespace BinarySerializer.Test
                 _serializer.Serialize(stream, cereal);
                 stream.Position = 0;
 
-                Assert.AreEqual(Endianness.Big, _serializer.Endianness);
+                Assert.AreEqual(BinarySerialization.Endianness.Big, _serializer.Endianness);
 
                 //File.WriteAllBytes("c:\\temp\\out.bin", stream.ToArray());
 
@@ -139,10 +139,10 @@ namespace BinarySerializer.Test
             {
                 bool isLittleEndian = bool.Parse((string) e.Value);
                 if (!isLittleEndian)
-                    _serializer.Endianness = Endianness.Big;
+                    _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
 
-            //Console.WriteLine("write {0}: {1}", e.MemberName, e.Value);
+            Console.WriteLine("write {0}: {1}", e.MemberName, e.Value);
         }
 
         private void SerializerMemberDeserialized(object sender, MemberSerializedEventArgs e)
@@ -151,10 +151,10 @@ namespace BinarySerializer.Test
             {
                 bool isLittleEndian = bool.Parse((string) e.Value);
                 if (!isLittleEndian)
-                    _serializer.Endianness = Endianness.Big;
+                    _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
 
-            //Console.WriteLine("read {0}: {1}", e.MemberName, e.Value);
+            Console.WriteLine("read {0}: {1}", e.MemberName, e.Value);
         }
 
         [TestMethod]

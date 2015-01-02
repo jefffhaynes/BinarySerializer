@@ -22,8 +22,16 @@ namespace BinarySerialization
     /// </summary>
     public class BinarySerializer
     {
-        private readonly Dictionary<Type, Node> _graphCache = new Dictionary<Type, Node>();
+        private readonly Dictionary<Type, RootNode> _graphCache = new Dictionary<Type, RootNode>();
+        private readonly object _graphCacheLock = new object();
+
+        private const Endianness DefaultEndianness = Endianness.Little;
         private Endianness _endianness;
+
+        public BinarySerializer()
+        {
+            Endianness = DefaultEndianness;
+        }
 
         /// <summary>
         ///     The default <see cref="Endianness" /> to use during serialization or deserialization.
@@ -35,10 +43,10 @@ namespace BinarySerialization
 
             set
             {
-                _endianness = value;
+                foreach (RootNode graph in _graphCache.Values)
+                    graph.Endianness = value;
 
-                foreach (Node graph in _graphCache.Values)
-                    graph.Endianness = _endianness;
+                _endianness = value;
             }
         }
 
@@ -63,19 +71,18 @@ namespace BinarySerialization
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 
 
-        private Node GetGraph(Type valueType)
+        private RootNode GetGraph(Type valueType)
         {
-            Node graph;
-            if (!_graphCache.TryGetValue(valueType, out graph))
-            {
-                graph = new RootNode(valueType);
-                graph.Bind();
-                graph.MemberSerializing += OnMemberSerializing;
-                graph.MemberSerialized += OnMemberSerialized;
-                graph.MemberDeserializing += OnMemberDeserializing;
-                graph.MemberDeserialized += OnMemberDeserialized;
-                _graphCache.Add(valueType, graph);
-            }
+            RootNode graph;
+            if (_graphCache.TryGetValue(valueType, out graph))
+                return graph;
+
+            graph = new RootNode(valueType) {Endianness = Endianness};
+            graph.MemberSerializing += OnMemberSerializing;
+            graph.MemberSerialized += OnMemberSerialized;
+            graph.MemberDeserializing += OnMemberDeserializing;
+            graph.MemberDeserialized += OnMemberDeserialized;
+            _graphCache.Add(valueType, graph);
 
             return graph;
         }
@@ -94,12 +101,16 @@ namespace BinarySerialization
             if (value == null)
                 return;
 
-            Node graph = GetGraph(value.GetType());
+            lock (_graphCacheLock)
+            {
+                RootNode graph = GetGraph(value.GetType());
 
-            graph.Value = value;
-            graph.Bind();
+                graph.SerializationContext = context;
+                graph.Value = value;
+                graph.Bind();
 
-            graph.Serialize(stream);
+                graph.Serialize(stream);
+            }
         }
 
         /// <summary>
@@ -125,11 +136,15 @@ namespace BinarySerialization
         public T Deserialize<T>(Stream stream, BinarySerializationContext context = null,
             IFormatProvider formatProvider = null)
         {
-            Node graph = GetGraph(typeof (T));
+            lock (_graphCacheLock)
+            {
+                RootNode graph = GetGraph(typeof (T));
+                graph.SerializationContext = context;
 
-            graph.Deserialize(new StreamLimiter(stream));
+                graph.Deserialize(new StreamLimiter(stream));
 
-            return (T) graph.Value;
+                return (T) graph.Value;
+            }
         }
 
         /// <summary>

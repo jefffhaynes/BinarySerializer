@@ -11,8 +11,10 @@ namespace BinarySerialization.Graph
         private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
         private readonly Dictionary<Type, List<Node>> _typeChildren = new Dictionary<Type, List<Node>>();
+        private readonly object _typeChildrenLock = new object();
 
         private Type _valueType;
+        private Type _setValueType;
 
         private bool _isCacheDirty = true;
         private object _cachedValue;
@@ -102,17 +104,18 @@ namespace BinarySerialization.Graph
 
             set
             {
-                ClearCache();
-
                 if (value == null)
                 {
+                    _setValueType = null;
                     ValueType = null;
                     return;
                 }
 
-                ValueType = value.GetType();
+                _setValueType = value.GetType();
 
-                UpdateValueType(ValueType);
+                ValueType = _setValueType;
+
+                UpdateSource(ValueType);
 
                 foreach (var child in Children)
                     child.Value = child.ValueGetter(value);
@@ -185,8 +188,14 @@ namespace BinarySerialization.Graph
 
         private void GenerateChildren(Type type)
         {
-            var children = GenerateChildrenImpl(type);
-            _typeChildren.Add(type, children.ToList());
+            lock (_typeChildrenLock)
+            {
+                if (_typeChildren.ContainsKey(type))
+                    return;
+
+                var children = GenerateChildrenImpl(type);
+                _typeChildren.Add(type, children.ToList());
+            }
         }
 
         private IEnumerable<Node> GenerateChildrenImpl(Type type)
@@ -228,7 +237,9 @@ namespace BinarySerialization.Graph
         private Type ResolveValueType()
         {
             if (SubtypeBinding == null || SubtypeBinding.Value == null)
-                return Type;
+            {
+                return _setValueType ?? Type;
+            }
 
             var source = (ValueNode)SubtypeBinding.GetSource();
             var bindingValue = SubtypeBinding.Value;
@@ -241,7 +252,7 @@ namespace BinarySerialization.Graph
             return matchingAttribute == null ? null : matchingAttribute.Subtype;
         }
 
-        private void UpdateValueType(Type valueType)
+        private void UpdateSource(Type valueType)
         {
             if (SubtypeBinding == null || SubtypeBinding.Value == null)
                 return;

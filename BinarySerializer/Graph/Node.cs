@@ -11,7 +11,6 @@ namespace BinarySerialization.Graph
     {
         private const char PathSeparator = '.';
 
-        private const Endianness DefaultEndianness = Endianness.Little;
         private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
         public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
@@ -285,7 +284,7 @@ namespace BinarySerialization.Graph
                 if (_endianness != null && _endianness.Value != Endianness.Inherit)
                     return _endianness.Value;
 
-                return Parent != null ? Parent.Endianness : DefaultEndianness;
+                return Parent.Endianness;
             }
         }
 
@@ -576,7 +575,7 @@ namespace BinarySerialization.Graph
             return null;
         }
 
-        public BinarySerializationContext CreateSerializationContext()
+        public virtual BinarySerializationContext CreateSerializationContext()
         {
             if (Parent == null)
                 return null;

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace BinarySerialization.Graph
 {
-    internal class RootNode : ContainerNode
+    internal sealed class RootNode : ContainerNode
     {
         private readonly Node _child;
 
@@ -25,6 +25,8 @@ namespace BinarySerialization.Graph
             get { return _child.BoundValue; }
         }
 
+        public BinarySerializationContext SerializationContext { get; set; }
+
         public override void SerializeOverride(Stream stream)
         {
             _child.Serialize(stream);
@@ -43,6 +45,11 @@ namespace BinarySerialization.Graph
         public override void Deserialize(StreamLimiter stream)
         {
             DeserializeOverride(stream);
+        }
+
+        public override BinarySerializationContext CreateSerializationContext()
+        {
+            return SerializationContext;
         }
 
         public override Endianness Endianness { get; set; }

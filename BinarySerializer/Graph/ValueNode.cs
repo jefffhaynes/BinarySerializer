@@ -69,7 +69,7 @@ namespace BinarySerialization.Graph
             if (value == null)
                 return;
 
-            var writer = new EndianAwareBinaryWriter(stream);
+            var writer = new EndianAwareBinaryWriter(stream, Endianness);
 
             switch (serializedType)
             {
@@ -141,7 +141,14 @@ namespace BinarySerialization.Graph
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
-                writer.Write(value.ToString());
+                {
+                    byte[] data = Encoding.GetBytes(value.ToString());
+                    var datalength = (ushort) data.Length;
+
+                    writer.Write(datalength);
+                    writer.Write(data);
+                }
+
                     break;
                 default:
                     throw new NotSupportedException();
@@ -156,7 +163,8 @@ namespace BinarySerialization.Graph
 
         protected object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
         {
-            var reader = new EndianAwareBinaryReader(stream);
+            var reader = new EndianAwareBinaryReader(stream, Endianness);
+
             object value;
             switch (serializedType)
             {
@@ -220,8 +228,13 @@ namespace BinarySerialization.Graph
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
-                    value = reader.ReadString();
+                {
+                    var dataLength = reader.ReadUInt16();
+                    byte[] data = reader.ReadBytes(dataLength);
+                    value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
                     break;
+                }
+
                 default:
                     throw new NotSupportedException();
             }

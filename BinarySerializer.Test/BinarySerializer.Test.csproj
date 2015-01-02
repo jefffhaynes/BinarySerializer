@@ -64,9 +64,15 @@
     <Compile Include="Count\BoundCountClass.cs" />
     <Compile Include="Count\ConstCountClass.cs" />
     <Compile Include="Count\CountTests.cs" />
+    <Compile Include="Endianness\EndiannessClass.cs" />
+    <Compile Include="Endianness\EndiannessTests.cs" />
     <Compile Include="ItemLength\ItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemConstLengthClass.cs" />
+    <Compile Include="Misc\AbstractClass.cs" />
+    <Compile Include="Misc\AbstractClassContainer.cs" />
+    <Compile Include="Misc\AsbtractClassTests.cs" />
     <Compile Include="Misc\CollectionMiscTests.cs" />
+    <Compile Include="Misc\DerivedClass.cs" />
     <Compile Include="Misc\DictionaryTests.cs" />
     <Compile Include="Misc\EmptyClass.cs" />
     <Compile Include="Misc\EmptyClassTest.cs" />
