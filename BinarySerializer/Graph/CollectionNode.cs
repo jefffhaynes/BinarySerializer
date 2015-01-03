@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,18 +9,22 @@ namespace BinarySerialization.Graph
 {
     internal abstract class CollectionNode : ContainerNode
     {
-        protected readonly Lazy<Type> LazyChildType;
+        protected Type ChildType { get; set; }
+
+        /// <summary>
+        /// For primitive collections.
+        /// </summary>
+        protected object CollectionValue { get; set; }
+
         private readonly object _terminationValue;
 
         protected CollectionNode(Node parent, Type type) : base(parent, type)
         {
-            LazyChildType = new Lazy<Type>(() => GetChildType(Type));
             _terminationValue = GetTerminationValue();
         }
 
         protected CollectionNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
-            LazyChildType = new Lazy<Type>(() => GetChildType(Type));
             _terminationValue = GetTerminationValue();
         }
 
@@ -34,6 +40,34 @@ namespace BinarySerialization.Graph
         }
 
         public override void SerializeOverride(Stream stream)
+        {
+            if (ChildType.IsPrimitive)
+            {
+                SerializePrimitiveCollection(stream);
+            }
+            else
+            {
+                SerializeObjectCollection(stream);
+            }
+        }
+
+        private void SerializePrimitiveCollection(Stream stream)
+        {
+            var dummyChild = (ValueNode)GenerateChild(ChildType);
+
+            int count = GetCollectionCount();
+
+            var writer = new EndianAwareBinaryWriter(stream, Endianness);
+            var childSerializedType = dummyChild.GetSerializedType();
+
+            for (int i = 0; i < count; i++)
+            {
+                var value = GetPrimitiveValue(i);
+                dummyChild.Serialize(writer, value, childSerializedType);
+            }
+        }
+
+        private void SerializeObjectCollection(Stream stream)
         {
             foreach (var child in Children)
                 child.Serialize(stream);
@@ -52,6 +86,54 @@ namespace BinarySerialization.Graph
             if (FieldLengthBinding != null)
                 stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);
 
+            var count = FieldCountBinding != null ? (int)FieldCountBinding.Value : int.MaxValue;
+
+            if (ChildType.IsPrimitive)
+            {
+                DeserializePrimitiveCollection(stream, count);
+            }
+            else
+            {
+                DeserializeObjectCollection(stream, count);
+            }
+        }
+
+        private void DeserializePrimitiveCollection(StreamLimiter stream, int count)
+        {
+            /* Create temporary list */
+            Type collectionType = typeof(List<>).MakeGenericType(ChildType);
+            var collection = (IList)Activator.CreateInstance(collectionType);
+
+            /* Create single child to do all the work */
+            var dummyChild = (ValueNode)GenerateChild(ChildType);
+
+            var reader = new EndianAwareBinaryReader(stream, Endianness);
+            var childSerializedType = dummyChild.GetSerializedType();
+
+            int itemCount = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if (ShouldTerminate(stream))
+                    break;
+
+                var value = dummyChild.Deserialize(reader, childSerializedType);
+                collection.Add(value);
+
+                itemCount++;
+            }
+
+            /* Create final collection */
+            CollectionValue = CreatePrimitiveCollection(itemCount);
+
+            /* Copy temp list into final collection */
+            for (int i = 0; i < itemCount; i++)
+            {
+                SetPrimitiveValue(collection[i], i);
+            }
+        }
+
+        private void DeserializeObjectCollection(StreamLimiter stream, int count)
+        {
             ClearChildren();
 
             /* Prep termination case */
@@ -59,8 +141,8 @@ namespace BinarySerialization.Graph
             if (_terminationValue != null)
                 terminationChild = GenerateChild(_terminationValue.GetType());
 
-            var count = FieldCountBinding != null ? FieldCountBinding.Value : ulong.MaxValue;
-            for (ulong i = 0; i < count; i++)
+
+            for (int i = 0; i < count; i++)
             {
                 if (ShouldTerminate(stream))
                     break;
@@ -81,10 +163,10 @@ namespace BinarySerialization.Graph
                 }
 
                 // TODO why am I generating the same type information over and over?
-                var child = GenerateChild(LazyChildType.Value);
+                var child = GenerateChild(ChildType);
 
                 var childStream = child.ItemLengthBinding != null
-                    ? new StreamLimiter(stream, (long) child.ItemLengthBinding.Value)
+                    ? new StreamLimiter(stream, (long)child.ItemLengthBinding.Value)
                     : stream;
 
                 child.Deserialize(childStream);
@@ -119,6 +201,12 @@ namespace BinarySerialization.Graph
             return SerializeUntilAttribute.ConstValue ?? (byte)0;
         }
 
-        protected abstract Type GetChildType(Type collectionType);
+        protected abstract object CreatePrimitiveCollection(int size);
+
+        protected abstract int GetCollectionCount();
+
+        protected abstract void SetPrimitiveValue(object item, int index);
+
+        protected abstract object GetPrimitiveValue(int index);
     }
 }

@@ -71,6 +71,14 @@ namespace BinarySerialization.Graph
 
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
 
+            Serialize(writer, value, serializedType, length);
+        }
+
+        public void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType, int? length = null)
+        {
+            if (value == null)
+                return;
+
             switch (serializedType)
             {
                 case SerializedType.Int1:
@@ -104,50 +112,50 @@ namespace BinarySerialization.Graph
                     writer.Write(Convert.ToDouble(value));
                     break;
                 case SerializedType.ByteArray:
-                {
-                    var data = (byte[])value;
-                    writer.Write(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        var data = (byte[])value;
+                        writer.Write(data, 0, data.Length);
+                        break;
+                    }
                 case SerializedType.NullTerminatedString:
-                {
-                    byte[] data = Encoding.GetBytes(value.ToString());
-                    writer.Write(data);
-                    writer.Write((byte) 0);
-                    break;
-                }
+                    {
+                        byte[] data = Encoding.GetBytes(value.ToString());
+                        writer.Write(data);
+                        writer.Write((byte)0);
+                        break;
+                    }
                 case SerializedType.SizedString:
-                {
-                    byte[] data = Encoding.GetBytes(value.ToString());
-
-                    if (length != null)
                     {
-                        Array.Resize(ref data, length.Value);
-                    }
-                    else if (FieldLengthBinding != null)
-                    {
-                        if (FieldLengthBinding.IsConst)
-                            Array.Resize(ref data, (int) FieldLengthBinding.BoundValue);
-                    }
-                    else if (ItemLengthBinding != null)
-                    {
-                        if (ItemLengthBinding.IsConst)
-                            Array.Resize(ref data, (int) ItemLengthBinding.BoundValue);
-                    }
-                    else throw new InvalidOperationException("No field length specified on sized string.");
+                        byte[] data = Encoding.GetBytes(value.ToString());
 
-                    writer.Write(data);
+                        if (length != null)
+                        {
+                            Array.Resize(ref data, length.Value);
+                        }
+                        else if (FieldLengthBinding != null)
+                        {
+                            if (FieldLengthBinding.IsConst)
+                                Array.Resize(ref data, (int)FieldLengthBinding.BoundValue);
+                        }
+                        else if (ItemLengthBinding != null)
+                        {
+                            if (ItemLengthBinding.IsConst)
+                                Array.Resize(ref data, (int)ItemLengthBinding.BoundValue);
+                        }
+                        else throw new InvalidOperationException("No field length specified on sized string.");
 
-                    break;
-                }
+                        writer.Write(data);
+
+                        break;
+                    }
                 case SerializedType.LengthPrefixedString:
-                {
-                    byte[] data = Encoding.GetBytes(value.ToString());
-                    var datalength = (ushort) data.Length;
+                    {
+                        byte[] data = Encoding.GetBytes(value.ToString());
+                        var datalength = (ushort)data.Length;
 
-                    writer.Write(datalength);
-                    writer.Write(data);
-                }
+                        writer.Write(datalength);
+                        writer.Write(data);
+                    }
 
                     break;
                 default:
@@ -165,6 +173,11 @@ namespace BinarySerialization.Graph
         {
             var reader = new EndianAwareBinaryReader(stream, Endianness);
 
+            return Deserialize(reader, serializedType, length);
+        }
+
+        public object Deserialize(EndianAwareBinaryReader reader, SerializedType serializedType, int? length = null)
+        {
             object value;
             switch (serializedType)
             {
@@ -199,41 +212,41 @@ namespace BinarySerialization.Graph
                     value = reader.ReadDouble();
                     break;
                 case SerializedType.ByteArray:
-                {
-                    if (FieldLengthBinding == null)
-                        throw new InvalidOperationException("No length specified on byte array.");
+                    {
+                        if (FieldLengthBinding == null)
+                            throw new InvalidOperationException("No length specified on byte array.");
 
-                    value = reader.ReadBytes((int) FieldLengthBinding.Value);
-                    break;
-                }
+                        value = reader.ReadBytes((int)FieldLengthBinding.Value);
+                        break;
+                    }
                 case SerializedType.NullTerminatedString:
-                {
-                    byte[] data = ReadNullTerminatedString(reader).ToArray();
-                    value = Encoding.GetString(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        byte[] data = ReadNullTerminatedString(reader).ToArray();
+                        value = Encoding.GetString(data, 0, data.Length);
+                        break;
+                    }
                 case SerializedType.SizedString:
-                {
-                    int effectiveLength;
-                    if (length != null)
-                        effectiveLength = length.Value;
-                    else if (FieldLengthBinding != null)
-                        effectiveLength = (int)FieldLengthBinding.Value;
-                    else if (ItemLengthBinding != null)
-                        effectiveLength = (int) ItemLengthBinding.Value;
-                    else throw new InvalidOperationException("No length specified on sized string.");
+                    {
+                        int effectiveLength;
+                        if (length != null)
+                            effectiveLength = length.Value;
+                        else if (FieldLengthBinding != null)
+                            effectiveLength = (int)FieldLengthBinding.Value;
+                        else if (ItemLengthBinding != null)
+                            effectiveLength = (int)ItemLengthBinding.Value;
+                        else throw new InvalidOperationException("No length specified on sized string.");
 
-                    byte[] data = reader.ReadBytes(effectiveLength);
-                    value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
-                    break;
-                }
+                        byte[] data = reader.ReadBytes(effectiveLength);
+                        value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
+                        break;
+                    }
                 case SerializedType.LengthPrefixedString:
-                {
-                    var dataLength = reader.ReadUInt16();
-                    byte[] data = reader.ReadBytes(dataLength);
-                    value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
-                    break;
-                }
+                    {
+                        var dataLength = reader.ReadUInt16();
+                        byte[] data = reader.ReadBytes(dataLength);
+                        value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
+                        break;
+                    }
 
                 default:
                     throw new NotSupportedException();
