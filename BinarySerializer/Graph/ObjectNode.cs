@@ -35,7 +35,7 @@ namespace BinarySerialization.Graph
                         List<Node> children;
                         if (!_typeChildren.TryGetValue(value, out children))
                         {
-                            /* Previously unseen type */
+                            /* Previously unseen graphType */
                             GenerateChildren(value);
                             children = _typeChildren[value];
                         }

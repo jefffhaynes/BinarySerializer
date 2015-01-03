@@ -58,6 +58,9 @@
     <Compile Include="CalciumCarbonate.cs" />
     <Compile Include="Cereal.cs" />
     <Compile Include="CerealShape.cs" />
+    <Compile Include="Context\Context.cs" />
+    <Compile Include="Context\ContextClass.cs" />
+    <Compile Include="Context\ContextTests.cs" />
     <Compile Include="Converters\ConverterClass.cs" />
     <Compile Include="Converters\ConverterTests.cs" />
     <Compile Include="Converters\TwiceConverter.cs" />

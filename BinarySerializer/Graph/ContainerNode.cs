@@ -30,7 +30,7 @@ namespace BinarySerialization.Graph
             }
             catch (Exception exception)
             {
-                var message = string.Format("There was an error reflecting type '{0}'", type);
+                var message = string.Format("There was an error reflecting graphType '{0}'", type);
                 throw new InvalidOperationException(message, exception);
             }
         }

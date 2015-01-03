@@ -162,7 +162,7 @@ namespace BinarySerialization.Graph
                     }
                 }
 
-                // TODO why am I generating the same type information over and over?
+                // TODO why am I generating the same graphType information over and over?
                 var child = GenerateChild(ChildType);
 
                 var childStream = child.ItemLengthBinding != null

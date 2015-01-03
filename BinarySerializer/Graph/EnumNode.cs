@@ -92,7 +92,7 @@ namespace BinarySerialization.Graph
                             .GroupBy(value => value.Length).ToList();
 
 
-                    /* If the type isn't specified, let's try to guess it smartly */
+                    /* If the graphType isn't specified, let's try to guess it smartly */
                     if (serializedType == SerializedType.Default)
                     {
                         /* If everything is the same length, assume fixed length */

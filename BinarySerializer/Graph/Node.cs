@@ -202,7 +202,7 @@ namespace BinarySerialization.Graph
 
         public string Name { get; private set; }
 
-        public Type Type
+        public virtual Type Type
         {
             get
             {
@@ -222,7 +222,7 @@ namespace BinarySerialization.Graph
             get { return Value; }
         }
 
-        public IEnumerable<Node> Children
+        public virtual IEnumerable<Node> Children
         {
             get { return _lazyChildren.Value; }
         }
@@ -474,7 +474,7 @@ namespace BinarySerialization.Graph
             catch (Exception e)
             {
                 string reference = Name == null
-                    ? string.Format("type '{0}'", _type)
+                    ? string.Format("graphType '{0}'", _type)
                     : string.Format("member '{0}'", Name);
                 string message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
@@ -490,7 +490,7 @@ namespace BinarySerialization.Graph
             catch (EndOfStreamException e)
             {
                 string reference = Name == null
-                    ? string.Format("type '{0}'", _type)
+                    ? string.Format("graphType '{0}'", _type)
                     : string.Format("member '{0}'", Name);
                 string message = string.Format("Error deserializing '{0}'.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
@@ -529,12 +529,6 @@ namespace BinarySerialization.Graph
             if (source == null)
                 throw new BindingException(string.Format("No ancestor found."));
 
-            /* Get various members along path */
-            string[] memberNames = binding.Path.Split(PathSeparator);
-
-            if (!memberNames.Any())
-                throw new BindingException("Path cannot be empty.");
-
             return source.GetChild(binding.Path);
         }
 
@@ -563,7 +557,7 @@ namespace BinarySerialization.Graph
             Node parent = Parent;
             while (parent != null)
             {
-                if (binding.AncestorLevel == level || parent._type == binding.AncestorType)
+                if (binding.AncestorLevel == level || parent.Type == binding.AncestorType)
                 {
                     return parent;
                 }

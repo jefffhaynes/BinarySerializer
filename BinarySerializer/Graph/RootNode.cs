@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace BinarySerialization.Graph
 {
     internal sealed class RootNode : ContainerNode
     {
         private readonly Node _child;
+        private object _context;
+        private List<Node> _contextChildren; 
 
-        public RootNode(Type type) : base(null, type)
+        public RootNode(Type graphType) : base(null, graphType)
         {
-            var child = GenerateChild(type);
-            AddChild(child);
+            var child = GenerateChild(graphType);
             _child = child;
+            AddChild(child);
         }
 
         public override object Value
@@ -25,7 +30,61 @@ namespace BinarySerialization.Graph
             get { return _child.BoundValue; }
         }
 
-        public BinarySerializationContext SerializationContext { get; set; }
+        public override Type Type
+        {
+            get { return _context != null ? _context.GetType() : null; }
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                var child = new[] { _child };
+                if (_contextChildren == null && _child == null)
+                    return Enumerable.Empty<Node>();
+
+                if (_contextChildren == null)
+                    return child;
+
+                if (_child == null)
+                    return _contextChildren;
+
+                return _contextChildren.Union(child);
+            }
+        }
+
+        public object SerializationContext
+        {
+            get
+            {
+                return _context;
+            }
+
+            set
+            {
+                _contextChildren = null;
+
+                _context = value;
+
+                if (value != null)
+                {
+                    var children = GenerateChildrenImpl(value.GetType());
+                    _contextChildren = new List<Node>(children);
+
+                    foreach (var child in _contextChildren)
+                        child.Value = child.ValueGetter(value);
+                }
+            }
+        }
+
+        private IEnumerable<Node> GenerateChildrenImpl(Type type)
+        {
+            IEnumerable<MemberInfo> properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            IEnumerable<MemberInfo> fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
+            IEnumerable<MemberInfo> all = properties.Union(fields);
+
+            return all.Select(GenerateChild);
+        }
 
         public override void SerializeOverride(Stream stream)
         {
@@ -45,11 +104,6 @@ namespace BinarySerialization.Graph
         public override void Deserialize(StreamLimiter stream)
         {
             DeserializeOverride(stream);
-        }
-
-        public override BinarySerializationContext CreateSerializationContext()
-        {
-            return SerializationContext;
         }
 
         public override Endianness Endianness { get; set; }

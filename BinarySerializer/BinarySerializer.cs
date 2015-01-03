@@ -93,7 +93,7 @@ namespace BinarySerialization
         /// <param name="stream">The stream to which the graph is to be serialized.</param>
         /// <param name="value">The object at the root of the graph to serialize.</param>
         /// <param name="context">An optional serialization context.</param>
-        public void Serialize(Stream stream, object value, BinarySerializationContext context = null)
+        public void Serialize(Stream stream, object value, object context = null)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream");
@@ -131,10 +131,8 @@ namespace BinarySerialization
         /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
-        /// <param name="formatProvider">An optional formatter.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(Stream stream, BinarySerializationContext context = null,
-            IFormatProvider formatProvider = null)
+        public T Deserialize<T>(Stream stream, object context = null)
         {
             lock (_graphCacheLock)
             {
