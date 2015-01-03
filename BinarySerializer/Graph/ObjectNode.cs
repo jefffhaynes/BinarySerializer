@@ -104,6 +104,9 @@ namespace BinarySerialization.Graph
 
             set
             {
+                _cachedValue = value;
+                _isCacheDirty = false;
+
                 if (value == null)
                 {
                     _setValueType = null;

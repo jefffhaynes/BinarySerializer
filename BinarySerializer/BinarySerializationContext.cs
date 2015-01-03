@@ -22,29 +22,6 @@ namespace BinarySerialization
 		}
 
         /// <summary>
-        /// Initializes a new instance of the BinarySerializationContext class with a parent and parentContext.  The parent
-        /// type will be inferred from the parent.
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="parentContext"></param>
-        /// <exception cref="NullReferenceException">Thrown if the parent is null.</exception>
-        internal BinarySerializationContext(object parent, BinarySerializationContext parentContext)
-            : this(parent, parent.GetType(), parentContext)
-        {
-            
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the BinarySerializationContext class with a parent.
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <exception cref="NullReferenceException">Thrown if the parent is null.</exception>
-        public BinarySerializationContext(object parent)
-            : this(parent, parent.GetType(), null)
-        {
-        }
-
-        /// <summary>
         /// The parent in the object graph of the object being serialized.
         /// </summary>
 		public object Parent { get; set; }
