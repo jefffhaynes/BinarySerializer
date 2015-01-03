@@ -152,7 +152,7 @@ namespace BinarySerialization
         /// <param name="data">The byte array from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(byte[] data, BinarySerializationContext context = null)
+        public T Deserialize<T>(byte[] data, object context = null)
         {
             return Deserialize<T>(new MemoryStream(data), context);
         }
