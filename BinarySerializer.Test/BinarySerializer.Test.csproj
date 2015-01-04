@@ -71,6 +71,7 @@
     <Compile Include="Endianness\EndiannessTests.cs" />
     <Compile Include="ItemLength\ItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemConstLengthClass.cs" />
+    <Compile Include="ItemLength\ItemLengthListOfByteArrayClass.cs" />
     <Compile Include="Misc\AbstractClass.cs" />
     <Compile Include="Misc\AbstractClassContainer.cs" />
     <Compile Include="Misc\AsbtractClassTests.cs" />

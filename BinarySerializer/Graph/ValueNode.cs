@@ -213,10 +213,18 @@ namespace BinarySerialization.Graph
                     break;
                 case SerializedType.ByteArray:
                     {
-                        if (FieldLengthBinding == null)
-                            throw new InvalidOperationException("No length specified on byte array.");
+                        int effectiveLength;
+                        if (length != null)
+                            effectiveLength = length.Value;
+                        else if (FieldLengthBinding != null)
+                            effectiveLength = (int)FieldLengthBinding.Value;
+                        else if (ItemLengthBinding != null)
+                            effectiveLength = (int)ItemLengthBinding.Value;
+                        else if (FieldCountBinding != null)
+                            effectiveLength = (int) FieldCountBinding.Value;
+                        else throw new InvalidOperationException("No length specified on byte array.");
 
-                        value = reader.ReadBytes((int)FieldLengthBinding.Value);
+                        value = reader.ReadBytes(effectiveLength);
                         break;
                     }
                 case SerializedType.NullTerminatedString:
