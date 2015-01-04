@@ -30,7 +30,7 @@ namespace BinarySerialization.Graph
 
         protected override long CountNodeOverride()
         {
-            return ChildCount;
+            return ChildType.IsPrimitive ? GetCollectionCount() : ChildCount;
         }
 
         protected override object GetLastItemValueOverride()

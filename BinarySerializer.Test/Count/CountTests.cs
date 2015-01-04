@@ -35,5 +35,14 @@ namespace BinarySerializer.Test.Count
             var actual = Roundtrip(new ConstCountClass { Field = new List<string>(TestSequence.Take(2)) });
             Assert.AreEqual(2, actual.Field.Count);
         }
+
+        [TestMethod]
+        public void PrimitiveArrayBindingTest()
+        {
+            var expected = new PrimitiveArrayBindingClass {Ints = new[] {1, 2, 3}};
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Ints.Length, actual.ItemCount);
+        }
     }
 }
