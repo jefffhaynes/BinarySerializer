@@ -1,6 +1,6 @@
 namespace BinarySerializer.Test.Enums
 {
-    public enum BaseTypeEnumValues : ushort
+    public enum BaseTypeEnumValues : byte
     {
         A,
         B,

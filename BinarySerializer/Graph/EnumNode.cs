@@ -72,7 +72,10 @@ namespace BinarySerialization.Graph
                 var enumInfo = new EnumInfo();
 
                 /* If any are specified, build dictionary of them one time */
-                if (enumAttributes.Any(enumAttribute => enumAttribute.Value != null))
+                if (enumAttributes.Any(enumAttribute => enumAttribute.Value != null) ||
+                    serializedType == SerializedType.NullTerminatedString || 
+                    serializedType == SerializedType.SizedString ||
+                    serializedType == SerializedType.LengthPrefixedString)
                 {
                     enumInfo.EnumValues = enumAttributes.ToDictionary(enumAttribute => enumAttribute.Key,
                         enumAttribute =>
