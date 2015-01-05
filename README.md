@@ -58,7 +58,7 @@ Note that it is not necessary that <code>NameLength</code> contains the length o
 See below for a summary all possible bindings and attributes.
 
 ## Default Behavior ##
-Although most behavior can be overridden, in many cases the serializer will attempt to guess the intended behavior based on class design.  For example, in the following class a null-terminated string will be used during serialization as deserialization would be impossible without more information.
+Although most behavior can be overridden, in many cases the serializer will attempt to guess the intended behavior based on class design.  For example, in the following class a null-terminated string will be used during serialization as deserialization would be otherwise be impossible without more information.
 
     public class MyUnboundClass
     {
