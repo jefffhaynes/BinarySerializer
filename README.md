@@ -259,7 +259,7 @@ The ItemSerializeUntil attribute can be used to terminate a collection when an i
      }
 </code>
 
-## SerializeAsEnumAttribute ##
+### SerializeAsEnumAttribute ###
 
 The SerializeAsEnum attribute allows you specify an alternate value for an enum to be used during the operation.
 
@@ -272,10 +272,6 @@ The SerializeAsEnum attribute allows you specify an alternate value for an enum 
         [SerializeAsEnum("Charlie")]
         C
     }
-
-### Advanced Usage ###
-
-That's the basics.  Everything else is for special cases.
 
 ## Enums ##
 Enums can be used to create expressive definitions.  Depending on what attributes are specified enums will be interpreted by the serializer as either the underlying value, the literal value of the enum, or a value specified with the SerializeAsEnum attribute.  In the following example, the field will be serialized using the enum underlying byte.
