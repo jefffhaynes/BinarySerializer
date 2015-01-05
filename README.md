@@ -38,7 +38,7 @@ Note that we're using properties and fields interchangeably; they are treated eq
 
 The most powerful feature of BinarySerializer is the ability to bind attributes to other fields in the object graph.  Using the available attributes, this approach can allow for interop with complex formats and protocols.  One of the simplest examples of this is field length binding.
 
-    public class MyBoundClass
+    public class Person
     {
         [FieldOrder(0)]
         public byte NameLength { get; set; }
@@ -50,18 +50,16 @@ The most powerful feature of BinarySerializer is the ability to bind attributes 
     
     ...
     
-    var myBoundClass = new MyBoundClass { Name = "Alice" };
+    var person = new Person { Name = "Alice" };
 
 ![](/BinarySerializer.Docs/SimpleBinding_2.png)
 
-*Note that it is not necessary that <code>NameLength</code> contains the length of the <code>Name</code> field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the <code>NameLength</code> value will be used to correctly deserialize the <code>Name</code> field.*
-
-See below for a summary all possible bindings and attributes.
+**Note that it is not necessary that NameLength contains the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.**
 
 ### Default Behavior ###
 Although most behavior can be overridden, in many cases the serializer will attempt to guess the intended behavior based on class design.  For example, in the following class a null-terminated string will be used during serialization as deserialization would be otherwise be impossible without more information.
 
-    public class MyUnboundClass
+    public class Person2
     {
         [FieldOrder(0)]
         public string Name { get; set; }
