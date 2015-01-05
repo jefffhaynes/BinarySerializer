@@ -52,6 +52,7 @@ namespace BinarySerialization
         /// </summary>
         public Endianness Endianness { get; set; }
 
+
         public override void Write(Int16 value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;

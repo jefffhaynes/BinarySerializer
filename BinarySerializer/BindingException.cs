@@ -3,17 +3,22 @@ using System.Runtime.Serialization;
 
 namespace BinarySerialization
 {
+    /// <summary>
+    /// Represents an binding exception.
+    /// </summary>
     public class BindingException : Exception
     {
-        public BindingException()
+        internal BindingException()
         {
         }
 
-        public BindingException(string message) : base(message)
+        internal BindingException(string message)
+            : base(message)
         {
         }
 
-        public BindingException(string message, Exception inner) : base(message, inner)
+        internal BindingException(string message, Exception inner)
+            : base(message, inner)
         {
         }
     }

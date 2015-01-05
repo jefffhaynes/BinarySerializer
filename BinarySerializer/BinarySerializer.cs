@@ -28,6 +28,9 @@ namespace BinarySerialization
         private const Endianness DefaultEndianness = Endianness.Little;
         private Endianness _endianness;
 
+        /// <summary>
+        /// Constructs an instance of BinarySerializer.
+        /// </summary>
         public BinarySerializer()
         {
             Endianness = DefaultEndianness;
@@ -116,12 +119,13 @@ namespace BinarySerialization
         /// <summary>
         ///     Calculates the serialized length of the object.
         /// </summary>
-        /// <param name="o">The object.</param>
+        /// <param name="value">The object.</param>
+        /// <param name="context">An optional context.</param>
         /// <returns>The length of the specified object graph when serialized.</returns>
-        public long SizeOf(object o)
+        public long SizeOf(object value, object context = null)
         {
             var nullStream = new NullStream();
-            Serialize(nullStream, o);
+            Serialize(nullStream, value, context);
             return nullStream.Length;
         }
 
