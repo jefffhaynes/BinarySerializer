@@ -74,11 +74,11 @@ Although most behavior can be overridden, in many cases the serializer will atte
 
 There are a number of attributes that can be used to control how your fields are serialized.  Following is a summary with examples:
 
-### Ignore ###
+### IgnoreAttribute ###
 
 Any field or property with an Ignore attribute will not be included in serialization or deserialization.  However, these fields can still be used in bindings.  This can be used to create "dummy" properties that perform some conversion or computation; however, better practice for this is to define a value converter (see below).
 
-### SerializeAs ###
+### SerializeAsAttribute ###
 
 In general you shouldn't need this as most things tend to work themselves out.  However, you can always override the default behavior by specifying SerializeAs.  This can also be used to specify encodings and endianness if needed.
 
@@ -90,7 +90,7 @@ In general you shouldn't need this as most things tend to work themselves out.  
     public uint SectorCountBig { get; set; }
 
 
-### FieldOrder ###
+### FieldOrderAttribute ###
 
 Again, this attribute is required on any field/property in a class with more than one field or property.  Only relative value matters.  Base values are serialized before dervied values.
 
@@ -108,7 +108,7 @@ Again, this attribute is required on any field/property in a class with more tha
         public int C;
     }
 
-### FieldLength ###
+### FieldLengthAttribute ###
 The most basic attribute, this can be used to either specify bound or constant field length.  Field lengths can apply to anything that is sizeable; strings, arrays, lists, streams, and even complex objects.
 
     public class MyConstFieldClass
@@ -168,7 +168,7 @@ More generically some formats and protocols will define a set of fields of speci
 
 This is a pretty nasty way to define a specification, but again our goal here to maximize interoperability with existing formats and protocols and we may have no say in the matter.
 
-### FieldCount ###
+### FieldCountAttribute ###
 
 The FieldCount attribute is used to define how many items are contained in a collection.  In practice, this is either an array or a list with a single generic argument.
 
@@ -184,7 +184,7 @@ The FieldCount attribute is used to define how many items are contained in a col
 
 Note the special case of a byte array, for which length and count attributes are interchangeable.
 
-### ItemLength ###
+### ItemLengthAttribute ###
 
 This attribute can be used to control the length of items in a collection.
 
@@ -199,11 +199,11 @@ This attribute can be used to control the length of items in a collection.
     }
 
 
-### FieldOffset ###
+### FieldOffsetAttribute ###
 
 The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases, implicit offset (e.g. just define the structure) is preferable.  For an example application, see the ISO9660 example.
 
-### Subtype ###
+### SubtypeAttribute ###
 
 The Subtype attribute allows dynamic switching to subtypes based on a binding.
 
@@ -221,7 +221,7 @@ The Subtype attribute allows dynamic switching to subtypes based on a binding.
 
 It is not necessary that FrameType be correct during serialization; it will be updated with the appropriate value based on the instantiated type.  During deserialization the FrameType field will be used to construct the correct type.
 
-### SerializeWhen ###
+### SerializeWhenAttribute ###
 
 The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.
 
@@ -231,7 +231,7 @@ The SerializeWhen attribute can be used to conditionally serialize or deserializ
         public ReceivedSignalStrengthIndicator ReceivedSignalStrengthIndicator { get; set; }
 </code>
 
-### SerializeUntil ###
+### SerializeUntilAttribute ###
 
 The SerializedUntil attribute can be used to terminate a collection once a specified value is encountered.
 
@@ -241,7 +241,7 @@ The SerializedUntil attribute can be used to terminate a collection once a speci
         public List<DirectoryRecord> Records { get; set; }
 </code>
 
-### ItemSerializeUntil ###
+### ItemSerializeUntilAttribute ###
 
 The ItemSerializeUntil attribute can be used to terminate a collection when an item with a specified value is encountered.
 
@@ -259,6 +259,23 @@ The ItemSerializeUntil attribute can be used to terminate a collection when an i
      }
 </code>
 
+## SerializeAsEnumAttribute ##
+
+The SerializeAsEnum attribute allows you specify an alternate value for an enum to be used during the operation.
+
+    public enum Waypoints
+    {
+        [SerializeAsEnum("Alpha")]
+        A,
+        [SerializeAsEnum("Bravo")]
+        B,
+        [SerializeAsEnum("Charlie")]
+        C
+    }
+
+### Advanced Usage ###
+
+That's the basics.  Everything else is for special cases.
 
 ## Enums ##
 Enums can be used to create expressive definitions.  Depending on what attributes are specified enums will be interpreted by the serializer as either the underlying value, the literal value of the enum, or a value specified with the SerializeAsEnum attribute.  In the following example, the field will be serialized using the enum underlying byte.
@@ -297,3 +314,25 @@ In some cases you may be serializing or deserializing large amounts of data, whi
 </code>
 
 In this example, the Data property will be copied from the source stream during serialization.  On deserialization, the resulting object graph will contain a Streamlet object which references a section of the source stream and allows for deferred read access.  Note that this feature is only supported when the underlying source stream supports seeking.  When dealing with non-seekable streams (e.g. NetworkStream), it is better to deserialize the stream in frames or packets where possible rather than try to deserialize the entire stream (which in some cases may be open-ended) at once.
+
+## Encoding ##
+
+Text encoding can be specified by the <code>SerializeAsAttribute</code> and is inherited by all children unless overridden.
+
+    [SerializeAs(Encoding = "windows-1256")]
+    public string Name { get; set;  }
+    
+## Endianness ##
+
+A quiant topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or field-local.  If you're working in a system that deal entirely in big endian, you can simply do:
+
+    serializer.Endianness = Endianness.Big;
+    
+In other cases you may actually have a mix of big and little endian and again you can use the <code>SerializeAsAttribute</code> to specify endianness.  As with encoding, endianness is inherited through the graph heirarchy unless overridden by a child field.
+
+    [SerializeAs(Endianness = Endianness.Big)]
+    public uint SectorCountBig { get; set; }
+    
+## Exceptions ##
+
+If an exception does occur either during the initial reflection phase or subsequent serialization, every layer of the object graph with throw its own exception, keeping the prior exception as the inner exception.  Always check the inner exception for more details.
