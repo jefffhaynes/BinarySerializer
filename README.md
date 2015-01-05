@@ -70,6 +70,18 @@ There are a number of attributes that can be used to control how your fields are
 
 Any field or property with an Ignore attribute will not be included in serialization or deserialization.  However, these fields can still be used in bindings.  This can be used to create "dummy" properties that perform some conversion or computation; however, better practice for this is to define a value converter (see below).
 
+### SerializeAs ###
+
+In general you shouldn't need this as most things tend to work themselves out.  However, you can always override the default behavior by specifying SerializeAs.  This can also be used to specify encodings and endianness if needed.
+
+
+    [SerializeAs(Encoding = "windows-1256")]
+    public string Name { get; set;  }
+    
+    [SerializeAs(Endianness = Endianness.Big)]
+    public uint SectorCountBig { get; set; }
+
+
 ### FieldOrder ###
 
 Again, this attribute is required on any field/property in a class with more than one field or property.  Only relative value matters.  Base values are serialized before dervied values.
