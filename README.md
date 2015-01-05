@@ -1,7 +1,7 @@
 BinarySerializer
 ================
 
-A .NET declarative serialization framework for controlling formatting of data at the byte level.  BinarySerializer is designed to make interop with binary formats and protocols fast and simple.
+A .NET declarative serialization framework and Portable Class Library (PCL) for controlling formatting of data at the byte level.  BinarySerializer is designed to make interop with binary formats and protocols fast and simple.
 
 ## Field Ordering ##
 
@@ -272,6 +272,17 @@ The SerializeAsEnum attribute allows you specify an alternate value for an enum 
         [SerializeAsEnum("Charlie")]
         C
     }
+    
+## Performance ##
+
+Serialization and deserialization operations are broken into four phases.
+
+* Reflection
+* Value assignment
+* Binding
+* Serialization/Deserialization
+
+The first and most expensive stage is cached in memory for every type that the serializer encounters.  As such, it is best practice to create the serializer once and keep it around for subsequent operations.  If you are creating a new serializer each time, you'll be paying the reflection cost every time.
 
 ## Enums ##
 Enums can be used to create expressive definitions.  Depending on what attributes are specified enums will be interpreted by the serializer as either the underlying value, the literal value of the enum, or a value specified with the SerializeAsEnum attribute.  In the following example, the field will be serialized using the enum underlying byte.
@@ -332,3 +343,7 @@ In other cases you may actually have a mix of big and little endian and again yo
 ## Exceptions ##
 
 If an exception does occur either during the initial reflection phase or subsequent serialization, every layer of the object graph with throw its own exception, keeping the prior exception as the inner exception.  Always check the inner exception for more details.
+
+## Thread Safety ##
+
+An unfortunate side-effect of the caching behavior is that every serialization and deserialization operation is exclusively locked.  Maybe some day I'll try to emit implementations but that sounds like a lot of work and it wouldn't be as portable.  There may be a better design to alleviate locking but I haven't come up with it yet.
