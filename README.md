@@ -32,7 +32,7 @@ There is no completely reliable way to get member ordering from the CLR, so as o
 
     ...
 
-Note that we're using properties and fields interchangeably; both are treated the same by the serializer.
+> Note that we're using properties and fields interchangeably; they are treated equivalently by the serializer.
 
 ### Binding ###
 
@@ -54,7 +54,7 @@ The most powerful feature of BinarySerializer is the ability to bind attributes 
 
 ![](/BinarySerializer.Docs/SimpleBinding_2.png)
 
-Note that it is not necessary that <code>NameLength</code> contains the length of the <code>Name</code> field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the <code>NameLength</code> value will be used to correctly deserialize the <code>Name</code> field.
+> Note that it is not necessary that <code>NameLength</code> contains the length of the <code>Name</code> field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the <code>NameLength</code> value will be used to correctly deserialize the <code>Name</code> field.
 
 See below for a summary all possible bindings and attributes.
 
@@ -109,6 +109,7 @@ Again, this attribute is required on any field/property in a class with more tha
     }
 
 #### FieldLengthAttribute ####
+
 The most basic attribute, this can be used to either specify bound or constant field length.  Field lengths can apply to anything that is sizeable; strings, arrays, lists, streams, and even complex objects.
 
     public class MyConstFieldClass
@@ -182,7 +183,7 @@ The FieldCount attribute is used to define how many items are contained in a col
         public List<Entry> Entries { get; set; }
     }
 
-Note the special case of a byte array, for which length and count attributes are interchangeable.
+> Note the special case of a byte array, for which length and count attributes are interchangeable.
 
 #### ItemLengthAttribute ####
 
@@ -223,41 +224,34 @@ It is not necessary that FrameType be correct during serialization; it will be u
 
 #### SerializeWhenAttribute ####
 
-The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.
+The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  Multiple SerializeWhen attributes will be OR'd together.
 
-<code>
-  [SerializeWhen("ControllerHardwareVersion", HardwareVersion.XBeeSeries1, AncestorType = typeof(FrameContext), Mode = RelativeSourceMode.FindAncestor)]
-        [SerializeWhen("ControllerHardwareVersion", HardwareVersion.XBeeProSeries1, AncestorType = typeof(FrameContext), Mode = RelativeSourceMode.FindAncestor)]
-        public ReceivedSignalStrengthIndicator ReceivedSignalStrengthIndicator { get; set; }
-</code>
+    [SerializeWhen("ControllerHardwareVersion", HardwareVersion.XBeeSeries1)]
+    [SerializeWhen("ControllerHardwareVersion", HardwareVersion.XBeeProSeries1)]
+    public ReceivedSignalStrengthIndicator ReceivedSignalStrengthIndicator { get; set; }
 
 #### SerializeUntilAttribute ####
 
 The SerializedUntil attribute can be used to terminate a collection once a specified value is encountered.
 
-<code>
-        [FieldOffset("FirstSector", ConverterType = typeof(SectorByteConverter))]
-        [SerializeUntil((byte)0)]
-        public List<DirectoryRecord> Records { get; set; }
-</code>
+    [SerializeUntil((byte)0)]
+    public List<DirectoryRecord> Records { get; set; }
 
 #### ItemSerializeUntilAttribute ####
 
 The ItemSerializeUntil attribute can be used to terminate a collection when an item with a specified value is encountered.
 
-<code>
-     public class Toy
-     {
-         public string Name { get; set; }
-         public bool IsLast { get; set; }
-     }
+    public class Toy
+    {
+        public string Name { get; set; }
+        public bool IsLast { get; set; }
+    }
      
-     public class ToyChest
-     {
-         [ItemSerializeUntil("IsLast", true)]
-         public List&lt;Toy&gt; Toys { get; set; }
-     }
-</code>
+    public class ToyChest
+    {
+        [ItemSerializeUntil("IsLast", true)]
+        public List&lt;Toy&gt; Toys { get; set; }
+    }
 
 #### SerializeAsEnumAttribute ####
 
@@ -282,7 +276,7 @@ Serialization and deserialization operations are broken into four phases.
 * Binding
 * Serialization/Deserialization
 
-The first and most expensive stage is cached in memory for every type that the serializer encounters.  As such, it is best practice to create the serializer once and keep it around for subsequent operations.  If you are creating a new serializer each time, you'll be paying the reflection cost every time.
+> The first and most expensive stage is cached in memory for every type that the serializer encounters.  As such, it is best practice to create the serializer once and keep it around for subsequent operations.  If you are creating a new serializer each time, you'll be paying the reflection cost every time.
 
 ### Enums ###
 Enums can be used to create expressive definitions.  Depending on what attributes are specified enums will be interpreted by the serializer as either the underlying value, the literal value of the enum, or a value specified with the SerializeAsEnum attribute.  In the following example, the field will be serialized using the enum underlying byte.
