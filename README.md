@@ -5,7 +5,7 @@ A .NET declarative serialization framework for controlling formatting of data at
 
 ## Field Ordering ##
 
-There is no completely reliable way to get POCO member ordering from the CLR, so as of 3.0 FieldOrder attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first, followed by any derived classes.  For example, the following class will serialize in the order A B C.
+There is no completely reliable way to get member ordering from the CLR, so as of 3.0 FieldOrder attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first, followed by any derived classes.  For example, the following class will serialize in the order A B C.
 
     public class MyBaseClass
     {
@@ -25,6 +25,8 @@ There is no completely reliable way to get POCO member ordering from the CLR, so
 
     var stream = new MemoryStream();
     var serializer = new BinarySerializer();
+    
+    var myDerivedClass = new MyDerivedClass();
 
     serializer.Serialize(stream, myDerivedClass);
 
@@ -44,6 +46,10 @@ The most powerful feature of BinarySerializer is the ability to bind attributes 
         [FieldLength("NameLength")]
         public string Name { get; set; }
     }
+    
+    ...
+    
+    var myBoundClass = new MyBoundClass { Name = "Alice" };
 
 ![](/BinarySerializer.Docs/SimpleBinding_2.png)
 
