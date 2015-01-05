@@ -71,15 +71,16 @@ Although most behavior can be overridden, in many cases the serializer will atte
     }
 
 
-### Attributes ###
+Attributes
+----------
 
 There are a number of attributes that can be used to control how your fields are serialized.  Following is a summary with examples:
 
-#### IgnoreAttribute ####
+### IgnoreAttribute ###
 
 Any field or property with an Ignore attribute will not be included in serialization or deserialization.  However, these fields can still be used in bindings.  This can be used to create "dummy" properties that perform some conversion or computation; however, better practice for this is to define a value converter (see below).
 
-#### SerializeAsAttribute ####
+### SerializeAsAttribute ###
 
 In general you shouldn't need this as most things tend to work themselves out.  However, you can always override the default behavior by specifying SerializeAs.  This can also be used to specify encodings and endianness if needed.
 
@@ -90,7 +91,7 @@ In general you shouldn't need this as most things tend to work themselves out.  
     [SerializeAs(Endianness = Endianness.Big)]
     public uint SectorCountBig { get; set; }
 
-#### FieldOrderAttribute ####
+### FieldOrderAttribute ###
 
 Again, this attribute is required on any field/property in a class with more than one field or property.  Only relative value matters.  Base values are serialized before dervied values.
 
@@ -108,7 +109,7 @@ Again, this attribute is required on any field/property in a class with more tha
         public int C;
     }
 
-#### FieldLengthAttribute ####
+### FieldLengthAttribute ###
 
 The most basic attribute, this can be used to either specify bound or constant field length.  Field lengths can apply to anything that is sizeable; strings, arrays, lists, streams, and even complex objects.
 
@@ -169,7 +170,7 @@ More generically some formats and protocols will define a set of fields of speci
 
 This is a pretty nasty way to define a specification, but again our goal here to maximize interoperability with existing formats and protocols and we may have no say in the matter.
 
-#### FieldCountAttribute ####
+### FieldCountAttribute ###
 
 The FieldCount attribute is used to define how many items are contained in a collection.  In practice, this is either an array or a list with a single generic argument.
 
@@ -185,7 +186,7 @@ The FieldCount attribute is used to define how many items are contained in a col
 
 Note the special case of a byte array, for which length and count attributes are interchangeable.
 
-#### ItemLengthAttribute ####
+### ItemLengthAttribute ###
 
 This attribute can be used to control the length of items in a collection.
 
@@ -200,11 +201,11 @@ This attribute can be used to control the length of items in a collection.
     }
 
 
-#### FieldOffsetAttribute ####
+### FieldOffsetAttribute ###
 
 The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases, implicit offset (e.g. just define the structure) is preferable.  For an example application, see the ISO9660 example.
 
-#### SubtypeAttribute ####
+### SubtypeAttribute ###
 
 The Subtype attribute allows dynamic switching to subtypes based on a binding.
 
@@ -222,7 +223,7 @@ The Subtype attribute allows dynamic switching to subtypes based on a binding.
 
 It is not necessary that FrameType be correct during serialization; it will be updated with the appropriate value based on the instantiated type.  During deserialization the FrameType field will be used to construct the correct type.
 
-#### SerializeWhenAttribute ####
+### SerializeWhenAttribute ###
 
 The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  Multiple SerializeWhen attributes will be OR'd together.
 
@@ -230,14 +231,14 @@ The SerializeWhen attribute can be used to conditionally serialize or deserializ
     [SerializeWhen("ControllerHardwareVersion", HardwareVersion.XBeeProSeries1)]
     public ReceivedSignalStrengthIndicator ReceivedSignalStrengthIndicator { get; set; }
 
-#### SerializeUntilAttribute ####
+### SerializeUntilAttribute ###
 
 The SerializedUntil attribute can be used to terminate a collection once a specified value is encountered.
 
     [SerializeUntil((byte)0)]
     public List<DirectoryRecord> Records { get; set; }
 
-#### ItemSerializeUntilAttribute ####
+### ItemSerializeUntilAttribute ###
 
 The ItemSerializeUntil attribute can be used to terminate a collection when an item with a specified value is encountered.
 
@@ -253,7 +254,7 @@ The ItemSerializeUntil attribute can be used to terminate a collection when an i
         public List<Toy> Toys { get; set; }
     }
 
-#### SerializeAsEnumAttribute ####
+### SerializeAsEnumAttribute ###
 
 The SerializeAsEnum attribute allows you specify an alternate value for an enum to be used during the operation.
 
