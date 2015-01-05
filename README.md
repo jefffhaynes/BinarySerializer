@@ -392,3 +392,7 @@ If an exception does occur either during the initial reflection phase or subsequ
 ### Thread Safety ###
 
 An unfortunate side-effect of the caching behavior is that every serialization and deserialization operation is exclusively locked.  Maybe some day I'll try to emit implementations but that sounds like a lot of work and it wouldn't be as portable.  There may be a better design to alleviate locking but I haven't come up with it yet.
+
+## Examples ##
+
+See [XBee]: https://github.com/jefffhaynes/XBee
