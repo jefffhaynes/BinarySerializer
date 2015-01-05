@@ -45,7 +45,7 @@ The most powerful feature of BinarySerializer is the ability to bind attributes 
         public string Name { get; set; }
     }
 
-!(/BinarySerializer.Docs/SimpleBinding_2.png)
+![](/BinarySerializer.Docs/SimpleBinding_2.png)
 
 It is not necessary that <code>NameLength</code> contains the length of <code>Name</code> as that value will be computed during serialization and updated in the serialized graph.  During deserialization the <code>NameLength</code> value will be used to correctly deserialize the <code>Name</code> field.  See below for a summary all possible bindings and attributes.
 
