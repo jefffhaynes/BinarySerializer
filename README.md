@@ -5,7 +5,7 @@ A .NET declarative serialization framework and Portable Class Library (PCL) for 
 
 ## Field Ordering ##
 
-There is no completely reliable way to get member ordering from the CLR, so as of 3.0 FieldOrder attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first, followed by any derived classes.  For example, the following class will serialize in the order A B C.
+There is no completely reliable way to get member ordering from the CLR, so as of 3.0 <code>FieldOrder</code> attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first, followed by any derived classes.  For example, the following class will serialize in the order A B C.
 
     public class MyBaseClass
     {
@@ -32,10 +32,11 @@ There is no completely reliable way to get member ordering from the CLR, so as o
 
     ...
 
-Note that we're using properties and fields interchangeably.  Both are treated as the same by the serializer.
+Note that we're using properties and fields interchangeably; both are treated the same by the serializer.
 
 ## Binding ##
-The most powerful feature of BinarySerializer is the ability to bind attributes of fields to other fields in the object graph.  Using the various attributes, this approach can allow for interop with complex formats and protocols.  One of the simplest examples of this is field length binding.
+
+The most powerful feature of BinarySerializer is the ability to bind attributes to other fields in the object graph.  Using the available attributes, this approach can allow for interop with complex formats and protocols.  One of the simplest examples of this is field length binding.
 
     public class MyBoundClass
     {
@@ -321,6 +322,57 @@ In some cases you may be serializing or deserializing large amounts of data, whi
 </code>
 
 In this example, the Data property will be copied from the source stream during serialization.  On deserialization, the resulting object graph will contain a Streamlet object which references a section of the source stream and allows for deferred read access.  Note that this feature is only supported when the underlying source stream supports seeking.  When dealing with non-seekable streams (e.g. NetworkStream), it is better to deserialize the stream in frames or packets where possible rather than try to deserialize the entire stream (which in some cases may be open-ended) at once.
+
+## Advanced Binding ##
+
+Binding is not limited to fields in the same object, but can be used to reference arbitrary fields accessible throughout the graph.  Ancestors in the graph can be located by either type or level and used as references for binding.
+
+    public class Container
+    {
+        [FieldOrder(0)]
+        public int NameLength { get; set; }
+        
+        [FieldOrder(1)]
+        public Person Person { get; set; }
+    }
+    
+    public class Person
+    {
+        [FieldOrder(0)]
+        [FieldLength("NameLength", Mode = RelativeSourceMode.FindAncestor, AncestorType = typeof(Container))]
+        public string Name1 { get; set; }
+        
+        // is equivalent to
+        
+        [FieldOrder(1)]
+        [FieldLength("NameLength", Mode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
+        public string Name2 { get; set; }
+    }
+    
+### Value Converter ###
+
+Sometimes binding directly to a source is insuffient and in those cases your best option is to define a value converter, which can be specified as part of the binding.
+
+    class SectorByteConverter : IValueConverter
+    {
+        public object Convert(object value, object converterParameter, BinarySerializationContext context)
+        {
+            var sector = (uint) value;
+            var iso = context.FindAncestor<Iso9660>();
+            var sectorSize = iso.PrimaryVolumeDescriptor.SectorSize;
+            return sector*sectorSize;
+        }
+
+        public object ConvertBack(object value, object converterParameter, BinarySerializationContext context)
+        {
+            // etc
+        }
+    }
+    
+    
+    [FieldOffset("FirstSector", ConverterType = typeof(SectorByteConverter))]
+    [SerializeUntil((byte)0)]
+    public List<DirectoryRecord> Records { get; set; }
 
 ## Encoding ##
 
