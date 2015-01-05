@@ -54,7 +54,7 @@ The most powerful feature of BinarySerializer is the ability to bind attributes 
 
 ![](/BinarySerializer.Docs/SimpleBinding_2.png)
 
-Note that it is not necessary that <code>NameLength</code> contains the length of the <code>Name</code> field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the <code>NameLength</code> value will be used to correctly deserialize the <code>Name</code> field.
+*Note that it is not necessary that <code>NameLength</code> contains the length of the <code>Name</code> field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the <code>NameLength</code> value will be used to correctly deserialize the <code>Name</code> field.*
 
 See below for a summary all possible bindings and attributes.
 
@@ -74,7 +74,7 @@ Although most behavior can be overridden, in many cases the serializer will atte
 Attributes
 ----------
 
-There are a number of attributes that can be used to control how your fields are serialized.  Following is a summary with examples:
+There are a number of attributes that can be used to control how your fields are serialized.
 
 ### IgnoreAttribute ###
 
