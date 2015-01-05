@@ -130,7 +130,7 @@ Alternatively, this same field could be bound to a different field:
         public string Name { get; set; }
     }
 
-In some cases you may want to limit a collection of items by the total serialized length:
+In some cases you may want to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the resulting serialized length in bytes.
 
     public class MyBoundCollectionClass
     {
@@ -142,7 +142,7 @@ In some cases you may want to limit a collection of items by the total serialize
         public List<string> Names { get; set; }
     }
 
-More generically some formats and protocols will define a set of fields of specified size, with "optional" trailing fields:
+Some formats and protocols will define a set of fields of specified size, with "optional" trailing fields.  This is a pretty nasty way to define a specification, but our goal here is to maximize interoperability with existing specs and we may have not have a say in the matter.  In the following example, EntryLength will either be 32 or 36, depending on whether or not Age is specified.  If age is null during serialization, the framework will update EntryLength to be 32, or 36 if Age is present.  If EntryLength is 32 during deserialization, the framework will return a null value for Age.  If EntryLength is 36, the framework will deserialize the Age value.
 
     public class Person
     {
@@ -151,10 +151,7 @@ More generically some formats and protocols will define a set of fields of speci
         public string Name { get; set; }
 
         [FieldOrder(1)]
-        public int Age { get; set; }
-        
-        [FieldOrder(2)]
-        public string OptionalDescription { get; set; }
+        public int? Age { get; set; }
     }
 
     public class PersonEntry
@@ -167,7 +164,6 @@ More generically some formats and protocols will define a set of fields of speci
         public Person Person { get; set; }
      }
 
-This is a pretty nasty way to define a specification, but again our goal here to maximize interoperability with existing formats and protocols and we may have no say in the matter.
 
 ### FieldCountAttribute ###
 
@@ -316,6 +312,14 @@ In some cases you may be serializing or deserializing large amounts of data, whi
     public Stream Data { get; set; }
 
 In this example, the Data property will be copied from the source stream during serialization.  On deserialization, the resulting object graph will contain a Streamlet object which references a section of the source stream and allows for deferred read access.  Note that this feature is only supported when the underlying source stream supports seeking.  When dealing with non-seekable streams (e.g. NetworkStream), it is better to deserialize the stream in frames or packets where possible rather than try to deserialize the entire stream (which in some cases may be open-ended) at once.
+
+### Nullable types ###
+
+Nullable types are supported and are serialized, if present, as the "underlying" type.
+
+### Nulls ###
+
+Null values are allowed; however, bear in mind that this can lead to unstable definitions.  While serialization may work, deserialization may fail if the framework is unable to deduce which fields are meant to be null and which are not.
 
 ### Advanced Binding ###
 
