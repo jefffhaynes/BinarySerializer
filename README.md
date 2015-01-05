@@ -1,7 +1,7 @@
 BinarySerializer
 ================
 
-A .NET declarative serialization framework and Portable Class Library (PCL) for controlling formatting of data at the byte level.  BinarySerializer is designed to make working with binary formats and protocols fast and simple.
+A .NET declarative serialization framework for controlling formatting of data at the byte level.  BinarySerializer is designed to make working with binary formats and protocols fast and simple.  The Portable Class Library (PCL) is available on [nuget](https://www.nuget.org/packages/BinarySerializer).
 
 ### Field Ordering ###
 
