@@ -5,7 +5,7 @@ A .NET declarative serialization framework for controlling formatting of data at
 
 ## Field Ordering ##
 
-There is no completely reliable way to get POCO member ordering from the CLR so as of 3.0 FieldOrder attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first, followed by any derived classes.  For example, the following class will serialize as A, B, C.
+There is no completely reliable way to get POCO member ordering from the CLR, so as of 3.0 FieldOrder attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first, followed by any derived classes.  For example, the following class will serialize in the order A B C.
 
     public class MyBaseClass
     {
@@ -30,7 +30,7 @@ There is no completely reliable way to get POCO member ordering from the CLR so 
 
     ...
 
- Also note that we're using properties and fields interchangeably.  Both are treated equally by the serializer.
+Note that we're using properties and fields interchangeably.  Both are treated as the same by the serializer.
 
 ## Binding ##
 The most powerful feature of BinarySerializer is the ability to bind attributes of fields to other fields in the object graph.  Using the various attributes, this approach can allow for interop with complex formats and protocols.  One of the simplest examples of this is field length binding.
@@ -45,7 +45,7 @@ The most powerful feature of BinarySerializer is the ability to bind attributes 
         public string Name { get; set; }
     }
 
-It is not necessary that <code>NameLength</code> contains the length of <code>Name</code> as that value will be computed during serialization.  During deserialization the <code>NameLength</code> value will be used to correctly deserialize the <code>Name</code> field.  See below for a summary all possible bindings and attributes.
+It is not necessary that <code>NameLength</code> contains the length of <code>Name</code> as that value will be computed during serialization and updated in the serialized graph.  During deserialization the <code>NameLength</code> value will be used to correctly deserialize the <code>Name</code> field.  See below for a summary all possible bindings and attributes.
 
 ## Default Behavior ##
 Although most behavior can be overridden, in many cases the serializer will attempt to guess the intended behavior based on class design.  For example, in the following class a null-terminated string will be used during serialization as deserialization would be impossible without more information.
