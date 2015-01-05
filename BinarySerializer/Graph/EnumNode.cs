@@ -9,7 +9,7 @@ namespace BinarySerialization.Graph
     internal class EnumNode : ValueNode
     {
         private static readonly IDictionary<Type, EnumInfo> EnumTypeInfo = new Dictionary<Type, EnumInfo>();
-        private static object EnumTypeInfoLock = new object();
+        private static readonly object EnumTypeInfoLock = new object();
 
         public EnumNode(Node parent, Type type) : base(parent, type)
         {

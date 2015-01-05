@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace BinarySerialization.Graph
 {
-    internal class ArrayNode : CollectionNode
+    internal sealed class ArrayNode : CollectionNode
     {
         public ArrayNode(Node parent, Type type) : base(parent, type)
         {
