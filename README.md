@@ -268,7 +268,7 @@ The SerializeAsEnum attribute allows you specify an alternate value for an enum 
     }
 
 Other Stuff
----------------
+-----------
 
 ### Performance ###
 
