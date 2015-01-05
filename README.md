@@ -444,4 +444,4 @@ An unfortunate side-effect of the caching behavior is that every serialization a
 
 ## Examples ##
 
-See [XBee](https://github.com/jefffhaynes/XBee) for a complete example of BinarySerializer in action.
+See [XBee](https://github.com/jefffhaynes/XBee) for a complete example of BinarySerializer use.
