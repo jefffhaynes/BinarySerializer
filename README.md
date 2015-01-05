@@ -267,7 +267,7 @@ The SerializeAsEnum attribute allows you specify an alternate value for an enum 
         C
     }
 
-Advanced Topics
+Other Stuff
 ---------------
 
 ### Performance ###
@@ -309,13 +309,11 @@ You could also specify this to be a fixed-sized string, etc.
 
 In some cases you may be serializing or deserializing large amounts of data, which is logically broken into blocks or volumes.  In these cases it may be adventageous to defer handling of those sections, rather than dealing with large in-memory buffers.
 
-<code>
-        [FieldOrder(22)]
-        [SerializeWhen("RecordType", RecordType.File)]
-        [FieldOffset("FirstSectorData", ConverterType = typeof(SectorByteConverter))]
-        [FieldLength("DataLength")]
-        public Stream Data { get; set; }
-</code>
+    [FieldOrder(22)]
+    [SerializeWhen("RecordType", RecordType.File)]
+    [FieldOffset("FirstSectorData", ConverterType = typeof(SectorByteConverter))]
+    [FieldLength("DataLength")]
+    public Stream Data { get; set; }
 
 In this example, the Data property will be copied from the source stream during serialization.  On deserialization, the resulting object graph will contain a Streamlet object which references a section of the source stream and allows for deferred read access.  Note that this feature is only supported when the underlying source stream supports seeking.  When dealing with non-seekable streams (e.g. NetworkStream), it is better to deserialize the stream in frames or packets where possible rather than try to deserialize the entire stream (which in some cases may be open-ended) at once.
 
