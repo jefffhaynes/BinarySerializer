@@ -118,7 +118,7 @@ The most basic attribute, this can be used to either specify bound or constant f
         public string Name { get; set; }
     }
 
-Alternatively, this same field could be bound to a different field:
+Alternatively, the length of the Name field could be bound to a NameLength field:
 
     public class MyBoundFieldClass
     {
