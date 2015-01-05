@@ -27,7 +27,7 @@ namespace BinarySerializer.Test.Length
         [TestMethod]
         public void LengthBindingTest2()
         {
-            var expected = new BoundLengthClass<byte[]> { Field = Encoding.ASCII.GetBytes("FieldValue") };
+            var expected = new BoundLengthClass<byte[]> { Field = System.Text.Encoding.ASCII.GetBytes("FieldValue") };
             var actual = Roundtrip(expected);
             Assert.AreEqual(expected.Field.Length, actual.FieldLengthField);
             Assert.IsTrue(expected.Field.SequenceEqual(actual.Field));

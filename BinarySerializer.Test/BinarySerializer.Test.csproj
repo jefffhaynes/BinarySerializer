@@ -68,6 +68,8 @@
     <Compile Include="Count\ConstCountClass.cs" />
     <Compile Include="Count\CountTests.cs" />
     <Compile Include="Count\PrimitiveArrayBindingClass.cs" />
+    <Compile Include="Encoding\EncodingClass.cs" />
+    <Compile Include="Encoding\EncodingTests.cs" />
     <Compile Include="Endianness\EndiannessClass.cs" />
     <Compile Include="Endianness\EndiannessTests.cs" />
     <Compile Include="Enums\BaseTypeEnumAsStringClass.cs" />
