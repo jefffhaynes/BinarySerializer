@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace BinarySerialization.Graph
+namespace BinarySerialization.TypeGraph
 {
     internal abstract class CollectionNode : ContainerNode
     {

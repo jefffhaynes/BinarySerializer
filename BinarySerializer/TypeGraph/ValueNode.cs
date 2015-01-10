@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace BinarySerialization.Graph
+namespace BinarySerialization.TypeGraph
 {
     internal class ValueNode : Node
     {
@@ -34,34 +34,34 @@ namespace BinarySerialization.Graph
         {
         }
 
-        public override object BoundValue
+        //public override object BoundValue
+        //{
+        //    get
+        //    {
+        //        object value;
+
+        //        if (Bindings.Any())
+        //        {
+        //            value = Bindings[0].GetTargetValue();
+
+        //            if (Bindings.Count != 1)
+        //            {
+        //                var targetValues = Bindings.Select(binding => binding.GetTargetValue()).ToArray();
+
+        //                if (targetValues.Any(v => !value.Equals(v)))
+        //                    throw new BindingException(
+        //                        "Multiple bindings to a single source must have equivalent target values.");
+        //            }
+        //        }
+        //        else value = Value;
+
+        //        return ConvertToFieldType(value);
+        //    }
+        //}
+
+        public override void SerializeOverride(Stream stream, object value)
         {
-            get
-            {
-                object value;
-
-                if (Bindings.Any())
-                {
-                    value = Bindings[0].GetTargetValue();
-
-                    if (Bindings.Count != 1)
-                    {
-                        var targetValues = Bindings.Select(binding => binding.GetTargetValue()).ToArray();
-
-                        if (targetValues.Any(v => !value.Equals(v)))
-                            throw new BindingException(
-                                "Multiple bindings to a single source must have equivalent target values.");
-                    }
-                }
-                else value = Value;
-
-                return ConvertToFieldType(value);
-            }
-        }
-
-        public override void SerializeOverride(Stream stream)
-        {
-            Serialize(stream, BoundValue, GetSerializedType());
+            Serialize(stream, value, GetSerializedType());
         }
 
         protected void Serialize(Stream stream, object value, SerializedType serializedType, int? length = null)
@@ -132,17 +132,17 @@ namespace BinarySerialization.Graph
                         {
                             Array.Resize(ref data, length.Value);
                         }
-                        else if (FieldLengthBinding != null)
-                        {
-                            if (FieldLengthBinding.IsConst)
-                                Array.Resize(ref data, (int)FieldLengthBinding.BoundValue);
-                        }
-                        else if (ItemLengthBinding != null)
-                        {
-                            if (ItemLengthBinding.IsConst)
-                                Array.Resize(ref data, (int)ItemLengthBinding.BoundValue);
-                        }
-                        else throw new InvalidOperationException("No field length specified on sized string.");
+                        //else if (FieldLengthBinding != null)
+                        //{
+                        //    if (FieldLengthBinding.IsConst)
+                        //        Array.Resize(ref data, (int)FieldLengthBinding.BoundValue);
+                        //}
+                        //else if (ItemLengthBinding != null)
+                        //{
+                        //    if (ItemLengthBinding.IsConst)
+                        //        Array.Resize(ref data, (int)ItemLengthBinding.BoundValue);
+                        //}
+                        //else throw new InvalidOperationException("No field length specified on sized string.");
 
                         writer.Write(data);
 
@@ -163,10 +163,10 @@ namespace BinarySerialization.Graph
             }
         }
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override object DeserializeOverride(StreamLimiter stream)
         {
             var value = Deserialize(stream, GetSerializedType());
-            Value = ConvertToFieldType(value);
+            return ConvertToFieldType(value);
         }
 
         protected object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
@@ -213,18 +213,18 @@ namespace BinarySerialization.Graph
                     break;
                 case SerializedType.ByteArray:
                     {
-                        int effectiveLength;
-                        if (length != null)
-                            effectiveLength = length.Value;
-                        else if (FieldLengthBinding != null)
-                            effectiveLength = (int)FieldLengthBinding.Value;
-                        else if (ItemLengthBinding != null)
-                            effectiveLength = (int)ItemLengthBinding.Value;
-                        else if (FieldCountBinding != null)
-                            effectiveLength = (int) FieldCountBinding.Value;
-                        else throw new InvalidOperationException("No length specified on byte array.");
+                        //int effectiveLength;
+                        //if (length != null)
+                        //    effectiveLength = length.Value;
+                        //else if (FieldLengthBinding != null)
+                        //    effectiveLength = (int)FieldLengthBinding.Value;
+                        //else if (ItemLengthBinding != null)
+                        //    effectiveLength = (int)ItemLengthBinding.Value;
+                        //else if (FieldCountBinding != null)
+                        //    effectiveLength = (int) FieldCountBinding.Value;
+                        //else throw new InvalidOperationException("No length specified on byte array.");
 
-                        value = reader.ReadBytes(effectiveLength);
+                        value = reader.ReadBytes(length.Value);
                         break;
                     }
                 case SerializedType.NullTerminatedString:
@@ -235,16 +235,16 @@ namespace BinarySerialization.Graph
                     }
                 case SerializedType.SizedString:
                     {
-                        int effectiveLength;
-                        if (length != null)
-                            effectiveLength = length.Value;
-                        else if (FieldLengthBinding != null)
-                            effectiveLength = (int)FieldLengthBinding.Value;
-                        else if (ItemLengthBinding != null)
-                            effectiveLength = (int)ItemLengthBinding.Value;
-                        else throw new InvalidOperationException("No length specified on sized string.");
+                        //int effectiveLength;
+                        //if (length != null)
+                        //    effectiveLength = length.Value;
+                        //else if (FieldLengthBinding != null)
+                        //    effectiveLength = (int)FieldLengthBinding.Value;
+                        //else if (ItemLengthBinding != null)
+                        //    effectiveLength = (int)ItemLengthBinding.Value;
+                        //else throw new InvalidOperationException("No length specified on sized string.");
 
-                        byte[] data = reader.ReadBytes(effectiveLength);
+                        byte[] data = reader.ReadBytes(length.Value);
                         value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
                         break;
                     }
@@ -303,7 +303,7 @@ namespace BinarySerialization.Graph
 
         public override string ToString()
         {
-            return Name == null ? Value.ToString() : string.Format("{0}: {1}", Name, Value);
+            return Name ?? base.ToString();
         }
     }
 }

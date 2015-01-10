@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace BinarySerialization.Graph
+namespace BinarySerialization.TypeGraph
 {
     internal class CustomNode : Node
     {

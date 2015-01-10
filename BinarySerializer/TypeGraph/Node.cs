@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace BinarySerialization.Graph
+namespace BinarySerialization.TypeGraph
 {
     internal abstract class Node
     {
@@ -35,36 +36,35 @@ namespace BinarySerialization.Graph
         private readonly Encoding _encoding;
         private readonly Endianness? _endianness;
 
-        private readonly IntegerBinding _fieldCountBinding;
-        private readonly IntegerBinding _fieldLengthBinding;
-        private readonly IntegerBinding _fieldOffsetBinding;
-        private readonly bool _ignore;
-        private readonly IntegerBinding _itemLengthBinding;
-        //private readonly ObjectBinding _serializeUntilBinding;
-        private readonly ObjectBinding _itemSerializeUntilBinding;
-        private readonly Lazy<List<Binding>> _lazyBindings;
+        //private readonly IntegerBinding _fieldCountBinding;
+        //private readonly IntegerBinding _fieldLengthBinding;
+        //private readonly IntegerBinding _fieldOffsetBinding;
+        //private readonly bool _ignore;
+        //private readonly IntegerBinding _itemLengthBinding;
+        //private readonly ObjectBinding _itemSerializeUntilBinding;
+        //private readonly Lazy<List<Binding>> _lazyBindings;
         private readonly Lazy<List<Node>> _lazyChildren;
         private readonly int? _order;
         private readonly SerializedType? _serializedType;
-        private readonly ObjectBinding _subtypeBinding;
+        //private readonly ObjectBinding _subtypeBinding;
         private readonly Type _type;
-        private readonly ConditionalBinding[] _whenBindings;
+        //private readonly ConditionalBinding[] _whenBindings;
 
         protected Node(Node parent)
         {
             Parent = parent;
 
             _lazyChildren = new Lazy<List<Node>>();
-            _lazyBindings = new Lazy<List<Binding>>();
+            //_lazyBindings = new Lazy<List<Binding>>();
 
-            if (Parent is CollectionNode && Parent.ItemLengthAttribute != null)
-            {
-                _itemLengthBinding = new IntegerBinding(Parent, Parent.ItemLengthAttribute,
-                    () => MeasureNodeOverride());
-            }
+            //if (Parent is CollectionNode && Parent.ItemLengthAttribute != null)
+            //{
+            //    _itemLengthBinding = new IntegerBinding(Parent, Parent.ItemLengthAttribute,
+            //        () => MeasureOverride());
+            //}
 
 
-            Bind();
+            //Bind();
         }
 
         protected Node(Node parent, Type type) : this(parent)
@@ -98,11 +98,7 @@ namespace BinarySerialization.Graph
 
             object[] attributes = memberInfo.GetCustomAttributes(true);
 
-            IgnoreAttribute ignoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
-            _ignore = ignoreAttribute != null;
-
-            if (_ignore)
-                return;
+            IgnoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
 
             FieldOrderAttribute fieldOrderAttribute = attributes.OfType<FieldOrderAttribute>().SingleOrDefault();
             if (fieldOrderAttribute != null)
@@ -119,66 +115,66 @@ namespace BinarySerialization.Graph
                 }
           
 
-            FieldLengthAttribute fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
-            if (fieldLengthAttribute != null)
-                _fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, () => MeasureNodeOverride());
+            //FieldLengthAttribute fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
+            //if (fieldLengthAttribute != null)
+            //    _fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, () => MeasureOverride());
 
-            FieldCountAttribute fieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
-            if (fieldCountAttribute != null)
-                _fieldCountBinding = new IntegerBinding(this, fieldCountAttribute, () => CountNodeOverride());
+            FieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
 
-            FieldOffsetAttribute fieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
-            if (fieldOffsetAttribute != null)
-                _fieldOffsetBinding = new IntegerBinding(this, fieldOffsetAttribute);
+            FieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
 
             SerializeWhenAttribute[] serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
-            if (serializeWhenAttributes.Length > 0)
-            {
-                _whenBindings =
-                    serializeWhenAttributes.Select(
-                        attribute => new ConditionalBinding(this, attribute, null)).ToArray();
-            }
+            SerializeWhenAttributes = new ReadOnlyCollection<SerializeWhenAttribute>(serializeWhenAttributes);
 
-            SubtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
-            if (SubtypeAttributes.Length != 0)
-            {
-                List<ObjectBinding> subtypeBindings =
-                    SubtypeAttributes.Select(subtypeAttribute => new ObjectBinding(this, SubtypeAttributes[0], () =>
-                    {
-                        Type valueType = GetValueTypeOverride();
+            //if (serializeWhenAttributes.Length > 0)
+            //{
+            //    _whenBindings =
+            //        serializeWhenAttributes.Select(
+            //            attribute => new ConditionalBinding(this, attribute, null)).ToArray();
+            //}
 
-                        if (valueType == null)
-                            return null;
+            var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
+            SubtypeAttributes = new ReadOnlyCollection<SubtypeAttribute>(subtypeAttributes);
 
-                        List<SubtypeAttribute> matchingSubtypes =
-                            SubtypeAttributes.Where(attribute => attribute.Subtype == valueType).ToList();
+            //if (SubtypeAttributes.Length != 0)
+            //{
+            //    List<ObjectBinding> subtypeBindings =
+            //        SubtypeAttributes.Select(subtypeAttribute => new ObjectBinding(this, SubtypeAttributes[0], () =>
+            //        {
+            //            Type valueType = GetValueTypeOverride();
 
-                        if (!matchingSubtypes.Any())
-                        {
-                            /* Try to fall back on base types */
-                            matchingSubtypes =
-                                SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType))
-                                    .ToList();
+            //            if (valueType == null)
+            //                return null;
 
-                            if (!matchingSubtypes.Any())
-                                return null;
-                        }
+            //            List<SubtypeAttribute> matchingSubtypes =
+            //                SubtypeAttributes.Where(attribute => attribute.Subtype == valueType).ToList();
 
-                        if (matchingSubtypes.Count() > 1)
-                            throw new BindingException("Subtypes must have unique types.");
+            //            if (!matchingSubtypes.Any())
+            //            {
+            //                /* Try to fall back on base types */
+            //                matchingSubtypes =
+            //                    SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType))
+            //                        .ToList();
 
-                        return matchingSubtypes.Single().Value;
-                    })).ToList();
+            //                if (!matchingSubtypes.Any())
+            //                    return null;
+            //            }
+
+            //            if (matchingSubtypes.Count() > 1)
+            //                throw new BindingException("Subtypes must have unique types.");
+
+            //            return matchingSubtypes.Single().Value;
+            //        })).ToList();
 
 
-                IEnumerable<IGrouping<BindingInfo, SubtypeAttribute>> bindingGroups =
-                    SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
+            //    IEnumerable<IGrouping<BindingInfo, SubtypeAttribute>> bindingGroups =
+            //        SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
 
-                if (bindingGroups.Count() > 1)
-                    throw new BindingException("Subtypes must all use the same binding configuration.");
+            //    if (bindingGroups.Count() > 1)
+            //        throw new BindingException("Subtypes must all use the same binding configuration.");
 
-                _subtypeBinding = subtypeBindings.First();
-            }
+            //    _subtypeBinding = subtypeBindings.First();
+            //}
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             //if (SerializeUntilAttribute != null)
@@ -191,11 +187,11 @@ namespace BinarySerialization.Graph
 
             ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
 
-            if (ItemSerializeUntilAttribute != null)
-            {
-                _itemSerializeUntilBinding = new ObjectBinding(this, ItemSerializeUntilAttribute,
-                    GetLastItemValueOverride);
-            }
+            //if (ItemSerializeUntilAttribute != null)
+            //{
+            //    _itemSerializeUntilBinding = new ObjectBinding(this, ItemSerializeUntilAttribute,
+            //        GetLastItemValueOverride);
+            //}
         }
 
         protected Node Parent { get; private set; }
@@ -215,65 +211,37 @@ namespace BinarySerialization.Graph
 
         public Func<object, object> ValueGetter { get; private set; }
 
-        public virtual object Value { get; set; }
-
-        public virtual object BoundValue
-        {
-            get { return Value; }
-        }
-
         public virtual IEnumerable<Node> Children
         {
             get { return _lazyChildren.Value; }
         }
 
-        public List<Binding> Bindings
-        {
-            get { return _lazyBindings.Value; }
-        }
+        //public List<Binding> Bindings
+        //{
+        //    get { return _lazyBindings.Value; }
+        //}
 
         protected int ChildCount
         {
             get { return _lazyChildren.Value.Count; }
         }
 
+        public IgnoreAttribute IgnoreAttribute { get; private set; }
+        public FieldLengthAttribute FieldLengthAttribute { get; private set; }
+
+        public FieldCountAttribute FieldCountAttribute { get; private set; }
+
+        public FieldOffsetAttribute FieldOffsetAttribute { get; private set; }
+
         public ItemLengthAttribute ItemLengthAttribute { get; private set; }
 
-        public IntegerBinding FieldLengthBinding
-        {
-            get { return _fieldLengthBinding; }
-        }
+        public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; private set; }
 
-        public IntegerBinding FieldCountBinding
-        {
-            get { return _fieldCountBinding; }
-        }
-
-        public IntegerBinding FieldOffsetBinding
-        {
-            get { return _fieldOffsetBinding; }
-        }
-
-        public IntegerBinding ItemLengthBinding
-        {
-            get { return _itemLengthBinding; }
-        }
-
-        public ObjectBinding SubtypeBinding
-        {
-            get { return _subtypeBinding; }
-        }
-
-        public ObjectBinding ItemSerializeUntilBinding
-        {
-            get { return _itemSerializeUntilBinding; }
-        }
+        public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; private set; } 
 
         public SerializeUntilAttribute SerializeUntilAttribute { get; private set; }
 
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; private set; }
-
-        public SubtypeAttribute[] SubtypeAttributes { get; private set; }
 
         public virtual Endianness Endianness
         {
@@ -304,21 +272,21 @@ namespace BinarySerialization.Graph
             get { return _order; }
         }
 
-        public bool Ignore
-        {
-            get { return _ignore; }
-        }
+        //public bool Ignore
+        //{
+        //    get { return _ignore; }
+        //}
 
-        public bool ShouldSerialize
-        {
-            get
-            {
-                if (_ignore)
-                    return false;
+        //public bool ShouldSerialize
+        //{
+        //    get
+        //    {
+        //        if (_ignore)
+        //            return false;
 
-                return _whenBindings == null || _whenBindings.Any(binding => binding.Value);
-            }
-        }
+        //        return _whenBindings == null || _whenBindings.Any(binding => binding.Value);
+        //    }
+        //}
 
         /// <summary>
         ///     Occurrs after a member has been serialized.
@@ -340,28 +308,28 @@ namespace BinarySerialization.Graph
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 
-        protected virtual long MeasureNodeOverride()
-        {
-            var nullStream = new NullStream();
-            var streamKeeper = new StreamKeeper(nullStream);
-            Serialize(streamKeeper);
-            return streamKeeper.RelativePosition;
-        }
+        //protected virtual long MeasureOverride(object value)
+        //{
+        //    var nullStream = new NullStream();
+        //    var streamKeeper = new StreamKeeper(nullStream);
+        //    Serialize(streamKeeper, value);
+        //    return streamKeeper.RelativePosition;
+        //}
 
-        protected virtual long CountNodeOverride()
-        {
-            throw new NotSupportedException();
-        }
+        //protected virtual long CountNodeOverride()
+        //{
+        //    throw new NotSupportedException();
+        //}
 
-        protected virtual Type GetValueTypeOverride()
-        {
-            throw new NotSupportedException();
-        }
+        //protected virtual Type GetValueTypeOverride()
+        //{
+        //    throw new NotSupportedException();
+        //}
 
-        protected virtual object GetLastItemValueOverride()
-        {
-            throw new NotSupportedException();
-        }
+        //protected virtual object GetLastItemValueOverride()
+        //{
+        //    throw new NotSupportedException();
+        //}
 
         protected void AddChild(Node child)
         {
@@ -379,63 +347,63 @@ namespace BinarySerialization.Graph
         {
             foreach (Node child in Children)
             {
-                child.Unbind();
+                //child.Unbind();
                 RemoveEvents(child);
             }
 
             _lazyChildren.Value.Clear();
         }
 
-        public void Bind()
-        {
-            if (FieldLengthBinding != null)
-                FieldLengthBinding.Bind();
+        //public void Bind()
+        //{
+        //    if (FieldLengthBinding != null)
+        //        FieldLengthBinding.Bind();
 
-            if (FieldCountBinding != null)
-                FieldCountBinding.Bind();
+        //    if (FieldCountBinding != null)
+        //        FieldCountBinding.Bind();
 
-            if (FieldOffsetBinding != null)
-                FieldOffsetBinding.Bind();
+        //    if (FieldOffsetBinding != null)
+        //        FieldOffsetBinding.Bind();
 
-            if (ItemLengthBinding != null)
-                ItemLengthBinding.Bind();
+        //    if (ItemLengthBinding != null)
+        //        ItemLengthBinding.Bind();
 
-            if (SubtypeBinding != null)
-                SubtypeBinding.Bind();
+        //    if (SubtypeBinding != null)
+        //        SubtypeBinding.Bind();
 
-            if (_whenBindings != null)
-            {
-                foreach (ConditionalBinding conditionalBinding in _whenBindings)
-                    conditionalBinding.Bind();
-            }
+        //    if (_whenBindings != null)
+        //    {
+        //        foreach (ConditionalBinding conditionalBinding in _whenBindings)
+        //            conditionalBinding.Bind();
+        //    }
 
-            foreach (Node child in Children)
-                child.Bind();
-        }
+        //    foreach (Node child in Children)
+        //        child.Bind();
+        //}
 
-        public void Unbind()
-        {
-            if (FieldLengthBinding != null)
-                FieldLengthBinding.Unbind();
+        //public void Unbind()
+        //{
+        //    if (FieldLengthBinding != null)
+        //        FieldLengthBinding.Unbind();
 
-            if (FieldCountBinding != null)
-                FieldCountBinding.Unbind();
+        //    if (FieldCountBinding != null)
+        //        FieldCountBinding.Unbind();
 
-            if (FieldOffsetBinding != null)
-                FieldOffsetBinding.Unbind();
+        //    if (FieldOffsetBinding != null)
+        //        FieldOffsetBinding.Unbind();
 
-            if (ItemLengthBinding != null)
-                ItemLengthBinding.Unbind();
+        //    if (ItemLengthBinding != null)
+        //        ItemLengthBinding.Unbind();
 
-            if (SubtypeBinding != null)
-                SubtypeBinding.Unbind();
+        //    if (SubtypeBinding != null)
+        //        SubtypeBinding.Unbind();
 
-            if (_whenBindings != null)
-            {
-                foreach (ConditionalBinding conditionalBinding in _whenBindings)
-                    conditionalBinding.Unbind();
-            }
-        }
+        //    if (_whenBindings != null)
+        //    {
+        //        foreach (ConditionalBinding conditionalBinding in _whenBindings)
+        //            conditionalBinding.Unbind();
+        //    }
+        //}
 
         public SerializedType GetSerializedType(Type referenceType = null)
         {
@@ -449,7 +417,7 @@ namespace BinarySerialization.Graph
             if (DefaultSerializedTypes.TryGetValue(referenceType, out serializedType))
             {
                 /* Special cases */
-                if (serializedType == SerializedType.NullTerminatedString && FieldLengthBinding != null)
+                if (serializedType == SerializedType.NullTerminatedString && FieldLengthAttribute != null)
                     serializedType = SerializedType.SizedString;
 
                 if (serializedType == SerializedType.NullTerminatedString && Parent.ItemLengthAttribute != null)
@@ -461,11 +429,11 @@ namespace BinarySerialization.Graph
             return SerializedType.Default;
         }
 
-        public virtual void Serialize(Stream stream)
+        public virtual void Serialize(Stream stream, object value)
         {
             try
             {
-                SerializeOverride(stream);
+                SerializeOverride(stream, value);
             }
             catch (IOException)
             {
@@ -481,11 +449,11 @@ namespace BinarySerialization.Graph
             }
         }
 
-        public virtual void Deserialize(StreamLimiter stream)
+        public virtual object Deserialize(StreamLimiter stream)
         {
             try
             {
-                DeserializeOverride(stream);
+                return DeserializeOverride(stream);
             }
             catch (EndOfStreamException e)
             {
@@ -506,9 +474,9 @@ namespace BinarySerialization.Graph
             }
         }
 
-        public abstract void SerializeOverride(Stream stream);
+        public abstract void SerializeOverride(Stream stream, object value);
 
-        public abstract void DeserializeOverride(StreamLimiter stream);
+        public abstract object DeserializeOverride(StreamLimiter stream);
 
         public Node GetBindingSource(BindingInfo binding)
         {
@@ -569,13 +537,13 @@ namespace BinarySerialization.Graph
             return null;
         }
 
-        public virtual BinarySerializationContext CreateSerializationContext()
-        {
-            if (Parent == null)
-                return null;
+        //public virtual BinarySerializationContext CreateSerializationContext()
+        //{
+        //    if (Parent == null)
+        //        return null;
 
-            return new BinarySerializationContext(Parent.Value, Parent.Type, Parent.CreateSerializationContext());
-        }
+        //    return new BinarySerializationContext(Parent.Value, Parent.Type, Parent.CreateSerializationContext());
+        //}
 
         protected void AddEvents(Node child)
         {

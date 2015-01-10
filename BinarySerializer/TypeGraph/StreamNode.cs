@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace BinarySerialization.Graph
+namespace BinarySerialization.TypeGraph
 {
     internal class StreamNode : Node
     {
@@ -14,7 +14,7 @@ namespace BinarySerialization.Graph
         {
         }
 
-        protected override long MeasureNodeOverride()
+        protected override long MeasureOverride()
         {
             var valueStream = (Stream) Value;
 

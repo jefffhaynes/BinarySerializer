@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BinarySerialization.Graph
+namespace BinarySerialization.TypeGraph
 {
     internal abstract class Binding
     {
@@ -10,29 +10,29 @@ namespace BinarySerialization.Graph
         private readonly Node _targetNode;
         private readonly BindingInfo _bindingInfo;
 
-        protected Binding(Node targetNode, IBindableFieldAttribute attribute, Func<object> targetEvaluator = null)
+        protected Binding(Node targetNode, BindingInfo binding)
         {
-            if (string.IsNullOrEmpty(attribute.Path))
-                return;
+            //if (string.IsNullOrEmpty(attribute.Path))
+            //    return;
 
-            _targetNode = targetNode;
-            _bindingInfo = attribute.Binding;
+            //_targetNode = targetNode;
+            //_bindingInfo = attribute.Binding;
 
-            if (attribute.ConverterType != null)
-            {
-                var valueConverter = Activator.CreateInstance(attribute.ConverterType) as IValueConverter;
+            //if (attribute.ConverterType != null)
+            //{
+            //    var valueConverter = Activator.CreateInstance(attribute.ConverterType) as IValueConverter;
 
-                if (valueConverter == null)
-                {
-                    var message = string.Format("{0} does not implement IValueConverter.", attribute.ConverterType);
-                    throw new InvalidOperationException(message);
-                }
+            //    if (valueConverter == null)
+            //    {
+            //        var message = string.Format("{0} does not implement IValueConverter.", attribute.ConverterType);
+            //        throw new InvalidOperationException(message);
+            //    }
 
-                _valueConverter = valueConverter;
-                _converterParameter = attribute.ConverterParameter;
-            }
+            //    _valueConverter = valueConverter;
+            //    _converterParameter = attribute.ConverterParameter;
+            //}
 
-            _targetEvaluator = targetEvaluator;
+            //_targetEvaluator = targetEvaluator;
         }
 
         public Node GetSource()

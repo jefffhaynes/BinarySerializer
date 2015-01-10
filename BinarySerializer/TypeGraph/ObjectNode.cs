@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace BinarySerialization.Graph
+namespace BinarySerialization.TypeGraph
 {
     internal class ObjectNode : ContainerNode
     {
@@ -13,43 +13,14 @@ namespace BinarySerialization.Graph
         private readonly Dictionary<Type, List<Node>> _typeChildren = new Dictionary<Type, List<Node>>();
         private readonly object _typeChildrenLock = new object();
 
-        private Type _valueType;
-        private Type _setValueType;
+        //private Type _valueType;
+        //private Type _setValueType;
 
-        private bool _isCacheDirty = true;
-        private object _cachedValue;
-
-        public Type ValueType
-        {
-            get { return _valueType; }
-
-            private set
-            {
-                if (_valueType != value)
-                {
-                    ClearCache();
-
-                    ClearChildren();
-                    if (value != null && !Ignore)
-                    {
-                        List<Node> children;
-                        if (!_typeChildren.TryGetValue(value, out children))
-                        {
-                            /* Previously unseen graphType */
-                            GenerateChildren(value);
-                            children = _typeChildren[value];
-                        }
-
-                        AddChildren(children);
-                    }
-                    _valueType = value;
-                }
-            }
-        }
+        //private bool _isCacheDirty = true;
+        //private object _cachedValue;
 
         public ObjectNode(Node parent, Type type) : base(parent, type)
         {
-            ValueType = type;
         }
 
         public ObjectNode(Type type)
@@ -64,80 +35,84 @@ namespace BinarySerialization.Graph
 
             var type = GetMemberType(memberInfo);
 
-            ValueType = type;
+            var baseChild = GenerateChild(type);
 
-            if (SubtypeAttributes == null || SubtypeAttributes.Length <= 0) 
+            AddChild(baseChild);
+
+            /* Add subtypes, if any */
+            if (SubtypeAttributes == null || SubtypeAttributes.Count <= 0) 
                 return;
 
             var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
+
 
             foreach(var subType in subTypes)
                 GenerateChildren(subType);
         }
 
-        public override object Value
-        {
-            get
-            {
-                var valueType = ResolveValueType();
-                if (valueType == null)
-                    return null;
+        //public override object Value
+        //{
+        //    get
+        //    {
+        //        var valueType = ResolveValueType();
+        //        if (valueType == null)
+        //            return null;
 
-                ValueType = valueType;
+        //        ValueType = valueType;
 
-                if (!_isCacheDirty)
-                    return _cachedValue;
+        //        if (!_isCacheDirty)
+        //            return _cachedValue;
 
-                if (ValueType.IsAbstract)
-                    return null;
+        //        if (ValueType.IsAbstract)
+        //            return null;
 
-                var value = Activator.CreateInstance(ValueType);
+        //        var value = Activator.CreateInstance(ValueType);
 
-                foreach (var child in Children.Where(child => !child.Ignore))
-                    child.ValueSetter(value, child.Value);
+        //        foreach (var child in Children.Where(child => !child.Ignore))
+        //            child.ValueSetter(value, child.Value);
 
-                _cachedValue = value;
-                _isCacheDirty = false;
+        //        _cachedValue = value;
+        //        _isCacheDirty = false;
 
-                return value;
-            }
+        //        return value;
+        //    }
 
-            set
-            {
-                _cachedValue = value;
-                _isCacheDirty = false;
+        //    set
+        //    {
+        //        _cachedValue = value;
+        //        _isCacheDirty = false;
 
-                if (value == null)
-                {
-                    _setValueType = null;
-                    ValueType = null;
-                    return;
-                }
+        //        if (value == null)
+        //        {
+        //            _setValueType = null;
+        //            ValueType = null;
+        //            return;
+        //        }
 
-                _setValueType = value.GetType();
+        //        _setValueType = value.GetType();
 
-                ValueType = _setValueType;
+        //        ValueType = _setValueType;
 
-                UpdateSource(ValueType);
+        //        UpdateSource(ValueType);
 
-                foreach (var child in Children)
-                    child.Value = child.ValueGetter(value);
-            }
-        }
+        //        foreach (var child in Children)
+        //            child.Value = child.ValueGetter(value);
+        //    }
+        //}
 
         private IEnumerable<Node> GetSerializableChildren()
         {
             return Children.Where(child => child.ShouldSerialize);
         }
 
-        public override void SerializeOverride(Stream stream)
+        public override void SerializeOverride(Stream stream, object value)
         {
             var serializableChildren = GetSerializableChildren();
 
-            var serializationContext = CreateSerializationContext();
+            //var serializationContext = CreateSerializationContext();
             foreach (var child in serializableChildren)
             {
-                OnMemberSerializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
+                //OnMemberSerializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
                 using (new StreamResetter(stream, child.FieldOffsetBinding != null))
                 {
                     if (child.FieldOffsetBinding != null)
@@ -145,11 +120,11 @@ namespace BinarySerialization.Graph
 
                     child.Serialize(stream);
                 }
-                OnMemberSerialized(this, new MemberSerializedEventArgs(child.Name, child.BoundValue, serializationContext));
+                //OnMemberSerialized(this, new MemberSerializedEventArgs(child.Name, child.BoundValue, serializationContext));
             }
         }
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override object DeserializeOverride(StreamLimiter stream)
         {
             ClearCache();
 

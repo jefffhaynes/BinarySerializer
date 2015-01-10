@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using BinarySerialization.Graph;
+using BinarySerialization.TypeGraph;
 
 namespace BinarySerialization
 {

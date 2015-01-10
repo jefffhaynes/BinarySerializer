@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BinarySerialization.Graph
+namespace BinarySerialization.TypeGraph
 {
     internal class IntegerBinding : Binding
     {
