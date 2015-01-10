@@ -28,74 +28,74 @@ namespace BinarySerialization.TypeGraph
             _terminationValue = GetTerminationValue();
         }
 
-        protected override long CountNodeOverride()
-        {
-            return ChildType.IsPrimitive ? GetCollectionCount() : ChildCount;
-        }
+        //protected override long CountNodeOverride()
+        //{
+        //    return ChildType.IsPrimitive ? GetCollectionCount() : ChildCount;
+        //}
 
-        protected override object GetLastItemValueOverride()
-        {
-            var lastItem = Children.Last();
-            return lastItem.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
-        }
+        //protected override object GetLastItemValueOverride()
+        //{
+        //    var lastItem = Children.Last();
+        //    return lastItem.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
+        //}
 
-        public override void SerializeOverride(Stream stream)
+        public override void SerializeOverride(Stream stream, object value)
         {
             if (ChildType.IsPrimitive)
             {
-                SerializePrimitiveCollection(stream);
+                SerializePrimitiveCollection(stream, value);
             }
             else
             {
-                SerializeObjectCollection(stream);
+                SerializeObjectCollection(stream, value);
             }
         }
 
-        private void SerializePrimitiveCollection(Stream stream)
+        private void SerializePrimitiveCollection(Stream stream, object value)
         {
-            var dummyChild = (ValueNode)GenerateChild(ChildType);
+            //var dummyChild = (ValueNode)GenerateChild(ChildType);
 
-            int count = GetCollectionCount();
+            //int count = GetCollectionCount(value);
 
-            var writer = new EndianAwareBinaryWriter(stream, Endianness);
-            var childSerializedType = dummyChild.GetSerializedType();
+            //var writer = new EndianAwareBinaryWriter(stream, Endianness);
+            //var childSerializedType = dummyChild.GetSerializedType();
 
-            for (int i = 0; i < count; i++)
-            {
-                var value = GetPrimitiveValue(i);
-                dummyChild.Serialize(writer, value, childSerializedType);
-            }
+            //for (int i = 0; i < count; i++)
+            //{
+            //    var value = GetPrimitiveValue(i);
+            //    dummyChild.Serialize(writer, value, childSerializedType);
+            //}
         }
 
-        private void SerializeObjectCollection(Stream stream)
+        private void SerializeObjectCollection(Stream stream, object collection)
         {
-            foreach (var child in Children)
-                child.Serialize(stream);
 
             /* Handle termination case */
-            if (_terminationValue != null)
-            {
-                Node terminationChild = GenerateChild(_terminationValue.GetType());
-                terminationChild.Value = _terminationValue;
-                terminationChild.Serialize(stream);
-            }
+            //if (_terminationValue != null)
+            //{
+            //    Node terminationChild = GenerateChild(_terminationValue.GetType());
+            //    terminationChild.Value = _terminationValue;
+            //    terminationChild.Serialize(stream);
+            //}
         }
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override object DeserializeOverride(StreamLimiter stream)
         {
-            if (FieldLengthBinding != null)
-                stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);
+            //if (FieldLengthBinding != null)
+            //    stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);
 
-            var count = FieldCountBinding != null ? (int)FieldCountBinding.Value : int.MaxValue;
+            //var count = FieldCountBinding != null ? (int)FieldCountBinding.Value : int.MaxValue;
 
-            if (ChildType.IsPrimitive)
-            {
-                DeserializePrimitiveCollection(stream, count);
-            }
-            else
-            {
-                DeserializeObjectCollection(stream, count);
-            }
+            //if (ChildType.IsPrimitive)
+            //{
+            //    DeserializePrimitiveCollection(stream, count);
+            //}
+            //else
+            //{
+            //    DeserializeObjectCollection(stream, count);
+            //}
+
+            return null;
         }
 
         private void DeserializePrimitiveCollection(StreamLimiter stream, int count)
@@ -132,66 +132,66 @@ namespace BinarySerialization.TypeGraph
             }
         }
 
-        private void DeserializeObjectCollection(StreamLimiter stream, int count)
-        {
-            ClearChildren();
+        //private void DeserializeObjectCollection(StreamLimiter stream, int count)
+        //{
+        //    ClearChildren();
 
-            /* Prep termination case */
-            Node terminationChild = null;
-            if (_terminationValue != null)
-                terminationChild = GenerateChild(_terminationValue.GetType());
+        //    /* Prep termination case */
+        //    Node terminationChild = null;
+        //    if (_terminationValue != null)
+        //        terminationChild = GenerateChild(_terminationValue.GetType());
 
 
-            for (int i = 0; i < count; i++)
-            {
-                if (ShouldTerminate(stream))
-                    break;
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        if (ShouldTerminate(stream))
+        //            break;
 
-                /* Check termination case */
-                if (terminationChild != null)
-                {
-                    using (var streamResetter = new StreamResetter(stream))
-                    {
-                        terminationChild.Deserialize(stream);
+        //        /* Check termination case */
+        //        if (terminationChild != null)
+        //        {
+        //            using (var streamResetter = new StreamResetter(stream))
+        //            {
+        //                terminationChild.Deserialize(stream);
 
-                        if (terminationChild.Value.Equals(_terminationValue))
-                        {
-                            streamResetter.CancelReset();
-                            break;
-                        }
-                    }
-                }
+        //                if (terminationChild.Value.Equals(_terminationValue))
+        //                {
+        //                    streamResetter.CancelReset();
+        //                    break;
+        //                }
+        //            }
+        //        }
 
-                // TODO why am I generating the same graphType information over and over?
-                var child = GenerateChild(ChildType);
+        //        // TODO why am I generating the same graphType information over and over?
+        //        var child = GenerateChild(ChildType);
 
-                var childStream = child.ItemLengthBinding != null
-                    ? new StreamLimiter(stream, (long)child.ItemLengthBinding.Value)
-                    : stream;
+        //        var childStream = child.ItemLengthBinding != null
+        //            ? new StreamLimiter(stream, (long)child.ItemLengthBinding.Value)
+        //            : stream;
 
-                child.Deserialize(childStream);
+        //        child.Deserialize(childStream);
 
-                /* Check item termination case */
-                if (ItemSerializeUntilBinding != null)
-                {
-                    var itemTerminationValue = ItemSerializeUntilBinding.Value;
-                    var itemTerminationChild = child.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
+        //        /* Check item termination case */
+        //        if (ItemSerializeUntilBinding != null)
+        //        {
+        //            var itemTerminationValue = ItemSerializeUntilBinding.Value;
+        //            var itemTerminationChild = child.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
 
-                    if (itemTerminationChild.Value.Equals(itemTerminationValue))
-                    {
-                        if (!ItemSerializeUntilAttribute.ExcludeLastItem)
-                        {
-                            AddChild(child);
-                        }
-                        break;
-                    }
-                }
+        //            if (itemTerminationChild.Value.Equals(itemTerminationValue))
+        //            {
+        //                if (!ItemSerializeUntilAttribute.ExcludeLastItem)
+        //                {
+        //                    AddChild(child);
+        //                }
+        //                break;
+        //            }
+        //        }
 
-                AddChild(child);
-            }
+        //        AddChild(child);
+        //    }
 
-            Bind();
-        }
+        //    Bind();
+        //}
 
         private object GetTerminationValue()
         {
@@ -203,7 +203,7 @@ namespace BinarySerialization.TypeGraph
 
         protected abstract object CreatePrimitiveCollection(int size);
 
-        protected abstract int GetCollectionCount();
+        protected abstract int GetCollectionCount(object collection);
 
         protected abstract void SetPrimitiveValue(object item, int index);
 

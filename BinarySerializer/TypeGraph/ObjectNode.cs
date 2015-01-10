@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BinarySerialization.ValueGraph;
 
 namespace BinarySerialization.TypeGraph
 {
@@ -21,33 +22,44 @@ namespace BinarySerialization.TypeGraph
 
         public ObjectNode(Node parent, Type type) : base(parent, type)
         {
+            Construct();
         }
 
-        public ObjectNode(Type type)
-            : this(null, type)
-        {
-        }
+        //public ObjectNode(Type type)
+        //    : this(null, type)
+        //{
+        //    Construct();
+        //}
 
         public ObjectNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
-            if (memberInfo == null)
-                return;
+            Construct();
+            //if (memberInfo == null)
+            //    return;
 
-            var type = GetMemberType(memberInfo);
+            //var type = GetMemberType(memberInfo);
 
-            var baseChild = GenerateChild(type);
+            //var baseChild = GenerateChild(type);
 
-            AddChild(baseChild);
+            //AddChild(baseChild);
 
             /* Add subtypes, if any */
-            if (SubtypeAttributes == null || SubtypeAttributes.Count <= 0) 
-                return;
+            //if (SubtypeAttributes == null || SubtypeAttributes.Count <= 0) 
+            //    return;
 
-            var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
+            //var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
 
 
-            foreach(var subType in subTypes)
-                GenerateChildren(subType);
+            //foreach(var subType in subTypes)
+            //    GenerateChildren(subType);
+        }
+
+        private void Construct()
+        {
+            var children = GenerateChildrenImpl(Type);
+            AddChildren(children);
+            //var baseChild = GenerateChild(Type);
+            //AddChild(baseChild);
         }
 
         //public override object Value
@@ -102,67 +114,77 @@ namespace BinarySerialization.TypeGraph
 
         private IEnumerable<Node> GetSerializableChildren()
         {
-            return Children.Where(child => child.ShouldSerialize);
+            return Children.Where(child => child.IgnoreAttribute == null);
         }
 
-        public override void SerializeOverride(Stream stream, object value)
+        public override ValueGraphNode SerializeOverride(object value)
         {
             var serializableChildren = GetSerializableChildren();
+
+
+            var childrenValueNodes = serializableChildren.Select(child => child.Serialize(child.ValueGetter(value)));
+
+            return new ValueGraphObjectNode(childrenValueNodes);
 
             //var serializationContext = CreateSerializationContext();
-            foreach (var child in serializableChildren)
-            {
-                //OnMemberSerializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
-                using (new StreamResetter(stream, child.FieldOffsetBinding != null))
-                {
-                    if (child.FieldOffsetBinding != null)
-                        stream.Position = (long)child.FieldOffsetBinding.Value;
+            //foreach (var child in serializableChildren)
+            //{
+            //    var childValue = child.ValueGetter(value);
+            //    //OnMemberSerializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
+            //    //using (new StreamResetter(stream, child.FieldOffsetBinding != null))
+            //    //{
+            //    //    if (child.FieldOffsetBinding != null)
+            //    //        stream.Position = (long)child.FieldOffsetBinding.Value;
 
-                    child.Serialize(stream);
-                }
-                //OnMemberSerialized(this, new MemberSerializedEventArgs(child.Name, child.BoundValue, serializationContext));
-            }
+            //        child.Serialize(childValue);
+            //   // }
+            //    //OnMemberSerialized(this, new MemberSerializedEventArgs(child.Name, child.BoundValue, serializationContext));
+            //}
         }
 
-        public override object DeserializeOverride(StreamLimiter stream)
+        public override object DeserializeOverride(ValueGraphNode node)
         {
-            ClearCache();
+            //ClearCache();
 
-            var valueType = ResolveValueType();
-            if (valueType == null)
-                return;
+            //var valueType = ResolveValueType();
+            //if (valueType == null)
+            //    return;
 
-            ValueType = valueType;
+            //ValueType = valueType;
 
-            foreach (var child in Children)
-                child.Value = null;
+            //foreach (var child in Children)
+            //    child.Value = null;
+
+            //var type = Type;
+
+            //var value = Activator.CreateInstance(type);
 
             var serializableChildren = GetSerializableChildren();
 
-            if (FieldLengthBinding != null)
-                stream = new StreamLimiter(stream, (long) FieldLengthBinding.Value);
+            //if (FieldLengthBinding != null)
+            //    stream = new StreamLimiter(stream, (long) FieldLengthBinding.Value);
 
-            var serializationContext = CreateSerializationContext();
-            foreach (var child in serializableChildren.TakeWhile(child => !ShouldTerminate(stream)))
-            {
-                OnMemberDeserializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
-                using (new StreamResetter(stream, child.FieldOffsetBinding != null))
-                {
-                    if (child.FieldOffsetBinding != null)
-                        stream.Position = (long) child.FieldOffsetBinding.Value;
+            //var serializationContext = CreateSerializationContext();
+            //foreach (var child in serializableChildren.TakeWhile(child => !ShouldTerminate(stream)))
+            //{
+            //    //OnMemberDeserializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
+            //    //using (new StreamResetter(stream, child.FieldOffsetBinding != null))
+            //    //{
+            //    //    if (child.FieldOffsetBinding != null)
+            //    //        stream.Position = (long) child.FieldOffsetBinding.Value;
 
-                    child.Deserialize(stream);
+            //        var childValue = child.Deserialize(stream);
+            //        child.ValueSetter(value, childValue);
 
-                    ClearCache();
-                }
-                OnMemberDeserialized(this, new MemberSerializedEventArgs(child.Name, child.Value, serializationContext));
-            }
+            //    //    ClearCache();
+            //    //}
+            //    //OnMemberDeserialized(this, new MemberSerializedEventArgs(child.Name, child.Value, serializationContext));
+            //}
+
+            return null;
         }
 
-        private void ClearCache()
-        {
-            _isCacheDirty = true;
-        }
+
 
         private void GenerateChildren(Type type)
         {
@@ -184,7 +206,7 @@ namespace BinarySerialization.TypeGraph
 
             var children = all.Select(GenerateChild).OrderBy(child => child.Order).ToList();
 
-            var serializableChildren = children.Where(child => !child.Ignore).ToList();
+            var serializableChildren = children.Where(child => child.IgnoreAttribute != null).ToList();
 
             if (serializableChildren.Count > 1)
             {
@@ -212,54 +234,54 @@ namespace BinarySerialization.TypeGraph
             return children;
         }
 
-        private Type ResolveValueType()
-        {
-            if (SubtypeBinding == null || SubtypeBinding.Value == null)
-            {
-                return _setValueType ?? Type;
-            }
+        //private Type ResolveValueType()
+        //{
+        //    if (SubtypeBinding == null || SubtypeBinding.Value == null)
+        //    {
+        //        return _setValueType ?? Type;
+        //    }
 
-            var source = (ValueNode)SubtypeBinding.GetSource();
-            var bindingValue = SubtypeBinding.Value;
+        //    var source = (ValueNode)SubtypeBinding.GetSource();
+        //    var bindingValue = SubtypeBinding.Value;
 
-            var matchingAttribute =
-                SubtypeAttributes.SingleOrDefault(
-                    attribute => source.ConvertToFieldType(attribute.Value).Equals(bindingValue));
+        //    var matchingAttribute =
+        //        SubtypeAttributes.SingleOrDefault(
+        //            attribute => source.ConvertToFieldType(attribute.Value).Equals(bindingValue));
 
-            /* If we can't find a match, default our value to null */
-            return matchingAttribute == null ? null : matchingAttribute.Subtype;
-        }
+        //    /* If we can't find a match, default our value to null */
+        //    return matchingAttribute == null ? null : matchingAttribute.Subtype;
+        //}
 
-        private void UpdateSource(Type valueType)
-        {
-            if (SubtypeBinding == null || SubtypeBinding.Value == null)
-                return;
+        //private void UpdateSource(Type valueType)
+        //{
+        //    if (SubtypeBinding == null || SubtypeBinding.Value == null)
+        //        return;
 
-            List<SubtypeAttribute> matchingSubtypes =
-                         SubtypeAttributes.Where(attribute => attribute.Subtype == valueType).ToList();
+        //    List<SubtypeAttribute> matchingSubtypes =
+        //                 SubtypeAttributes.Where(attribute => attribute.Subtype == valueType).ToList();
 
-            if (!matchingSubtypes.Any())
-            {
-                /* Try to fall back on base types */
-                matchingSubtypes =
-                    SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType))
-                        .ToList();
+        //    if (!matchingSubtypes.Any())
+        //    {
+        //        /* Try to fall back on base types */
+        //        matchingSubtypes =
+        //            SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType))
+        //                .ToList();
 
-                if (!matchingSubtypes.Any())
-                    throw new BindingException("No matching subtype.");
-            }
+        //        if (!matchingSubtypes.Any())
+        //            throw new BindingException("No matching subtype.");
+        //    }
 
-            if (matchingSubtypes.Count() > 1)
-                throw new BindingException("Subtypes must have unique types.");
+        //    if (matchingSubtypes.Count() > 1)
+        //        throw new BindingException("Subtypes must have unique types.");
 
-            var value = matchingSubtypes.Single().Value;
-            var source = (ValueNode)SubtypeBinding.GetSource();
-            source.Value = source.ConvertToFieldType(value);
-        }
+        //    var value = matchingSubtypes.Single().Value;
+        //    var source = (ValueNode)SubtypeBinding.GetSource();
+        //    source.Value = source.ConvertToFieldType(value);
+        //}
 
-        protected override Type GetValueTypeOverride()
-        {
-            return ValueType;
-        }
+        //protected override Type GetValueTypeOverride()
+        //{
+        //    return ValueType;
+        //}
     }
 }

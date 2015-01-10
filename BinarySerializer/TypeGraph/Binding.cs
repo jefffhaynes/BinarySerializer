@@ -1,4 +1,5 @@
 ﻿using System;
+using BinarySerialization.ValueGraph;
 
 namespace BinarySerialization.TypeGraph
 {
@@ -10,10 +11,16 @@ namespace BinarySerialization.TypeGraph
         private readonly Node _targetNode;
         private readonly BindingInfo _bindingInfo;
 
-        protected Binding(Node targetNode, BindingInfo binding)
+        private Node _sourceNode;
+        private string _path;
+
+        protected Binding(Node sourceNode, BindingInfo bindingInfo)
         {
-            //if (string.IsNullOrEmpty(attribute.Path))
-            //    return;
+            if (bindingInfo.Path == null)
+                return;
+
+            _sourceNode = sourceNode;
+            _path = bindingInfo.Path;
 
             //_targetNode = targetNode;
             //_bindingInfo = attribute.Binding;
@@ -43,56 +50,58 @@ namespace BinarySerialization.TypeGraph
             return _targetNode.GetBindingSource(_bindingInfo);
         }
 
-        public void Bind()
-        {
-            var source = GetSource();
 
-            if (source != null && _targetEvaluator != null)
-            {
-                if (!source.Bindings.Contains(this))
-                    source.Bindings.Add(this);
-            }
-        }
 
-        public void Unbind()
-        {
-            var source = GetSource();
+        //public void Bind()
+        //{
+        //    var source = GetSource();
 
-            if (source != null)
-            {
-                source.Bindings.Remove(this);
-            }
-        }
+        //    if (source != null && _targetEvaluator != null)
+        //    {
+        //        if (!source.Bindings.Contains(this))
+        //            source.Bindings.Add(this);
+        //    }
+        //}
 
-        protected object GetValue()
-        {
-            return Convert(GetSource().Value);
-        }
+        //public void Unbind()
+        //{
+        //    var source = GetSource();
 
-        protected object GetBoundValue()
-        {
-            return Convert(GetSource().BoundValue);
-        }
+        //    if (source != null)
+        //    {
+        //        source.Bindings.Remove(this);
+        //    }
+        //}
 
-        public object GetTargetValue()
-        {
-            return ConvertBack(_targetEvaluator());
-        }
+        //protected object GetValue()
+        //{
+        //    return Convert(GetSource().Value);
+        //}
 
-        public object Convert(object value)
-        {
-            if (_valueConverter == null)
-                return value;
+        //protected object GetBoundValue()
+        //{
+        //    return Convert(GetSource().BoundValue);
+        //}
 
-            return _valueConverter.Convert(value, _converterParameter, _targetNode.CreateSerializationContext());
-        }
+        //public object GetTargetValue()
+        //{
+        //    return ConvertBack(_targetEvaluator());
+        //}
 
-        public object ConvertBack(object value)
-        {
-            if (_valueConverter == null)
-                return value;
+        //public object Convert(object value)
+        //{
+        //    if (_valueConverter == null)
+        //        return value;
 
-            return _valueConverter.ConvertBack(value, _converterParameter, _targetNode.CreateSerializationContext());
-        }
+        //    return _valueConverter.Convert(value, _converterParameter, _targetNode.CreateSerializationContext());
+        //}
+
+        //public object ConvertBack(object value)
+        //{
+        //    if (_valueConverter == null)
+        //        return value;
+
+        //    return _valueConverter.ConvertBack(value, _converterParameter, _targetNode.CreateSerializationContext());
+        //}
     }
 }

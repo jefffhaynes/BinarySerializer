@@ -64,20 +64,20 @@ namespace BinarySerialization.TypeGraph
 
         private static Type GetNodeType(Type type)
         {
-            if (type.IsEnum)
-                return typeof (EnumNode);
+            //if (type.IsEnum)
+            //    return typeof (EnumNode);
             if (type.IsPrimitive || type == typeof (string) || type == typeof (byte[]))
                 return typeof (ValueNode);
-            if (Nullable.GetUnderlyingType(type) != null)
-                return typeof (ValueNode);
-            if (type.IsArray)
-                return typeof (ArrayNode);
-            if (typeof(IList).IsAssignableFrom(type))
-                return typeof (ListNode);
-            if (typeof (Stream).IsAssignableFrom(type))
-                return typeof(StreamNode);
-            if (typeof(IBinarySerializable).IsAssignableFrom(type))
-                return typeof(CustomNode);
+            //if (Nullable.GetUnderlyingType(type) != null)
+            //    return typeof (ValueNode);
+            //if (type.IsArray)
+            //    return typeof (ArrayNode);
+            //if (typeof(IList).IsAssignableFrom(type))
+            //    return typeof (ListNode);
+            //if (typeof (Stream).IsAssignableFrom(type))
+            //    return typeof(StreamNode);
+            //if (typeof(IBinarySerializable).IsAssignableFrom(type))
+            //    return typeof(CustomNode);
             return typeof (ObjectNode);
         }
 

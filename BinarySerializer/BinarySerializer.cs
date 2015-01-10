@@ -109,10 +109,10 @@ namespace BinarySerialization
                 RootNode graph = GetGraph(value.GetType());
 
                 graph.SerializationContext = context;
-                graph.Value = value;
-                graph.Bind();
+                //graph.Value = value;
+                //graph.Bind();
 
-                graph.Serialize(stream);
+                var valueGraph = graph.Serialize(value);
             }
         }
 
@@ -143,9 +143,11 @@ namespace BinarySerialization
                 RootNode graph = GetGraph(typeof (T));
                 graph.SerializationContext = context;
 
-                graph.Deserialize(new StreamLimiter(stream));
+                //graph.Deserialize(new StreamLimiter(stream));
 
-                return (T) graph.Value;
+                //return (T) graph.Value;
+
+                throw new NotImplementedException();
             }
         }
 

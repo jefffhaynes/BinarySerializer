@@ -42,30 +42,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SerializeAsAttribute.cs" />
-    <Compile Include="TypeGraph\ArrayNode.cs" />
     <Compile Include="BinarySerializer.cs" />
     <Compile Include="BindingException.cs" />
     <Compile Include="Bytes.cs" />
-    <Compile Include="TypeGraph\CollectionNode.cs" />
-    <Compile Include="TypeGraph\ConditionalBinding.cs" />
-    <Compile Include="TypeGraph\ContainerNode.cs" />
     <Compile Include="TypeGraph\Binding.cs" />
-    <Compile Include="TypeGraph\CustomNode.cs" />
+    <Compile Include="TypeGraph\ContainerNode.cs" />
     <Compile Include="TypeGraph\EnumInfo.cs" />
-    <Compile Include="TypeGraph\EnumNode.cs" />
     <Compile Include="IConstAttribute.cs" />
     <Compile Include="ILengthAttribute.cs" />
-    <Compile Include="TypeGraph\ObjectBinding.cs" />
-    <Compile Include="TypeGraph\IntegerBinding.cs" />
-    <Compile Include="TypeGraph\ListNode.cs" />
     <Compile Include="MemberSerializingEventArgs.cs" />
+    <Compile Include="TypeGraph\IntegerBinding.cs" />
     <Compile Include="TypeGraph\Node.cs" />
     <Compile Include="NullStream.cs" />
     <Compile Include="TypeGraph\ObjectNode.cs" />
     <Compile Include="TypeGraph\RootNode.cs" />
     <Compile Include="StreamKeeper.cs" />
     <Compile Include="StreamLimiter.cs" />
-    <Compile Include="TypeGraph\StreamNode.cs" />
     <Compile Include="StreamResetter.cs" />
     <Compile Include="SubtypeAttribute.cs" />
     <Compile Include="SerializeUntilAttribute.cs" />
@@ -95,6 +87,9 @@
     <Compile Include="IBindableFieldAttribute.cs" />
     <Compile Include="Streamlet.cs" />
     <Compile Include="TypeGraph\ValueNode.cs" />
+    <Compile Include="ValueGraph\ValueGraphNode.cs" />
+    <Compile Include="ValueGraph\ValueGraphObjectNode.cs" />
+    <Compile Include="ValueGraph\ValueGraphValueNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget\BinarySerializer.dll.nuspec" />

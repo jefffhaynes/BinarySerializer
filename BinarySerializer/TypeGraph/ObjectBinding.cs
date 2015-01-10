@@ -6,8 +6,8 @@ namespace BinarySerialization.TypeGraph
     {
         private readonly object _constValue;
 
-        public ObjectBinding(Node targetNode, IBindableFieldAttribute attribute, Func<object> targetEvaluator = null) 
-            : base(targetNode, attribute, targetEvaluator)
+        public ObjectBinding(Node targetNode, BindingInfo binding) 
+            : base(targetNode, binding)
         {
             var constAttribute = attribute as IConstAttribute;
             if (constAttribute != null)

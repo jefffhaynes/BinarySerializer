@@ -21,7 +21,7 @@ namespace BinarySerialization.TypeGraph
             InitializeEnumValues();
         }
 
-        public override void SerializeOverride(Stream stream)
+        public override void SerializeOverride(Stream stream, object value)
         {
             EnumInfo enumInfo = EnumTypeInfo[Type];
             var value = enumInfo.EnumValues != null ? enumInfo.EnumValues[(Enum)BoundValue] : BoundValue;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BinarySerialization.ValueGraph;
 
 namespace BinarySerialization.TypeGraph
 {
@@ -17,17 +18,6 @@ namespace BinarySerialization.TypeGraph
             var child = GenerateChild(graphType);
             _child = child;
             AddChild(child);
-        }
-
-        public override object Value
-        {
-            get { return _child.Value; }
-            set { _child.Value = value; }
-        }
-
-        public override object BoundValue
-        {
-            get { return _child.BoundValue; }
         }
 
         public override Type Type
@@ -62,18 +52,18 @@ namespace BinarySerialization.TypeGraph
 
             set
             {
-                _contextChildren = null;
+                //_contextChildren = null;
 
-                _context = value;
+                //_context = value;
 
-                if (value != null)
-                {
-                    var children = GenerateChildrenImpl(value.GetType());
-                    _contextChildren = new List<Node>(children);
+                //if (value != null)
+                //{
+                //    var children = GenerateChildrenImpl(value.GetType());
+                //    _contextChildren = new List<Node>(children);
 
-                    foreach (var child in _contextChildren)
-                        child.Value = child.ValueGetter(value);
-                }
+                //    foreach (var child in _contextChildren)
+                //        child.Value = child.ValueGetter(value);
+                //}
             }
         }
 
@@ -86,24 +76,24 @@ namespace BinarySerialization.TypeGraph
             return all.Select(GenerateChild);
         }
 
-        public override void SerializeOverride(Stream stream)
+        public override ValueGraphNode SerializeOverride(object value)
         {
-            _child.Serialize(stream);
+            return _child.Serialize(value);
         }
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override object DeserializeOverride(ValueGraphNode node)
         {
-            _child.Deserialize(stream);
+            return _child.Deserialize(node);
         }
 
-        public override void Serialize(Stream stream)
+        public override ValueGraphNode Serialize(object value)
         {
-            SerializeOverride(stream);
+            return SerializeOverride(value);
         }
 
-        public override void Deserialize(StreamLimiter stream)
+        public override object Deserialize(ValueGraphNode node)
         {
-            DeserializeOverride(stream);
+            return DeserializeOverride(node);
         }
 
         public override Endianness Endianness { get; set; }

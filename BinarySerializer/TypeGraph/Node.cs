@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using BinarySerialization.ValueGraph;
 
 namespace BinarySerialization.TypeGraph
 {
@@ -113,11 +114,14 @@ namespace BinarySerialization.TypeGraph
                     if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
                         _encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
                 }
-          
 
-            //FieldLengthAttribute fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
-            //if (fieldLengthAttribute != null)
-            //    _fieldLengthBinding = new IntegerBinding(this, fieldLengthAttribute, () => MeasureOverride());
+
+                FieldLengthAttribute fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
+            if (fieldLengthAttribute != null)
+            {
+                FieldLengthBinding = new IntegerBinding(GetBindingSource(fieldLengthAttribute.Binding),
+                    fieldLengthAttribute.Binding);
+            }
 
             FieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
 
@@ -202,8 +206,9 @@ namespace BinarySerialization.TypeGraph
         {
             get
             {
-                Type underlyingType = Nullable.GetUnderlyingType(_type);
-                return underlyingType ?? _type;
+                return _type;
+                //Type underlyingType = Nullable.GetUnderlyingType(_type);
+                //return underlyingType ?? _type;
             }
         }
 
@@ -227,6 +232,8 @@ namespace BinarySerialization.TypeGraph
         }
 
         public IgnoreAttribute IgnoreAttribute { get; private set; }
+
+        public IntegerBinding FieldLengthBinding { get; private set; }
         public FieldLengthAttribute FieldLengthAttribute { get; private set; }
 
         public FieldCountAttribute FieldCountAttribute { get; private set; }
@@ -429,15 +436,11 @@ namespace BinarySerialization.TypeGraph
             return SerializedType.Default;
         }
 
-        public virtual void Serialize(Stream stream, object value)
+        public virtual ValueGraphNode Serialize(object value)
         {
             try
             {
-                SerializeOverride(stream, value);
-            }
-            catch (IOException)
-            {
-                throw;
+                return SerializeOverride(value);
             }
             catch (Exception e)
             {
@@ -449,11 +452,11 @@ namespace BinarySerialization.TypeGraph
             }
         }
 
-        public virtual object Deserialize(StreamLimiter stream)
+        public virtual object Deserialize(ValueGraphNode valueNode)
         {
             try
             {
-                return DeserializeOverride(stream);
+                return DeserializeOverride(valueNode);
             }
             catch (EndOfStreamException e)
             {
@@ -474,9 +477,9 @@ namespace BinarySerialization.TypeGraph
             }
         }
 
-        public abstract void SerializeOverride(Stream stream, object value);
+        public abstract ValueGraphNode SerializeOverride(object value);
 
-        public abstract object DeserializeOverride(StreamLimiter stream);
+        public abstract object DeserializeOverride(ValueGraphNode valueNode);
 
         public Node GetBindingSource(BindingInfo binding)
         {
@@ -494,10 +497,7 @@ namespace BinarySerialization.TypeGraph
                     throw new NotImplementedException();
             }
 
-            if (source == null)
-                throw new BindingException(string.Format("No ancestor found."));
-
-            return source.GetChild(binding.Path);
+            return source;
         }
 
         public Node GetChild(string path)
