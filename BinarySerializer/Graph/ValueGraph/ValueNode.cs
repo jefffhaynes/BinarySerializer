@@ -1,15 +1,29 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
     internal abstract class ValueNode : Node
     {
-        protected ValueNode(Node parent) : base(parent)
+        protected ValueNode(Node parent, TypeNode typeNode) : base(parent)
         {
+            TypeNode = typeNode;
         }
 
-        public Type Type { get; set; }
+        public TypeNode TypeNode { get; set; }
+
+        public void Bind()
+        {
+            if (TypeNode.FieldLengthBinding != null)
+            {
+                TypeNode.FieldLengthBinding.Bind(this, () => 5);
+            }
+
+            foreach(var child in Children.Cast<ValueNode>())
+                child.Bind();
+        }
 
         public virtual void Serialize(Stream stream)
         {
@@ -24,7 +38,7 @@ namespace BinarySerialization.Graph.ValueGraph
             catch (Exception e)
             {
                 string reference = Name == null
-                    ? string.Format("graphType '{0}'", Type)
+                    ? string.Format("graphType '{0}'", TypeNode.Type)
                     : string.Format("member '{0}'", Name);
                 string message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);

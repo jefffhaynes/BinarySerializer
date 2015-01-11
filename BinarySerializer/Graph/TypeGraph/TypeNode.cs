@@ -612,13 +612,5 @@ namespace BinarySerialization.Graph.TypeGraph
             if (handler != null)
                 handler(sender, e);
         }
-
-        public override string ToString()
-        {
-            if (Name != null)
-                return Name;
-
-            return base.ToString();
-        }
     }
 }

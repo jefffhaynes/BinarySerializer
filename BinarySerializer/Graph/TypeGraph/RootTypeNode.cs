@@ -16,7 +16,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             var child = GenerateChild(graphType);
             _child = child;
-            Children.Add(child);
+            //Children.Add(child);
         }
 
         public override Type Type

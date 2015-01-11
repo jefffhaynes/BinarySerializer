@@ -1,11 +1,13 @@
 ﻿using System.IO;
 using System.Linq;
+using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ObjectValueNode : ValueNode
     {
-        public ObjectValueNode(Node parent) : base(parent)
+        public ObjectValueNode(Node parent, TypeNode typeNode)
+            : base(parent, typeNode)
         {
         }
 

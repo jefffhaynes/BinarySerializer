@@ -113,6 +113,8 @@ namespace BinarySerialization
                 //graph.Bind();
 
                 var valueGraph = graph.Serialize(null, value);
+
+                valueGraph.Bind();
             }
         }
 

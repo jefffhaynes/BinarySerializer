@@ -55,8 +55,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void Construct()
         {
-            var children = GenerateChildrenImpl(Type);
-            Children.AddRange(children);
+            Children = new List<Node>(GenerateChildrenImpl(Type));
             //var baseChild = GenerateChild(Type);
             //AddChild(baseChild);
         }
@@ -120,7 +119,10 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             var serializableChildren = GetSerializableChildren();
 
-            var objectValueNode = new ObjectValueNode(parent);
+            var objectValueNode = new ObjectValueNode(parent, this)
+            {
+                Name = Name,
+            };
 
             objectValueNode.Children = new List<Node>(serializableChildren.Select(child => child.Serialize(objectValueNode, child.ValueGetter(value))));
 

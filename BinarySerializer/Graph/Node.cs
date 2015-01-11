@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BinarySerialization.Graph
 {
@@ -7,6 +8,8 @@ namespace BinarySerialization.Graph
         protected Node(Node parent)
         {
             Parent = parent;
+            Children = new List<Node>();
+            TargetBindings = new List<Func<object>>();
         }
 
         public Node Parent { get; private set; }
@@ -15,6 +18,14 @@ namespace BinarySerialization.Graph
 
         public List<Node> Children { get; set; }
 
-        public List<Binding> Bindings { get; set; } 
+        public List<Func<object>> TargetBindings { get; set; }
+
+        public override string ToString()
+        {
+            if (Name != null)
+                return Name;
+
+            return base.ToString();
+        }
     }
 }
