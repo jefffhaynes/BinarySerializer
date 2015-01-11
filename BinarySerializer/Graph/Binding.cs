@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph
 {
@@ -7,24 +8,34 @@ namespace BinarySerialization.Graph
     {
         private const char PathSeparator = '.';
 
-        protected Binding(BindingInfo bindingInfo, int level)
-        {
-            Path = bindingInfo.Path;
+        private bool _isConst;
+        private object _constValue;
 
-            if (bindingInfo.ConverterType != null)
+        public Binding(IBindableFieldAttribute attribute, int level)
+        {
+            Path = attribute.Path;
+
+            var constAttribute = attribute as IConstAttribute;
+            if (constAttribute != null && Path == null)
             {
-                ValueConverter = Activator.CreateInstance(bindingInfo.ConverterType) as IValueConverter;
+                _isConst = true;
+                _constValue = constAttribute.GetConstValue();
+            }
+
+            if (attribute.ConverterType != null)
+            {
+                ValueConverter = Activator.CreateInstance(attribute.ConverterType) as IValueConverter;
 
                 if (ValueConverter == null)
                 {
-                    var message = string.Format("{0} does not implement IValueConverter.", bindingInfo.ConverterType);
+                    var message = string.Format("{0} does not implement IValueConverter.", attribute.ConverterType);
                     throw new InvalidOperationException(message);
                 }
 
-                ConverterParameter = bindingInfo.ConverterParameter;
+                ConverterParameter = attribute.ConverterParameter;
             }
 
-            Mode = bindingInfo.Mode;
+            Mode = attribute.Mode;
 
             Level = level;
         }
@@ -39,7 +50,16 @@ namespace BinarySerialization.Graph
 
         public int Level { get; set; }
 
-        public TNode GetSource<TNode>(Node target) where TNode : Node
+        public object GetValue(ValueNode target)
+        {
+            if (_isConst)
+                return _constValue;
+
+            var source = GetSource<ValueNode>(target);
+            return source.Value;
+        }
+
+        public TSourceNode GetSource<TSourceNode>(Node target) where TSourceNode : Node
         {
             var relativeSource = GetRelativeSource(target);
 
@@ -57,7 +77,7 @@ namespace BinarySerialization.Graph
                     throw new BindingException(string.Format("No field found at '{0}'.", Path));
             }
 
-            return (TNode)relativeSourceChild;
+            return (TSourceNode)relativeSourceChild;
         }
 
         private Node GetRelativeSource(Node target)
@@ -100,6 +120,9 @@ namespace BinarySerialization.Graph
 
         public void Bind<TNode>(Node target, Func<object> callback) where TNode : Node
         {
+            if (_isConst)
+                return;
+
             var source = GetSource<TNode>(target);
             source.TargetBindings.Add(callback);
         }

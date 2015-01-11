@@ -117,10 +117,14 @@ namespace BinarySerialization.Graph.TypeGraph
                  FieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
                  if (FieldLengthAttribute != null)
             {
-                FieldLengthBinding = new IntegerBinding(FieldLengthAttribute.Binding, GetBindingLevel(FieldLengthAttribute.Binding));
+                FieldLengthBinding = new Binding(FieldLengthAttribute, GetBindingLevel(FieldLengthAttribute.Binding));
             }
 
             FieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
+            if (FieldCountAttribute != null)
+            {
+                FieldCountBinding = new Binding(FieldCountAttribute, FindAncestorLevel(FieldCountAttribute.Binding));
+            }
 
             FieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
 
@@ -185,6 +189,11 @@ namespace BinarySerialization.Graph.TypeGraph
             //}
 
             ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
+            if (ItemLengthAttribute != null)
+            {
+                ItemLengthBinding = new Binding(ItemLengthAttribute,
+                    GetBindingLevel(ItemLengthAttribute.Binding));
+            }
 
             ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
 
@@ -219,7 +228,12 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public IgnoreAttribute IgnoreAttribute { get; private set; }
 
-        public IntegerBinding FieldLengthBinding { get; private set; }
+        public Binding FieldLengthBinding { get; private set; }
+
+        public Binding ItemLengthBinding { get; private set; }
+
+        public Binding FieldCountBinding { get; private set; }
+
         public FieldLengthAttribute FieldLengthAttribute { get; private set; }
 
         public FieldCountAttribute FieldCountAttribute { get; private set; }

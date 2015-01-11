@@ -52,7 +52,6 @@
     <Compile Include="IConstAttribute.cs" />
     <Compile Include="ILengthAttribute.cs" />
     <Compile Include="MemberSerializingEventArgs.cs" />
-    <Compile Include="Graph\IntegerBinding.cs" />
     <Compile Include="Graph\TypeGraph\TypeNode.cs" />
     <Compile Include="NullStream.cs" />
     <Compile Include="Graph\TypeGraph\ObjectTypeNode.cs" />

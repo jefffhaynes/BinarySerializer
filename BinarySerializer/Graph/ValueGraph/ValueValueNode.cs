@@ -33,7 +33,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-
         public override object Value
         {
             get
@@ -181,18 +180,24 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             int? effectiveLength = null;
 
+            var typeParent = TypeNode.Parent as TypeNode;
             if (length != null)
                 effectiveLength = length.Value;
             else if (TypeNode.FieldLengthBinding != null)
             {
-                var source = TypeNode.FieldLengthBinding.GetSource<ValueNode>(this);
-                effectiveLength = Convert.ToInt32(source.Value);
+                var lengthValue = TypeNode.FieldLengthBinding.GetValue(this);
+                effectiveLength = Convert.ToInt32(lengthValue);
             }
-            //else if (ItemLengthBinding != null)
-            //    effectiveLength = (int)ItemLengthBinding.Value;
-            //else if (FieldCountBinding != null)
-            //    effectiveLength = (int)FieldCountBinding.Value;
-            //else throw new InvalidOperationException("No length specified on sized field.");
+            else if (typeParent != null && typeParent.ItemLengthBinding != null)
+            {
+                var lengthValue = TypeNode.ItemLengthBinding.GetValue(this);
+                effectiveLength = Convert.ToInt32(lengthValue);
+            }
+            else if (TypeNode.FieldCountBinding != null)
+            {
+                var countValue = TypeNode.FieldCountBinding.GetValue(this);
+                effectiveLength = Convert.ToInt32(countValue);
+            }
 
             object value;
             switch (serializedType)
