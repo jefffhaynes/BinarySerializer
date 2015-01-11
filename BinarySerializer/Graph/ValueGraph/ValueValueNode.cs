@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
-namespace BinarySerialization.ValueGraph
+namespace BinarySerialization.Graph.ValueGraph
 {
-    public class ValueGraphValueNode : ValueGraphNode
+    internal class ValueValueNode : ValueNode
     {
-        public ValueGraphValueNode()
+        public ValueValueNode(Node parent) : base(parent)
         {
         }
 
-        public ValueGraphValueNode(object value)
+        public ValueValueNode(Node parent, object value) : base(parent)
         {
             Value = value;
         }

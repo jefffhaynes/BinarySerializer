@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using BinarySerialization.ValueGraph;
+using BinarySerialization.Graph.ValueGraph;
 
-namespace BinarySerialization.TypeGraph
+namespace BinarySerialization.Graph.TypeGraph
 {
-    internal class ValueNode : Node
+    internal class ValueTypeNode : TypeNode
     {
         protected static readonly Dictionary<Type, Func<object, object>> TypeConverters =
             new Dictionary<Type, Func<object, object>>
@@ -27,11 +25,11 @@ namespace BinarySerialization.TypeGraph
                 {typeof (string), Convert.ToString}
             };
 
-        public ValueNode(Node parent, Type type) : base(parent, type)
+        public ValueTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
         }
 
-        public ValueNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        public ValueTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
         }
 
@@ -60,9 +58,9 @@ namespace BinarySerialization.TypeGraph
         //    }
         //}
 
-        public override ValueGraphNode SerializeOverride(object value)
+        public override ValueNode SerializeOverride(ValueNode parent, object value)
         {
-            return new ValueGraphValueNode(value);
+            return new ValueValueNode(parent, value);
             //Serialize(stream, value, GetSerializedType());
         }
 
@@ -165,9 +163,9 @@ namespace BinarySerialization.TypeGraph
         //    }
         //}
 
-        public override object DeserializeOverride(ValueGraphNode node)
+        public override object DeserializeOverride(ValueNode node)
         {
-            var valueNode = node as ValueGraphValueNode;
+            var valueNode = node as ValueValueNode;
 
             if(valueNode == null)
                 throw new ArgumentException("Expected value node.");

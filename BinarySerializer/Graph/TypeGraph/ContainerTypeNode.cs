@@ -1,22 +1,21 @@
 using System;
 using System.Collections;
-using System.IO;
 using System.Reflection;
 
-namespace BinarySerialization.TypeGraph
+namespace BinarySerialization.Graph.TypeGraph
 {
-    internal abstract class ContainerNode : Node
+    internal abstract class ContainerTypeNode : TypeNode
     {
-        protected ContainerNode(Node parent, Type type)
+        protected ContainerTypeNode(TypeNode parent, Type type)
             : base(parent, type)
         {
         }
 
-        protected ContainerNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        protected ContainerTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
         }
 
-        protected Node GenerateChild(Type type)
+        protected TypeNode GenerateChild(Type type)
         {
             try
             {
@@ -24,7 +23,7 @@ namespace BinarySerialization.TypeGraph
 
                 var nodeType = GetNodeType(type);
 
-                var child = (Node)Activator.CreateInstance(nodeType, this, type);
+                var child = (TypeNode)Activator.CreateInstance(nodeType, this, type);
                 AddEvents(child);
                 return child;
             }
@@ -35,7 +34,7 @@ namespace BinarySerialization.TypeGraph
             }
         }
 
-        protected Node GenerateChild(MemberInfo memberInfo)
+        protected TypeNode GenerateChild(MemberInfo memberInfo)
         {
             var memberType = GetMemberType(memberInfo);
 
@@ -45,7 +44,7 @@ namespace BinarySerialization.TypeGraph
 
                 var nodeType = GetNodeType(memberType);
 
-                return (Node) Activator.CreateInstance(nodeType, this, memberInfo);
+                return (TypeNode) Activator.CreateInstance(nodeType, this, memberInfo);
             }
             catch (Exception exception)
             {
@@ -67,7 +66,7 @@ namespace BinarySerialization.TypeGraph
             //if (type.IsEnum)
             //    return typeof (EnumNode);
             if (type.IsPrimitive || type == typeof (string) || type == typeof (byte[]))
-                return typeof (ValueNode);
+                return typeof (ValueTypeNode);
             //if (Nullable.GetUnderlyingType(type) != null)
             //    return typeof (ValueNode);
             //if (type.IsArray)
@@ -78,7 +77,7 @@ namespace BinarySerialization.TypeGraph
             //    return typeof(StreamNode);
             //if (typeof(IBinarySerializable).IsAssignableFrom(type))
             //    return typeof(CustomNode);
-            return typeof (ObjectNode);
+            return typeof (ObjectTypeNode);
         }
 
         protected static Type GetMemberType(MemberInfo memberInfo)

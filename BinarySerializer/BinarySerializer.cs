@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using BinarySerialization.TypeGraph;
+using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization
 {
@@ -22,7 +22,7 @@ namespace BinarySerialization
     /// </summary>
     public class BinarySerializer
     {
-        private readonly Dictionary<Type, RootNode> _graphCache = new Dictionary<Type, RootNode>();
+        private readonly Dictionary<Type, RootTypeNode> _graphCache = new Dictionary<Type, RootTypeNode>();
         private readonly object _graphCacheLock = new object();
 
         private const Endianness DefaultEndianness = Endianness.Little;
@@ -46,7 +46,7 @@ namespace BinarySerialization
 
             set
             {
-                foreach (RootNode graph in _graphCache.Values)
+                foreach (RootTypeNode graph in _graphCache.Values)
                     graph.Endianness = value;
 
                 _endianness = value;
@@ -74,13 +74,13 @@ namespace BinarySerialization
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 
 
-        private RootNode GetGraph(Type valueType)
+        private RootTypeNode GetGraph(Type valueType)
         {
-            RootNode graph;
+            RootTypeNode graph;
             if (_graphCache.TryGetValue(valueType, out graph))
                 return graph;
 
-            graph = new RootNode(valueType) {Endianness = Endianness};
+            graph = new RootTypeNode(valueType) {Endianness = Endianness};
             graph.MemberSerializing += OnMemberSerializing;
             graph.MemberSerialized += OnMemberSerialized;
             graph.MemberDeserializing += OnMemberDeserializing;
@@ -106,13 +106,13 @@ namespace BinarySerialization
 
             lock (_graphCacheLock)
             {
-                RootNode graph = GetGraph(value.GetType());
+                RootTypeNode graph = GetGraph(value.GetType());
 
                 graph.SerializationContext = context;
                 //graph.Value = value;
                 //graph.Bind();
 
-                var valueGraph = graph.Serialize(value);
+                var valueGraph = graph.Serialize(null, value);
             }
         }
 
@@ -140,7 +140,7 @@ namespace BinarySerialization
         {
             lock (_graphCacheLock)
             {
-                RootNode graph = GetGraph(typeof (T));
+                RootTypeNode graph = GetGraph(typeof (T));
                 graph.SerializationContext = context;
 
                 //graph.Deserialize(new StreamLimiter(stream));

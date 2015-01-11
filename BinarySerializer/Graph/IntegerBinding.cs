@@ -1,13 +1,11 @@
-﻿using System;
-
-namespace BinarySerialization.TypeGraph
+﻿namespace BinarySerialization.Graph
 {
     internal class IntegerBinding : Binding
     {
         //private readonly ulong? _constValue;
  
-        public IntegerBinding(Node targetNode, BindingInfo bindingInfo) 
-            : base(targetNode, bindingInfo)
+        public IntegerBinding(BindingInfo bindingInfo, int level)
+            : base(bindingInfo, level)
         {
             //if (string.IsNullOrEmpty(attribute.Path))
             //{

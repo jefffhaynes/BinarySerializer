@@ -5,13 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using BinarySerialization.ValueGraph;
+using BinarySerialization.Graph.ValueGraph;
 
-namespace BinarySerialization.TypeGraph
+namespace BinarySerialization.Graph.TypeGraph
 {
-    internal abstract class Node
+    internal abstract class TypeNode : Node
     {
-        private const char PathSeparator = '.';
 
         private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
@@ -44,18 +43,17 @@ namespace BinarySerialization.TypeGraph
         //private readonly IntegerBinding _itemLengthBinding;
         //private readonly ObjectBinding _itemSerializeUntilBinding;
         //private readonly Lazy<List<Binding>> _lazyBindings;
-        private readonly Lazy<List<Node>> _lazyChildren;
+        private readonly Lazy<List<TypeNode>> _lazyChildren;
         private readonly int? _order;
         private readonly SerializedType? _serializedType;
         //private readonly ObjectBinding _subtypeBinding;
         private readonly Type _type;
         //private readonly ConditionalBinding[] _whenBindings;
 
-        protected Node(Node parent)
+        protected TypeNode(TypeNode parent) : base(parent)
         {
-            Parent = parent;
+           // _lazyChildren = new Lazy<List<Node>>();
 
-            _lazyChildren = new Lazy<List<Node>>();
             //_lazyBindings = new Lazy<List<Binding>>();
 
             //if (Parent is CollectionNode && Parent.ItemLengthAttribute != null)
@@ -68,12 +66,12 @@ namespace BinarySerialization.TypeGraph
             //Bind();
         }
 
-        protected Node(Node parent, Type type) : this(parent)
+        protected TypeNode(TypeNode parent, Type type) : this(parent)
         {
             _type = type;
         }
 
-        protected Node(Node parent, MemberInfo memberInfo) : this(parent)
+        protected TypeNode(TypeNode parent, MemberInfo memberInfo) : this(parent)
         {
             if (memberInfo == null)
                 return;
@@ -119,8 +117,7 @@ namespace BinarySerialization.TypeGraph
                 FieldLengthAttribute fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
             if (fieldLengthAttribute != null)
             {
-                FieldLengthBinding = new IntegerBinding(GetBindingSource(fieldLengthAttribute.Binding),
-                    fieldLengthAttribute.Binding);
+                FieldLengthBinding = new IntegerBinding(fieldLengthAttribute.Binding, GetBindingLevel(fieldLengthAttribute.Binding));
             }
 
             FieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
@@ -198,9 +195,6 @@ namespace BinarySerialization.TypeGraph
             //}
         }
 
-        protected Node Parent { get; private set; }
-
-        public string Name { get; private set; }
 
         public virtual Type Type
         {
@@ -216,20 +210,12 @@ namespace BinarySerialization.TypeGraph
 
         public Func<object, object> ValueGetter { get; private set; }
 
-        public virtual IEnumerable<Node> Children
-        {
-            get { return _lazyChildren.Value; }
-        }
 
-        //public List<Binding> Bindings
+
+        //protected int ChildCount
         //{
-        //    get { return _lazyBindings.Value; }
+        //    get { return _lazyChildren.Value.Count; }
         //}
-
-        protected int ChildCount
-        {
-            get { return _lazyChildren.Value.Count; }
-        }
 
         public IgnoreAttribute IgnoreAttribute { get; private set; }
 
@@ -259,7 +245,8 @@ namespace BinarySerialization.TypeGraph
                 if (_endianness != null && _endianness.Value != Endianness.Inherit)
                     return _endianness.Value;
 
-                return Parent.Endianness;
+                var parent = (TypeNode) Parent;
+                return parent.Endianness;
             }
         }
 
@@ -270,7 +257,8 @@ namespace BinarySerialization.TypeGraph
                 if (_encoding != null)
                     return _encoding;
 
-                return Parent != null ? Parent.Encoding : DefaultEncoding;
+                var parent = (TypeNode)Parent;
+                return parent != null ? parent.Encoding : DefaultEncoding;
             }
         }
 
@@ -338,21 +326,21 @@ namespace BinarySerialization.TypeGraph
         //    throw new NotSupportedException();
         //}
 
-        protected void AddChild(Node child)
-        {
-            _lazyChildren.Value.Add(child);
-            AddEvents(child);
-        }
+        //protected void AddChild(Node child)
+        //{
+        //    _lazyChildren.Value.Add(child);
+        //    AddEvents(child);
+        //}
 
-        protected void AddChildren(IEnumerable<Node> children)
-        {
-            foreach (Node child in children)
-                AddChild(child);
-        }
+        //protected void AddChildren(IEnumerable<Node> children)
+        //{
+        //    foreach (Node child in children)
+        //        Children.Add(child);
+        //}
 
         protected void ClearChildren()
         {
-            foreach (Node child in Children)
+            foreach (TypeNode child in Children)
             {
                 //child.Unbind();
                 RemoveEvents(child);
@@ -427,7 +415,8 @@ namespace BinarySerialization.TypeGraph
                 if (serializedType == SerializedType.NullTerminatedString && FieldLengthAttribute != null)
                     serializedType = SerializedType.SizedString;
 
-                if (serializedType == SerializedType.NullTerminatedString && Parent.ItemLengthAttribute != null)
+                var parent = (TypeNode) Parent;
+                if (serializedType == SerializedType.NullTerminatedString && parent.ItemLengthAttribute != null)
                     serializedType = SerializedType.SizedString;
 
                 return serializedType;
@@ -436,23 +425,27 @@ namespace BinarySerialization.TypeGraph
             return SerializedType.Default;
         }
 
-        public virtual ValueGraphNode Serialize(object value)
+        public virtual ValueNode Serialize(ValueNode parent, object value)
         {
             try
             {
-                return SerializeOverride(value);
+                return SerializeOverride(parent, value);
             }
             catch (Exception e)
             {
                 string reference = Name == null
-                    ? string.Format("graphType '{0}'", _type)
+                    ? string.Format("type '{0}'", Type)
                     : string.Format("member '{0}'", Name);
                 string message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
             }
         }
 
-        public virtual object Deserialize(ValueGraphNode valueNode)
+        public abstract ValueNode SerializeOverride(ValueNode parent, object value);
+
+
+
+        public virtual object Deserialize(ValueNode valueNode)
         {
             try
             {
@@ -477,65 +470,95 @@ namespace BinarySerialization.TypeGraph
             }
         }
 
-        public abstract ValueGraphNode SerializeOverride(object value);
 
-        public abstract object DeserializeOverride(ValueGraphNode valueNode);
+        public abstract object DeserializeOverride(ValueNode valueNode);
 
-        public Node GetBindingSource(BindingInfo binding)
+        //public TypeNode GetBindingSource(BindingInfo binding)
+        //{
+        //    TypeNode source = null;
+
+        //    switch (binding.Mode)
+        //    {
+        //        case RelativeSourceMode.Self:
+        //            source = Parent;
+        //            break;
+        //        case RelativeSourceMode.FindAncestor:
+        //            source = FindAncestor(binding);
+        //            break;
+        //        case RelativeSourceMode.PreviousData:
+        //            throw new NotImplementedException();
+        //        case RelativeSourceMode.SerializationContext:
+        //            source = FindAncestor(null);
+        //            break;
+        //    }
+
+        //    return source;
+        //}
+
+        public int GetBindingLevel(BindingInfo binding)
         {
-            Node source = null;
+            int level = 0;
 
             switch (binding.Mode)
             {
                 case RelativeSourceMode.Self:
-                    source = Parent;
+                    level = 1;
                     break;
                 case RelativeSourceMode.FindAncestor:
-                    source = FindAncestor(binding);
+                    level = FindAncestorLevel(binding);
                     break;
                 case RelativeSourceMode.PreviousData:
                     throw new NotImplementedException();
+                case RelativeSourceMode.SerializationContext:
+                    level = FindAncestorLevel(null);
+                    break;
             }
 
-            return source;
+            return level;
         }
 
-        public Node GetChild(string path)
-        {
-            string[] memberNames = path.Split(PathSeparator);
-
-            if (!memberNames.Any())
-                throw new BindingException("Path cannot be empty.");
-
-            Node sourceChild = this;
-            foreach (string name in memberNames)
-            {
-                sourceChild = sourceChild.Children.SingleOrDefault(c => c.Name == name);
-
-                if (sourceChild == null)
-                    throw new BindingException(string.Format("No field found at '{0}'.", path));
-            }
-
-            return sourceChild;
-        }
-
-        private Node FindAncestor(BindingInfo binding)
+        private int FindAncestorLevel(BindingInfo binding)
         {
             int level = 1;
-            Node parent = Parent;
+            var parent = (TypeNode)Parent;
             while (parent != null)
             {
-                if (binding.AncestorLevel == level || parent.Type == binding.AncestorType)
+                if (binding != null)
                 {
-                    return parent;
+                    if (binding.AncestorLevel == level || parent.Type == binding.AncestorType)
+                    {
+                        return level;
+                    }
                 }
 
-                parent = parent.Parent;
+                parent = (TypeNode)parent.Parent;
                 level++;
             }
 
-            return null;
+            return level;
         }
+
+        //private TypeNode FindAncestor(BindingInfo binding)
+        //{
+        //    int level = 1;
+        //    TypeNode parent = Parent;
+        //    while (parent != null)
+        //    {
+        //        if (binding != null)
+        //        {
+        //            if (binding.AncestorLevel == level || parent.Type == binding.AncestorType)
+        //            {
+        //                return parent;
+        //            }
+        //        }
+
+        //        parent = parent.Parent;
+        //        level++;
+        //    }
+
+        //    return null;
+        //}
+
 
         //public virtual BinarySerializationContext CreateSerializationContext()
         //{
@@ -545,7 +568,7 @@ namespace BinarySerialization.TypeGraph
         //    return new BinarySerializationContext(Parent.Value, Parent.Type, Parent.CreateSerializationContext());
         //}
 
-        protected void AddEvents(Node child)
+        protected void AddEvents(TypeNode child)
         {
             RemoveEvents(child);
             child.MemberSerializing += OnMemberSerializing;
@@ -554,7 +577,7 @@ namespace BinarySerialization.TypeGraph
             child.MemberDeserialized += OnMemberDeserialized;
         }
 
-        private void RemoveEvents(Node child)
+        private void RemoveEvents(TypeNode child)
         {
             child.MemberSerializing -= OnMemberSerializing;
             child.MemberSerialized -= OnMemberSerialized;

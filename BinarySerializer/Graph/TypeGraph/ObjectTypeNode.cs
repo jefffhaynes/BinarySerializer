@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using BinarySerialization.ValueGraph;
+using BinarySerialization.Graph.ValueGraph;
 
-namespace BinarySerialization.TypeGraph
+namespace BinarySerialization.Graph.TypeGraph
 {
-    internal class ObjectNode : ContainerNode
+    internal class ObjectTypeNode : ContainerTypeNode
     {
         private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
-        private readonly Dictionary<Type, List<Node>> _typeChildren = new Dictionary<Type, List<Node>>();
+        private readonly Dictionary<Type, List<TypeNode>> _typeChildren = new Dictionary<Type, List<TypeNode>>();
         private readonly object _typeChildrenLock = new object();
 
         //private Type _valueType;
@@ -20,7 +19,7 @@ namespace BinarySerialization.TypeGraph
         //private bool _isCacheDirty = true;
         //private object _cachedValue;
 
-        public ObjectNode(Node parent, Type type) : base(parent, type)
+        public ObjectTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
             Construct();
         }
@@ -31,7 +30,7 @@ namespace BinarySerialization.TypeGraph
         //    Construct();
         //}
 
-        public ObjectNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        public ObjectTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
             Construct();
             //if (memberInfo == null)
@@ -57,7 +56,7 @@ namespace BinarySerialization.TypeGraph
         private void Construct()
         {
             var children = GenerateChildrenImpl(Type);
-            AddChildren(children);
+            Children.AddRange(children);
             //var baseChild = GenerateChild(Type);
             //AddChild(baseChild);
         }
@@ -112,19 +111,20 @@ namespace BinarySerialization.TypeGraph
         //    }
         //}
 
-        private IEnumerable<Node> GetSerializableChildren()
+        private IEnumerable<TypeNode> GetSerializableChildren()
         {
-            return Children.Where(child => child.IgnoreAttribute == null);
+            return Children.Cast<TypeNode>().Where(child => child.IgnoreAttribute == null);
         }
 
-        public override ValueGraphNode SerializeOverride(object value)
+        public override ValueNode SerializeOverride(ValueNode parent, object value)
         {
             var serializableChildren = GetSerializableChildren();
 
+            var objectValueNode = new ObjectValueNode(parent);
 
-            var childrenValueNodes = serializableChildren.Select(child => child.Serialize(child.ValueGetter(value)));
+            objectValueNode.Children = new List<Node>(serializableChildren.Select(child => child.Serialize(objectValueNode, child.ValueGetter(value))));
 
-            return new ValueGraphObjectNode(childrenValueNodes);
+            return objectValueNode;
 
             //var serializationContext = CreateSerializationContext();
             //foreach (var child in serializableChildren)
@@ -142,7 +142,7 @@ namespace BinarySerialization.TypeGraph
             //}
         }
 
-        public override object DeserializeOverride(ValueGraphNode node)
+        public override object DeserializeOverride(ValueNode node)
         {
             //ClearCache();
 
@@ -198,7 +198,7 @@ namespace BinarySerialization.TypeGraph
             }
         }
 
-        private IEnumerable<Node> GenerateChildrenImpl(Type type)
+        private IEnumerable<TypeNode> GenerateChildrenImpl(Type type)
         { 
             IEnumerable<MemberInfo> properties = type.GetProperties(MemberBindingFlags);
             IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);

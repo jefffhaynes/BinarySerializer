@@ -1,27 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
-namespace BinarySerialization.ValueGraph
+namespace BinarySerialization.Graph.ValueGraph
 {
-    public abstract class ValueGraphNode
+    internal abstract class ValueNode : Node
     {
-        protected ValueGraphNode()
+        protected ValueNode(Node parent) : base(parent)
         {
         }
-
-        protected ValueGraphNode(IEnumerable<ValueGraphNode> children)
-        {
-            Children = new List<ValueGraphNode>(children);
-        }
-
-        public string Name { get; set; }
 
         public Type Type { get; set; }
-
-        public List<ValueGraphNode> Children { get; set; }
 
         public virtual void Serialize(Stream stream)
         {

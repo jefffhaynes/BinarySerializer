@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using BinarySerialization.ValueGraph;
+using BinarySerialization.Graph.ValueGraph;
 
-namespace BinarySerialization.TypeGraph
+namespace BinarySerialization.Graph.TypeGraph
 {
-    internal sealed class RootNode : ContainerNode
+    internal sealed class RootTypeNode : ContainerTypeNode
     {
-        private readonly Node _child;
+        private readonly TypeNode _child;
         private object _context;
-        private List<Node> _contextChildren; 
+        private List<TypeNode> _contextChildren; 
 
-        public RootNode(Type graphType) : base(null, graphType)
+        public RootTypeNode(Type graphType) : base(null, graphType)
         {
             var child = GenerateChild(graphType);
             _child = child;
-            AddChild(child);
+            Children.Add(child);
         }
 
         public override Type Type
@@ -25,23 +24,23 @@ namespace BinarySerialization.TypeGraph
             get { return _context != null ? _context.GetType() : null; }
         }
 
-        public override IEnumerable<Node> Children
-        {
-            get
-            {
-                var child = new[] { _child };
-                if (_contextChildren == null && _child == null)
-                    return Enumerable.Empty<Node>();
+        //public override IEnumerable<Node> Children
+        //{
+        //    get
+        //    {
+        //        var child = new[] { _child };
+        //        if (_contextChildren == null && _child == null)
+        //            return Enumerable.Empty<Node>();
 
-                if (_contextChildren == null)
-                    return child;
+        //        if (_contextChildren == null)
+        //            return child;
 
-                if (_child == null)
-                    return _contextChildren;
+        //        if (_child == null)
+        //            return _contextChildren;
 
-                return _contextChildren.Union(child);
-            }
-        }
+        //        return _contextChildren.Union(child);
+        //    }
+        //}
 
         public object SerializationContext
         {
@@ -67,7 +66,7 @@ namespace BinarySerialization.TypeGraph
             }
         }
 
-        private IEnumerable<Node> GenerateChildrenImpl(Type type)
+        private IEnumerable<TypeNode> GenerateChildrenImpl(Type type)
         {
             IEnumerable<MemberInfo> properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             IEnumerable<MemberInfo> fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
@@ -76,22 +75,22 @@ namespace BinarySerialization.TypeGraph
             return all.Select(GenerateChild);
         }
 
-        public override ValueGraphNode SerializeOverride(object value)
+        public override ValueNode SerializeOverride(ValueNode parent, object value)
         {
-            return _child.Serialize(value);
+            return _child.Serialize(parent, value);
         }
 
-        public override object DeserializeOverride(ValueGraphNode node)
+        public override object DeserializeOverride(ValueNode node)
         {
             return _child.Deserialize(node);
         }
 
-        public override ValueGraphNode Serialize(object value)
+        public override ValueNode Serialize(ValueNode parent, object value)
         {
-            return SerializeOverride(value);
+            return SerializeOverride(parent, value);
         }
 
-        public override object Deserialize(ValueGraphNode node)
+        public override object Deserialize(ValueNode node)
         {
             return DeserializeOverride(node);
         }
