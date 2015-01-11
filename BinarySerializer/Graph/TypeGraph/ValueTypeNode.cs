@@ -60,7 +60,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public override ValueNode SerializeOverride(ValueNode parent, object value)
         {
-            return new ValueValueNode(parent, this, value) {Name = Name};
+            return new ValueValueNode(parent, Name, this, value);
 
             //Serialize(stream, value, GetSerializedType());
         }
@@ -164,17 +164,17 @@ namespace BinarySerialization.Graph.TypeGraph
         //    }
         //}
 
-        public override object DeserializeOverride(ValueNode node)
-        {
-            var valueNode = node as ValueValueNode;
+        //public override object DeserializeOverride(ValueNode node)
+        //{
+        //    var valueNode = node as ValueValueNode;
 
-            if(valueNode == null)
-                throw new ArgumentException("Expected value node.");
+        //    if(valueNode == null)
+        //        throw new ArgumentException("Expected value node.");
 
-            return valueNode.Value;
-            //var value = Deserialize(stream, GetSerializedType());
-            //return ConvertToFieldType(value);
-        }
+        //    return valueNode.Value;
+        //    //var value = Deserialize(stream, GetSerializedType());
+        //    //return ConvertToFieldType(value);
+        //}
 
         //protected object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
         //{

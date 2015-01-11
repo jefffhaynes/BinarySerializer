@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -27,25 +26,26 @@ namespace BinarySerialization.Graph.ValueGraph
                 {typeof (string), Convert.ToString}
             };
 
-        public ValueValueNode(Node parent, TypeNode typeNode)
-            : base(parent, typeNode)
+        private object _value;
+
+        public ValueValueNode(Node parent, string name, TypeNode typeNode)
+            : base(parent, name, typeNode)
         {
         }
 
-        public ValueValueNode(Node parent, TypeNode typeNode, object value)
-            : base(parent, typeNode)
+        public ValueValueNode(Node parent, string name, TypeNode typeNode, object value)
+            : base(parent, name, typeNode)
         {
-            Value = value;
+            _value = value;
         }
 
-        public object Value { get; set; }
 
         protected override void SerializeOverride(Stream stream)
         {
             Serialize(stream, TypeNode.GetSerializedType());
         }
 
-        public object BoundValue
+        public object Value
         {
             get
             {
@@ -64,17 +64,19 @@ namespace BinarySerialization.Graph.ValueGraph
                                 "Multiple bindings to a single source must have equivalent target values.");
                     }
                 }
-                else value = Value;
+                else value = _value;
 
                 return ConvertToFieldType(value);
             }
+
+            set { _value = value; }
         }
 
         protected void Serialize(Stream stream, SerializedType serializedType, int? length = null)
         {
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
 
-            Serialize(writer, BoundValue, serializedType, length);
+            Serialize(writer, Value, serializedType, length);
         }
 
         protected void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType, int? length = null)

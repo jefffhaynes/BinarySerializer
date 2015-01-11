@@ -80,20 +80,20 @@ namespace BinarySerialization.Graph.TypeGraph
             return _child.Serialize(parent, value);
         }
 
-        public override object DeserializeOverride(ValueNode node)
-        {
-            return _child.Deserialize(node);
-        }
+        //public override object DeserializeOverride(ValueNode node)
+        //{
+        //    return _child.Deserialize(node);
+        //}
 
         public override ValueNode Serialize(ValueNode parent, object value)
         {
             return SerializeOverride(parent, value);
         }
 
-        public override object Deserialize(ValueNode node)
-        {
-            return DeserializeOverride(node);
-        }
+        //public override object Deserialize(ValueNode node)
+        //{
+        //    return DeserializeOverride(node);
+        //}
 
         public override Endianness Endianness { get; set; }
     }

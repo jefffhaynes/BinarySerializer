@@ -445,33 +445,33 @@ namespace BinarySerialization.Graph.TypeGraph
 
 
 
-        public virtual object Deserialize(ValueNode valueNode)
-        {
-            try
-            {
-                return DeserializeOverride(valueNode);
-            }
-            catch (EndOfStreamException e)
-            {
-                string reference = Name == null
-                    ? string.Format("graphType '{0}'", _type)
-                    : string.Format("member '{0}'", Name);
-                string message = string.Format("Error deserializing '{0}'.  See inner exception for detail.", reference);
-                throw new InvalidOperationException(message, e);
-            }
-            catch (IOException)
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                string message = string.Format("Error deserializing {0}.", Name);
-                throw new InvalidOperationException(message, e);
-            }
-        }
+        //public virtual object Deserialize(ValueNode valueNode)
+        //{
+        //    try
+        //    {
+        //        return DeserializeOverride(valueNode);
+        //    }
+        //    catch (EndOfStreamException e)
+        //    {
+        //        string reference = Name == null
+        //            ? string.Format("graphType '{0}'", _type)
+        //            : string.Format("member '{0}'", Name);
+        //        string message = string.Format("Error deserializing '{0}'.  See inner exception for detail.", reference);
+        //        throw new InvalidOperationException(message, e);
+        //    }
+        //    catch (IOException)
+        //    {
+        //        throw;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        string message = string.Format("Error deserializing {0}.", Name);
+        //        throw new InvalidOperationException(message, e);
+        //    }
+        //}
 
 
-        public abstract object DeserializeOverride(ValueNode valueNode);
+        //public abstract object DeserializeOverride(ValueNode valueNode);
 
         //public TypeNode GetBindingSource(BindingInfo binding)
         //{

@@ -119,10 +119,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             var serializableChildren = GetSerializableChildren();
 
-            var objectValueNode = new ObjectValueNode(parent, this)
-            {
-                Name = Name,
-            };
+            var objectValueNode = new ObjectValueNode(parent, Name, this);
 
             objectValueNode.Children = new List<Node>(serializableChildren.Select(child => child.Serialize(objectValueNode, child.ValueGetter(value))));
 
@@ -144,47 +141,47 @@ namespace BinarySerialization.Graph.TypeGraph
             //}
         }
 
-        public override object DeserializeOverride(ValueNode node)
-        {
-            //ClearCache();
+        //public override object DeserializeOverride(ValueNode node)
+        //{
+        //    //ClearCache();
 
-            //var valueType = ResolveValueType();
-            //if (valueType == null)
-            //    return;
+        //    //var valueType = ResolveValueType();
+        //    //if (valueType == null)
+        //    //    return;
 
-            //ValueType = valueType;
+        //    //ValueType = valueType;
 
-            //foreach (var child in Children)
-            //    child.Value = null;
+        //    //foreach (var child in Children)
+        //    //    child.Value = null;
 
-            //var type = Type;
+        //    //var type = Type;
 
-            //var value = Activator.CreateInstance(type);
+        //    //var value = Activator.CreateInstance(type);
 
-            var serializableChildren = GetSerializableChildren();
+        //    var serializableChildren = GetSerializableChildren();
 
-            //if (FieldLengthBinding != null)
-            //    stream = new StreamLimiter(stream, (long) FieldLengthBinding.Value);
+        //    //if (FieldLengthBinding != null)
+        //    //    stream = new StreamLimiter(stream, (long) FieldLengthBinding.Value);
 
-            //var serializationContext = CreateSerializationContext();
-            //foreach (var child in serializableChildren.TakeWhile(child => !ShouldTerminate(stream)))
-            //{
-            //    //OnMemberDeserializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
-            //    //using (new StreamResetter(stream, child.FieldOffsetBinding != null))
-            //    //{
-            //    //    if (child.FieldOffsetBinding != null)
-            //    //        stream.Position = (long) child.FieldOffsetBinding.Value;
+        //    //var serializationContext = CreateSerializationContext();
+        //    //foreach (var child in serializableChildren.TakeWhile(child => !ShouldTerminate(stream)))
+        //    //{
+        //    //    //OnMemberDeserializing(this, new MemberSerializingEventArgs(child.Name, serializationContext));
+        //    //    //using (new StreamResetter(stream, child.FieldOffsetBinding != null))
+        //    //    //{
+        //    //    //    if (child.FieldOffsetBinding != null)
+        //    //    //        stream.Position = (long) child.FieldOffsetBinding.Value;
 
-            //        var childValue = child.Deserialize(stream);
-            //        child.ValueSetter(value, childValue);
+        //    //        var childValue = child.Deserialize(stream);
+        //    //        child.ValueSetter(value, childValue);
 
-            //    //    ClearCache();
-            //    //}
-            //    //OnMemberDeserialized(this, new MemberSerializedEventArgs(child.Name, child.Value, serializationContext));
-            //}
+        //    //    //    ClearCache();
+        //    //    //}
+        //    //    //OnMemberDeserialized(this, new MemberSerializedEventArgs(child.Name, child.Value, serializationContext));
+        //    //}
 
-            return null;
-        }
+        //    return null;
+        //}
 
 
 

@@ -6,10 +6,12 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ObjectValueNode : ValueNode
     {
-        public ObjectValueNode(Node parent, TypeNode typeNode)
-            : base(parent, typeNode)
+        public ObjectValueNode(Node parent, string name, TypeNode typeNode)
+            : base(parent, name, typeNode)
         {
         }
+
+        public override object Value { get; set; }
 
         protected override void SerializeOverride(Stream stream)
         {
@@ -17,6 +19,11 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 child.Serialize(stream);
             }
+        }
+
+        public override void DeserializeOverride(Stream stream)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
