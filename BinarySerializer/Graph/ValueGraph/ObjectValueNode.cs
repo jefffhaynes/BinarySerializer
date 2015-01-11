@@ -11,7 +11,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        public override object Value { get; set; }
 
         protected override void SerializeOverride(Stream stream)
         {
@@ -21,9 +20,12 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override void DeserializeOverride(Stream stream)
+        public override void DeserializeOverride(StreamLimiter stream)
         {
-            throw new System.NotImplementedException();
+            foreach (var child in Children.Cast<ValueNode>())
+            {
+                child.Deserialize(stream);
+            }
         }
     }
 }

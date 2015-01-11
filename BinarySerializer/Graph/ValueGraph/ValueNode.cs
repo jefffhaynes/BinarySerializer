@@ -20,8 +20,6 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public Endianness Endianness { get { return TypeNode.Endianness; } }
 
-        public abstract object Value { get; set; }
-
         public void Bind()
         {
             if (TypeNode.FieldLengthBinding != null)
@@ -55,7 +53,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected abstract void SerializeOverride(Stream stream);
 
-        public virtual void Deserialize(Stream stream)
+        public virtual void Deserialize(StreamLimiter stream)
         {
             try
             {
@@ -80,7 +78,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public abstract void DeserializeOverride(Stream stream);
+        public abstract void DeserializeOverride(StreamLimiter stream);
 
 
         protected virtual long MeasureOverride()

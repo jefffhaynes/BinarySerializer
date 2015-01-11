@@ -45,6 +45,105 @@ namespace BinarySerialization.Graph.ValueGraph
             Serialize(stream, TypeNode.GetSerializedType());
         }
 
+        public override void DeserializeOverride(StreamLimiter stream)
+        {
+            var value = Deserialize(stream, TypeNode.GetSerializedType());
+            Value = ConvertToFieldType(value);
+        }
+
+        protected object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
+        {
+            var reader = new EndianAwareBinaryReader(stream, Endianness);
+            return Deserialize(reader, serializedType, length);
+        }
+
+        public object Deserialize(EndianAwareBinaryReader reader, SerializedType serializedType, int? length = null)
+        {
+            object value;
+            switch (serializedType)
+            {
+                case SerializedType.Int1:
+                    value = reader.ReadSByte();
+                    break;
+                case SerializedType.UInt1:
+                    value = reader.ReadByte();
+                    break;
+                case SerializedType.Int2:
+                    value = reader.ReadInt16();
+                    break;
+                case SerializedType.UInt2:
+                    value = reader.ReadUInt16();
+                    break;
+                case SerializedType.Int4:
+                    value = reader.ReadInt32();
+                    break;
+                case SerializedType.UInt4:
+                    value = reader.ReadUInt32();
+                    break;
+                case SerializedType.Int8:
+                    value = reader.ReadInt64();
+                    break;
+                case SerializedType.UInt8:
+                    value = reader.ReadUInt64();
+                    break;
+                case SerializedType.Float4:
+                    value = reader.ReadSingle();
+                    break;
+                case SerializedType.Float8:
+                    value = reader.ReadDouble();
+                    break;
+                case SerializedType.ByteArray:
+                    {
+                        //int effectiveLength;
+                        //if (length != null)
+                        //    effectiveLength = length.Value;
+                        //else if (FieldLengthBinding != null)
+                        //    effectiveLength = (int)FieldLengthBinding.Value;
+                        //else if (ItemLengthBinding != null)
+                        //    effectiveLength = (int)ItemLengthBinding.Value;
+                        //else if (FieldCountBinding != null)
+                        //    effectiveLength = (int) FieldCountBinding.Value;
+                        //else throw new InvalidOperationException("No length specified on byte array.");
+
+                        value = reader.ReadBytes(length.Value);
+                        break;
+                    }
+                case SerializedType.NullTerminatedString:
+                    {
+                        byte[] data = ReadNullTerminatedString(reader).ToArray();
+                        value = Encoding.GetString(data, 0, data.Length);
+                        break;
+                    }
+                case SerializedType.SizedString:
+                    {
+                        //int effectiveLength;
+                        //if (length != null)
+                        //    effectiveLength = length.Value;
+                        //else if (FieldLengthBinding != null)
+                        //    effectiveLength = (int)FieldLengthBinding.Value;
+                        //else if (ItemLengthBinding != null)
+                        //    effectiveLength = (int)ItemLengthBinding.Value;
+                        //else throw new InvalidOperationException("No length specified on sized string.");
+
+                        byte[] data = reader.ReadBytes(length.Value);
+                        value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
+                        break;
+                    }
+                case SerializedType.LengthPrefixedString:
+                    {
+                        var dataLength = reader.ReadUInt16();
+                        byte[] data = reader.ReadBytes(dataLength);
+                        value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
+                        break;
+                    }
+
+                default:
+                    throw new NotSupportedException();
+            }
+
+            return value;
+        }
+
         public object Value
         {
             get
@@ -194,6 +293,17 @@ namespace BinarySerialization.Graph.ValueGraph
                 return Enum.ToObject(nodeType, value);
 
             return value;
+        }
+
+        private static IEnumerable<byte> ReadNullTerminatedString(BinaryReader reader)
+        {
+            var buffer = new MemoryStream();
+
+            byte b;
+            while ((b = reader.ReadByte()) != 0)
+                buffer.WriteByte(b);
+
+            return buffer.ToArray();
         }
     }
 }
