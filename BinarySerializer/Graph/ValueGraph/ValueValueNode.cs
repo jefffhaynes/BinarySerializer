@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -41,7 +42,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override void SerializeOverride(Stream stream)
         {
-            throw new NotImplementedException();
+            Serialize(stream, TypeNode.GetSerializedType());
         }
 
         public object BoundValue
@@ -66,6 +67,102 @@ namespace BinarySerialization.Graph.ValueGraph
                 else value = Value;
 
                 return ConvertToFieldType(value);
+            }
+        }
+
+        protected void Serialize(Stream stream, SerializedType serializedType, int? length = null)
+        {
+            var writer = new EndianAwareBinaryWriter(stream, Endianness);
+
+            Serialize(writer, BoundValue, serializedType, length);
+        }
+
+        protected void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType, int? length = null)
+        {
+            if (value == null)
+                return;
+
+            switch (serializedType)
+            {
+                case SerializedType.Int1:
+                    writer.Write(Convert.ToSByte(value));
+                    break;
+                case SerializedType.UInt1:
+                    writer.Write(Convert.ToByte(value));
+                    break;
+                case SerializedType.Int2:
+                    writer.Write(Convert.ToInt16(value));
+                    break;
+                case SerializedType.UInt2:
+                    writer.Write(Convert.ToUInt16(value));
+                    break;
+                case SerializedType.Int4:
+                    writer.Write(Convert.ToInt32(value));
+                    break;
+                case SerializedType.UInt4:
+                    writer.Write(Convert.ToUInt32(value));
+                    break;
+                case SerializedType.Int8:
+                    writer.Write(Convert.ToInt64(value));
+                    break;
+                case SerializedType.UInt8:
+                    writer.Write(Convert.ToUInt64(value));
+                    break;
+                case SerializedType.Float4:
+                    writer.Write(Convert.ToSingle(value));
+                    break;
+                case SerializedType.Float8:
+                    writer.Write(Convert.ToDouble(value));
+                    break;
+                case SerializedType.ByteArray:
+                    {
+                        var data = (byte[])value;
+                        writer.Write(data, 0, data.Length);
+                        break;
+                    }
+                case SerializedType.NullTerminatedString:
+                    {
+                        byte[] data = Encoding.GetBytes(value.ToString());
+                        writer.Write(data);
+                        writer.Write((byte)0);
+                        break;
+                    }
+                case SerializedType.SizedString:
+                    {
+                        byte[] data = Encoding.GetBytes(value.ToString());
+
+                        if (length != null)
+                        {
+                            Array.Resize(ref data, length.Value);
+                        }
+                        //else if (FieldLengthBinding != null)
+                        //{
+                        //    if (FieldLengthBinding.IsConst)
+                        //        Array.Resize(ref data, (int)FieldLengthBinding.BoundValue);
+                        //}
+                        //else if (ItemLengthBinding != null)
+                        //{
+                        //    if (ItemLengthBinding.IsConst)
+                        //        Array.Resize(ref data, (int)ItemLengthBinding.BoundValue);
+                        //}
+                        //else throw new InvalidOperationException("No field length specified on sized string.");
+
+                        writer.Write(data);
+
+                        break;
+                    }
+                case SerializedType.LengthPrefixedString:
+                    {
+                        byte[] data = Encoding.GetBytes(value.ToString());
+                        var datalength = (ushort)data.Length;
+
+                        writer.Write(datalength);
+                        writer.Write(data);
+                    }
+
+                    break;
+                default:
+                    throw new NotSupportedException();
             }
         }
 

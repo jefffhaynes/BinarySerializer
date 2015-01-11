@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -14,11 +15,15 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public TypeNode TypeNode { get; set; }
 
+        public Encoding Encoding { get { return TypeNode.Encoding; } }
+
+        public Endianness Endianness { get { return TypeNode.Endianness; } }
+
         public void Bind()
         {
             if (TypeNode.FieldLengthBinding != null)
             {
-                TypeNode.FieldLengthBinding.Bind(this, () => 5);
+                TypeNode.FieldLengthBinding.Bind(this, () => MeasureOverride());
             }
 
             foreach(var child in Children.Cast<ValueNode>())
@@ -47,5 +52,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected abstract void SerializeOverride(Stream stream);
 
+
+        protected virtual long MeasureOverride()
+        {
+            var nullStream = new NullStream();
+            var streamKeeper = new StreamKeeper(nullStream);
+            Serialize(streamKeeper);
+            return streamKeeper.RelativePosition;
+        }
     }
 }

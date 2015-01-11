@@ -80,14 +80,20 @@ namespace BinarySerialization
             if (_graphCache.TryGetValue(valueType, out graph))
                 return graph;
 
-            graph = new RootTypeNode(valueType) {Endianness = Endianness};
-            graph.MemberSerializing += OnMemberSerializing;
-            graph.MemberSerialized += OnMemberSerialized;
-            graph.MemberDeserializing += OnMemberDeserializing;
-            graph.MemberDeserialized += OnMemberDeserialized;
-            _graphCache.Add(valueType, graph);
+            lock (_graphCacheLock)
+            {
+                if (_graphCache.TryGetValue(valueType, out graph))
+                    return graph;
 
-            return graph;
+                graph = new RootTypeNode(valueType) {Endianness = Endianness};
+                graph.MemberSerializing += OnMemberSerializing;
+                graph.MemberSerialized += OnMemberSerialized;
+                graph.MemberDeserializing += OnMemberDeserializing;
+                graph.MemberDeserialized += OnMemberDeserialized;
+                _graphCache.Add(valueType, graph);
+
+                return graph;
+            }
         }
 
         /// <summary>
@@ -104,18 +110,15 @@ namespace BinarySerialization
             if (value == null)
                 return;
 
-            lock (_graphCacheLock)
-            {
-                RootTypeNode graph = GetGraph(value.GetType());
+            RootTypeNode graph = GetGraph(value.GetType());
 
-                graph.SerializationContext = context;
-                //graph.Value = value;
-                //graph.Bind();
+            // graph.SerializationContext = context;
 
-                var valueGraph = graph.Serialize(null, value);
+            var valueGraph = graph.Serialize(null, value);
 
-                valueGraph.Bind();
-            }
+            valueGraph.Bind();
+
+            valueGraph.Serialize(stream);
         }
 
         /// <summary>
@@ -140,17 +143,14 @@ namespace BinarySerialization
         /// <returns>The deserialized object graph.</returns>
         public T Deserialize<T>(Stream stream, object context = null)
         {
-            lock (_graphCacheLock)
-            {
-                RootTypeNode graph = GetGraph(typeof (T));
-                graph.SerializationContext = context;
+            RootTypeNode graph = GetGraph(typeof (T));
+            //graph.SerializationContext = context;
 
-                //graph.Deserialize(new StreamLimiter(stream));
+            //graph.Deserialize(new StreamLimiter(stream));
 
-                //return (T) graph.Value;
+            //return (T) graph.Value;
 
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
 
         /// <summary>
