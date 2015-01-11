@@ -20,11 +20,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public Endianness Endianness { get { return TypeNode.Endianness; } }
 
+        public abstract object Value { get; set; }
+
         public void Bind()
         {
             if (TypeNode.FieldLengthBinding != null)
             {
-                TypeNode.FieldLengthBinding.Bind(this, () => MeasureOverride());
+                TypeNode.FieldLengthBinding.Bind<ValueNode>(this, () => MeasureOverride());
             }
 
             foreach(var child in Children.Cast<ValueNode>())

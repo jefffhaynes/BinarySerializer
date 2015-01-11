@@ -58,9 +58,9 @@ namespace BinarySerialization.Graph.TypeGraph
         //    }
         //}
 
-        public override ValueNode SerializeOverride(ValueNode parent, object value)
+        public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            return new ValueValueNode(parent, Name, this, value);
+            return new ValueValueNode(parent, Name, this);
 
             //Serialize(stream, value, GetSerializedType());
         }

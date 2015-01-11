@@ -110,18 +110,12 @@ namespace BinarySerialization.Graph.TypeGraph
         //    }
         //}
 
-        private IEnumerable<TypeNode> GetSerializableChildren()
-        {
-            return Children.Cast<TypeNode>().Where(child => child.IgnoreAttribute == null);
-        }
 
-        public override ValueNode SerializeOverride(ValueNode parent, object value)
+        public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            var serializableChildren = GetSerializableChildren();
-
             var objectValueNode = new ObjectValueNode(parent, Name, this);
 
-            objectValueNode.Children = new List<Node>(serializableChildren.Select(child => child.Serialize(objectValueNode, child.ValueGetter(value))));
+            objectValueNode.Children = new List<Node>(Children.Cast<TypeNode>().Select(child => child.CreateSerializer(objectValueNode)));
 
             return objectValueNode;
 

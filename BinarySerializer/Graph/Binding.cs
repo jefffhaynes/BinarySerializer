@@ -39,7 +39,7 @@ namespace BinarySerialization.Graph
 
         public int Level { get; set; }
 
-        public Node GetSource(Node target)
+        public TNode GetSource<TNode>(Node target) where TNode : Node
         {
             var relativeSource = GetRelativeSource(target);
 
@@ -48,7 +48,7 @@ namespace BinarySerialization.Graph
             if (!memberNames.Any())
                 throw new BindingException("Path cannot be empty.");
 
-            Node relativeSourceChild = relativeSource;
+            var relativeSourceChild = relativeSource;
             foreach (string name in memberNames)
             {
                 relativeSourceChild = relativeSourceChild.Children.SingleOrDefault(c => c.Name == name);
@@ -57,7 +57,7 @@ namespace BinarySerialization.Graph
                     throw new BindingException(string.Format("No field found at '{0}'.", Path));
             }
 
-            return relativeSourceChild;
+            return (TNode)relativeSourceChild;
         }
 
         private Node GetRelativeSource(Node target)
@@ -98,9 +98,9 @@ namespace BinarySerialization.Graph
             return null;
         }
 
-        public void Bind(Node target, Func<object> callback)
+        public void Bind<TNode>(Node target, Func<object> callback) where TNode : Node
         {
-            var source = GetSource(target);
+            var source = GetSource<TNode>(target);
             source.TargetBindings.Add(callback);
         }
 

@@ -75,9 +75,9 @@ namespace BinarySerialization.Graph.TypeGraph
             return all.Select(GenerateChild);
         }
 
-        public override ValueNode SerializeOverride(ValueNode parent, object value)
+        public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            return _child.Serialize(parent, value);
+            return _child.CreateSerializer(parent);
         }
 
         //public override object DeserializeOverride(ValueNode node)
@@ -85,9 +85,9 @@ namespace BinarySerialization.Graph.TypeGraph
         //    return _child.Deserialize(node);
         //}
 
-        public override ValueNode Serialize(ValueNode parent, object value)
+        public override ValueNode CreateSerializer(ValueNode parent)
         {
-            return SerializeOverride(parent, value);
+            return CreateSerializerOverride(parent);
         }
 
         //public override object Deserialize(ValueNode node)

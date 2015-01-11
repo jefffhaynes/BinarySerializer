@@ -114,10 +114,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 }
 
 
-                FieldLengthAttribute fieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
-            if (fieldLengthAttribute != null)
+                 FieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
+                 if (FieldLengthAttribute != null)
             {
-                FieldLengthBinding = new IntegerBinding(fieldLengthAttribute.Binding, GetBindingLevel(fieldLengthAttribute.Binding));
+                FieldLengthBinding = new IntegerBinding(FieldLengthAttribute.Binding, GetBindingLevel(FieldLengthAttribute.Binding));
             }
 
             FieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
@@ -425,11 +425,11 @@ namespace BinarySerialization.Graph.TypeGraph
             return SerializedType.Default;
         }
 
-        public virtual ValueNode Serialize(ValueNode parent, object value)
+        public virtual ValueNode CreateSerializer(ValueNode parent)
         {
             try
             {
-                return SerializeOverride(parent, value);
+                return CreateSerializerOverride(parent);
             }
             catch (Exception e)
             {
@@ -441,7 +441,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-        public abstract ValueNode SerializeOverride(ValueNode parent, object value);
+        public abstract ValueNode CreateSerializerOverride(ValueNode parent);
 
 
 
