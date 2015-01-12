@@ -76,6 +76,7 @@ namespace BinarySerializer.Test.Length
                     Field = new ConstLengthClass { Field = "FieldValue" }
                 };
             var actual = Roundtrip(expected);
+            Assert.AreEqual(3, actual.Field.Field.Length);
             Assert.AreEqual(3, actual.FieldLengthField);
         }
 

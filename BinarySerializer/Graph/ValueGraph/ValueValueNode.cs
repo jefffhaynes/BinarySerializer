@@ -128,21 +128,23 @@ namespace BinarySerialization.Graph.ValueGraph
                     {
                         byte[] data = Encoding.GetBytes(value.ToString());
 
+                        var typeParent = TypeNode.Parent as TypeNode;
+
                         if (length != null)
                         {
                             Array.Resize(ref data, length.Value);
                         }
-                        //else if (FieldLengthBinding != null)
-                        //{
-                        //    if (FieldLengthBinding.IsConst)
-                        //        Array.Resize(ref data, (int)FieldLengthBinding.BoundValue);
-                        //}
-                        //else if (ItemLengthBinding != null)
-                        //{
-                        //    if (ItemLengthBinding.IsConst)
-                        //        Array.Resize(ref data, (int)ItemLengthBinding.BoundValue);
-                        //}
-                        //else throw new InvalidOperationException("No field length specified on sized string.");
+                        else if (TypeNode.FieldLengthBinding != null)
+                        {
+                            if (TypeNode.FieldLengthBinding.IsConst)
+                                Array.Resize(ref data, Convert.ToInt32(TypeNode.FieldLengthBinding.ConstValue));
+                        }
+                        else if (typeParent != null && typeParent.ItemLengthBinding != null)
+                        {
+                            if (typeParent.ItemLengthBinding.IsConst)
+                                Array.Resize(ref data, Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue));
+                        }
+                        else throw new InvalidOperationException("No field length specified on sized string.");
 
                         writer.Write(data);
 
@@ -181,6 +183,7 @@ namespace BinarySerialization.Graph.ValueGraph
             int? effectiveLength = null;
 
             var typeParent = TypeNode.Parent as TypeNode;
+
             if (length != null)
                 effectiveLength = length.Value;
             else if (TypeNode.FieldLengthBinding != null)
