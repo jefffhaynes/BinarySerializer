@@ -29,6 +29,11 @@ namespace BinarySerialization.Graph.ValueGraph
                 TypeNode.FieldLengthBinding.Bind<ValueNode>(this, () => MeasureOverride());
             }
 
+            if (TypeNode.FieldCountBinding != null)
+            {
+                TypeNode.FieldCountBinding.Bind<ValueNode>(this, () => CountOverride());
+            }
+
             foreach(var child in Children.Cast<ValueNode>())
                 child.Bind();
         }
@@ -59,6 +64,9 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
+                if (TypeNode.FieldLengthBinding != null)
+                    stream = new StreamLimiter(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
+
                 DeserializeOverride(stream);
             }
             catch (EndOfStreamException e)
@@ -89,6 +97,21 @@ namespace BinarySerialization.Graph.ValueGraph
             var streamKeeper = new StreamKeeper(nullStream);
             Serialize(streamKeeper);
             return streamKeeper.RelativePosition;
+        }
+
+        protected virtual long CountOverride()
+        {
+            throw new NotSupportedException("Can't count this type.");
+        }
+
+
+
+        protected static bool ShouldTerminate(StreamLimiter stream)
+        {
+            if (stream.IsAtLimit)
+                return true;
+
+            return stream.CanSeek && stream.Position >= stream.Length;
         }
     }
 }

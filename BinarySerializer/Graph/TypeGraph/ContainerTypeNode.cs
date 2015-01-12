@@ -24,7 +24,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 var nodeType = GetNodeType(type);
 
                 var child = (TypeNode)Activator.CreateInstance(nodeType, this, type);
-                AddEvents(child);
+                //AddEvents(child);
                 return child;
             }
             catch (Exception exception)
@@ -69,10 +69,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 return typeof (ValueTypeNode);
             //if (Nullable.GetUnderlyingType(type) != null)
             //    return typeof (ValueNode);
-            //if (type.IsArray)
-            //    return typeof (ArrayNode);
-            //if (typeof(IList).IsAssignableFrom(type))
-            //    return typeof (ListNode);
+            if (type.IsArray)
+                return typeof(ArrayTypeNode);
+            if (typeof(IList).IsAssignableFrom(type))
+                return typeof(ListTypeNode);
             //if (typeof (Stream).IsAssignableFrom(type))
             //    return typeof(StreamNode);
             //if (typeof(IBinarySerializable).IsAssignableFrom(type))
@@ -98,12 +98,5 @@ namespace BinarySerialization.Graph.TypeGraph
             throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
         }
 
-        protected static bool ShouldTerminate(StreamLimiter stream)
-        {
-            if (stream.IsAtLimit)
-                return true;
-
-            return stream.CanSeek && stream.Position >= stream.Length;
-        }
     }
 }

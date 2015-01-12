@@ -8,8 +8,7 @@ namespace BinarySerialization.Graph
     {
         private const char PathSeparator = '.';
 
-        private bool _isConst;
-        private object _constValue;
+        private readonly object _constValue;
 
         public Binding(IBindableFieldAttribute attribute, int level)
         {
@@ -18,7 +17,7 @@ namespace BinarySerialization.Graph
             var constAttribute = attribute as IConstAttribute;
             if (constAttribute != null && Path == null)
             {
-                _isConst = true;
+                IsConst = true;
                 _constValue = constAttribute.GetConstValue();
             }
 
@@ -40,6 +39,19 @@ namespace BinarySerialization.Graph
             Level = level;
         }
 
+        public bool IsConst { get; private set; }
+
+        public object ConstValue
+        {
+            get
+            {
+                if (!IsConst)
+                    throw new InvalidOperationException("Not const.");
+
+                return _constValue;
+            }
+        }
+
         public string Path { get; private set; }
 
         public IValueConverter ValueConverter { get; private set; }
@@ -52,7 +64,7 @@ namespace BinarySerialization.Graph
 
         public object GetValue(ValueNode target)
         {
-            if (_isConst)
+            if (IsConst)
                 return _constValue;
 
             var source = GetSource<ValueNode>(target);
@@ -120,7 +132,7 @@ namespace BinarySerialization.Graph
 
         public void Bind<TNode>(Node target, Func<object> callback) where TNode : Node
         {
-            if (_isConst)
+            if (IsConst)
                 return;
 
             var source = GetSource<TNode>(target);

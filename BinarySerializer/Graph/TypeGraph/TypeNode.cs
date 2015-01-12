@@ -43,7 +43,7 @@ namespace BinarySerialization.Graph.TypeGraph
         //private readonly IntegerBinding _itemLengthBinding;
         //private readonly ObjectBinding _itemSerializeUntilBinding;
         //private readonly Lazy<List<Binding>> _lazyBindings;
-        private readonly Lazy<List<TypeNode>> _lazyChildren;
+        //private readonly Lazy<List<TypeNode>> _lazyChildren;
         private readonly int? _order;
         private readonly SerializedType? _serializedType;
         //private readonly ObjectBinding _subtypeBinding;
@@ -352,16 +352,16 @@ namespace BinarySerialization.Graph.TypeGraph
         //        Children.Add(child);
         //}
 
-        protected void ClearChildren()
-        {
-            foreach (TypeNode child in Children)
-            {
-                //child.Unbind();
-                RemoveEvents(child);
-            }
+        //protected void ClearChildren()
+        //{
+        //    foreach (TypeNode child in Children)
+        //    {
+        //        //child.Unbind();
+        //        RemoveEvents(child);
+        //    }
 
-            _lazyChildren.Value.Clear();
-        }
+        //    _lazyChildren.Value.Clear();
+        //}
 
         //public void Bind()
         //{
@@ -582,22 +582,22 @@ namespace BinarySerialization.Graph.TypeGraph
         //    return new BinarySerializationContext(Parent.Value, Parent.Type, Parent.CreateSerializationContext());
         //}
 
-        protected void AddEvents(TypeNode child)
-        {
-            RemoveEvents(child);
-            child.MemberSerializing += OnMemberSerializing;
-            child.MemberSerialized += OnMemberSerialized;
-            child.MemberDeserializing += OnMemberDeserializing;
-            child.MemberDeserialized += OnMemberDeserialized;
-        }
+        //protected void AddEvents(TypeNode child)
+        //{
+        //    RemoveEvents(child);
+        //    child.MemberSerializing += OnMemberSerializing;
+        //    child.MemberSerialized += OnMemberSerialized;
+        //    child.MemberDeserializing += OnMemberDeserializing;
+        //    child.MemberDeserialized += OnMemberDeserialized;
+        //}
 
-        private void RemoveEvents(TypeNode child)
-        {
-            child.MemberSerializing -= OnMemberSerializing;
-            child.MemberSerialized -= OnMemberSerialized;
-            child.MemberDeserializing -= OnMemberDeserializing;
-            child.MemberDeserialized -= OnMemberDeserialized;
-        }
+        //private void RemoveEvents(TypeNode child)
+        //{
+        //    child.MemberSerializing -= OnMemberSerializing;
+        //    child.MemberSerialized -= OnMemberSerialized;
+        //    child.MemberDeserializing -= OnMemberDeserializing;
+        //    child.MemberDeserialized -= OnMemberDeserialized;
+        //}
 
         protected void OnMemberSerialized(object sender, MemberSerializedEventArgs e)
         {

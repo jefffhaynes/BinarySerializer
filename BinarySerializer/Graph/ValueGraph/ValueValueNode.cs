@@ -74,7 +74,7 @@ namespace BinarySerialization.Graph.ValueGraph
             Serialize(writer, Value, serializedType, length);
         }
 
-        protected void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType, int? length = null)
+        public void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType, int? length = null)
         {
             if (value == null)
                 return;
@@ -170,7 +170,7 @@ namespace BinarySerialization.Graph.ValueGraph
             Value = ConvertToFieldType(value);
         }
 
-        protected object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
+        public object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
         {
             var reader = new EndianAwareBinaryReader(stream, Endianness);
             return Deserialize(reader, serializedType, length);

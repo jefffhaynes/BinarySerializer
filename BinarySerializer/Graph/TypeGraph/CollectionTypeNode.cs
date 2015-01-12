@@ -1,32 +1,46 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BinarySerialization.Graph.ValueGraph;
 
-namespace BinarySerialization.TypeGraph
+namespace BinarySerialization.Graph.TypeGraph
 {
-    internal abstract class CollectionNode : ContainerNode
+    internal abstract class CollectionTypeNode : ContainerTypeNode
     {
-        protected Type ChildType { get; set; }
+        protected CollectionTypeNode(TypeNode parent, Type type) : base(parent, type)
+        {
+            TerminationValue = GetTerminationValue();
+        }
+
+        protected CollectionTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        {
+            TerminationValue = GetTerminationValue();
+        }
+
+        public Type ChildType { get; set; }
+
+        public TypeNode Child { get; set; }
 
         /// <summary>
         /// For primitive collections.
         /// </summary>
-        protected object CollectionValue { get; set; }
+        //protected object CollectionValue { get; set; }
 
-        private readonly object _terminationValue;
+        public object TerminationValue { get; private set; }
 
-        protected CollectionNode(Node parent, Type type) : base(parent, type)
-        {
-            _terminationValue = GetTerminationValue();
-        }
+        //protected CollectionNode(Node parent, Type type)
+        //    : base(parent, type)
+        //{
+        //    _terminationValue = GetTerminationValue();
+        //}
 
-        protected CollectionNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
-        {
-            _terminationValue = GetTerminationValue();
-        }
+        //protected CollectionNode(Node parent, MemberInfo memberInfo)
+        //    : base(parent, memberInfo)
+        //{
+        //    _terminationValue = GetTerminationValue();
+        //}
 
         //protected override long CountNodeOverride()
         //{
@@ -39,17 +53,17 @@ namespace BinarySerialization.TypeGraph
         //    return lastItem.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
         //}
 
-        public override void SerializeOverride(Stream stream, object value)
-        {
-            if (ChildType.IsPrimitive)
-            {
-                SerializePrimitiveCollection(stream, value);
-            }
-            else
-            {
-                SerializeObjectCollection(stream, value);
-            }
-        }
+        //public override void SerializeOverride(Stream stream)
+        //{
+        //    if (ChildType.IsPrimitive)
+        //    {
+        //        SerializePrimitiveCollection(stream, value);
+        //    }
+        //    else
+        //    {
+        //        SerializeObjectCollection(stream, value);
+        //    }
+        //}
 
         private void SerializePrimitiveCollection(Stream stream, object value)
         {
@@ -79,58 +93,58 @@ namespace BinarySerialization.TypeGraph
             //}
         }
 
-        public override object DeserializeOverride(StreamLimiter stream)
-        {
-            //if (FieldLengthBinding != null)
-            //    stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);
+        //public override object DeserializeOverride(StreamLimiter stream)
+        //{
+        //    //if (FieldLengthBinding != null)
+        //    //    stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);
 
-            //var count = FieldCountBinding != null ? (int)FieldCountBinding.Value : int.MaxValue;
+        //    //var count = FieldCountBinding != null ? (int)FieldCountBinding.Value : int.MaxValue;
 
-            //if (ChildType.IsPrimitive)
-            //{
-            //    DeserializePrimitiveCollection(stream, count);
-            //}
-            //else
-            //{
-            //    DeserializeObjectCollection(stream, count);
-            //}
+        //    //if (ChildType.IsPrimitive)
+        //    //{
+        //    //    DeserializePrimitiveCollection(stream, count);
+        //    //}
+        //    //else
+        //    //{
+        //    //    DeserializeObjectCollection(stream, count);
+        //    //}
 
-            return null;
-        }
+        //    return null;
+        //}
 
-        private void DeserializePrimitiveCollection(StreamLimiter stream, int count)
-        {
-            /* Create temporary list */
-            Type collectionType = typeof(List<>).MakeGenericType(ChildType);
-            var collection = (IList)Activator.CreateInstance(collectionType);
+        //private void DeserializePrimitiveCollection(StreamLimiter stream, int count)
+        //{
+        //    /* Create temporary list */
+        //    Type collectionType = typeof(List<>).MakeGenericType(ChildType);
+        //    var collection = (IList)Activator.CreateInstance(collectionType);
 
-            /* Create single child to do all the work */
-            var dummyChild = (ValueNode)GenerateChild(ChildType);
+        //    /* Create single child to do all the work */
+        //    var dummyChild = (ValueNode)GenerateChild(ChildType);
 
-            var reader = new EndianAwareBinaryReader(stream, Endianness);
-            var childSerializedType = dummyChild.GetSerializedType();
+        //    var reader = new EndianAwareBinaryReader(stream, Endianness);
+        //    var childSerializedType = dummyChild.GetSerializedType();
 
-            int itemCount = 0;
-            for (int i = 0; i < count; i++)
-            {
-                if (ShouldTerminate(stream))
-                    break;
+        //    int itemCount = 0;
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        if (ShouldTerminate(stream))
+        //            break;
 
-                var value = dummyChild.Deserialize(reader, childSerializedType);
-                collection.Add(value);
+        //        var value = dummyChild.Deserialize(reader, childSerializedType);
+        //        collection.Add(value);
 
-                itemCount++;
-            }
+        //        itemCount++;
+        //    }
 
-            /* Create final collection */
-            CollectionValue = CreatePrimitiveCollection(itemCount);
+        //    /* Create final collection */
+        //    CollectionValue = CreatePrimitiveCollection(itemCount);
 
-            /* Copy temp list into final collection */
-            for (int i = 0; i < itemCount; i++)
-            {
-                SetPrimitiveValue(collection[i], i);
-            }
-        }
+        //    /* Copy temp list into final collection */
+        //    for (int i = 0; i < itemCount; i++)
+        //    {
+        //        SetPrimitiveValue(collection[i], i);
+        //    }
+        //}
 
         //private void DeserializeObjectCollection(StreamLimiter stream, int count)
         //{
@@ -201,12 +215,12 @@ namespace BinarySerialization.TypeGraph
             return SerializeUntilAttribute.ConstValue ?? (byte)0;
         }
 
-        protected abstract object CreatePrimitiveCollection(int size);
+        //protected abstract object CreatePrimitiveCollection(int size);
 
-        protected abstract int GetCollectionCount(object collection);
+        //protected abstract int GetCollectionCount(object collection);
 
-        protected abstract void SetPrimitiveValue(object item, int index);
+        //protected abstract void SetPrimitiveValue(object item, int index);
 
-        protected abstract object GetPrimitiveValue(int index);
+        //protected abstract object GetPrimitiveValue(int index);
     }
 }

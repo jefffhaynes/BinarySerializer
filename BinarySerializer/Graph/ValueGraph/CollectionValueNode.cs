@@ -2,36 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal class ObjectValueNode : ValueNode
+    internal abstract class CollectionValueNode : ValueNode
     {
-        public ObjectValueNode(Node parent, string name, TypeNode typeNode)
-            : base(parent, name, typeNode)
+        protected CollectionValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
-        }
-
-        public override object Value
-        {
-            get
-            {
-                var value = Activator.CreateInstance(TypeNode.Type);
-
-                var serializableChildren = GetSerializableChildren();
-
-                foreach (var child in serializableChildren)
-                    child.TypeNode.ValueSetter(value, child.Value);
-
-                return value;
-            }
-
-            set
-            {
-                foreach (var child in Children.Cast<ValueNode>())
-                    child.Value = child.TypeNode.ValueGetter(value);
-            }
         }
 
         private IEnumerable<ValueNode> GetSerializableChildren()
@@ -54,9 +33,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             foreach (var child in Children.Cast<ValueNode>())
             {
-                if (ShouldTerminate(stream))
-                    break;
-
                 child.Deserialize(stream);
             }
         }
