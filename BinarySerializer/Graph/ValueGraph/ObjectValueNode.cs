@@ -13,11 +13,16 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
+        private Type _valueType;
+
         public override object Value
         {
             get
             {
-                var value = Activator.CreateInstance(TypeNode.Type);
+                if (_valueType == null)
+                    return null;
+
+                var value = Activator.CreateInstance(_valueType);
 
                 var serializableChildren = GetSerializableChildren();
 
@@ -29,8 +34,22 @@ namespace BinarySerialization.Graph.ValueGraph
 
             set
             {
+                if (Children.Any())
+                    throw new InvalidOperationException("Value already set.");
+
+                if (value == null)
+                    return;
+
+                var typeNode = (ObjectTypeNode) TypeNode;
+
+                var typeChildren = typeNode.TypeChildren[value.GetType()];
+
+                Children = new List<Node>(typeChildren.Select(child => child.CreateSerializer(this)));
+
                 foreach (var child in Children.Cast<ValueNode>())
                     child.Value = child.TypeNode.ValueGetter(value);
+
+                _valueType = value.GetType();
             }
         }
 
@@ -52,6 +71,29 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override void DeserializeOverride(StreamLimiter stream)
         {
+            if (TypeNode.SubtypeBinding == null)
+            {
+                _valueType = TypeNode.Type;
+            }
+            else
+            {
+                var subTypeValue = TypeNode.SubtypeBinding.GetValue(this);
+
+                var matchingAttribute =
+                    TypeNode.SubtypeAttributes.SingleOrDefault(
+                        attribute =>
+                            subTypeValue.Equals(Convert.ChangeType(attribute.Value, subTypeValue.GetType(), null)));
+
+                _valueType = matchingAttribute == null ? null : matchingAttribute.Subtype;
+            }
+
+            if (_valueType == null)
+                return;
+
+            var typeNode = (ObjectTypeNode)TypeNode;
+
+            Children = new List<Node>(typeNode.TypeChildren[_valueType].Select(child => child.CreateSerializer(this)));
+
             foreach (var child in Children.Cast<ValueNode>())
             {
                 if (ShouldTerminate(stream))
@@ -59,6 +101,11 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 child.Deserialize(stream);
             }
+        }
+
+        protected override Type GetValueTypeOverride()
+        {
+            return _valueType;
         }
     }
 }

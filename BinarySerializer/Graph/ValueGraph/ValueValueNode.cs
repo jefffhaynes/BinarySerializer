@@ -6,7 +6,7 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal class ValueValueNode : ValueNode
+    internal class ValueValueNode : ValueNode, IBindingSource
     {
         protected static readonly Dictionary<Type, Func<object, object>> TypeConverters =
     new Dictionary<Type, Func<object, object>>
@@ -26,14 +26,14 @@ namespace BinarySerialization.Graph.ValueGraph
                 {typeof (string), Convert.ToString}
             };
 
-        private object _value;
-
         public ValueValueNode(Node parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
         }
 
-        public override object Value
+        public override object Value { get; set; }
+
+        public object BoundValue
         {
             get
             {
@@ -52,26 +52,24 @@ namespace BinarySerialization.Graph.ValueGraph
                                 "Multiple bindings to a single source must have equivalent target values.");
                     }
                 }
-                else value = _value;
+                else value = Value;
 
                 return ConvertToFieldType(value);
             }
-
-            set { _value = value; }
         }
 
 
         protected override void SerializeOverride(Stream stream)
         {
-            Serialize(stream, TypeNode.GetSerializedType());
+            Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }
 
 
-        protected void Serialize(Stream stream, SerializedType serializedType, int? length = null)
+        public void Serialize(Stream stream, object value, SerializedType serializedType, int? length = null)
         {
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
 
-            Serialize(writer, Value, serializedType, length);
+            Serialize(writer, value, serializedType, length);
         }
 
         public void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType, int? length = null)

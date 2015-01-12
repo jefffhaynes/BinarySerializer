@@ -63,8 +63,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private static Type GetNodeType(Type type)
         {
-            //if (type.IsEnum)
-            //    return typeof (EnumNode);
+            if (type.IsEnum)
+                return typeof(EnumTypeNode);
             if (type.IsPrimitive || type == typeof (string) || type == typeof (byte[]))
                 return typeof (ValueTypeNode);
             //if (Nullable.GetUnderlyingType(type) != null)

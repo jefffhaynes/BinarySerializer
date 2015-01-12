@@ -71,6 +71,21 @@ namespace BinarySerialization.Graph
             return source.Value;
         }
 
+        public object GetBoundValue(ValueNode target)
+        {
+            if (IsConst)
+                return _constValue;
+
+            var source = GetSource<ValueNode>(target);
+
+            var bindingSource = source as IBindingSource;
+
+            if(bindingSource == null)
+                throw new InvalidOperationException("Not a bindable source.");
+
+            return bindingSource.BoundValue;
+        }
+
         public TSourceNode GetSource<TSourceNode>(Node target) where TSourceNode : Node
         {
             var relativeSource = GetRelativeSource(target);

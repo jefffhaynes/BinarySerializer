@@ -10,8 +10,7 @@ namespace BinarySerialization.Graph.TypeGraph
     {
         private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
-        private readonly Dictionary<Type, List<TypeNode>> _typeChildren = new Dictionary<Type, List<TypeNode>>();
-        private readonly object _typeChildrenLock = new object();
+        //private readonly object _typeChildrenLock = new object();
 
         //private Type _valueType;
         //private Type _setValueType;
@@ -53,12 +52,57 @@ namespace BinarySerialization.Graph.TypeGraph
             //    GenerateChildren(subType);
         }
 
+        public IDictionary<Type, List<TypeNode>> TypeChildren { get; private set; }
+
+        public IDictionary<Type, object> SubTypeKeys { get; private set; }
+
         private void Construct()
         {
-            Children = new List<Node>(GenerateChildrenImpl(Type));
-            //var baseChild = GenerateChild(Type);
-            //AddChild(baseChild);
+            var baseChildren = GenerateChildrenImpl(Type).ToList();
+
+            TypeChildren = new Dictionary<Type, List<TypeNode>> {{Type, baseChildren}};
+
+            /* Add subtypes, if any */
+            if (SubtypeAttributes == null || SubtypeAttributes.Count <= 0)
+                return;
+
+            /* Get subtype keys */
+            SubTypeKeys = SubtypeAttributes.ToDictionary(attribute => attribute.Subtype, attribute => attribute.Value);
+
+            /* Generate subtype children */
+            var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
+
+            foreach (var subType in subTypes)
+                TypeChildren.Add(subType, GenerateChildrenImpl(subType).ToList());
         }
+
+         //TypeNode.SubtypeBinding.Bind<ValueNode>(this, () =>
+         //       {
+         //           Type valueType = GetValueTypeOverride();
+
+         //           if (valueType == null)
+         //               return null;
+
+         //           List<SubtypeAttribute> matchingSubtypes =
+         //               TypeNode.SubtypeAttributes.Where(attribute => attribute.Subtype == valueType).ToList();
+
+         //           if (!matchingSubtypes.Any())
+         //           {
+         //               /* Try to fall back on base types */
+         //               matchingSubtypes =
+         //                   TypeNode.SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType))
+         //                       .ToList();
+
+         //               if (!matchingSubtypes.Any())
+         //                   return null;
+         //           }
+
+         //           if (matchingSubtypes.Count() > 1)
+         //               throw new BindingException("Subtypes must have unique types.");
+
+         //           return matchingSubtypes.Single().Value;
+         //       });
+
 
         //public override object Value
         //{
@@ -113,11 +157,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            var objectValueNode = new ObjectValueNode(parent, Name, this);
-
-            objectValueNode.Children = new List<Node>(Children.Cast<TypeNode>().Select(child => child.CreateSerializer(objectValueNode)));
-
-            return objectValueNode;
+            return new ObjectValueNode(parent, Name, this);
 
             //var serializationContext = CreateSerializationContext();
             //foreach (var child in serializableChildren)
@@ -179,17 +219,14 @@ namespace BinarySerialization.Graph.TypeGraph
 
 
 
-        private void GenerateChildren(Type type)
-        {
-            lock (_typeChildrenLock)
-            {
-                if (_typeChildren.ContainsKey(type))
-                    return;
+        //private void GenerateChildren(Type type)
+        //{
+        //    if (_typeChildren.ContainsKey(type))
+        //        return;
 
-                var children = GenerateChildrenImpl(type);
-                _typeChildren.Add(type, children.ToList());
-            }
-        }
+        //    var children = GenerateChildrenImpl(type);
+        //    _typeChildren.Add(type, children.ToList());
+        //}
 
         private IEnumerable<TypeNode> GenerateChildrenImpl(Type type)
         { 

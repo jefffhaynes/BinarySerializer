@@ -44,9 +44,12 @@
     <Compile Include="Graph\Node.cs" />
     <Compile Include="Graph\TypeGraph\ArrayTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\CollectionTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\EnumTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\ListTypeNode.cs" />
     <Compile Include="Graph\ValueGraph\ArrayValueNode.cs" />
     <Compile Include="Graph\ValueGraph\CollectionValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\EnumValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\IBindingSource.cs" />
     <Compile Include="Graph\ValueGraph\ListValueNode.cs" />
     <Compile Include="Graph\ValueGraph\PrimitiveCollectionValueNode.cs" />
     <Compile Include="Graph\ValueGraph\PrimitiveListValueNode.cs" />

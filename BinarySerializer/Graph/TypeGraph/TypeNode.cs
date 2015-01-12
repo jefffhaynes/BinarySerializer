@@ -145,10 +145,19 @@ namespace BinarySerialization.Graph.TypeGraph
             var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
             SubtypeAttributes = new ReadOnlyCollection<SubtypeAttribute>(subtypeAttributes);
 
-            //if (SubtypeAttributes.Length != 0)
-            //{
-            //    List<ObjectBinding> subtypeBindings =
-            //        SubtypeAttributes.Select(subtypeAttribute => new ObjectBinding(this, SubtypeAttributes[0], () =>
+            if (SubtypeAttributes.Count > 0)
+            {
+                IEnumerable<IGrouping<BindingInfo, SubtypeAttribute>> bindingGroups =
+                    SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
+
+                if (bindingGroups.Count() > 1)
+                    throw new BindingException("Subtypes must all use the same binding configuration.");
+
+                var firstBinding = SubtypeAttributes[0];
+                SubtypeBinding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
+            }
+
+            //() =>
             //        {
             //            Type valueType = GetValueTypeOverride();
 
@@ -175,15 +184,6 @@ namespace BinarySerialization.Graph.TypeGraph
             //            return matchingSubtypes.Single().Value;
             //        })).ToList();
 
-
-            //    IEnumerable<IGrouping<BindingInfo, SubtypeAttribute>> bindingGroups =
-            //        SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
-
-            //    if (bindingGroups.Count() > 1)
-            //        throw new BindingException("Subtypes must all use the same binding configuration.");
-
-            //    _subtypeBinding = subtypeBindings.First();
-            //}
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             //if (SerializeUntilAttribute != null)
@@ -239,6 +239,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public Binding FieldCountBinding { get; private set; }
 
         public Binding FieldOffsetBinding { get; private set; }
+
+        public Binding SubtypeBinding { get; private set; }
 
         public FieldLengthAttribute FieldLengthAttribute { get; private set; }
 

@@ -16,9 +16,15 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public TypeNode TypeNode { get; set; }
 
-        public Encoding Encoding { get { return TypeNode.Encoding; } }
+        public Encoding Encoding
+        {
+            get { return TypeNode.Encoding; }
+        }
 
-        public Endianness Endianness { get { return TypeNode.Endianness; } }
+        public Endianness Endianness
+        {
+            get { return TypeNode.Endianness; }
+        }
 
         public abstract object Value { get; set; }
 
@@ -34,15 +40,30 @@ namespace BinarySerialization.Graph.ValueGraph
                 TypeNode.FieldCountBinding.Bind<ValueNode>(this, () => CountOverride());
             }
 
-            foreach(var child in Children.Cast<ValueNode>())
+            if (TypeNode.SubtypeBinding != null)
+            {
+                TypeNode.SubtypeBinding.Bind<ValueNode>(this, () =>
+                {
+                    Type valueType = GetValueTypeOverride();
+                    if(valueType == null)
+                        return null;
+
+                    var typeNode = (ObjectTypeNode) TypeNode;
+
+                    return typeNode.SubTypeKeys[valueType];
+                });
+            }
+
+            foreach (ValueNode child in Children.Cast<ValueNode>())
                 child.Bind();
         }
+
 
         public virtual void Serialize(Stream stream)
         {
             try
-            {    
-                var fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+            {
+                Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
                 using (new StreamResetter(stream, fieldOffsetBinding != null))
                 {
@@ -75,7 +96,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (TypeNode.FieldLengthBinding != null)
                     stream = new StreamLimiter(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
 
-                var fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+                Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
                 using (new StreamResetter(stream, fieldOffsetBinding != null))
                 {
@@ -117,7 +138,12 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected virtual long CountOverride()
         {
-            throw new NotSupportedException("Can't count this type.");
+            throw new NotSupportedException("Can't count this field.");
+        }
+
+        protected virtual Type GetValueTypeOverride()
+        {
+            throw new NotSupportedException("Can't set subtypes on this field.");
         }
 
         protected static bool ShouldTerminate(StreamLimiter stream)
