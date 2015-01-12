@@ -41,8 +41,16 @@ namespace BinarySerialization.Graph.ValueGraph
         public virtual void Serialize(Stream stream)
         {
             try
-            {
-                SerializeOverride(stream);
+            {    
+                var fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+
+                using (new StreamResetter(stream, fieldOffsetBinding != null))
+                {
+                    if (fieldOffsetBinding != null)
+                        stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
+
+                    SerializeOverride(stream);
+                }
             }
             catch (IOException)
             {
@@ -67,7 +75,15 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (TypeNode.FieldLengthBinding != null)
                     stream = new StreamLimiter(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
 
-                DeserializeOverride(stream);
+                var fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+
+                using (new StreamResetter(stream, fieldOffsetBinding != null))
+                {
+                    if (fieldOffsetBinding != null)
+                        stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
+
+                    DeserializeOverride(stream);
+                }
             }
             catch (EndOfStreamException e)
             {

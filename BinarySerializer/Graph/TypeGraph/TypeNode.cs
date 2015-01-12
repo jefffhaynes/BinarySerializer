@@ -127,6 +127,10 @@ namespace BinarySerialization.Graph.TypeGraph
             }
 
             FieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
+            if (FieldOffsetAttribute != null)
+            {
+                FieldOffsetBinding = new Binding(FieldOffsetAttribute, GetBindingLevel(FieldOffsetAttribute.Binding));
+            }
 
             SerializeWhenAttribute[] serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
             SerializeWhenAttributes = new ReadOnlyCollection<SerializeWhenAttribute>(serializeWhenAttributes);
@@ -233,6 +237,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public Binding ItemLengthBinding { get; private set; }
 
         public Binding FieldCountBinding { get; private set; }
+
+        public Binding FieldOffsetBinding { get; private set; }
 
         public FieldLengthAttribute FieldLengthAttribute { get; private set; }
 
