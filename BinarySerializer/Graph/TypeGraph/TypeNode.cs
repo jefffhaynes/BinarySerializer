@@ -185,9 +185,8 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             get
             {
-                return _type;
-                //Type underlyingType = Nullable.GetUnderlyingType(_type);
-                //return underlyingType ?? _type;
+                Type underlyingType = Nullable.GetUnderlyingType(_type);
+                return underlyingType ?? _type;
             }
         }
 

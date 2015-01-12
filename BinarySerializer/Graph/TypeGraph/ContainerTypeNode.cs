@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.IO;
 using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
@@ -67,14 +68,14 @@ namespace BinarySerialization.Graph.TypeGraph
                 return typeof(EnumTypeNode);
             if (type.IsPrimitive || type == typeof (string) || type == typeof (byte[]))
                 return typeof (ValueTypeNode);
-            //if (Nullable.GetUnderlyingType(type) != null)
-            //    return typeof (ValueNode);
+            if (Nullable.GetUnderlyingType(type) != null)
+                return typeof(ValueTypeNode);
             if (type.IsArray)
                 return typeof(ArrayTypeNode);
             if (typeof(IList).IsAssignableFrom(type))
                 return typeof(ListTypeNode);
-            //if (typeof (Stream).IsAssignableFrom(type))
-            //    return typeof(StreamNode);
+            if (typeof(Stream).IsAssignableFrom(type))
+                return typeof(StreamTypeNode);
             //if (typeof(IBinarySerializable).IsAssignableFrom(type))
             //    return typeof(CustomNode);
             return typeof (ObjectTypeNode);

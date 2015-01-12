@@ -47,6 +47,7 @@
     <Compile Include="Graph\ConditionalBinding.cs" />
     <Compile Include="Graph\TypeGraph\EnumTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\ListTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\StreamTypeNode.cs" />
     <Compile Include="Graph\ValueGraph\ArrayValueNode.cs" />
     <Compile Include="Graph\ValueGraph\CollectionValueNode.cs" />
     <Compile Include="Graph\ValueGraph\EnumValueNode.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Graph\ValueGraph\PrimitiveCollectionValueNode.cs" />
     <Compile Include="Graph\ValueGraph\PrimitiveListValueNode.cs" />
     <Compile Include="Graph\ValueGraph\PrimitveArrayValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\StreamValueNode.cs" />
     <Compile Include="SerializeAsAttribute.cs" />
     <Compile Include="BinarySerializer.cs" />
     <Compile Include="BindingException.cs" />

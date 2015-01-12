@@ -154,21 +154,6 @@ namespace BinarySerialization.Graph
             source.TargetBindings.Add(() => ConvertBack(callback()));
         }
 
-        //protected object GetValue()
-        //{
-        //    return Convert(GetSource().Value);
-        //}
-
-        //protected object GetBoundValue()
-        //{
-        //    return Convert(GetSource().BoundValue);
-        //}
-
-        //public object GetTargetValue()
-        //{
-        //    return ConvertBack(_targetEvaluator());
-        //}
-
         public object Convert(object value)
         {
             if (ValueConverter == null)
