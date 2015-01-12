@@ -104,8 +104,6 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new NotSupportedException("Can't count this type.");
         }
 
-
-
         protected static bool ShouldTerminate(StreamLimiter stream)
         {
             if (stream.IsAtLimit)
