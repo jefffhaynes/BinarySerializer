@@ -68,7 +68,7 @@ namespace BinarySerialization.Graph
                 return _constValue;
 
             var source = GetSource(target);
-            return source.Value;
+            return Convert(source.Value);
         }
 
         public object GetBoundValue(ValueNode target)
@@ -83,7 +83,7 @@ namespace BinarySerialization.Graph
             if(bindingSource == null)
                 throw new InvalidOperationException("Not a bindable source.");
 
-            return bindingSource.BoundValue;
+            return Convert(bindingSource.BoundValue);
         }
 
         public ValueNode GetSource(ValueNode target)
@@ -151,7 +151,7 @@ namespace BinarySerialization.Graph
                 return;
 
             var source = GetSource(target);
-            source.TargetBindings.Add(callback);
+            source.TargetBindings.Add(() => ConvertBack(callback()));
         }
 
         //protected object GetValue()
@@ -169,20 +169,22 @@ namespace BinarySerialization.Graph
         //    return ConvertBack(_targetEvaluator());
         //}
 
-        //public object Convert(object value)
-        //{
-        //    if (_valueConverter == null)
-        //        return value;
+        public object Convert(object value)
+        {
+            if (ValueConverter == null)
+                return value;
 
-        //    return _valueConverter.Convert(value, _converterParameter, _targetNode.CreateSerializationContext());
-        //}
+            //return ValueConverter.Convert(value, _converterParameter, _targetNode.CreateSerializationContext());
+            return ValueConverter.Convert(value, ConverterParameter, null);
+        }
 
-        //public object ConvertBack(object value)
-        //{
-        //    if (_valueConverter == null)
-        //        return value;
+        public object ConvertBack(object value)
+        {
+            if (ValueConverter == null)
+                return value;
 
-        //    return _valueConverter.ConvertBack(value, _converterParameter, _targetNode.CreateSerializationContext());
-        //}
+            //return ValueConverter.ConvertBack(value, _converterParameter, _targetNode.CreateSerializationContext());
+            return ValueConverter.ConvertBack(value, ConverterParameter, null);
+        }
     }
 }
