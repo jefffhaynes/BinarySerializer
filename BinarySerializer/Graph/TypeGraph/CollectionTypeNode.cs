@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
@@ -11,59 +8,25 @@ namespace BinarySerialization.Graph.TypeGraph
     {
         protected CollectionTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
-            TerminationValue = GetTerminationValue();
+            object terminationValue;
+            TerminationChild = GetTerminationChild(out terminationValue);
+            TerminationValue = terminationValue;
         }
 
         protected CollectionTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
         {
-            TerminationValue = GetTerminationValue();
+            object terminationValue;
+            TerminationChild = GetTerminationChild(out terminationValue);
+            TerminationValue = terminationValue;
         }
 
         public Type ChildType { get; set; }
 
         public TypeNode Child { get; set; }
 
-        /// <summary>
-        /// For primitive collections.
-        /// </summary>
-        //protected object CollectionValue { get; set; }
+        public TypeNode TerminationChild { get; private set; }
 
         public object TerminationValue { get; private set; }
-
-        //protected CollectionNode(Node parent, Type type)
-        //    : base(parent, type)
-        //{
-        //    _terminationValue = GetTerminationValue();
-        //}
-
-        //protected CollectionNode(Node parent, MemberInfo memberInfo)
-        //    : base(parent, memberInfo)
-        //{
-        //    _terminationValue = GetTerminationValue();
-        //}
-
-        //protected override long CountNodeOverride()
-        //{
-        //    return ChildType.IsPrimitive ? GetCollectionCount() : ChildCount;
-        //}
-
-        //protected override object GetLastItemValueOverride()
-        //{
-        //    var lastItem = Children.Last();
-        //    return lastItem.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
-        //}
-
-        //public override void SerializeOverride(Stream stream)
-        //{
-        //    if (ChildType.IsPrimitive)
-        //    {
-        //        SerializePrimitiveCollection(stream, value);
-        //    }
-        //    else
-        //    {
-        //        SerializeObjectCollection(stream, value);
-        //    }
-        //}
 
         private void SerializePrimitiveCollection(Stream stream, object value)
         {
@@ -207,12 +170,21 @@ namespace BinarySerialization.Graph.TypeGraph
         //    Bind();
         //}
 
-        private object GetTerminationValue()
+        private TypeNode GetTerminationChild(out object terminationValue)
         {
-            if (SerializeUntilAttribute == null) 
+            if (SerializeUntilAttribute == null)
+            {
+                terminationValue = null;
                 return null;
+            }
 
-            return SerializeUntilAttribute.ConstValue ?? (byte)0;
+            terminationValue = SerializeUntilAttribute == null ? null : SerializeUntilAttribute.ConstValue ?? (byte)0;
+
+            TypeNode terminationChild = null;
+            if (terminationValue != null)
+                terminationChild = GenerateChild(terminationValue.GetType());
+
+            return terminationChild;
         }
 
         //protected abstract object CreatePrimitiveCollection(int size);

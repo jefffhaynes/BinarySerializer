@@ -42,7 +42,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var typeNode = (ObjectTypeNode) TypeNode;
 
-                var typeChildren = typeNode.TypeChildren[value.GetType()];
+                List<TypeNode> typeChildren;
+                if (!typeNode.TypeChildren.TryGetValue(value.GetType(), out typeChildren))
+                    return;
 
                 Children = new List<Node>(typeChildren.Select(child => child.CreateSerializer(this)));
 

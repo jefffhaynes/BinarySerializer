@@ -159,11 +159,10 @@ namespace BinarySerialization.Graph.TypeGraph
 
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
-            //if (SerializeUntilAttribute != null)
-            //{
-            //    _serializeUntilBinding = new ObjectBinding(this, SerializeUntilAttribute,
-            //        () => { throw new NotSupportedException("Binding for this attribute not currently supported."); });
-            //}
+            if (SerializeUntilAttribute != null)
+            {
+                SerializeUntilBinding = new Binding(SerializeUntilAttribute, GetBindingLevel(SerializeUntilAttribute.Binding));
+            }
 
             ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
             if (ItemLengthAttribute != null)
@@ -228,6 +227,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; private set; } 
 
         public SerializeUntilAttribute SerializeUntilAttribute { get; private set; }
+
+        public Binding SerializeUntilBinding { get; private set; }
 
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; private set; }
 

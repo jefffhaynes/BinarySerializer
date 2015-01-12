@@ -26,6 +26,15 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 child.Serialize(stream);
             }
+
+            var typeNode = (CollectionTypeNode)TypeNode;
+
+            if (typeNode.TerminationChild != null)
+            {
+                var terminationChild = typeNode.TerminationChild.CreateSerializer(this);
+                terminationChild.Value = typeNode.TerminationValue;
+                terminationChild.Serialize(stream);
+            }
         }
 
         public override void DeserializeOverride(StreamLimiter stream)
@@ -38,10 +47,28 @@ namespace BinarySerialization.Graph.ValueGraph
             if (TypeNode.ItemLengthBinding != null)
                 length = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
 
+            var terminationValue = typeNode.TerminationValue;
+            var terminationChild = typeNode.TerminationChild == null ? null : typeNode.TerminationChild.CreateSerializer(this);
+
             for (int i = 0; i < count; i++)
             {
                 if (ShouldTerminate(stream))
                     break;
+
+                /* Check termination case */
+                if (terminationChild != null)
+                {
+                    using (var streamResetter = new StreamResetter(stream))
+                    {
+                        terminationChild.Deserialize(stream);
+
+                        if (terminationChild.Value.Equals(terminationValue))
+                        {
+                            streamResetter.CancelReset();
+                            break;
+                        }
+                    }
+                }
 
                 var child = (ValueValueNode)typeNode.Child.CreateSerializer(this);
                 child.Value = child.Deserialize(stream, child.TypeNode.GetSerializedType(), length);
