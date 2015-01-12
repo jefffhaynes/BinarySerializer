@@ -135,12 +135,12 @@ namespace BinarySerialization.Graph.TypeGraph
             SerializeWhenAttribute[] serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
             SerializeWhenAttributes = new ReadOnlyCollection<SerializeWhenAttribute>(serializeWhenAttributes);
 
-            //if (serializeWhenAttributes.Length > 0)
-            //{
-            //    _whenBindings =
-            //        serializeWhenAttributes.Select(
-            //            attribute => new ConditionalBinding(this, attribute, null)).ToArray();
-            //}
+            if(SerializeWhenAttributes.Any())
+            {
+                SerializeWhenBindings = new ReadOnlyCollection<ConditionalBinding>(
+                serializeWhenAttributes.Select(
+                    attribute => new ConditionalBinding(attribute, GetBindingLevel(attribute.Binding))).ToList());
+            }
 
             var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
             SubtypeAttributes = new ReadOnlyCollection<SubtypeAttribute>(subtypeAttributes);
@@ -157,33 +157,6 @@ namespace BinarySerialization.Graph.TypeGraph
                 SubtypeBinding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
             }
 
-            //() =>
-            //        {
-            //            Type valueType = GetValueTypeOverride();
-
-            //            if (valueType == null)
-            //                return null;
-
-            //            List<SubtypeAttribute> matchingSubtypes =
-            //                SubtypeAttributes.Where(attribute => attribute.Subtype == valueType).ToList();
-
-            //            if (!matchingSubtypes.Any())
-            //            {
-            //                /* Try to fall back on base types */
-            //                matchingSubtypes =
-            //                    SubtypeAttributes.Where(attribute => attribute.Subtype.IsAssignableFrom(valueType))
-            //                        .ToList();
-
-            //                if (!matchingSubtypes.Any())
-            //                    return null;
-            //            }
-
-            //            if (matchingSubtypes.Count() > 1)
-            //                throw new BindingException("Subtypes must have unique types.");
-
-            //            return matchingSubtypes.Single().Value;
-            //        })).ToList();
-
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             //if (SerializeUntilAttribute != null)
@@ -195,8 +168,7 @@ namespace BinarySerialization.Graph.TypeGraph
             ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
             if (ItemLengthAttribute != null)
             {
-                ItemLengthBinding = new Binding(ItemLengthAttribute,
-                    GetBindingLevel(ItemLengthAttribute.Binding));
+                ItemLengthBinding = new Binding(ItemLengthAttribute, GetBindingLevel(ItemLengthAttribute.Binding));
             }
 
             ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
@@ -252,7 +224,9 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; private set; }
 
-        public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; private set; } 
+        public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; private set; }
+
+        public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; private set; } 
 
         public SerializeUntilAttribute SerializeUntilAttribute { get; private set; }
 

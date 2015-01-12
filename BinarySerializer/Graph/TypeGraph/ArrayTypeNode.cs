@@ -95,7 +95,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            if (ChildType.IsPrimitive || ChildType == typeof (string))
+            if (ChildType.IsPrimitive)
                 return new PrimitveArrayValueNode(parent, Name, this);
             return new ArrayValueNode(parent, Name, this);
         }

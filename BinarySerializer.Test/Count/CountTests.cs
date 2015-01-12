@@ -33,7 +33,7 @@ namespace BinarySerializer.Test.Count
         public void ConstCountMismatchTest()
         {
             var actual = Roundtrip(new ConstCountClass { Field = new List<string>(TestSequence.Take(2)) });
-            Assert.AreEqual(2, actual.Field.Count);
+            Assert.AreEqual(3, actual.Field.Count);
         }
 
         [TestMethod]

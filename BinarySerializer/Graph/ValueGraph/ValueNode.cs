@@ -32,17 +32,22 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             if (TypeNode.FieldLengthBinding != null)
             {
-                TypeNode.FieldLengthBinding.Bind<ValueNode>(this, () => MeasureOverride());
+                TypeNode.FieldLengthBinding.Bind(this, () => MeasureOverride());
+            }
+
+            if (TypeNode.ItemLengthBinding != null)
+            {
+                TypeNode.ItemLengthBinding.Bind(this, () => MeasureItemOverride());
             }
 
             if (TypeNode.FieldCountBinding != null)
             {
-                TypeNode.FieldCountBinding.Bind<ValueNode>(this, () => CountOverride());
+                TypeNode.FieldCountBinding.Bind(this, () => CountOverride());
             }
 
             if (TypeNode.SubtypeBinding != null)
             {
-                TypeNode.SubtypeBinding.Bind<ValueNode>(this, () =>
+                TypeNode.SubtypeBinding.Bind(this, () =>
                 {
                     Type valueType = GetValueTypeOverride();
                     if(valueType == null)
@@ -63,6 +68,11 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
+                var serializeWhenBindings = TypeNode.SerializeWhenBindings;
+                if (serializeWhenBindings != null &&
+                    !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetBoundValue(this))))
+                    return;
+
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
                 using (new StreamResetter(stream, fieldOffsetBinding != null))
@@ -93,6 +103,11 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
+                var serializeWhenBindings = TypeNode.SerializeWhenBindings;
+                if (serializeWhenBindings != null &&
+                    !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetValue(this))))
+                    return;
+
                 if (TypeNode.FieldLengthBinding != null)
                     stream = new StreamLimiter(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
 
@@ -134,6 +149,11 @@ namespace BinarySerialization.Graph.ValueGraph
             var streamKeeper = new StreamKeeper(nullStream);
             Serialize(streamKeeper);
             return streamKeeper.RelativePosition;
+        }
+
+        protected virtual long MeasureItemOverride()
+        {
+            throw new NotSupportedException("This field doesn't contain child items.");
         }
 
         protected virtual long CountOverride()

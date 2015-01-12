@@ -30,13 +30,17 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var count = TypeNode.FieldCountBinding != null ? Convert.ToInt32(TypeNode.FieldCountBinding.GetValue(this)) : int.MaxValue;
 
+            int? length = null;
+            if (TypeNode.ItemLengthBinding != null)
+                length = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
+
             int itemCount = 0;
             for (int i = 0; i < count; i++)
             {
                 if (ShouldTerminate(stream))
                     break;
 
-                var value = dummyChild.Deserialize(reader, childSerializedType);
+                var value = dummyChild.Deserialize(reader, childSerializedType, length);
                 collection.Add(value);
 
                 itemCount++;
@@ -49,7 +53,6 @@ namespace BinarySerialization.Graph.ValueGraph
             for (int i = 0; i < itemCount; i++)
                 SetCollectionValue(collection[i], i);
         }
-
 
         protected abstract object CreateCollection(int size);
 

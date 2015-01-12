@@ -18,11 +18,6 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 var typeNode = (ListTypeNode)TypeNode;
 
-                /* Handle primitive case */
-                if (typeNode.ChildType.IsPrimitive)
-                    throw new NotImplementedException();
-
-                /* Handle object case */
                 var list = (IList)Activator.CreateInstance(typeNode.Type);
 
                 foreach (var child in Children.Cast<ValueNode>())
@@ -36,22 +31,17 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (Children.Any())
                     throw new InvalidOperationException("Value already set.");
 
-                var typeNode = (ListTypeNode)TypeNode;
-
-                /* Handle primitive case */
-                if (typeNode.ChildType.IsPrimitive)
-                    throw new NotImplementedException();
-
-                /* Handle object case */
                 if (value == null)
                     return;
 
                 var list = (IList)value;
 
+                var typeNode = (ListTypeNode)TypeNode;
+
                 if (typeNode.FieldCountBinding != null && typeNode.FieldCountBinding.IsConst)
                 {
                     /* Pad out const-sized list */
-                    var count = (int)typeNode.FieldCountBinding.GetValue(this);
+                    var count = Convert.ToInt32(typeNode.FieldCountBinding.GetValue(this));
                     while (list.Count < count)
                     {
                         var item = typeNode.ChildType == typeof (string)

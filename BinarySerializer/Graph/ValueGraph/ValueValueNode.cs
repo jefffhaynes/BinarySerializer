@@ -191,7 +191,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             else if (typeParent != null && typeParent.ItemLengthBinding != null)
             {
-                var lengthValue = TypeNode.ItemLengthBinding.GetValue(this);
+                var lengthValue = typeParent.ItemLengthBinding.GetValue((ValueNode)Parent);
                 effectiveLength = Convert.ToInt32(lengthValue);
             }
             else if (TypeNode.FieldCountBinding != null)

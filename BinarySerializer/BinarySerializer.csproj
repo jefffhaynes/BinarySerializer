@@ -44,6 +44,7 @@
     <Compile Include="Graph\Node.cs" />
     <Compile Include="Graph\TypeGraph\ArrayTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\CollectionTypeNode.cs" />
+    <Compile Include="Graph\ConditionalBinding.cs" />
     <Compile Include="Graph\TypeGraph\EnumTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\ListTypeNode.cs" />
     <Compile Include="Graph\ValueGraph\ArrayValueNode.cs" />
