@@ -199,7 +199,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             var children = all.Select(GenerateChild).OrderBy(child => child.Order).ToList();
 
-            var serializableChildren = children.Where(child => child.IgnoreAttribute != null).ToList();
+            var serializableChildren = children.Where(child => child.IgnoreAttribute == null).ToList();
 
             if (serializableChildren.Count > 1)
             {
