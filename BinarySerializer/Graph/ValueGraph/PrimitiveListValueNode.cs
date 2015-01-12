@@ -36,5 +36,11 @@ namespace BinarySerialization.Graph.ValueGraph
             var list = (IList) Value;
             list[index] = item;
         }
+
+        protected override long CountOverride()
+        {
+            var list = (IList) Value;
+            return list.Count;
+        }
     }
 }

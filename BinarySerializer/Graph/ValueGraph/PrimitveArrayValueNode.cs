@@ -38,5 +38,11 @@ namespace BinarySerialization.Graph.ValueGraph
             var array = (Array)Value;
             array.SetValue(item, index);
         }
+
+        protected override long CountOverride()
+        {
+            var array = (Array)Value;
+            return array.Length;
+        }
     }
 }

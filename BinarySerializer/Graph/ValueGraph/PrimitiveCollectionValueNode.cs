@@ -28,7 +28,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var reader = new EndianAwareBinaryReader(stream, Endianness);
             var childSerializedType = dummyChild.TypeNode.GetSerializedType();
 
-            var count = TypeNode.FieldCountBinding != null ? (int)TypeNode.FieldCountBinding.GetValue(this) : int.MaxValue;
+            var count = TypeNode.FieldCountBinding != null ? Convert.ToInt32(TypeNode.FieldCountBinding.GetValue(this)) : int.MaxValue;
 
             int itemCount = 0;
             for (int i = 0; i < count; i++)
@@ -47,9 +47,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             /* Copy temp list into final collection */
             for (int i = 0; i < itemCount; i++)
-            {
                 SetCollectionValue(collection[i], i);
-            }
         }
 
 

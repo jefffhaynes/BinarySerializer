@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -35,6 +33,11 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 child.Deserialize(stream);
             }
+        }
+
+        protected override long CountOverride()
+        {
+            return Children.Count();
         }
     }
 }
