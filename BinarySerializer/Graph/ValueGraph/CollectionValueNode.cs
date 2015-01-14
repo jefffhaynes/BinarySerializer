@@ -42,10 +42,6 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var count = TypeNode.FieldCountBinding != null ? Convert.ToInt32(TypeNode.FieldCountBinding.GetValue(this)) : int.MaxValue;
 
-            int? length = null;
-            if (TypeNode.ItemLengthBinding != null)
-                length = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
-
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild == null ? null : typeNode.TerminationChild.CreateSerializer(this);
 
@@ -70,10 +66,6 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 var child = typeNode.Child.CreateSerializer(this);
-                
-                if(length != null)
-                    stream = new StreamLimiter(stream, length.Value);
-
                 child.Deserialize(stream);
 
                 /* Check child termination case */
