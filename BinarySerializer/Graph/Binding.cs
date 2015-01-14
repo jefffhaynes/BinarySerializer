@@ -88,23 +88,8 @@ namespace BinarySerialization.Graph
 
         public ValueNode GetSource(ValueNode target)
         {
-            var relativeSource = GetRelativeSource(target);
-
-            string[] memberNames = Path.Split(PathSeparator);
-
-            if (!memberNames.Any())
-                throw new BindingException("Path cannot be empty.");
-
-            var relativeSourceChild = relativeSource;
-            foreach (string name in memberNames)
-            {
-                relativeSourceChild = relativeSourceChild.Children.SingleOrDefault(c => c.Name == name);
-
-                if (relativeSourceChild == null)
-                    throw new BindingException(string.Format("No field found at '{0}'.", Path));
-            }
-
-            return (ValueNode)relativeSourceChild;
+            var relativeSource = (ValueNode) GetRelativeSource(target);
+            return relativeSource.GetChild(Path);
         }
 
         private Node GetRelativeSource(Node target)

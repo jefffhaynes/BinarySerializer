@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,9 +69,32 @@ namespace BinarySerialization.Graph.ValueGraph
                     }
                 }
 
-                var child = (ValueValueNode)typeNode.Child.CreateSerializer(this);
-                child.Value = child.Deserialize(stream, child.TypeNode.GetSerializedType(), length);
+                var child = typeNode.Child.CreateSerializer(this);
+                
+                if(length != null)
+                    stream = new StreamLimiter(stream, length.Value);
+
+                child.Deserialize(stream);
+
+                /* Check child termination case */
+                if (TypeNode.ItemSerializeUntilBinding != null)
+                {
+                    var itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
+                    var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
+
+                    if (itemTerminationChild.Value.Equals(itemTerminationValue))
+                    {
+                        if (!TypeNode.ItemSerializeUntilAttribute.ExcludeLastItem)
+                        {
+                            Children.Add(child);
+                            child.Bind();
+                        }
+                        break;
+                    }
+                }
+
                 Children.Add(child);
+                child.Bind();
             }
         }
 

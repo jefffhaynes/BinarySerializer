@@ -8,6 +8,8 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal abstract class ValueNode : Node
     {
+        private const char PathSeparator = '.';
+
         protected ValueNode(Node parent, string name, TypeNode typeNode) : base(parent)
         {
             Name = name;
@@ -57,6 +59,11 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     return typeNode.SubTypeKeys[valueType];
                 });
+            }
+
+            if (TypeNode.ItemSerializeUntilBinding != null)
+            {
+                TypeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
             }
 
             foreach (ValueNode child in Children.Cast<ValueNode>())
@@ -142,6 +149,24 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public abstract void DeserializeOverride(StreamLimiter stream);
 
+        public ValueNode GetChild(string path)
+        {
+            string[] memberNames = path.Split(PathSeparator);
+
+            if (!memberNames.Any())
+                throw new BindingException("Path cannot be empty.");
+
+            Node child = this;
+            foreach (string name in memberNames)
+            {
+                child = child.Children.SingleOrDefault(c => c.Name == name);
+
+                if (child == null)
+                    throw new BindingException(string.Format("No field found at '{0}'.", path));
+            }
+
+            return (ValueNode)child;
+        }
 
         protected virtual long MeasureOverride()
         {
@@ -153,17 +178,22 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected virtual long MeasureItemOverride()
         {
-            throw new NotSupportedException("This field doesn't contain child items.");
+            throw new NotSupportedException("Not a collection field.");
         }
 
         protected virtual long CountOverride()
         {
-            throw new NotSupportedException("Can't count this field.");
+            throw new NotSupportedException("Not a collection field.");
         }
 
         protected virtual Type GetValueTypeOverride()
         {
             throw new NotSupportedException("Can't set subtypes on this field.");
+        }
+
+        protected virtual object GetLastItemValueOverride()
+        {
+            throw new NotSupportedException("Not a collection field.");
         }
 
         protected static bool ShouldTerminate(StreamLimiter stream)

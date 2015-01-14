@@ -172,11 +172,10 @@ namespace BinarySerialization.Graph.TypeGraph
 
             ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
 
-            //if (ItemSerializeUntilAttribute != null)
-            //{
-            //    _itemSerializeUntilBinding = new ObjectBinding(this, ItemSerializeUntilAttribute,
-            //        GetLastItemValueOverride);
-            //}
+            if (ItemSerializeUntilAttribute != null)
+            {
+                ItemSerializeUntilBinding = new Binding(ItemSerializeUntilAttribute, GetBindingLevel(ItemSerializeUntilAttribute.Binding));
+            }
         }
 
 
@@ -229,6 +228,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public SerializeUntilAttribute SerializeUntilAttribute { get; private set; }
 
         public Binding SerializeUntilBinding { get; private set; }
+
+        public Binding ItemSerializeUntilBinding { get; private set; }
 
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; private set; }
 
