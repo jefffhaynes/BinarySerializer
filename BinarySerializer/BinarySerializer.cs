@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using BinarySerialization.Graph.TypeGraph;
+using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization
 {
@@ -112,10 +113,10 @@ namespace BinarySerialization
 
             RootTypeNode graph = GetGraph(value.GetType());
 
-            // graph.SerializationContext = context;
 
-            var valueGraph = graph.CreateSerializer(null);
+            var valueGraph = (ContextNode)graph.CreateSerializer(null);
             valueGraph.Value = value;
+            valueGraph.Context = context;
             valueGraph.Bind();
             
             valueGraph.Serialize(stream);

@@ -50,6 +50,7 @@
     <Compile Include="Graph\TypeGraph\StreamTypeNode.cs" />
     <Compile Include="Graph\ValueGraph\ArrayValueNode.cs" />
     <Compile Include="Graph\ValueGraph\CollectionValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\ContextNode.cs" />
     <Compile Include="Graph\ValueGraph\EnumValueNode.cs" />
     <Compile Include="Graph\ValueGraph\IBindingSource.cs" />
     <Compile Include="Graph\ValueGraph\ListValueNode.cs" />

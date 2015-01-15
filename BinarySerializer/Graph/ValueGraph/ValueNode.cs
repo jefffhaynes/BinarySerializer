@@ -30,7 +30,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public abstract object Value { get; set; }
 
-        public void Bind()
+        public virtual void Bind()
         {
             if (TypeNode.FieldLengthBinding != null)
             {

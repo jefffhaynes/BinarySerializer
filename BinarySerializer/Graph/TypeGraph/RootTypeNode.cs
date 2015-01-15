@@ -14,9 +14,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public RootTypeNode(Type graphType) : base(null, graphType)
         {
-            var child = GenerateChild(graphType);
-            _child = child;
-            //Children.Add(child);
+            Child = GenerateChild(graphType);
         }
 
         public override Type Type
@@ -42,6 +40,8 @@ namespace BinarySerialization.Graph.TypeGraph
         //    }
         //}
 
+        public TypeNode Child { get; private set; }
+
         public object SerializationContext
         {
             get
@@ -66,18 +66,18 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-        private IEnumerable<TypeNode> GenerateChildrenImpl(Type type)
-        {
-            IEnumerable<MemberInfo> properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            IEnumerable<MemberInfo> fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
-            IEnumerable<MemberInfo> all = properties.Union(fields);
+        //private IEnumerable<TypeNode> GenerateChildrenImpl(Type type)
+        //{
+        //    IEnumerable<MemberInfo> properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+        //    IEnumerable<MemberInfo> fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
+        //    IEnumerable<MemberInfo> all = properties.Union(fields);
 
-            return all.Select(GenerateChild);
-        }
+        //    return all.Select(GenerateChild);
+        //}
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            return _child.CreateSerializer(parent);
+            return new ContextNode(parent, Name, this);
         }
 
         //public override object DeserializeOverride(ValueNode node)

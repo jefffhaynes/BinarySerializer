@@ -123,6 +123,9 @@ namespace BinarySerialization.Graph
                 if (level == Level)
                     return parent;
 
+                if (parent.Parent == null && Mode == RelativeSourceMode.SerializationContext)
+                    return parent;
+
                 parent = parent.Parent;
                 level++;
             }
