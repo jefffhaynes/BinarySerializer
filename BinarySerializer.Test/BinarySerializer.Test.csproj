@@ -126,6 +126,8 @@
     <Compile Include="Order\SingleMemberOrderClass.cs" />
     <Compile Include="Primitives\PrimitiveTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializeAs\SerializeAsTest.cs" />
+    <Compile Include="SerializeAs\SizedStringClass.cs" />
     <Compile Include="StreamletTest.cs" />
     <Compile Include="Streams\StreamClass.cs" />
     <Compile Include="Streams\StreamTests.cs" />

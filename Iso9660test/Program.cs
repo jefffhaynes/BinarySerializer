@@ -18,7 +18,7 @@ namespace Iso9660test
             using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read))
             {
                 var serializer = new BinarySerializer();
-                serializer.MemberDeserialized += (sender, eventArgs) => Console.WriteLine(eventArgs.MemberName);
+                serializer.MemberDeserialized += (sender, eventArgs) => Console.WriteLine(eventArgs.MemberName + " : " + eventArgs.Value);
 
                 var iso = serializer.Deserialize<Iso9660.Iso9660>(stream);
                 stream.Position = 0;

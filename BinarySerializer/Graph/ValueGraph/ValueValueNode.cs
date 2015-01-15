@@ -9,7 +9,7 @@ namespace BinarySerialization.Graph.ValueGraph
     internal class ValueValueNode : ValueNode, IBindingSource
     {
         protected static readonly Dictionary<Type, Func<object, object>> TypeConverters =
-    new Dictionary<Type, Func<object, object>>
+            new Dictionary<Type, Func<object, object>>
             {
                 {typeof (char), o => Convert.ToChar(o)},
                 {typeof (byte), o => Convert.ToByte(o)},
@@ -45,7 +45,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     if (TargetBindings.Count != 1)
                     {
-                        var targetValues = TargetBindings.Select(binding => binding()).ToArray();
+                        object[] targetValues = TargetBindings.Select(binding => binding()).ToArray();
 
                         if (targetValues.Any(v => !value.Equals(v)))
                             throw new BindingException(
@@ -72,7 +72,8 @@ namespace BinarySerialization.Graph.ValueGraph
             Serialize(writer, value, serializedType, length);
         }
 
-        public void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType, int? length = null)
+        public void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType,
+            int? length = null)
         {
             if (value == null)
                 return;
@@ -110,52 +111,52 @@ namespace BinarySerialization.Graph.ValueGraph
                     writer.Write(Convert.ToDouble(value));
                     break;
                 case SerializedType.ByteArray:
-                    {
-                        var data = (byte[])value;
-                        writer.Write(data, 0, data.Length);
-                        break;
-                    }
+                {
+                    var data = (byte[]) value;
+                    writer.Write(data, 0, data.Length);
+                    break;
+                }
                 case SerializedType.NullTerminatedString:
-                    {
-                        byte[] data = Encoding.GetBytes(value.ToString());
-                        writer.Write(data);
-                        writer.Write((byte)0);
-                        break;
-                    }
+                {
+                    byte[] data = Encoding.GetBytes(value.ToString());
+                    writer.Write(data);
+                    writer.Write((byte) 0);
+                    break;
+                }
                 case SerializedType.SizedString:
+                {
+                    byte[] data = Encoding.GetBytes(value.ToString());
+
+                    var typeParent = TypeNode.Parent as TypeNode;
+
+                    if (length != null)
                     {
-                        byte[] data = Encoding.GetBytes(value.ToString());
-
-                        var typeParent = TypeNode.Parent as TypeNode;
-
-                        if (length != null)
-                        {
-                            Array.Resize(ref data, length.Value);
-                        }
-                        else if (TypeNode.FieldLengthBinding != null)
-                        {
-                            if (TypeNode.FieldLengthBinding.IsConst)
-                                Array.Resize(ref data, Convert.ToInt32(TypeNode.FieldLengthBinding.ConstValue));
-                        }
-                        else if (typeParent != null && typeParent.ItemLengthBinding != null)
-                        {
-                            if (typeParent.ItemLengthBinding.IsConst)
-                                Array.Resize(ref data, Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue));
-                        }
-                        else throw new InvalidOperationException("No field length specified on sized string.");
-
-                        writer.Write(data);
-
-                        break;
+                        Array.Resize(ref data, length.Value);
                     }
+                    else if (TypeNode.FieldLengthBinding != null)
+                    {
+                        if (TypeNode.FieldLengthBinding.IsConst)
+                            Array.Resize(ref data, Convert.ToInt32(TypeNode.FieldLengthBinding.ConstValue));
+                    }
+                    else if (typeParent != null && typeParent.ItemLengthBinding != null)
+                    {
+                        if (typeParent.ItemLengthBinding.IsConst)
+                            Array.Resize(ref data, Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue));
+                    }
+                    else throw new InvalidOperationException("No field length specified on sized string.");
+
+                    writer.Write(data);
+
+                    break;
+                }
                 case SerializedType.LengthPrefixedString:
-                    {
-                        byte[] data = Encoding.GetBytes(value.ToString());
-                        var datalength = (ushort)data.Length;
+                {
+                    byte[] data = Encoding.GetBytes(value.ToString());
+                    var datalength = (ushort) data.Length;
 
-                        writer.Write(datalength);
-                        writer.Write(data);
-                    }
+                    writer.Write(datalength);
+                    writer.Write(data);
+                }
 
                     break;
                 default:
@@ -165,7 +166,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
-            var value = Deserialize(stream, TypeNode.GetSerializedType());
+            object value = Deserialize(stream, TypeNode.GetSerializedType());
             Value = ConvertToFieldType(value);
         }
 
@@ -185,17 +186,17 @@ namespace BinarySerialization.Graph.ValueGraph
                 effectiveLength = length.Value;
             else if (TypeNode.FieldLengthBinding != null)
             {
-                var lengthValue = TypeNode.FieldLengthBinding.GetValue(this);
+                object lengthValue = TypeNode.FieldLengthBinding.GetValue(this);
                 effectiveLength = Convert.ToInt32(lengthValue);
             }
             else if (typeParent != null && typeParent.ItemLengthBinding != null)
             {
-                var lengthValue = typeParent.ItemLengthBinding.GetValue((ValueNode)Parent);
+                object lengthValue = typeParent.ItemLengthBinding.GetValue((ValueNode) Parent);
                 effectiveLength = Convert.ToInt32(lengthValue);
             }
             else if (TypeNode.FieldCountBinding != null)
             {
-                var countValue = TypeNode.FieldCountBinding.GetValue(this);
+                object countValue = TypeNode.FieldCountBinding.GetValue(this);
                 effectiveLength = Convert.ToInt32(countValue);
             }
 
@@ -233,35 +234,35 @@ namespace BinarySerialization.Graph.ValueGraph
                     value = reader.ReadDouble();
                     break;
                 case SerializedType.ByteArray:
-                    {
-                        if (effectiveLength == null)
-                            throw new InvalidOperationException("No length specified on sized field.");
+                {
+                    if (effectiveLength == null)
+                        throw new InvalidOperationException("No length specified on sized field.");
 
-                        value = reader.ReadBytes(effectiveLength.Value);
-                        break;
-                    }
+                    value = reader.ReadBytes(effectiveLength.Value);
+                    break;
+                }
                 case SerializedType.NullTerminatedString:
-                    {
-                        byte[] data = ReadNullTerminatedString(reader).ToArray();
-                        value = Encoding.GetString(data, 0, data.Length);
-                        break;
-                    }
+                {
+                    byte[] data = ReadNullTerminatedString(reader).ToArray();
+                    value = Encoding.GetString(data, 0, data.Length);
+                    break;
+                }
                 case SerializedType.SizedString:
-                    {
-                        if (effectiveLength == null)
-                            throw new InvalidOperationException("No length specified on sized field.");
+                {
+                    if (effectiveLength == null)
+                        throw new InvalidOperationException("No length specified on sized field.");
 
-                        byte[] data = reader.ReadBytes(effectiveLength.Value);
-                        value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
-                        break;
-                    }
+                    byte[] data = reader.ReadBytes(effectiveLength.Value);
+                    value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
+                    break;
+                }
                 case SerializedType.LengthPrefixedString:
-                    {
-                        var dataLength = reader.ReadUInt16();
-                        byte[] data = reader.ReadBytes(dataLength);
-                        value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
-                        break;
-                    }
+                {
+                    ushort dataLength = reader.ReadUInt16();
+                    byte[] data = reader.ReadBytes(dataLength);
+                    value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
+                    break;
+                }
 
                 default:
                     throw new NotSupportedException();
@@ -275,14 +276,14 @@ namespace BinarySerialization.Graph.ValueGraph
             if (value == null)
                 return null;
 
-            var valueType = value.GetType();
-            var nodeType = TypeNode.Type;
+            Type valueType = value.GetType();
+            Type nodeType = TypeNode.Type;
 
             if (valueType == nodeType)
                 return value;
 
             /* Special handling for strings */
-            if (valueType == typeof(string) && nodeType.IsPrimitive)
+            if (valueType == typeof (string) && nodeType.IsPrimitive)
             {
                 if (string.IsNullOrWhiteSpace(value.ToString()))
                     value = 0;
