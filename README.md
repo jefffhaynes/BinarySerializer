@@ -77,7 +77,7 @@ There are a number of attributes that can be used to control how your fields are
 
 ### IgnoreAttribute ###
 
-Any field or property with an Ignore attribute will not be included in serialization or deserialization.  However, these fields can still be used in bindings.  This can be used to create "dummy" properties that perform some conversion or computation; however, better practice for this is to define a value converter (see below).
+Any field or property with an Ignore attribute will not be included in serialization or deserialization.  These fields can still be used in bindings, however properties will be treated as flat fields.  If you need to do some calculation on a binding source, your best option is to us a ValueConverter (see below).
 
 ### SerializeAsAttribute ###
 
@@ -441,10 +441,6 @@ In other cases you may actually have a mix of big and little endian and again yo
 ### Exceptions ###
 
 If an exception does occur either during the initial reflection phase or subsequent serialization, every layer of the object graph with throw its own exception, keeping the prior exception as the inner exception.  Always check the inner exception for more details.
-
-### Thread Safety ###
-
-An unfortunate side-effect of the caching behavior is that every serialization and deserialization operation is exclusively locked.  Maybe some day I'll try to emit implementations but that sounds like a lot of work and it wouldn't be as portable.  There may be a better design to alleviate locking but I haven't come up with it yet.
 
 ## Examples ##
 
