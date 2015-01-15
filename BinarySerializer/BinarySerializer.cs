@@ -126,7 +126,7 @@ namespace BinarySerialization
 
             RootTypeNode graph = GetGraph(value.GetType());
 
-            var valueGraph = (ContextNode)graph.CreateSerializer(null);
+            var valueGraph = (ContextValueNode)graph.CreateSerializer(null);
             valueGraph.Value = value;
             valueGraph.Context = context;
             valueGraph.Bind();
@@ -158,7 +158,7 @@ namespace BinarySerialization
         {
             RootTypeNode graph = GetGraph(typeof (T));
 
-            var serializer = (ContextNode)graph.CreateSerializer(null);
+            var serializer = (ContextValueNode)graph.CreateSerializer(null);
             serializer.Context = context;
             serializer.Deserialize(new StreamLimiter(stream), _eventShuttle);
 

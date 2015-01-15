@@ -1,5 +1,4 @@
-﻿using System;
-using BinarySerialization;
+﻿using BinarySerialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerializer.Test.Subtype

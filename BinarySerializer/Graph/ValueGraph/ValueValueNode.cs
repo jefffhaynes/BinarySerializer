@@ -163,7 +163,6 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-
         public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             var value = Deserialize(stream, TypeNode.GetSerializedType());
@@ -271,7 +270,6 @@ namespace BinarySerialization.Graph.ValueGraph
             return value;
         }
 
-
         public object ConvertToFieldType(object value)
         {
             if (value == null)
@@ -309,6 +307,14 @@ namespace BinarySerialization.Graph.ValueGraph
                 buffer.WriteByte(b);
 
             return buffer.ToArray();
+        }
+
+        public override string ToString()
+        {
+            if (Value != null)
+                return Value.ToString();
+
+            return base.ToString();
         }
     }
 }

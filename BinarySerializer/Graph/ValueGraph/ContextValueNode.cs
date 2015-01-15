@@ -3,9 +3,9 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal class ContextNode : ValueNode
+    internal class ContextValueNode : ValueNode
     {
-        public ContextNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public ContextValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 
@@ -34,7 +34,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 /* We have to dynamically generate a type graph for this new type */
                 var contextGraph = new RootTypeNode(value.GetType());
-                var contextSerializer = (ContextNode)contextGraph.CreateSerializer(this);
+                var contextSerializer = (ContextValueNode)contextGraph.CreateSerializer(this);
                 contextSerializer.Value = value;
 
                 Children.AddRange(contextSerializer.Child.Children);
