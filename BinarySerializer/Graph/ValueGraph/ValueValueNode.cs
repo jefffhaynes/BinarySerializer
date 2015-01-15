@@ -164,7 +164,7 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             var value = Deserialize(stream, TypeNode.GetSerializedType());
             Value = ConvertToFieldType(value);

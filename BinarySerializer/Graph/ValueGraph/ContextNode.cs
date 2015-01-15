@@ -51,10 +51,10 @@ namespace BinarySerialization.Graph.ValueGraph
             Child.Serialize(stream, eventShuttle);
         }
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             Child = ((RootTypeNode)TypeNode).Child.CreateSerializer(this);
-            Child.Deserialize(stream);
+            Child.Deserialize(stream, eventShuttle);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace BinarySerialization.Graph.ValueGraph
             Serialize(stream, value, enumInfo.SerializedType, enumInfo.EnumValueLength);
         }
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             var typeNode = (EnumTypeNode)TypeNode;
             var enumInfo = typeNode.EnumInfo;

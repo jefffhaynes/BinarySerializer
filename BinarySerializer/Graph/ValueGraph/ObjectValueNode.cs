@@ -80,7 +80,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             if (TypeNode.SubtypeBinding == null)
             {
@@ -110,7 +110,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (ShouldTerminate(stream))
                     break;
 
-                child.Deserialize(stream);
+                child.Deserialize(stream, eventShuttle);
             }
         }
 

@@ -29,7 +29,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             var typeNode = (CollectionTypeNode)TypeNode;
 
@@ -63,7 +63,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     using (var streamResetter = new StreamResetter(stream))
                     {
-                        terminationChild.Deserialize(stream);
+                        terminationChild.Deserialize(stream, eventShuttle);
 
                         if (terminationChild.Value.Equals(terminationValue))
                         {

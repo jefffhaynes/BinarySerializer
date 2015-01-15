@@ -111,7 +111,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected abstract void SerializeOverride(Stream stream, EventShuttle eventShuttle);
 
-        public void Deserialize(StreamLimiter stream)
+        public void Deserialize(StreamLimiter stream, EventShuttle eventShuttle)
         {
             try
             {
@@ -130,7 +130,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     if (fieldOffsetBinding != null)
                         stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
 
-                    DeserializeOverride(stream);
+                    DeserializeOverride(stream, eventShuttle);
                 }
             }
             catch (EndOfStreamException e)
@@ -152,7 +152,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public abstract void DeserializeOverride(StreamLimiter stream);
+        public abstract void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle);
 
         public ValueNode GetChild(string path)
         {

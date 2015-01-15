@@ -23,7 +23,7 @@ namespace BinarySerialization.Graph.ValueGraph
             valueStreamlet.CopyTo(stream);
         }
 
-        public override void DeserializeOverride(StreamLimiter stream)
+        public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             /* This is weird but we need to find the base stream so we can reference it directly */
             Stream baseStream = stream;
