@@ -7,17 +7,6 @@ namespace BinarySerialization.Graph.TypeGraph
 {
     internal class EnumTypeNode : ValueTypeNode
     {
-
-        //public EnumNode(Node parent, Type type) : base(parent, type)
-        //{
-        //    InitializeEnumValues();
-        //}
-
-        //public EnumNode(Node parent, MemberInfo memberInfo) : base(parent, memberInfo)
-        //{
-        //    InitializeEnumValues();
-        //}
-
         public EnumTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
             InitializeEnumValues();
@@ -34,31 +23,6 @@ namespace BinarySerialization.Graph.TypeGraph
         }
 
         public EnumInfo EnumInfo { get; private set; }
-
-        //public override void SerializeOverride(Stream stream, object value)
-        //{
-        //    EnumInfo enumInfo = EnumTypeInfo[Type];
-        //    var value = enumInfo.EnumValues != null ? enumInfo.EnumValues[(Enum)BoundValue] : BoundValue;
-        //    Serialize(stream, value, enumInfo.SerializedType, enumInfo.EnumValueLength);
-        //}
-
-        //public override void DeserializeOverride(StreamLimiter stream)
-        //{
-        //    EnumInfo enumInfo = EnumTypeInfo[Type];
-        //    var value = Deserialize(stream, enumInfo.SerializedType, enumInfo.EnumValueLength);
-
-        //    if (enumInfo.ValueEnums != null)
-        //    {
-        //        value = enumInfo.ValueEnums[(string) value];
-        //    }
-
-        //    Func<object, object> converter;
-        //    var underlyingValue = TypeConverters.TryGetValue(enumInfo.UnderlyingType, out converter)
-        //        ? converter(value)
-        //        : value;
-
-        //    Value = Enum.ToObject(Type, underlyingValue);
-        //}
 
         private void InitializeEnumValues()
         {

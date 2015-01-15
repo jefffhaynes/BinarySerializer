@@ -116,7 +116,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override object GetLastItemValueOverride()
         {
-            var lastItem = (ValueNode)Children.LastOrDefault();
+            var lastItem = Children.LastOrDefault();
             if(lastItem == null)
                 throw new InvalidOperationException("Can't determine last item value because collection is empty.");
 

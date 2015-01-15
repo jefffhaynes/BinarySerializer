@@ -25,7 +25,6 @@ namespace BinarySerialization.Graph.TypeGraph
                 var nodeType = GetNodeType(type);
 
                 var child = (TypeNode)Activator.CreateInstance(nodeType, this, type);
-                //AddEvents(child);
                 return child;
             }
             catch (Exception exception)

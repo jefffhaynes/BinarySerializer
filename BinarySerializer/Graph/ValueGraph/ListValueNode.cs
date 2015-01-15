@@ -19,7 +19,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var list = (IList)Activator.CreateInstance(typeNode.Type);
 
-                foreach (var child in Children.Cast<ValueNode>())
+                foreach (var child in Children)
                     list.Add(child.Value);
 
                 return list;

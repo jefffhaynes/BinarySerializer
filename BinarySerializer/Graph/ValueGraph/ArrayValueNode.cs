@@ -16,7 +16,7 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 var typeNode = (ArrayTypeNode)TypeNode;
                 var array = Array.CreateInstance(typeNode.ChildType, Children.Count);
-                var childValues = Children.Cast<ValueNode>().Select(child => child.Value).ToArray();
+                var childValues = Children.Select(child => child.Value).ToArray();
                 Array.Copy(childValues, array, childValues.Length);
                 return array;
             }

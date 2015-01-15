@@ -15,9 +15,12 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             Name = name;
             TypeNode = typeNode;
+            Children = new List<ValueNode>();
         }
 
         public TypeNode TypeNode { get; set; }
+
+        public List<ValueNode> Children { get; set; }
 
         public Encoding Encoding
         {
@@ -67,13 +70,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 TypeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
             }
 
-            foreach (ValueNode child in Children.Cast<ValueNode>())
+            foreach (ValueNode child in Children)
                 child.Bind();
         }
 
         protected IEnumerable<ValueNode> GetSerializableChildren()
         {
-            return Children.Cast<ValueNode>().Where(child => child.TypeNode.IgnoreAttribute == null);
+            return Children.Where(child => child.TypeNode.IgnoreAttribute == null);
         }
 
         public void Serialize(Stream stream, EventShuttle eventShuttle)
@@ -161,7 +164,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (!memberNames.Any())
                 throw new BindingException("Path cannot be empty.");
 
-            Node child = this;
+            ValueNode child = this;
             foreach (string name in memberNames)
             {
                 child = child.Children.SingleOrDefault(c => c.Name == name);
@@ -170,7 +173,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     throw new BindingException(string.Format("No field found at '{0}'.", path));
             }
 
-            return (ValueNode)child;
+            return child;
         }
 
         public virtual BinarySerializationContext CreateSerializationContext()

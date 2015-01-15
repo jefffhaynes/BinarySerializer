@@ -51,9 +51,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (!typeNode.TypeChildren.TryGetValue(value.GetType(), out typeChildren))
                     return;
 
-                Children = new List<Node>(typeChildren.Select(child => child.CreateSerializer(this)));
+                Children = new List<ValueNode>(typeChildren.Select(child => child.CreateSerializer(this)));
 
-                foreach (var child in Children.Cast<ValueNode>())
+                foreach (var child in Children)
                     child.Value = child.TypeNode.ValueGetter(value);
 
                 _valueType = value.GetType();
@@ -103,9 +103,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var typeNode = (ObjectTypeNode)TypeNode;
 
-            Children = new List<Node>(typeNode.TypeChildren[_valueType].Select(child => child.CreateSerializer(this)));
+            Children = new List<ValueNode>(typeNode.TypeChildren[_valueType].Select(child => child.CreateSerializer(this)));
 
-            foreach (var child in Children.Cast<ValueNode>())
+            foreach (var child in Children)
             {
                 if (ShouldTerminate(stream))
                     break;

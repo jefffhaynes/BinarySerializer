@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
@@ -28,148 +27,6 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public object TerminationValue { get; private set; }
 
-        private void SerializePrimitiveCollection(Stream stream, object value)
-        {
-            //var dummyChild = (ValueNode)GenerateChild(ChildType);
-
-            //int count = GetCollectionCount(value);
-
-            //var writer = new EndianAwareBinaryWriter(stream, Endianness);
-            //var childSerializedType = dummyChild.GetSerializedType();
-
-            //for (int i = 0; i < count; i++)
-            //{
-            //    var value = GetPrimitiveValue(i);
-            //    dummyChild.Serialize(writer, value, childSerializedType);
-            //}
-        }
-
-        private void SerializeObjectCollection(Stream stream, object collection)
-        {
-
-            /* Handle termination case */
-            //if (_terminationValue != null)
-            //{
-            //    Node terminationChild = GenerateChild(_terminationValue.GetType());
-            //    terminationChild.Value = _terminationValue;
-            //    terminationChild.Serialize(stream);
-            //}
-        }
-
-        //public override object DeserializeOverride(StreamLimiter stream)
-        //{
-        //    //if (FieldLengthBinding != null)
-        //    //    stream = new StreamLimiter(stream, (long)FieldLengthBinding.Value);
-
-        //    //var count = FieldCountBinding != null ? (int)FieldCountBinding.Value : int.MaxValue;
-
-        //    //if (ChildType.IsPrimitive)
-        //    //{
-        //    //    DeserializePrimitiveCollection(stream, count);
-        //    //}
-        //    //else
-        //    //{
-        //    //    DeserializeObjectCollection(stream, count);
-        //    //}
-
-        //    return null;
-        //}
-
-        //private void DeserializePrimitiveCollection(StreamLimiter stream, int count)
-        //{
-        //    /* Create temporary list */
-        //    Type collectionType = typeof(List<>).MakeGenericType(ChildType);
-        //    var collection = (IList)Activator.CreateInstance(collectionType);
-
-        //    /* Create single child to do all the work */
-        //    var dummyChild = (ValueNode)GenerateChild(ChildType);
-
-        //    var reader = new EndianAwareBinaryReader(stream, Endianness);
-        //    var childSerializedType = dummyChild.GetSerializedType();
-
-        //    int itemCount = 0;
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        if (ShouldTerminate(stream))
-        //            break;
-
-        //        var value = dummyChild.Deserialize(reader, childSerializedType);
-        //        collection.Add(value);
-
-        //        itemCount++;
-        //    }
-
-        //    /* Create final collection */
-        //    CollectionValue = CreatePrimitiveCollection(itemCount);
-
-        //    /* Copy temp list into final collection */
-        //    for (int i = 0; i < itemCount; i++)
-        //    {
-        //        SetPrimitiveValue(collection[i], i);
-        //    }
-        //}
-
-        //private void DeserializeObjectCollection(StreamLimiter stream, int count)
-        //{
-        //    ClearChildren();
-
-        //    /* Prep termination case */
-        //    Node terminationChild = null;
-        //    if (_terminationValue != null)
-        //        terminationChild = GenerateChild(_terminationValue.GetType());
-
-
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        if (ShouldTerminate(stream))
-        //            break;
-
-        //        /* Check termination case */
-        //        if (terminationChild != null)
-        //        {
-        //            using (var streamResetter = new StreamResetter(stream))
-        //            {
-        //                terminationChild.Deserialize(stream);
-
-        //                if (terminationChild.Value.Equals(_terminationValue))
-        //                {
-        //                    streamResetter.CancelReset();
-        //                    break;
-        //                }
-        //            }
-        //        }
-
-        //        // TODO why am I generating the same graphType information over and over?
-        //        var child = GenerateChild(ChildType);
-
-        //        var childStream = child.ItemLengthBinding != null
-        //            ? new StreamLimiter(stream, (long)child.ItemLengthBinding.Value)
-        //            : stream;
-
-        //        child.Deserialize(childStream);
-
-        //        /* Check item termination case */
-        //        if (ItemSerializeUntilBinding != null)
-        //        {
-        //            var itemTerminationValue = ItemSerializeUntilBinding.Value;
-        //            var itemTerminationChild = child.GetChild(ItemSerializeUntilAttribute.ItemValuePath);
-
-        //            if (itemTerminationChild.Value.Equals(itemTerminationValue))
-        //            {
-        //                if (!ItemSerializeUntilAttribute.ExcludeLastItem)
-        //                {
-        //                    AddChild(child);
-        //                }
-        //                break;
-        //            }
-        //        }
-
-        //        AddChild(child);
-        //    }
-
-        //    Bind();
-        //}
-
         private TypeNode GetTerminationChild(out object terminationValue)
         {
             if (SerializeUntilAttribute == null)
@@ -186,13 +43,5 @@ namespace BinarySerialization.Graph.TypeGraph
 
             return terminationChild;
         }
-
-        //protected abstract object CreatePrimitiveCollection(int size);
-
-        //protected abstract int GetCollectionCount(object collection);
-
-        //protected abstract void SetPrimitiveValue(object item, int index);
-
-        //protected abstract object GetPrimitiveValue(int index);
     }
 }

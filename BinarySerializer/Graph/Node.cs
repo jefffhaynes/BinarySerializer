@@ -8,15 +8,12 @@ namespace BinarySerialization.Graph
         protected Node(Node parent)
         {
             Parent = parent;
-            Children = new List<Node>();
             TargetBindings = new List<Func<object>>();
         }
 
         public Node Parent { get; private set; }
 
         public string Name { get; set; }
-
-        public List<Node> Children { get; set; }
 
         public List<Func<object>> TargetBindings { get; set; }
 
