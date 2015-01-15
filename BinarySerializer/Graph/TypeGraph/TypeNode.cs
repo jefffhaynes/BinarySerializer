@@ -37,6 +37,7 @@ namespace BinarySerialization.Graph.TypeGraph
         private readonly int? _order;
         private readonly SerializedType? _serializedType;
         private readonly Type _type;
+        private readonly Type _underlyingType;
 
         protected TypeNode(TypeNode parent) : base(parent)
         {
@@ -45,6 +46,7 @@ namespace BinarySerialization.Graph.TypeGraph
         protected TypeNode(TypeNode parent, Type type) : this(parent)
         {
             _type = type;
+            _underlyingType = Nullable.GetUnderlyingType(type);
         }
 
         protected TypeNode(TypeNode parent, MemberInfo memberInfo) : this(parent)
@@ -165,8 +167,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             get
             {
-                Type underlyingType = Nullable.GetUnderlyingType(_type);
-                return underlyingType ?? _type;
+                return _underlyingType ?? _type;
             }
         }
 
@@ -236,7 +237,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public int? Order
         {
-            get { return _order; }
+            get { return _order ?? int.MaxValue; }
         }
 
         public SerializedType GetSerializedType(Type referenceType = null)

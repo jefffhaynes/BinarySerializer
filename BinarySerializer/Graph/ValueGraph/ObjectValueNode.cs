@@ -24,6 +24,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (_valueType == null)
                     return null;
 
+                /* For creating serialization contexts quickly */
                 if (_cachedValue != null)
                     return _cachedValue;
 
@@ -58,6 +59,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 _valueType = value.GetType();
 
+                /* For creating serialization contexts quickly */
                 _cachedValue = value;
             }
         }

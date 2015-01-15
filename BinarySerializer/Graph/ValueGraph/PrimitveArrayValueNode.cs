@@ -18,7 +18,11 @@ namespace BinarySerialization.Graph.ValueGraph
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
             var childSerializedType = dummyChild.TypeNode.GetSerializedType();
 
-            var array = (Array) Value;
+            var array = Value as Array;
+
+            if (array == null)
+                return;
+
             for (int i = 0; i < array.Length; i++)
             {
                 var value = array.GetValue(i);

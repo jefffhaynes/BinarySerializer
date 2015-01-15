@@ -6,6 +6,8 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ArrayValueNode : CollectionValueNode
     {
+        private object _cachedValue;
+
         public ArrayValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
@@ -14,6 +16,10 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             get
             {
+                /* For creating serialization contexts quickly */
+                if (_cachedValue != null)
+                    return _cachedValue;
+
                 var typeNode = (ArrayTypeNode)TypeNode;
                 var array = Array.CreateInstance(typeNode.ChildType, Children.Count);
                 var childValues = Children.Select(child => child.Value).ToArray();
@@ -50,6 +56,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 });
 
                 Children.AddRange(children);
+
+                /* For creating serialization contexts quickly */
+                _cachedValue = value;
             }
         }
     }

@@ -46,7 +46,7 @@ namespace BinarySerializer.Test.Misc
 
         public override long Length
         {
-            get { throw new NotImplementedException(); }
+            get { throw new IOException(); }
         }
 
         public override long Position { get; set; }

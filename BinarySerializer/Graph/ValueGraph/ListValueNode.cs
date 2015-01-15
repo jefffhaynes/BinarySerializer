@@ -7,6 +7,8 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ListValueNode : CollectionValueNode
     {
+        private object _cachedValue;
+
         public ListValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
@@ -15,6 +17,10 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             get
             {
+                /* For creating serialization contexts quickly */
+                if (_cachedValue != null)
+                    return _cachedValue;
+
                 var typeNode = (ListTypeNode)TypeNode;
 
                 var list = (IList)Activator.CreateInstance(typeNode.Type);
@@ -59,6 +65,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 });
 
                 Children.AddRange(children);
+
+                /* For creating serialization contexts quickly */
+                _cachedValue = value;
             }
         }
     }

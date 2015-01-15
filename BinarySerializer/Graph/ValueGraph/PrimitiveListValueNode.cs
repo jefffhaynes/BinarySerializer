@@ -19,7 +19,11 @@ namespace BinarySerialization.Graph.ValueGraph
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
             var childSerializedType = dummyChild.TypeNode.GetSerializedType();
 
-            var list = (IList)Value;
+            var list = Value as IList;
+
+            if (list == null)
+                return;
+
             foreach (var value in list)
                 dummyChild.Serialize(writer, value, childSerializedType);
         }

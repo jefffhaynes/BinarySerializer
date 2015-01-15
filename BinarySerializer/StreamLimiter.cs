@@ -5,7 +5,10 @@ namespace BinarySerialization
 {
     internal class StreamLimiter : Stream
     {
-        private long _maxLength;
+        private readonly bool _canSeek;
+        private readonly long _length;
+        private readonly long _maxLength;
+
         private long _position;
 
         public StreamLimiter(Stream source, long maxLength = long.MaxValue)
@@ -18,6 +21,10 @@ namespace BinarySerialization
 
             Source = source;
             _maxLength = maxLength;
+
+            /* Store for performance */
+            _canSeek = source.CanSeek;
+            _length = source.Length;
         }
 
         /// <summary>
@@ -37,7 +44,7 @@ namespace BinarySerialization
 
         public override bool CanSeek
         {
-            get { return Source.CanSeek; }
+            get { return _canSeek; }
         }
 
         public override bool CanWrite
@@ -52,7 +59,7 @@ namespace BinarySerialization
 
         public override long Length
         {
-            get { return Source.Length; }
+            get { return _length; }
         }
 
         public override long Position
@@ -69,7 +76,7 @@ namespace BinarySerialization
 
         public override void Flush()
         {
-            throw new NotImplementedException();
+            Source.Flush();
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -92,7 +99,7 @@ namespace BinarySerialization
 
         public override void SetLength(long value)
         {
-            _maxLength = value;
+            throw new NotSupportedException();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
