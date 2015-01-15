@@ -10,7 +10,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void SerializeOverride(Stream stream)
+        protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
         {
             var typeNode = (EnumTypeNode) TypeNode;
             var enumInfo = typeNode.EnumInfo;

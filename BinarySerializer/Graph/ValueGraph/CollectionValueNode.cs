@@ -12,18 +12,13 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        private IEnumerable<ValueNode> GetSerializableChildren()
-        {
-            return Children.Cast<ValueNode>().Where(child => child.TypeNode.IgnoreAttribute == null);
-        }
-
-        protected override void SerializeOverride(Stream stream)
+        protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
         {
             var serializableChildren = GetSerializableChildren();
 
             foreach (var child in serializableChildren)
             {
-                child.Serialize(stream);
+                child.Serialize(stream, eventShuttle);
             }
 
             var typeNode = (CollectionTypeNode)TypeNode;
@@ -32,7 +27,7 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 var terminationChild = typeNode.TerminationChild.CreateSerializer(this);
                 terminationChild.Value = typeNode.TerminationValue;
-                terminationChild.Serialize(stream);
+                terminationChild.Serialize(stream, eventShuttle);
             }
         }
 
@@ -79,14 +74,12 @@ namespace BinarySerialization.Graph.ValueGraph
                         if (!TypeNode.ItemSerializeUntilAttribute.ExcludeLastItem)
                         {
                             Children.Add(child);
-                            child.Bind();
                         }
                         break;
                     }
                 }
 
                 Children.Add(child);
-                child.Bind();
             }
         }
 
@@ -105,7 +98,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var childLengths = serializableChildren.Select(child =>
             {
                 streamKeeper.RelativePosition = 0;
-                child.Serialize(streamKeeper);
+                child.Serialize(streamKeeper, null);
                 return streamKeeper.RelativePosition;
             }).ToList();
 

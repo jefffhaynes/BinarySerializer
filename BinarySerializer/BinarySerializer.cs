@@ -57,23 +57,40 @@ namespace BinarySerialization
         /// <summary>
         ///     Occurrs after a member has been serialized.
         /// </summary>
-        public event EventHandler<MemberSerializedEventArgs> MemberSerialized;
+        public event EventHandler<MemberSerializedEventArgs> MemberSerialized
+        {
+            add { _eventShuttle.MemberSerialized += value; }
+            remove { _eventShuttle.MemberSerialized -= value; }
+        }
 
         /// <summary>
         ///     Occurrs after a member has been deserialized.
         /// </summary>
-        public event EventHandler<MemberSerializedEventArgs> MemberDeserialized;
+        public event EventHandler<MemberSerializedEventArgs> MemberDeserialized
+        {
+            add { _eventShuttle.MemberDeserialized += value; }
+            remove { _eventShuttle.MemberDeserialized -= value; }
+        }
 
         /// <summary>
         ///     Occurrs before a member has been serialized.
         /// </summary>
-        public event EventHandler<MemberSerializingEventArgs> MemberSerializing;
+        public event EventHandler<MemberSerializingEventArgs> MemberSerializing
+        {
+            add { _eventShuttle.MemberSerializing += value; }
+            remove { _eventShuttle.MemberSerializing -= value; }
+        }
 
         /// <summary>
         ///     Occurrs before a member has been deserialized.
         /// </summary>
-        public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
-
+        public event EventHandler<MemberSerializingEventArgs> MemberDeserializing
+        {
+            add { _eventShuttle.MemberDeserializing += value; }
+            remove { _eventShuttle.MemberDeserializing -= value; }
+        }
+        
+        private readonly EventShuttle _eventShuttle = new EventShuttle();
 
         private RootTypeNode GetGraph(Type valueType)
         {
@@ -87,10 +104,6 @@ namespace BinarySerialization
                     return graph;
 
                 graph = new RootTypeNode(valueType) {Endianness = Endianness};
-                graph.MemberSerializing += OnMemberSerializing;
-                graph.MemberSerialized += OnMemberSerialized;
-                graph.MemberDeserializing += OnMemberDeserializing;
-                graph.MemberDeserialized += OnMemberDeserialized;
                 _graphCache.Add(valueType, graph);
 
                 return graph;
@@ -118,8 +131,8 @@ namespace BinarySerialization
             valueGraph.Value = value;
             valueGraph.Context = context;
             valueGraph.Bind();
-            
-            valueGraph.Serialize(stream);
+
+            valueGraph.Serialize(stream, _eventShuttle);
         }
 
         /// <summary>
@@ -168,35 +181,6 @@ namespace BinarySerialization
         public T Deserialize<T>(byte[] data, object context = null)
         {
             return Deserialize<T>(new MemoryStream(data), context);
-        }
-
-
-        private void OnMemberSerialized(object sender, MemberSerializedEventArgs e)
-        {
-            EventHandler<MemberSerializedEventArgs> handler = MemberSerialized;
-            if (handler != null)
-                handler(sender, e);
-        }
-
-        private void OnMemberDeserialized(object sender, MemberSerializedEventArgs e)
-        {
-            EventHandler<MemberSerializedEventArgs> handler = MemberDeserialized;
-            if (handler != null)
-                handler(sender, e);
-        }
-
-        private void OnMemberSerializing(object sender, MemberSerializingEventArgs e)
-        {
-            EventHandler<MemberSerializingEventArgs> handler = MemberSerializing;
-            if (handler != null)
-                handler(sender, e);
-        }
-
-        private void OnMemberDeserializing(object sender, MemberSerializingEventArgs e)
-        {
-            EventHandler<MemberSerializingEventArgs> handler = MemberDeserializing;
-            if (handler != null)
-                handler(sender, e);
         }
     }
 }

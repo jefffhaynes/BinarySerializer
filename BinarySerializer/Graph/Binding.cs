@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Linq;
 using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph
 {
     internal class Binding
     {
-        private const char PathSeparator = '.';
-
         private readonly object _constValue;
 
         public Binding(IBindableFieldAttribute attribute, int level)
@@ -68,7 +65,7 @@ namespace BinarySerialization.Graph
                 return _constValue;
 
             var source = GetSource(target);
-            return Convert(source.Value);
+            return Convert(source.Value, target.CreateSerializationContext());
         }
 
         public object GetBoundValue(ValueNode target)
@@ -83,7 +80,7 @@ namespace BinarySerialization.Graph
             if(bindingSource == null)
                 throw new InvalidOperationException("Not a bindable source.");
 
-            return Convert(bindingSource.BoundValue);
+            return Convert(bindingSource.BoundValue, target.CreateSerializationContext());
         }
 
         public ValueNode GetSource(ValueNode target)
@@ -142,16 +139,15 @@ namespace BinarySerialization.Graph
             source.TargetBindings.Add(() => ConvertBack(callback()));
         }
 
-        public object Convert(object value)
+        private object Convert(object value, BinarySerializationContext context)
         {
             if (ValueConverter == null)
                 return value;
 
-            //return ValueConverter.Convert(value, _converterParameter, _targetNode.CreateSerializationContext());
-            return ValueConverter.Convert(value, ConverterParameter, null);
+            return ValueConverter.Convert(value, ConverterParameter, context);
         }
 
-        public object ConvertBack(object value)
+        private object ConvertBack(object value)
         {
             if (ValueConverter == null)
                 return value;

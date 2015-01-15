@@ -59,7 +59,7 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
 
-        protected override void SerializeOverride(Stream stream)
+        protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
         {
             Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }

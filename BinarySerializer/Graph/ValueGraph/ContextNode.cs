@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using System.IO;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -36,6 +32,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (value == null)
                     return;
 
+                /* We have to dynamically generate a type graph for this new type */
                 var contextGraph = new RootTypeNode(value.GetType());
                 var contextSerializer = (ContextNode)contextGraph.CreateSerializer(this);
                 contextSerializer.Value = value;
@@ -49,9 +46,9 @@ namespace BinarySerialization.Graph.ValueGraph
             Child.Bind();
         }
 
-        protected override void SerializeOverride(Stream stream)
+        protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
         {
-            Child.Serialize(stream);
+            Child.Serialize(stream, eventShuttle);
         }
 
         public override void DeserializeOverride(StreamLimiter stream)

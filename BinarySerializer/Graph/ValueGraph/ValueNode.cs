@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -70,8 +71,12 @@ namespace BinarySerialization.Graph.ValueGraph
                 child.Bind();
         }
 
+        protected IEnumerable<ValueNode> GetSerializableChildren()
+        {
+            return Children.Cast<ValueNode>().Where(child => child.TypeNode.IgnoreAttribute == null);
+        }
 
-        public virtual void Serialize(Stream stream)
+        public void Serialize(Stream stream, EventShuttle eventShuttle)
         {
             try
             {
@@ -87,7 +92,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     if (fieldOffsetBinding != null)
                         stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
 
-                    SerializeOverride(stream);
+                    SerializeOverride(stream, eventShuttle);
                 }
             }
             catch (IOException)
@@ -104,9 +109,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected abstract void SerializeOverride(Stream stream);
+        protected abstract void SerializeOverride(Stream stream, EventShuttle eventShuttle);
 
-        public virtual void Deserialize(StreamLimiter stream)
+        public void Deserialize(StreamLimiter stream)
         {
             try
             {
@@ -168,11 +173,20 @@ namespace BinarySerialization.Graph.ValueGraph
             return (ValueNode)child;
         }
 
+        public virtual BinarySerializationContext CreateSerializationContext()
+        {
+            if (Parent == null)
+                return null;
+
+            var parent = (ValueNode) Parent;
+            return new BinarySerializationContext(parent.Value, parent.TypeNode.Type, parent.CreateSerializationContext());
+        }
+
         protected virtual long MeasureOverride()
         {
             var nullStream = new NullStream();
             var streamKeeper = new StreamKeeper(nullStream);
-            Serialize(streamKeeper);
+            Serialize(streamKeeper, null);
             return streamKeeper.RelativePosition;
         }
 

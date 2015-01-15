@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -13,6 +14,20 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value { get; set; }
 
+        protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
+        {
+            PrimitiveCollectionSerializeOverride(stream);
+
+            var typeNode = (CollectionTypeNode)TypeNode;
+
+            /* Add termination */
+            if (typeNode.TerminationChild != null)
+            {
+                var terminationChild = typeNode.TerminationChild.CreateSerializer(this);
+                terminationChild.Value = typeNode.TerminationValue;
+                terminationChild.Serialize(stream, eventShuttle);
+            }
+        }
 
         public override void DeserializeOverride(StreamLimiter stream)
         {
@@ -34,11 +49,29 @@ namespace BinarySerialization.Graph.ValueGraph
             if (TypeNode.ItemLengthBinding != null)
                 length = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
 
+            var terminationValue = typeNode.TerminationValue;
+            var terminationChild = typeNode.TerminationChild == null ? null : typeNode.TerminationChild.CreateSerializer(this);
+
             int itemCount = 0;
             for (int i = 0; i < count; i++)
             {
                 if (ShouldTerminate(stream))
                     break;
+
+                /* Check termination case */
+                if (terminationChild != null)
+                {
+                    using (var streamResetter = new StreamResetter(stream))
+                    {
+                        terminationChild.Deserialize(stream);
+
+                        if (terminationChild.Value.Equals(terminationValue))
+                        {
+                            streamResetter.CancelReset();
+                            break;
+                        }
+                    }
+                }
 
                 var value = dummyChild.Deserialize(reader, childSerializedType, length);
                 collection.Add(value);
@@ -54,8 +87,16 @@ namespace BinarySerialization.Graph.ValueGraph
                 SetCollectionValue(collection[i], i);
         }
 
+        protected abstract void PrimitiveCollectionSerializeOverride(Stream stream);
+
         protected abstract object CreateCollection(int size);
 
         protected abstract void SetCollectionValue(object item, int index);
+
+
+        protected override object GetLastItemValueOverride()
+        {
+            throw new InvalidOperationException("Not supported on primitive collections.  Use SerializeUntil attribute.");
+        }
     }
 }

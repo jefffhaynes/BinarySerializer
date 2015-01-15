@@ -15,12 +15,17 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private Type _valueType;
 
+        private object _cachedValue;
+
         public override object Value
         {
             get
             {
                 if (_valueType == null)
                     return null;
+
+                if (_cachedValue != null)
+                    return _cachedValue;
 
                 var value = Activator.CreateInstance(_valueType);
 
@@ -52,22 +57,26 @@ namespace BinarySerialization.Graph.ValueGraph
                     child.Value = child.TypeNode.ValueGetter(value);
 
                 _valueType = value.GetType();
+
+                _cachedValue = value;
             }
         }
 
-        private IEnumerable<ValueNode> GetSerializableChildren()
-        {
-            return Children.Cast<ValueNode>().Where(child => child.TypeNode.IgnoreAttribute == null);
-        }
-
-
-        protected override void SerializeOverride(Stream stream)
+        protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
         {
             var serializableChildren = GetSerializableChildren();
 
+            var serializationContext = CreateSerializationContext();
+
             foreach (var child in serializableChildren)
             {
-                child.Serialize(stream);
+                if (eventShuttle != null)
+                    eventShuttle.OnMemberSerializing(this, child.Name, serializationContext);
+
+                child.Serialize(stream, eventShuttle);
+
+                if (eventShuttle != null)
+                    eventShuttle.OnMemberSerialized(this, child.Name, child.Value, serializationContext);
             }
         }
 

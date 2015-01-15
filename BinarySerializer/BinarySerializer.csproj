@@ -52,6 +52,7 @@
     <Compile Include="Graph\ValueGraph\CollectionValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ContextNode.cs" />
     <Compile Include="Graph\ValueGraph\EnumValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\EventShuttle.cs" />
     <Compile Include="Graph\ValueGraph\IBindingSource.cs" />
     <Compile Include="Graph\ValueGraph\ListValueNode.cs" />
     <Compile Include="Graph\ValueGraph\PrimitiveCollectionValueNode.cs" />
