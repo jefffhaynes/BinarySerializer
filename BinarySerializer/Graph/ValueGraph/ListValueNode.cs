@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.IO;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
