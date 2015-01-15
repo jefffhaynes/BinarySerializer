@@ -75,6 +75,10 @@ namespace BinarySerialization.Graph.TypeGraph
 
             IgnoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
 
+            /* Don't go any further if we're ignoring this. */
+            if (IgnoreAttribute != null)
+                return;
+
             FieldOrderAttribute fieldOrderAttribute = attributes.OfType<FieldOrderAttribute>().SingleOrDefault();
             if (fieldOrderAttribute != null)
                 _order = fieldOrderAttribute.Order;

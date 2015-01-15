@@ -8,7 +8,8 @@ namespace BinarySerialization.Graph.TypeGraph
 {
     internal class ObjectTypeNode : ContainerTypeNode
     {
-        private const BindingFlags MemberBindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
+        private const BindingFlags MemberBindingFlags =
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
         public ObjectTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
@@ -26,7 +27,10 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void Construct()
         {
-            var baseChildren = GenerateChildrenImpl(Type).ToList();
+            if (IgnoreAttribute != null)
+                return;
+
+            List<TypeNode> baseChildren = GenerateChildrenImpl(Type).ToList();
 
             TypeChildren = new Dictionary<Type, List<TypeNode>> {{Type, baseChildren}};
 
@@ -38,9 +42,9 @@ namespace BinarySerialization.Graph.TypeGraph
             SubTypeKeys = SubtypeAttributes.ToDictionary(attribute => attribute.Subtype, attribute => attribute.Value);
 
             /* Generate subtype children */
-            var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
+            IEnumerable<Type> subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
 
-            foreach (var subType in subTypes)
+            foreach (Type subType in subTypes)
                 TypeChildren.Add(subType, GenerateChildrenImpl(subType).ToList());
         }
 
@@ -50,27 +54,27 @@ namespace BinarySerialization.Graph.TypeGraph
         }
 
         private IEnumerable<TypeNode> GenerateChildrenImpl(Type type)
-        { 
+        {
             IEnumerable<MemberInfo> properties = type.GetProperties(MemberBindingFlags);
             IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);
             IEnumerable<MemberInfo> all = properties.Union(fields);
 
-            var children = all.Select(GenerateChild).OrderBy(child => child.Order).ToList();
+            List<TypeNode> children = all.Select(GenerateChild).OrderBy(child => child.Order).ToList();
 
-            var serializableChildren = children.Where(child => child.IgnoreAttribute == null).ToList();
+            List<TypeNode> serializableChildren = children.Where(child => child.IgnoreAttribute == null).ToList();
 
             if (serializableChildren.Count > 1)
             {
-                var unorderedChild = serializableChildren.FirstOrDefault(child => child.Order == null);
+                TypeNode unorderedChild = serializableChildren.FirstOrDefault(child => child.Order == null);
 
                 if (unorderedChild != null)
                     throw new InvalidOperationException(
                         string.Format(
-                            "'{0}' does not have a FieldOrder attribute.  " + 
+                            "'{0}' does not have a FieldOrder attribute.  " +
                             "All serializable fields or properties in a class with more than one member must specify a FieldOrder attribute.",
                             unorderedChild.Name));
 
-                var orderGroups = serializableChildren.GroupBy(child => child.Order);
+                IEnumerable<IGrouping<int?, TypeNode>> orderGroups = serializableChildren.GroupBy(child => child.Order);
 
                 if (orderGroups.Count() != serializableChildren.Count)
                     throw new InvalidOperationException("All fields must have a unique order number.");
@@ -78,7 +82,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (type.BaseType != null)
             {
-                var baseChildren = GenerateChildrenImpl(type.BaseType);
+                IEnumerable<TypeNode> baseChildren = GenerateChildrenImpl(type.BaseType);
                 return baseChildren.Concat(children);
             }
 

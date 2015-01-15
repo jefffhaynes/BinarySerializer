@@ -105,12 +105,20 @@ namespace BinarySerialization.Graph.ValueGraph
 
             Children = new List<ValueNode>(typeNode.TypeChildren[_valueType].Select(child => child.CreateSerializer(this)));
 
-            foreach (var child in Children)
+            var context = CreateSerializationContext();
+
+            foreach (var child in GetSerializableChildren())
             {
+                if(eventShuttle != null)
+                    eventShuttle.OnMemberDeserializing(this, child.Name, context);
+
                 if (ShouldTerminate(stream))
                     break;
 
                 child.Deserialize(stream, eventShuttle);
+
+                if(eventShuttle != null)
+                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, context);
             }
         }
 
