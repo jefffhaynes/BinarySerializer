@@ -54,7 +54,7 @@ The most powerful feature of BinarySerializer is the ability to bind attributes 
 
 ![](/BinarySerializer.Docs/SimpleBinding_2.png)
 
-**Note that it is not necessary that NameLength contains the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.**
+Note that it is not necessary that NameLength contains the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
 
 ### Default Behavior ###
 
