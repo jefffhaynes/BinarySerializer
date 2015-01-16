@@ -130,7 +130,7 @@ Alternatively, the length of the Name field could be bound to a NameLength field
         public string Name { get; set; }
     }
 
-In some cases you may want to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the resulting serialized length in bytes.
+In some cases you may want to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the serialized length in bytes.
 
     public class MyBoundCollectionClass
     {
@@ -142,7 +142,7 @@ In some cases you may want to limit a collection of items by the total serialize
         public List<string> Names { get; set; }
     }
 
-Some formats and protocols will define a set of fields of specified size, with "optional" trailing fields.  This is a pretty nasty way to define a specification, but our goal here is to maximize interoperability with existing specs and we may have not have a say in the matter.  In the following example, EntryLength will either be 32 or 36, depending on whether or not Age is specified.  If age is null during serialization, the framework will update EntryLength to be 32, or 36 if Age is present.  If EntryLength is 32 during deserialization, the framework will return a null value for Age.  If EntryLength is 36, the framework will deserialize the Age value.
+Some formats and protocols will define a set of fields of specified size, with "optional" trailing fields.  In the following example, EntryLength will either be 32 or 36, depending on whether or not Age is specified.  If age is null during serialization, the framework will update EntryLength to be 32, or 36 if Age is present.  If EntryLength is 32 during deserialization, the framework will return a null value for Age.  If EntryLength is 36, the framework will deserialize the Age value.
 
     public class Person
     {
