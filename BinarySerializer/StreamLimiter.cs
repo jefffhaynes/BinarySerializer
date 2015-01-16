@@ -24,7 +24,9 @@ namespace BinarySerialization
 
             /* Store for performance */
             _canSeek = source.CanSeek;
-            _length = source.Length;
+
+            if(_canSeek)
+                _length = source.Length;
         }
 
         /// <summary>
@@ -59,7 +61,13 @@ namespace BinarySerialization
 
         public override long Length
         {
-            get { return _length; }
+            get
+            {
+                if (!_canSeek)
+                    return Source.Length;
+
+                return _length;
+            }
         }
 
         public override long Position

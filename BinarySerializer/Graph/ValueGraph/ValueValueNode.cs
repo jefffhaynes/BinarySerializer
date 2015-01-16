@@ -33,7 +33,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value { get; set; }
 
-        public object BoundValue
+        public override object BoundValue
         {
             get
             {
@@ -312,6 +312,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override string ToString()
         {
+            if (Name != null)
+                return Name + ": " + Value;
+
             if (Value != null)
                 return Value.ToString();
 

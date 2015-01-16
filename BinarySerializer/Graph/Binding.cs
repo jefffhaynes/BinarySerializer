@@ -10,6 +10,7 @@ namespace BinarySerialization.Graph
         public Binding(IBindableFieldAttribute attribute, int level)
         {
             Path = attribute.Path;
+            BindingMode = attribute.BindingMode;
 
             var constAttribute = attribute as IConstAttribute;
             if (constAttribute != null && Path == null)
@@ -31,7 +32,7 @@ namespace BinarySerialization.Graph
                 ConverterParameter = attribute.ConverterParameter;
             }
 
-            Mode = attribute.Mode;
+            RelativeSourceMode = attribute.RelativeSourceMode;
 
             Level = level;
         }
@@ -51,11 +52,13 @@ namespace BinarySerialization.Graph
 
         public string Path { get; private set; }
 
+        public BindingMode BindingMode { get; private set; }
+
         public IValueConverter ValueConverter { get; private set; }
 
         public object ConverterParameter { get; private set; }
 
-        public RelativeSourceMode Mode { get; private set; }
+        public RelativeSourceMode RelativeSourceMode { get; private set; }
 
         public int Level { get; set; }
 
@@ -93,7 +96,7 @@ namespace BinarySerialization.Graph
         {
             Node source = null;
 
-            switch (Mode)
+            switch (RelativeSourceMode)
             {
                 case RelativeSourceMode.Self:
                     source = target.Parent;
@@ -120,7 +123,7 @@ namespace BinarySerialization.Graph
                 if (level == Level)
                     return parent;
 
-                if (parent.Parent == null && Mode == RelativeSourceMode.SerializationContext)
+                if (parent.Parent == null && RelativeSourceMode == RelativeSourceMode.SerializationContext)
                     return parent;
 
                 parent = parent.Parent;

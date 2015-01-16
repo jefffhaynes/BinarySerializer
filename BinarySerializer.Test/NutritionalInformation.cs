@@ -21,11 +21,11 @@ namespace BinarySerializer.Test
         public uint VitaminB { get; set; }
 
         [FieldOrder(5)]
-        [FieldCount("OtherStuffCount", Mode = RelativeSourceMode.FindAncestor, AncestorType = typeof(Cereal))]
+        [FieldCount("OtherStuffCount", RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorType = typeof(Cereal))]
         public List<string> OtherNestedStuff { get; set; }
 
         [FieldOrder(6)]
-        [FieldCount("OtherStuffCount", Mode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
+        [FieldCount("OtherStuffCount", RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
         public List<string> OtherNestedStuff2 { get; set; }
 
         [FieldOrder(7)]
@@ -33,7 +33,7 @@ namespace BinarySerializer.Test
         public List<Toy> Toys { get; set; }
 
         [FieldOrder(8)]
-        [FieldLength("Outlier", ConverterType = typeof(DoubleOutlierConverter), Mode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
+        [FieldLength("Outlier", ConverterType = typeof(DoubleOutlierConverter), RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
         public string WeirdOutlierLengthedField { get; set; }
 
         [FieldOrder(9)]

@@ -34,40 +34,44 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public abstract object Value { get; set; }
 
+        public virtual object BoundValue { get { return Value; } }
+
         public virtual void Bind()
         {
-            if (TypeNode.FieldLengthBinding != null)
+            var typeNode = TypeNode;
+
+            if (typeNode.FieldLengthBinding != null && typeNode.FieldLengthBinding.BindingMode == BindingMode.TwoWay)
             {
-                TypeNode.FieldLengthBinding.Bind(this, () => MeasureOverride());
+                typeNode.FieldLengthBinding.Bind(this, () => MeasureOverride());
             }
 
-            if (TypeNode.ItemLengthBinding != null)
+            if (typeNode.ItemLengthBinding != null && typeNode.ItemLengthBinding.BindingMode == BindingMode.TwoWay)
             {
-                TypeNode.ItemLengthBinding.Bind(this, () => MeasureItemOverride());
+                typeNode.ItemLengthBinding.Bind(this, () => MeasureItemOverride());
             }
 
-            if (TypeNode.FieldCountBinding != null)
+            if (typeNode.FieldCountBinding != null && typeNode.FieldCountBinding.BindingMode == BindingMode.TwoWay)
             {
-                TypeNode.FieldCountBinding.Bind(this, () => CountOverride());
+                typeNode.FieldCountBinding.Bind(this, () => CountOverride());
             }
 
-            if (TypeNode.SubtypeBinding != null)
+            if (typeNode.SubtypeBinding != null && typeNode.SubtypeBinding.BindingMode == BindingMode.TwoWay)
             {
-                TypeNode.SubtypeBinding.Bind(this, () =>
+                typeNode.SubtypeBinding.Bind(this, () =>
                 {
                     Type valueType = GetValueTypeOverride();
-                    if(valueType == null)
+                    if (valueType == null)
                         return null;
 
-                    var typeNode = (ObjectTypeNode) TypeNode;
+                    var objectTypeNode = (ObjectTypeNode)typeNode;
 
-                    return typeNode.SubTypeKeys[valueType];
+                    return objectTypeNode.SubTypeKeys[valueType];
                 });
             }
 
-            if (TypeNode.ItemSerializeUntilBinding != null)
+            if (typeNode.ItemSerializeUntilBinding != null && typeNode.ItemSerializeUntilBinding.BindingMode == BindingMode.TwoWay)
             {
-                TypeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
+                typeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
             }
 
             foreach (ValueNode child in Children)

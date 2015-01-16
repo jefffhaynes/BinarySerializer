@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerializer.Test.Length
@@ -11,7 +10,7 @@ namespace BinarySerializer.Test.Length
         [TestMethod]
         public void ConstLengthTest()
         {
-            var actual = Roundtrip(new ConstLengthClass {Field = "FieldValue"});
+            var actual = Roundtrip(new ConstLengthClass {Field = "FieldValue"}, 3);
             Assert.AreEqual("Fie", actual.Field);
         }
 

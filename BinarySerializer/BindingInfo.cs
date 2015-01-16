@@ -16,30 +16,31 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Initializes a new BindingInfo with a path, a source binding mode, and an optional converter. 
+        /// Initializes a new BindingInfo with a path, a source binding RelativeSourceMode, and an optional converter. 
         /// </summary>
         /// <param name="path">The path to the source member.</param>
-        /// <param name="mode">The source mode.</param>
+        /// <param name="bindingMode">The binding direction.</param>
+        /// <param name="relativeSourceMode">The source RelativeSourceMode.</param>
         /// <param name="converterType">An optional converter.</param>
         /// <param name="converterParameter">An optional converter parameter.</param>
-        internal BindingInfo(string path, RelativeSourceMode mode, Type converterType = null,
+        internal BindingInfo(string path, BindingMode bindingMode, RelativeSourceMode relativeSourceMode, Type converterType = null,
             object converterParameter = null)
         {
             Path = path;
-            Mode = mode;
+            RelativeSourceMode = relativeSourceMode;
             ConverterType = converterType;
             ConverterParameter = converterParameter;
         }
 
         /// <summary>
         /// Initializes a new BindingInfo with a path and an optional converter.
-        /// using mode <see cref="RelativeSourceMode.Self"/>.
+        /// using RelativeSourceMode <see cref="BinarySerialization.RelativeSourceMode.Self"/>.
         /// </summary>
         /// <param name="path">The path to the source member.</param>
         /// <param name="converterType">An optional converter.</param>
         /// <param name="converterParameter">An optional converter parameter.</param>
         internal BindingInfo(string path, Type converterType = null, object converterParameter = null)
-            : this(path, RelativeSourceMode.Self, converterType, converterParameter)
+            : this(path, BindingMode.TwoWay, RelativeSourceMode.Self, converterType, converterParameter)
         {
         }
 
@@ -48,8 +49,10 @@ namespace BinarySerialization
         /// </summary>
         public string Path { get; set; }
 
+        public BindingMode BindingMode { get; set; }
+
         /// <summary>
-        /// Gets or sets the level of ancestor to look for, in <see cref="RelativeSourceMode.FindAncestor"/> mode. 
+        /// Gets or sets the level of ancestor to look for, in <see cref="BinarySerialization.RelativeSourceMode.FindAncestor"/> RelativeSourceMode. 
         /// Use 1 to indicate the one nearest to the binding target element.
         /// </summary>
         public int AncestorLevel { get; set; }
@@ -60,10 +63,10 @@ namespace BinarySerialization
         public Type AncestorType { get; set; }
 
         /// <summary>
-        /// Gets or sets a <see cref="RelativeSourceMode"/> value that describes the location of the
+        /// Gets or sets a <see cref="BinarySerialization.RelativeSourceMode"/> value that describes the location of the
         /// binding source member relative to the position of the binding target.
         /// </summary>
-        public RelativeSourceMode Mode { get; set; }
+        public RelativeSourceMode RelativeSourceMode { get; set; }
 
         /// <summary>
         /// An optional converter to be used converting from the source value to the target binding.
@@ -77,8 +80,8 @@ namespace BinarySerialization
 
         protected bool Equals(BindingInfo other)
         {
-            return string.Equals(Path, other.Path) && AncestorLevel == other.AncestorLevel &&
-                   AncestorType == other.AncestorType && ConverterType == other.ConverterType && Mode == other.Mode &&
+            return string.Equals(Path, other.Path) && BindingMode == other.BindingMode && AncestorLevel == other.AncestorLevel &&
+                   AncestorType == other.AncestorType && ConverterType == other.ConverterType && RelativeSourceMode == other.RelativeSourceMode &&
                    Equals(ConverterParameter, other.ConverterParameter);
         }
 
@@ -95,10 +98,11 @@ namespace BinarySerialization
             unchecked
             {
                 int hashCode = (Path != null ? Path.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (int) BindingMode;
                 hashCode = (hashCode*397) ^ AncestorLevel;
                 hashCode = (hashCode*397) ^ (AncestorType != null ? AncestorType.GetHashCode() : 0);
                 hashCode = (hashCode*397) ^ (ConverterType != null ? ConverterType.GetHashCode() : 0);
-                hashCode = (hashCode*397) ^ (int) Mode;
+                hashCode = (hashCode*397) ^ (int) RelativeSourceMode;
                 hashCode = (hashCode*397) ^ (ConverterParameter != null ? ConverterParameter.GetHashCode() : 0);
                 return hashCode;
             }

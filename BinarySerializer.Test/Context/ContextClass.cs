@@ -4,7 +4,7 @@ namespace BinarySerializer.Test.Context
 {
     public class ContextClass
     {
-        [SerializeWhen("SerializeCondtion", true, Mode = RelativeSourceMode.SerializationContext)]
+        [SerializeWhen("SerializeCondtion", true, RelativeSourceMode = RelativeSourceMode.SerializationContext)]
         public int ContextConditionalField { get; set; }
     }
 }

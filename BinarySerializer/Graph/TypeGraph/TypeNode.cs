@@ -137,6 +137,17 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 SubtypeAttribute firstBinding = SubtypeAttributes[0];
                 SubtypeBinding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
+
+                var valueGroups = SubtypeAttributes.GroupBy(attribute => attribute.Value);
+                if(valueGroups.Count() < SubtypeAttributes.Count)
+                    throw new InvalidOperationException("Subtype values must be unique.");
+
+                if (SubtypeBinding.BindingMode == BindingMode.TwoWay)
+                {
+                    var subTypeGroups = SubtypeAttributes.GroupBy(attribute => attribute.Subtype);
+                    if (subTypeGroups.Count() < SubtypeAttributes.Count)
+                        throw new InvalidOperationException("Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
+                }
             }
 
 
@@ -287,7 +298,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             int level = 0;
 
-            switch (binding.Mode)
+            switch (binding.RelativeSourceMode)
             {
                 case RelativeSourceMode.Self:
                     level = 1;

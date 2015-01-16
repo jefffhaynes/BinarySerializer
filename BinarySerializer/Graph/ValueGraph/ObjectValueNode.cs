@@ -48,9 +48,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var typeNode = (ObjectTypeNode) TypeNode;
 
-                List<TypeNode> typeChildren;
-                if (!typeNode.TypeChildren.TryGetValue(value.GetType(), out typeChildren))
-                    return;
+                var valueType = value.GetType();
+
+                IEnumerable<TypeNode> typeChildren = typeNode.GetTypeChildren(valueType);
 
                 Children = new List<ValueNode>(typeChildren.Select(child => child.CreateSerializer(this)));
 
@@ -78,7 +78,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 child.Serialize(stream, eventShuttle);
 
                 if (eventShuttle != null)
-                    eventShuttle.OnMemberSerialized(this, child.Name, child.Value, serializationContext);
+                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContext);
             }
         }
 
@@ -105,7 +105,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var typeNode = (ObjectTypeNode)TypeNode;
 
-            Children = new List<ValueNode>(typeNode.TypeChildren[_valueType].Select(child => child.CreateSerializer(this)));
+            var typeChildren = typeNode.GetTypeChildren(_valueType);
+            Children = new List<ValueNode>(typeChildren.Select(child => child.CreateSerializer(this)));
 
             var context = CreateSerializationContext();
 

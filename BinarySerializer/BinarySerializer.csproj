@@ -41,6 +41,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingMode.cs" />
     <Compile Include="Graph\Node.cs" />
     <Compile Include="Graph\TypeGraph\ArrayTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\CollectionTypeNode.cs" />
