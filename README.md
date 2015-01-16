@@ -198,7 +198,7 @@ This attribute can be used to control the length of items in a collection.
 
 ### FieldOffsetAttribute ###
 
-The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases, implicit offset (e.g. just define the structure) is preferable.  For an example application, see the ISO9660 example.
+The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases, implicit offset (e.g. just define the structure) is preferable.  After moving to the offset, the serializer will reset to the origin so subsequent fields must manage their own offsets.  This attribute it not supported when serializing to non-seekable streams.
 
 ### SubtypeAttribute ###
 
@@ -228,7 +228,7 @@ The SerializeWhen attribute can be used to conditionally serialize or deserializ
 
 ### SerializeUntilAttribute ###
 
-The SerializedUntil attribute can be used to terminate a collection once a specified value is encountered.
+The SerializedUntil attribute can be used to terminate a collection once a specified value is encountered.  This attribute it not currently supported when deserializing from non-seekable streams.
 
     [SerializeUntil((byte)0)]
     public List<DirectoryRecord> Records { get; set; }
