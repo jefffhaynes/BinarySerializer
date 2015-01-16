@@ -36,7 +36,7 @@ Note that we're using properties and fields interchangeably as they are treated 
 
 ### Binding ###
 
-The most powerful feature of BinarySerializer is the ability to bind attributes to other fields in the object graph.  Using the available attributes, this approach can allow for interop with complex formats and protocols.  One of the simplest examples of this is field length binding.
+The most powerful feature of BinarySerializer is the ability to bind attributes to other fields in the object graph.  Using the available attributes this approach can allow for interop with complex formats and protocols.  One of the simplest examples of this is field length binding.
 
     public class Person
     {
