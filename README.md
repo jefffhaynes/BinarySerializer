@@ -313,13 +313,14 @@ In some cases you may be serializing or deserializing large amounts of data, whi
 
 In this example, the Data property will be copied from the source stream during serialization.  On deserialization, the resulting object graph will contain a Streamlet object which references a section of the source stream and allows for deferred read access.  Note that this feature is only supported when the underlying source stream supports seeking.  When dealing with non-seekable streams (e.g. NetworkStream), it is better to deserialize the stream in frames or packets where possible rather than try to deserialize the entire stream (which in some cases may be open-ended) at once.
 
-### Nullable types ###
-
-Nullable types are supported and are serialized, if present, as the "underlying" type.
 
 ### Nulls ###
 
 Null values are allowed; however, bear in mind that this can lead to unstable definitions.  While serialization may work, deserialization may fail if the framework is unable to deduce which fields are meant to be null and which are not.
+
+### Nullable types ###
+
+Nullable types are supported and are serialized, if present, as the "underlying" type.
 
 ### Advanced Binding ###
 
