@@ -81,7 +81,7 @@ Any field or property with an Ignore attribute will not be included in serializa
 
 ### SerializeAsAttribute ###
 
-In general you shouldn't need this as most things tend to work themselves out.  However, you can always override the default behavior by specifying SerializeAs.  This can also be used to specify encodings and endianness if needed.
+In general you shouldn't need this as most things tend to work out without it.  However, you can always override the default behavior by specifying SerializeAs.  This attribute can also be used to specify encodings and endianness if needed.
 
 
     [SerializeAs(Encoding = "windows-1256")]
