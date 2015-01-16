@@ -46,7 +46,7 @@ namespace BinarySerialization.Graph.TypeGraph
         protected TypeNode(TypeNode parent, Type type) : this(parent)
         {
             _type = type;
-            _underlyingType = Nullable.GetUnderlyingType(type);
+            _underlyingType = Nullable.GetUnderlyingType(Type);
         }
 
         protected TypeNode(TypeNode parent, MemberInfo memberInfo) : this(parent)
@@ -72,6 +72,8 @@ namespace BinarySerialization.Graph.TypeGraph
                 ValueSetter = fieldInfo.SetValue;
             }
             else throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
+
+            _underlyingType = Nullable.GetUnderlyingType(Type);
 
             object[] attributes = memberInfo.GetCustomAttributes(true);
 
@@ -174,7 +176,7 @@ namespace BinarySerialization.Graph.TypeGraph
         }
 
 
-        public virtual Type Type
+        public Type Type
         {
             get
             {

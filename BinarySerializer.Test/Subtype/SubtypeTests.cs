@@ -26,22 +26,22 @@ namespace BinarySerializer.Test.Subtype
             Assert.IsInstanceOfType(actual.Field, typeof(SubSubclassC));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(BindingException))]
-        public void MissingSubtypeTest()
-        {
-            var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
-            Roundtrip(expected);
-        }
+        //[TestMethod]
+        //[ExpectedException(typeof(BindingException))]
+        //public void MissingSubtypeTest()
+        //{
+        //    var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
+        //    Roundtrip(expected);
+        //}
 
-        [TestMethod]
-        public void BestFitSubtypeTest()
-        {
-            var expected = new SubtypeClass { Field = new UnspecifiedSubclass() };
-            var actual = Roundtrip(expected);
+        //[TestMethod]
+        //public void BestFitSubtypeTest()
+        //{
+        //    var expected = new SubtypeClass { Field = new UnspecifiedSubclass() };
+        //    var actual = Roundtrip(expected);
 
-            Assert.AreEqual(SubclassType.B, actual.Subtype);
-            Assert.IsInstanceOfType(actual.Field, typeof(SubclassB));
-        }
+        //    Assert.AreEqual(SubclassType.B, actual.Subtype);
+        //    Assert.IsInstanceOfType(actual.Field, typeof(SubclassB));
+        //}
     }
 }

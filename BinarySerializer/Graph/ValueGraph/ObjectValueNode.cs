@@ -28,6 +28,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (_cachedValue != null)
                     return _cachedValue;
 
+                if (_valueType.IsAbstract)
+                    return null;
+
                 var value = Activator.CreateInstance(_valueType);
 
                 var serializableChildren = GetSerializableChildren();
