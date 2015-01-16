@@ -77,7 +77,7 @@ There are a number of attributes that can be used to control how your fields are
 
 ### IgnoreAttribute ###
 
-Any field or property with an Ignore attribute will not be included in serialization or deserialization.  These fields can still be used in bindings, however properties will be treated as flat fields.  If you need to do some calculation on a binding source, your best option is to us a ValueConverter (see below).
+Any field or property with an Ignore attribute will not be included in serialization or deserialization.  These fields can still be used in bindings, however properties will be treated as flat fields.  If you need to do some calculation on a binding source your best option is to define a ValueConverter (see below).
 
 ### SerializeAsAttribute ###
 
