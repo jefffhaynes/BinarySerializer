@@ -110,7 +110,7 @@ This attribute is required on any field/property in a class with more than one f
 
 ### FieldLengthAttribute ###
 
-The most basic attribute, this can be used to either specify bound or constant field length.  Field lengths can apply to anything that is sizeable; strings, arrays, lists, streams, and even complex objects.
+FieldLength can be used to either specify bound or constant field length.  Field lengths can apply to anything that is sizeable; strings, arrays, lists, streams, and even complex objects.
 
     public class MyConstFieldClass
     {
