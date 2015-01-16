@@ -92,7 +92,7 @@ In general you shouldn't need this as most things tend to work out without it.  
 
 ### FieldOrderAttribute ###
 
-Again, this attribute is required on any field/property in a class with more than one field or property.  Only relative value matters.  Base values are serialized before dervied values.
+This attribute is required on any field/property in a class with more than one field or property.  Only relative value matters.  Base values are serialized before dervied values.
 
     public class MyBaseClass
     {
