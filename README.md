@@ -263,9 +263,6 @@ The SerializeAsEnum attribute allows you specify an alternate value for an enum 
         C
     }
 
-Other Stuff
------------
-
 ### Performance ###
 
 Serialization and deserialization operations are broken into four phases.
