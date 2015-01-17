@@ -251,7 +251,7 @@ namespace BinarySerialization.Graph.TypeGraph
             return SerializedType.Default;
         }
 
-        public virtual ValueNode CreateSerializer(ValueNode parent)
+        public ValueNode CreateSerializer(ValueNode parent)
         {
             try
             {

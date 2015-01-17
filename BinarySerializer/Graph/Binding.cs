@@ -127,7 +127,9 @@ namespace BinarySerialization.Graph
                     return parent;
 
                 parent = parent.Parent;
-                level++;
+
+                if (!(parent is ContextValueNode))
+                    level++;
             }
 
             return null;
@@ -139,7 +141,7 @@ namespace BinarySerialization.Graph
                 return;
 
             var source = GetSource(target);
-            source.TargetBindings.Add(() => ConvertBack(callback()));
+            source.TargetBindings.Add(() => ConvertBack(callback(), target.CreateSerializationContext()));
         }
 
         private object Convert(object value, BinarySerializationContext context)
@@ -150,13 +152,12 @@ namespace BinarySerialization.Graph
             return ValueConverter.Convert(value, ConverterParameter, context);
         }
 
-        private object ConvertBack(object value)
+        private object ConvertBack(object value, BinarySerializationContext context)
         {
             if (ValueConverter == null)
                 return value;
 
-            //return ValueConverter.ConvertBack(value, _converterParameter, _targetNode.CreateSerializationContext());
-            return ValueConverter.ConvertBack(value, ConverterParameter, null);
+            return ValueConverter.ConvertBack(value, ConverterParameter, context);
         }
     }
 }

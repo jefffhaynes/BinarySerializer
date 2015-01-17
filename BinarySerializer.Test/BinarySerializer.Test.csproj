@@ -90,6 +90,11 @@
     <Compile Include="Misc\LargeArrayTests.cs" />
     <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
     <Compile Include="Misc\NullTrailingMemberTests.cs" />
+    <Compile Include="Unknown\BindingAcrossUnknownBoundaryChildClass.cs" />
+    <Compile Include="Unknown\BindingAcrossUnknownBoundaryClass.cs" />
+    <Compile Include="Unknown\InvalidUnknownTypeClass.cs" />
+    <Compile Include="Unknown\UnknownTypeClass.cs" />
+    <Compile Include="Unknown\UnknownTypeTests.cs" />
     <Compile Include="Misc\UnreadableStream.cs" />
     <Compile Include="NullArrayClass.cs" />
     <Compile Include="DoubleOutlierConverter.cs" />
