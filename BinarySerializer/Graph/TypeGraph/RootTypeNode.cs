@@ -11,7 +11,6 @@ namespace BinarySerialization.Graph.TypeGraph
         }
 
         public TypeNode Child { get; private set; }
-        public override Endianness Endianness { get; set; }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {

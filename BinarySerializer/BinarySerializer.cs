@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 using BinarySerialization.Graph.ValueGraph;
 
@@ -23,36 +24,32 @@ namespace BinarySerialization
     /// </summary>
     public class BinarySerializer
     {
+        private const Endianness DefaultEndianness = Endianness.Little;
+        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
+
         private readonly Dictionary<Type, RootTypeNode> _graphCache = new Dictionary<Type, RootTypeNode>();
         private readonly object _graphCacheLock = new object();
 
-        private const Endianness DefaultEndianness = Endianness.Little;
-        private Endianness _endianness;
-
         /// <summary>
-        /// Constructs an instance of BinarySerializer.
+        /// Default constructor.
         /// </summary>
         public BinarySerializer()
         {
             Endianness = DefaultEndianness;
+            Encoding = DefaultEncoding;
         }
 
         /// <summary>
-        ///     The default <see cref="Endianness" /> to use during serialization or deserialization.
-        ///     This property can be updated dynamically during serialization or deserialization.
+        /// The default <see cref="Endianness" /> to use during serialization or deserialization.
+        /// This property can be updated during serialization or deserialization operations as needed.
         /// </summary>
-        public Endianness Endianness
-        {
-            get { return _endianness; }
+        public Endianness Endianness { get; set; }
 
-            set
-            {
-                foreach (RootTypeNode graph in _graphCache.Values)
-                    graph.Endianness = value;
-
-                _endianness = value;
-            }
-        }
+        /// <summary>
+        /// The default Encoding to use during serialization or deserialization.
+        /// This property can be updated during serialization or deserialization operations as needed.
+        /// </summary>
+        public Encoding Encoding { get; set; }
 
         /// <summary>
         ///     Occurrs after a member has been serialized.
@@ -94,16 +91,13 @@ namespace BinarySerialization
 
         private RootTypeNode GetGraph(Type valueType)
         {
-            RootTypeNode graph;
-            if (_graphCache.TryGetValue(valueType, out graph))
-                return graph;
-
             lock (_graphCacheLock)
             {
+                RootTypeNode graph;
                 if (_graphCache.TryGetValue(valueType, out graph))
                     return graph;
 
-                graph = new RootTypeNode(valueType) {Endianness = Endianness};
+                graph = new RootTypeNode(valueType);
                 _graphCache.Add(valueType, graph);
 
                 return graph;
@@ -126,12 +120,14 @@ namespace BinarySerialization
 
             RootTypeNode graph = GetGraph(value.GetType());
 
-            var valueGraph = (ContextValueNode)graph.CreateSerializer(null);
-            valueGraph.Value = value;
-            valueGraph.Context = context;
-            valueGraph.Bind();
+            var serializer = (ContextValueNode)graph.CreateSerializer(null);
+            serializer.EndiannessCallback = () => Endianness;
+            serializer.EncodingCallback = () => Encoding;
+            serializer.Value = value;
+            serializer.Context = context;
+            serializer.Bind();
 
-            valueGraph.Serialize(stream, _eventShuttle);
+            serializer.Serialize(stream, _eventShuttle);
         }
 
         /// <summary>
@@ -159,6 +155,8 @@ namespace BinarySerialization
             RootTypeNode graph = GetGraph(typeof (T));
 
             var serializer = (ContextValueNode)graph.CreateSerializer(null);
+            serializer.EndiannessCallback = () => Endianness;
+            serializer.EncodingCallback = () => Encoding;
             serializer.Context = context;
             serializer.Deserialize(new StreamLimiter(stream), _eventShuttle);
 

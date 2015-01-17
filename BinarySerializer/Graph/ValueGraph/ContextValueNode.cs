@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -40,6 +42,20 @@ namespace BinarySerialization.Graph.ValueGraph
                 Children.AddRange(contextSerializer.Child.Children);
             }
         }
+
+        public override Endianness Endianness
+        {
+            get { return EndiannessCallback(); }
+        }
+
+        public override Encoding Encoding
+        {
+            get { return EncodingCallback(); }
+        }
+
+        public Func<Endianness> EndiannessCallback { get; set; }
+
+        public Func<Encoding> EncodingCallback { get; set; } 
 
         public override void Bind()
         {

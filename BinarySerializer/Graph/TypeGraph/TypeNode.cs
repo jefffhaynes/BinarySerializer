@@ -10,8 +10,6 @@ namespace BinarySerialization.Graph.TypeGraph
 {
     internal abstract class TypeNode : Node
     {
-        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
-
         public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
             new Dictionary<Type, SerializedType>
             {
@@ -30,9 +28,6 @@ namespace BinarySerialization.Graph.TypeGraph
                 {typeof (string), SerializedType.NullTerminatedString},
                 {typeof (byte[]), SerializedType.ByteArray}
             };
-
-        private readonly Encoding _encoding;
-        private readonly Endianness? _endianness;
 
         private readonly int? _order;
         private readonly SerializedType? _serializedType;
@@ -91,10 +86,10 @@ namespace BinarySerialization.Graph.TypeGraph
             if (serializeAsAttribute != null)
             {
                 _serializedType = serializeAsAttribute.SerializedType;
-                _endianness = serializeAsAttribute.Endianness;
+                Endianness = serializeAsAttribute.Endianness;
 
                 if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
-                    _encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
+                    Encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
             }
 
 
@@ -222,31 +217,9 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; private set; }
 
-        public virtual Endianness Endianness
-        {
-            set { throw new NotSupportedException(); }
+        public Endianness? Endianness { get; private set; }
 
-            get
-            {
-                if (_endianness != null && _endianness.Value != Endianness.Inherit)
-                    return _endianness.Value;
-
-                var parent = (TypeNode) Parent;
-                return parent.Endianness;
-            }
-        }
-
-        public Encoding Encoding
-        {
-            get
-            {
-                if (_encoding != null)
-                    return _encoding;
-
-                var parent = (TypeNode) Parent;
-                return parent != null ? parent.Encoding : DefaultEncoding;
-            }
-        }
+        public Encoding Encoding { get; private set; }
 
         public int? Order
         {

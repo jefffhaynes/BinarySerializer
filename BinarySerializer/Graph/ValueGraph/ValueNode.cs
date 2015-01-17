@@ -22,14 +22,29 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public List<ValueNode> Children { get; set; }
 
-        public Encoding Encoding
+
+        public virtual Encoding Encoding
         {
-            get { return TypeNode.Encoding; }
+            get
+            {
+                if (TypeNode.Encoding != null)
+                    return TypeNode.Encoding;
+
+                var parent = (ValueNode)Parent;
+                return parent.Encoding;
+            }
         }
 
-        public Endianness Endianness
+        public virtual Endianness Endianness
         {
-            get { return TypeNode.Endianness; }
+            get
+            {
+                if (TypeNode.Endianness != null && TypeNode.Endianness != Endianness.Inherit)
+                    return TypeNode.Endianness.Value;
+
+                var parent = (ValueNode)Parent;
+                return parent.Endianness;
+            }
         }
 
         public abstract object Value { get; set; }
