@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using BinarySerializer.Test.Misc;
 
 namespace BinarySerializerTester
@@ -9,10 +11,16 @@ namespace BinarySerializerTester
         {
             var test = new BinarySerializer.Test.BinarySerializerTests();
 
-            for (int i = 0; i < 10000; i++)
+            Enumerable.Range(0, 10000).AsParallel().ForAll(i =>
             {
                 test.Roundtrip();
-            }
+                Console.WriteLine(i);
+            });
+
+            //for (int i = 0; i < 10000; i++)
+            //{
+            //    test.Roundtrip();
+            //}
 
             //var ser = new BinarySerialization.BinarySerializer();
             //var arr = new IntArray64K() { Array = new int[65536] };

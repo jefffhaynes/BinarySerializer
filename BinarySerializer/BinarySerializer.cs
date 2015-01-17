@@ -27,8 +27,8 @@ namespace BinarySerialization
         private const Endianness DefaultEndianness = Endianness.Little;
         private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
-        private readonly Dictionary<Type, RootTypeNode> _graphCache = new Dictionary<Type, RootTypeNode>();
-        private readonly object _graphCacheLock = new object();
+        private static readonly Dictionary<Type, RootTypeNode> GraphCache = new Dictionary<Type, RootTypeNode>();
+        private static readonly object GraphCacheLock = new object();
 
         /// <summary>
         /// Default constructor.
@@ -91,14 +91,14 @@ namespace BinarySerialization
 
         private RootTypeNode GetGraph(Type valueType)
         {
-            lock (_graphCacheLock)
+            lock (GraphCacheLock)
             {
                 RootTypeNode graph;
-                if (_graphCache.TryGetValue(valueType, out graph))
+                if (GraphCache.TryGetValue(valueType, out graph))
                     return graph;
 
                 graph = new RootTypeNode(valueType);
-                _graphCache.Add(valueType, graph);
+                GraphCache.Add(valueType, graph);
 
                 return graph;
             }
