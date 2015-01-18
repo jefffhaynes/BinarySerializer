@@ -4,13 +4,16 @@ using BinarySerialization;
 
 namespace BinarySerializer.Test.Custom
 {
+    /// <summary>
+    /// A class for multibyte representation of an integer.
+    /// </summary>
     public class Varuint : IBinarySerializable
     {
         public uint Value { get; set; }
 
         public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
         {
-            var reader = new EndianAwareBinaryReader(stream, endianness);
+            var reader = new BinaryReader(stream);
 
             bool more = true;
             int shift = 0;
@@ -33,7 +36,7 @@ namespace BinarySerializer.Test.Custom
 
         public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
         {
-            var writer = new EndianAwareBinaryWriter(stream, endianness);
+            var writer = new BinaryWriter(stream);
 
             bool first = true;
             var value = Value;
