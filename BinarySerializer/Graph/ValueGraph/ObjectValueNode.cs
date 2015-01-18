@@ -57,7 +57,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 Children = new List<ValueNode>(typeChildren.Select(child => child.CreateSerializer(this)));
 
-                foreach (var child in Children)
+                var serializableChildren = GetSerializableChildren();
+
+                foreach (var child in serializableChildren)
                     child.Value = child.TypeNode.ValueGetter(value);
 
                 _valueType = value.GetType();
