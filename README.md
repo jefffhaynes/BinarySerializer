@@ -376,13 +376,16 @@ Sometimes binding directly to a source is insuffient and in those cases your bes
 
 If all else fails, you can define a custom serialization object.
 
+     /// <summary>
+    /// A class for multibyte representation of an integer.
+    /// </summary>
     public class Varuint : IBinarySerializable
     {
         public uint Value { get; set; }
 
         public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
         {
-            var reader = new EndianAwareBinaryReader(stream, endianness);
+            var reader = new BinaryReader(stream);
 
             bool more = true;
             int shift = 0;
@@ -405,7 +408,7 @@ If all else fails, you can define a custom serialization object.
 
         public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
         {
-            var writer = new EndianAwareBinaryWriter(stream, endianness);
+            var writer = new BinaryWriter(stream);
 
             bool first = true;
             var value = Value;
