@@ -383,7 +383,7 @@ If all else fails, you can define a custom serialization object.
     {
         public uint Value { get; set; }
 
-        public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
+        public void Deserialize(Stream stream, Endianness endianness, BinarySerializationContext context)
         {
             var reader = new BinaryReader(stream);
 
@@ -406,7 +406,7 @@ If all else fails, you can define a custom serialization object.
             }
         }
 
-        public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
+        public void Serialize(Stream stream, Endianness endianness, BinarySerializationContext context)
         {
             var writer = new BinaryWriter(stream);
 
