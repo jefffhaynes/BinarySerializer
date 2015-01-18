@@ -377,13 +377,16 @@ Sometimes binding directly to a source is insuffient and in those cases your bes
 
 If all else fails, you can define a custom serialization object.
 
+     /// <summary>
+    /// A class for multibyte representation of an integer.
+    /// </summary>
     public class Varuint : IBinarySerializable
     {
         public uint Value { get; set; }
 
         public void Deserialize(Stream stream, Endianness endianness, BinarySerializationContext context)
         {
-            var reader = new StreamReader(stream);
+            var reader = new BinaryReader(stream);
 
             bool more = true;
             int shift = 0;
@@ -392,29 +395,30 @@ If all else fails, you can define a custom serialization object.
 
             while (more)
             {
-                int b = reader.Read();
+                int b = reader.ReadByte();
 
                 if (b == -1)
                     throw new InvalidOperationException("Reached end of stream before end of varuint.");
 
-                var lower7Bits = (byte) b;
+                var lower7Bits = (byte)b;
                 more = (lower7Bits & 128) != 0;
-                Value |= (uint) ((lower7Bits & 0x7f) << shift);
+                Value |= (uint)((lower7Bits & 0x7f) << shift);
                 shift += 7;
             }
         }
 
         public void Serialize(Stream stream, Endianness endianness, BinarySerializationContext context)
         {
-            var writer = new StreamWriter(stream);
-            
+            var writer = new BinaryWriter(stream);
+
             bool first = true;
-            while (first || Value > 0)
+            var value = Value;
+            while (first || value > 0)
             {
                 first = false;
-                var lower7Bits = (byte)(Value & 0x7f);
-                Value >>= 7;
-                if (Value > 0)
+                var lower7Bits = (byte)(value & 0x7f);
+                value >>= 7;
+                if (value > 0)
                     lower7Bits |= 128;
                 writer.Write(lower7Bits);
             }
