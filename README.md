@@ -378,7 +378,7 @@ Sometimes binding directly to a source is insuffient and in those cases your bes
 If all else fails, you can define a custom serialization object.
 
      /// <summary>
-    /// A class for multibyte representation of an integer.
+    /// A custom serializer for variable byte representation of an integer.
     /// </summary>
     public class Varuint : IBinarySerializable
     {
