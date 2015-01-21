@@ -63,12 +63,15 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private static Type GetNodeType(Type type)
         {
-            if (type.IsEnum)
+            var nullableType = Nullable.GetUnderlyingType(type);
+
+            var effectiveType = nullableType ?? type;
+
+            if (effectiveType.IsEnum)
                 return typeof(EnumTypeNode);
-            if (type.IsPrimitive || type == typeof (string) || type == typeof (byte[]))
+            if (effectiveType.IsPrimitive || effectiveType == typeof(string) || effectiveType == typeof(byte[]))
                 return typeof (ValueTypeNode);
-            if (Nullable.GetUnderlyingType(type) != null)
-                return typeof(ValueTypeNode);
+
             if (type.IsArray)
                 return typeof(ArrayTypeNode);
             if (typeof(IList).IsAssignableFrom(type))
@@ -77,7 +80,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 return typeof(StreamTypeNode);
             if (typeof(IBinarySerializable).IsAssignableFrom(type))
                 return typeof(CustomTypeNode);
-            if (type == typeof (object))
+            if (type == typeof(object))
                 return typeof (UnknownTypeNode);
             return typeof (ObjectTypeNode);
         }

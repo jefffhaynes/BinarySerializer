@@ -76,6 +76,7 @@
     <Compile Include="Endianness\EndiannessTests.cs" />
     <Compile Include="Enums\BaseTypeEnumAsStringClass.cs" />
     <Compile Include="Enums\EnumTests.cs" />
+    <Compile Include="Enums\NullableEnumClass.cs" />
     <Compile Include="ItemLength\ItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemConstLengthClass.cs" />
     <Compile Include="ItemLength\ItemLengthListOfByteArrayClass.cs" />
