@@ -199,7 +199,7 @@ This attribute can be used to control the length of items in a collection.
 
 ### FieldOffsetAttribute ###
 
-The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases, implicit offset (e.g. just define the structure) is preferable.  After moving to the offset, the serializer will reset to the origin so subsequent fields must manage their own offsets.  This attribute it not supported when serializing to non-seekable streams.
+The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases implicit offset (e.g. just define the structure) is preferable.  After moving to the offset the serializer will reset to the origin so subsequent fields must manage their own offsets.  This attribute is not supported when serializing to non-seekable streams.
 
 ### SubtypeAttribute ###
 
