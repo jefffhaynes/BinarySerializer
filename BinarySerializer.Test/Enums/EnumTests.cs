@@ -40,5 +40,14 @@ namespace BinarySerializer.Test.Enums
 
             Assert.AreEqual(expected.Field, actual.Field);
         }
+
+        [TestMethod]
+        public void NullableEnumTest()
+        {
+            var expected = new NullableEnumClass {Field = BaseTypeEnumValues.B};
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Field, actual.Field);
+        }
     }
 }

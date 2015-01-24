@@ -142,7 +142,7 @@ In some cases you may want to limit a collection of items by the total serialize
         public List<string> Names { get; set; }
     }
 
-Some formats and protocols will define a set of fields of specified size, with "optional" trailing fields.  In the following example, EntryLength will either be 32 or 36, depending on whether or not Age is specified.  If age is null during serialization, the framework will update EntryLength to be 32, or 36 if Age is present.  If EntryLength is 32 during deserialization, the framework will return a null value for Age.  If EntryLength is 36, the framework will deserialize the Age value.
+Some formats and protocols will define a set of fields of specified size, with "optional" trailing fields.  In the following example, EntryLength will either be 32 or 36, depending on whether or not Age is specified.  
 
     public class Person
     {
@@ -164,6 +164,7 @@ Some formats and protocols will define a set of fields of specified size, with "
         public Person Person { get; set; }
      }
 
+If age is null during serialization, the framework will update EntryLength to be 32, or 36 if Age is present.  If EntryLength is 32 during deserialization, the framework will return a null value for Age.  If EntryLength is 36, the framework will deserialize the Age value.
 
 ### FieldCountAttribute ###
 
@@ -319,7 +320,7 @@ Null values are allowed; however, bear in mind that this can lead to unstable de
 
 ### Nullable types ###
 
-Nullable types are supported and are serialized, if present, as the "underlying" type.
+Nullable types are supported and are serialized, if present, as the underlying type.
 
 ### Advanced Binding ###
 
@@ -377,7 +378,7 @@ Sometimes binding directly to a source is insuffient and in those cases your bes
 If all else fails, you can define a custom serialization object.
 
      /// <summary>
-    /// A class for multibyte representation of an integer.
+    /// A custom serializer for variable byte representation of an integer.
     /// </summary>
     public class Varuint : IBinarySerializable
     {
@@ -433,7 +434,7 @@ Text encoding can be specified by the <code>SerializeAsAttribute</code> and is i
     
 ### Endianness ###
 
-A quiant topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or field-local.  If you're working in a system that deal entirely in big endian, you can simply do:
+A quiant topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or field-local.  If you're working in a system that deals entirely in big endian, you can simply do:
 
     serializer.Endianness = Endianness.Big;
     
