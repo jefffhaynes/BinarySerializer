@@ -445,7 +445,7 @@ In other cases you may actually have a mix of big and little endian and again yo
     
 ### Exceptions ###
 
-If an exception does occur either during the initial reflection phase or subsequent serialization, every layer of the object graph with throw its own exception, keeping the prior exception as the inner exception.  Always check the inner exception for more details.
+If an exception does occur either during the initial reflection phase or subsequent serialization, every layer of the object graph will throw its own exception, keeping the prior exception as the inner exception.  Always check the inner exception for more details.
 
 ### Thread Safety ###
 
