@@ -203,7 +203,7 @@ The FieldOffset attribute should be used sparingly but can be used if an absolut
 
 ### SubtypeAttribute ###
 
-The Subtype attribute allows dynamic switching to subtypes based on a binding.
+The Subtype attribute allows dynamic switching of subtypes based on a binding.
 
     public class Packet
     {
@@ -221,7 +221,7 @@ It is not necessary that FrameType be correct during serialization; it will be u
 
 ### SerializeWhenAttribute ###
 
-The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  Multiple SerializeWhen attributes will be OR'd together.
+The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  Multiple SerializeWhen attributes will be or'd together.
 
     [SerializeWhen("ControllerHardwareVersion", HardwareVersion.XBeeSeries1)]
     [SerializeWhen("ControllerHardwareVersion", HardwareVersion.XBeeProSeries1)]
@@ -229,7 +229,7 @@ The SerializeWhen attribute can be used to conditionally serialize or deserializ
 
 ### SerializeUntilAttribute ###
 
-The SerializedUntil attribute can be used to terminate a collection once a specified value is encountered.  This attribute it not currently supported when deserializing from non-seekable streams.
+The SerializedUntil attribute can be used to terminate a collection once a specified value is encountered, essentially allowing for the creation of "null-terminated" lists or the like.  This attribute is not currently supported when deserializing from non-seekable streams.
 
     [SerializeUntil((byte)0)]
     public List<DirectoryRecord> Records { get; set; }
@@ -324,7 +324,7 @@ Nullable types are supported and are serialized, if present, as the underlying t
 
 ### Advanced Binding ###
 
-Binding is not limited to fields in the same object, but can be used to reference arbitrary fields accessible throughout the graph.  Ancestors in the graph can be located by either type or level and used as references for binding.
+Binding is not limited to fields in the same object but can be used to reference arbitrary fields accessible throughout the graph.  Ancestors in the graph can be located by either type or level and can be used as references for binding.
 
     public class Container
     {
@@ -434,7 +434,7 @@ Text encoding can be specified by the <code>SerializeAsAttribute</code> and is i
     
 ### Endianness ###
 
-A quiant topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or field-local.  If you're working in a system that deals entirely in big endian, you can simply do:
+Maybe a quiant topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or field-local.  If you're working in a system that deals entirely in big endian, you can simply do:
 
     serializer.Endianness = Endianness.Big;
     
@@ -446,6 +446,10 @@ In other cases you may actually have a mix of big and little endian and again yo
 ### Exceptions ###
 
 If an exception does occur either during the initial reflection phase or subsequent serialization, every layer of the object graph with throw its own exception, keeping the prior exception as the inner exception.  Always check the inner exception for more details.
+
+### Thread Safety ###
+
+All public members of BinarySerializer are thread-safe and may be used concurrently from multiple threads.
 
 ## Examples ##
 
