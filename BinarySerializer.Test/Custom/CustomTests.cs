@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,5 +19,16 @@ namespace BinarySerializer.Test.Custom
 
             Assert.AreEqual(expected.Value, actual.Value);
         }
+
+        //[TestMethod]
+        //public void CustomWithContextTest()
+        //{
+        //    var expected = new CustomWithContextClass();
+
+        //    var serializer = new BinarySerialization.BinarySerializer();
+        //    var stream = new MemoryStream();
+
+        //    serializer.Serialize(stream, expected, "context");
+        //}
     }
 }

@@ -69,6 +69,7 @@
     <Compile Include="Count\CountTests.cs" />
     <Compile Include="Count\PrimitiveArrayBindingClass.cs" />
     <Compile Include="Custom\CustomTests.cs" />
+    <Compile Include="Custom\CustomWithContextClass.cs" />
     <Compile Include="Custom\Varuint.cs" />
     <Compile Include="Encoding\EncodingClass.cs" />
     <Compile Include="Encoding\EncodingTests.cs" />
