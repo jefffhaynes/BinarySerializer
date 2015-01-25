@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerializer.Test.Custom
 {
@@ -18,5 +13,16 @@ namespace BinarySerializer.Test.Custom
 
             Assert.AreEqual(expected.Value, actual.Value);
         }
+
+        //[TestMethod]
+        //public void CustomWithContextTest()
+        //{
+        //    var expected = new CustomWithContextClass();
+
+        //    var serializer = new BinarySerialization.BinarySerializer();
+        //    var stream = new MemoryStream();
+
+        //    serializer.Serialize(stream, expected, "context");
+        //}
     }
 }
