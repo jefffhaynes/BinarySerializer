@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using BinarySerialization.Graph.TypeGraph;
@@ -7,11 +8,29 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ContextValueNode : ValueNode
     {
+        private static readonly Dictionary<Type, RootTypeNode> ContextCache = new Dictionary<Type, RootTypeNode>();
+        private static readonly object ContextCacheLock = new object();
+
         public ContextValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 
         public ValueNode Child { get; private set; }
+
+        private RootTypeNode GetContextGraph(Type valueType)
+        {
+            lock (ContextCacheLock)
+            {
+                RootTypeNode graph;
+                if (ContextCache.TryGetValue(valueType, out graph))
+                    return graph;
+
+                graph = new RootTypeNode(valueType);
+                ContextCache.Add(valueType, graph);
+
+                return graph;
+            }
+        }
 
         public override object Value
         {
@@ -35,7 +54,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     return;
 
                 /* We have to dynamically generate a type graph for this new type */
-                var contextGraph = new RootTypeNode(value.GetType());
+                var contextGraph = GetContextGraph(value.GetType());
                 var contextSerializer = (ContextValueNode)contextGraph.CreateSerializer(this);
                 contextSerializer.Value = value;
 

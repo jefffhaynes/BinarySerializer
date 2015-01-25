@@ -59,17 +59,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-
         protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
         {
             Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }
 
-
         public void Serialize(Stream stream, object value, SerializedType serializedType, int? length = null)
         {
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
-
             Serialize(writer, value, serializedType, length);
         }
 
@@ -156,9 +153,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     writer.Write(datalength);
                     writer.Write(data);
-                }
 
                     break;
+                }
+
                 default:
                     throw new NotSupportedException();
             }
@@ -173,9 +171,6 @@ namespace BinarySerialization.Graph.ValueGraph
         public object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
         {
             var reader = new EndianAwareBinaryReader(stream, Endianness);
-
-
-
             return Deserialize(reader, serializedType, length);
         }
 
@@ -206,9 +201,6 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 // try to get bounded length from limiter
                 var baseStream = (StreamLimiter) reader.BaseStream;
-
-                if (!baseStream.CanSeek)
-                    throw new InvalidOperationException("No length specified on sized field.");
 
                 checked
                 {
