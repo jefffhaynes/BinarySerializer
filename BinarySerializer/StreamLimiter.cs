@@ -70,6 +70,17 @@ namespace BinarySerialization
             }
         }
 
+        public long Remainder
+        {
+            get
+            {
+                if (!_canSeek)
+                    return MaxLength - Position;
+
+                return Math.Min(MaxLength, Length) - Position;
+            }
+        }
+
         public override long Position
         {
             get { return _position; }

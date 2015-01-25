@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
@@ -143,7 +144,6 @@ namespace BinarySerialization.Graph.ValueGraph
                         if (typeParent.ItemLengthBinding.IsConst)
                             Array.Resize(ref data, Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue));
                     }
-                    else throw new InvalidOperationException("No field length specified on sized string.");
 
                     writer.Write(data);
 
@@ -173,13 +173,16 @@ namespace BinarySerialization.Graph.ValueGraph
         public object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
         {
             var reader = new EndianAwareBinaryReader(stream, Endianness);
+
+
+
             return Deserialize(reader, serializedType, length);
         }
 
         public object Deserialize(EndianAwareBinaryReader reader, SerializedType serializedType, int? length = null)
         {
             int? effectiveLength = null;
-
+            
             var typeParent = TypeNode.Parent as TypeNode;
 
             if (length != null)
@@ -198,6 +201,19 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 object countValue = TypeNode.FieldCountBinding.GetValue(this);
                 effectiveLength = Convert.ToInt32(countValue);
+            }
+            else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString)
+            {
+                // try to get bounded length from limiter
+                var baseStream = (StreamLimiter) reader.BaseStream;
+
+                if (!baseStream.CanSeek)
+                    throw new InvalidOperationException("No length specified on sized field.");
+
+                checked
+                {
+                    effectiveLength = (int) (baseStream.Remainder);
+                }
             }
 
             object value;
@@ -235,9 +251,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 case SerializedType.ByteArray:
                 {
-                    if (effectiveLength == null)
-                        throw new InvalidOperationException("No length specified on sized field.");
-
+                    Debug.Assert(effectiveLength != null, "effectiveLength != null");
                     value = reader.ReadBytes(effectiveLength.Value);
                     break;
                 }
@@ -249,9 +263,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.SizedString:
                 {
-                    if (effectiveLength == null)
-                        throw new InvalidOperationException("No length specified on sized field.");
-
+                    Debug.Assert(effectiveLength != null, "effectiveLength != null");
                     byte[] data = reader.ReadBytes(effectiveLength.Value);
                     value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
                     break;

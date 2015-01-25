@@ -83,5 +83,11 @@ namespace BinarySerializer.Test.Primitives
         {
             RoundtripPrimitive(Double.MaxValue, 8);
         }
+
+        [TestMethod]
+        public void ByteArrayTest()
+        {
+            Roundtrip(new byte[3], new byte[3]);
+        }
     }
 }

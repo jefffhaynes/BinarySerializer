@@ -124,7 +124,7 @@ namespace BinarySerialization.Graph.ValueGraph
             catch (Exception e)
             {
                 string reference = Name == null
-                    ? string.Format("graphType '{0}'", TypeNode.Type)
+                    ? string.Format("type '{0}'", TypeNode.Type)
                     : string.Format("member '{0}'", Name);
                 string message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
