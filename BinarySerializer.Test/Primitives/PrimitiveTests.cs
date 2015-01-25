@@ -89,5 +89,12 @@ namespace BinarySerializer.Test.Primitives
         {
             Roundtrip(new byte[3], new byte[3]);
         }
+
+        [TestMethod]
+        public void StringTest()
+        {
+            const string value = "hello";
+            Roundtrip(value, System.Text.Encoding.UTF8.GetBytes(value));
+        }
     }
 }
