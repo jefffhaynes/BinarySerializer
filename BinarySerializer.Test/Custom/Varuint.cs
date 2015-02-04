@@ -38,17 +38,15 @@ namespace BinarySerializer.Test.Custom
         {
             var writer = new BinaryWriter(stream);
 
-            bool first = true;
             var value = Value;
-            while (first || value > 0)
+            do
             {
-                first = false;
-                var lower7Bits = (byte)(value & 0x7f);
+                var lower7Bits = (byte) (value & 0x7f);
                 value >>= 7;
                 if (value > 0)
                     lower7Bits |= 128;
                 writer.Write(lower7Bits);
-            }
+            } while (value > 0);
         }
     }
 }
