@@ -13,5 +13,14 @@ namespace BinarySerializer.Test.SerializeAs
 
             Assert.AreEqual(expected.Value, actual.Value);
         }
+
+        [TestMethod]
+        public void SerializeAsLengthPrefixedStringTest()
+        {
+            var expected = new LengthPrefixedStringClass {Value = new string('c', ushort.MaxValue)};
+            var actual = Roundtrip(expected, ushort.MaxValue + 3);
+
+            Assert.AreEqual(expected.Value, actual.Value);
+        }
     }
 }
