@@ -99,10 +99,5 @@ namespace BinarySerialization
             var value = base.ReadDouble();
             return Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
         }
-
-        public override string ReadString()
-        {
-            throw new NotSupportedException();
-        }
     }
 }
