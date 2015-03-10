@@ -98,7 +98,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return Children.Where(child => child.TypeNode.IgnoreAttribute == null);
         }
 
-        public void Serialize(Stream stream, EventShuttle eventShuttle)
+        public void Serialize(StreamKeeper stream, EventShuttle eventShuttle)
         {
             try
             {
@@ -106,6 +106,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetBoundValue(this))))
                     return;
+
+                if (TypeNode.FieldLengthBinding != null)
+                    stream = new StreamKeeper(stream);
 
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
@@ -131,7 +134,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected abstract void SerializeOverride(Stream stream, EventShuttle eventShuttle);
+        protected abstract void SerializeOverride(StreamKeeper stream, EventShuttle eventShuttle);
 
         public void Deserialize(StreamLimiter stream, EventShuttle eventShuttle)
         {

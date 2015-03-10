@@ -14,7 +14,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value { get; set; }
 
-        protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
+        protected override void SerializeOverride(StreamKeeper stream, EventShuttle eventShuttle)
         {
             PrimitiveCollectionSerializeOverride(stream);
 

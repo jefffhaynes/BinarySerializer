@@ -69,7 +69,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
+        protected override void SerializeOverride(StreamKeeper stream, EventShuttle eventShuttle)
         {
             var serializableChildren = GetSerializableChildren();
 
@@ -84,6 +84,19 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (eventShuttle != null)
                     eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContext);
+            }
+
+            /* Check if we need to pad out object */
+            if (TypeNode.FieldLengthBinding != null)
+            {
+                var length = Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this));
+
+                if (length > stream.RelativePosition)
+                {
+                    var padLength = length - stream.RelativePosition;
+                    var pad = new byte[padLength];
+                    stream.Write(pad, 0, pad.Length);
+                }
             }
         }
 

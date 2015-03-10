@@ -81,6 +81,8 @@
     <Compile Include="ItemLength\ItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemConstLengthClass.cs" />
     <Compile Include="ItemLength\ItemLengthListOfByteArrayClass.cs" />
+    <Compile Include="Length\PaddedLengthClassClass.cs" />
+    <Compile Include="Length\PaddedLengthClassInnerClass.cs" />
     <Compile Include="Misc\AbstractClass.cs" />
     <Compile Include="Misc\AbstractClassContainer.cs" />
     <Compile Include="Misc\AsbtractClassTests.cs" />

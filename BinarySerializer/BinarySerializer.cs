@@ -127,7 +127,7 @@ namespace BinarySerialization
             serializer.Context = context;
             serializer.Bind();
 
-            serializer.Serialize(stream, _eventShuttle);
+            serializer.Serialize(new StreamKeeper(stream), _eventShuttle);
         }
 
         /// <summary>

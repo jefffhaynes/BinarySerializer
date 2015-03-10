@@ -97,5 +97,22 @@ namespace BinarySerializer.Test.Length
             var actual = Roundtrip(expected);
             Assert.AreEqual(2, actual.Field.Collection.Count);
         }
+
+        [TestMethod]
+        public void PaddedLengthTest()
+        {
+            var expected = new PaddedLengthClassClass
+            {
+                InnerClass = new PaddedLengthClassInnerClass
+                {
+                    Value = "hello"
+                }
+            };
+
+            var actual = Roundtrip(expected, 20);
+
+            Assert.AreEqual(expected.InnerClass.Value, actual.InnerClass.Value);
+            Assert.AreEqual(expected.InnerClass.Value.Length, actual.InnerClass.ValueLength);
+        }
     }
 }

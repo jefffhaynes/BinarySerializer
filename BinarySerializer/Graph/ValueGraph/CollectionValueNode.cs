@@ -11,7 +11,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void SerializeOverride(Stream stream, EventShuttle eventShuttle)
+        protected override void SerializeOverride(StreamKeeper stream, EventShuttle eventShuttle)
         {
             var serializableChildren = GetSerializableChildren();
 
