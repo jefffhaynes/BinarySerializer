@@ -100,10 +100,5 @@ namespace BinarySerialization
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
-
-        public override void Write(string value)
-        {
-            throw new NotSupportedException();
-        }
     }
 }

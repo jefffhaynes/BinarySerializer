@@ -148,12 +148,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.LengthPrefixedString:
                 {
-                    byte[] data = Encoding.GetBytes(value.ToString());
-                    var datalength = (ushort) data.Length;
-
-                    writer.Write(datalength);
-                    writer.Write(data);
-
+                    writer.Write(value.ToString());
                     break;
                 }
 
@@ -262,9 +257,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.LengthPrefixedString:
                 {
-                    ushort dataLength = reader.ReadUInt16();
-                    byte[] data = reader.ReadBytes(dataLength);
-                    value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
+                    value = reader.ReadString();
                     break;
                 }
 

@@ -96,6 +96,7 @@
     <Compile Include="Misc\LargeArrayTests.cs" />
     <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
     <Compile Include="Misc\NullTrailingMemberTests.cs" />
+    <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryChildClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryClass.cs" />
     <Compile Include="Unknown\InvalidUnknownTypeClass.cs" />
