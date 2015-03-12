@@ -69,7 +69,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected override void SerializeOverride(StreamKeeper stream, EventShuttle eventShuttle)
+        protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             var serializableChildren = GetSerializableChildren();
 

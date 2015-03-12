@@ -9,6 +9,7 @@ namespace BinarySerializer.Test
         private static readonly BinarySerialization.BinarySerializer Serializer = new BinarySerialization.BinarySerializer();
 
         protected static readonly string[] TestSequence = { "a", "b", "c" };
+        protected static readonly int[] PrimitiveTestSequence = { 1, 2, 3 };
 
         static TestBase()
         {

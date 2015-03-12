@@ -9,8 +9,6 @@ namespace BinarySerialization
         private readonly long _length;
         private readonly long _maxLength;
 
-        private long _position;
-
         public StreamLimiter(Stream source, long maxLength = long.MaxValue)
         {
             if (source == null)
@@ -28,6 +26,8 @@ namespace BinarySerialization
             if(_canSeek)
                 _length = source.Length;
         }
+
+        public long RelativePosition { get; set; }
 
         /// <summary>
         ///     The underlying source <see cref="Stream" />.
@@ -51,7 +51,7 @@ namespace BinarySerialization
 
         public override bool CanWrite
         {
-            get { return false; }
+            get { return Source.CanWrite; }
         }
 
         public long MaxLength
@@ -63,6 +63,7 @@ namespace BinarySerialization
         {
             get
             {
+                /* If we can't seek, might as well go to the source */
                 if (!_canSeek)
                     return Source.Length;
 
@@ -70,7 +71,7 @@ namespace BinarySerialization
             }
         }
 
-        public long Remainder
+        public long AvailableForReading
         {
             get
             {
@@ -81,15 +82,23 @@ namespace BinarySerialization
             }
         }
 
+        public long AvailableForWriting
+        {
+            get
+            {
+                return MaxLength - Position;
+            }
+        }
+
         public override long Position
         {
-            get { return _position; }
+            get { return RelativePosition; }
 
             set
             {
-                var delta = value - _position;
+                var delta = value - RelativePosition;
                 Source.Position += delta;
-                _position = value;
+                RelativePosition = value;
             }
         }
 
@@ -132,14 +141,23 @@ namespace BinarySerialization
                 return 0;
 
             int read = Source.Read(buffer, offset, count);
-            _position += read;
+            RelativePosition += read;
 
             return read;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            throw new NotImplementedException();
+            if (count == 0)
+                return;
+
+            if (count > MaxLength - Position)
+            {
+                throw new InvalidOperationException("Unable to write beyond end of stream limit.");
+            }
+
+            Source.Write(buffer, offset, count);
+            RelativePosition += count;
         }
     }
 }

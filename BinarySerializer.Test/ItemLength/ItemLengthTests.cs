@@ -35,5 +35,23 @@ namespace BinarySerializer.Test.ItemLength
 
             Assert.AreEqual(expected.Arrays.Count, actual.Arrays.Count);
         }
+
+        [TestMethod]
+        public void LimitedItemLengthTest()
+        {
+            var expected = new LimitedItemLengthClassClass
+            {
+                InnerClasses = new List<LimitedItemLengthClassInnerClass>
+                {
+                    new LimitedItemLengthClassInnerClass {Value = "hello"},
+                    new LimitedItemLengthClassInnerClass {Value = "world"}
+                }
+            };
+
+            var expectedData = System.Text.Encoding.ASCII.GetBytes("he\0wo\0");
+            var actual = Roundtrip(expected, expectedData);
+
+            Assert.AreEqual(expected.InnerClasses[0].Value.Substring(0, 2), actual.InnerClasses[0].Value);
+        }
     }
 }

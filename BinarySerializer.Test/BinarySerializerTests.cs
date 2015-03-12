@@ -11,7 +11,7 @@ namespace BinarySerializer.Test
     public class BinarySerializerTests
     {
         private const string Disclaimer = "This isn't really cereal";
-        private BinarySerialization.BinarySerializer _serializer = new BinarySerialization.BinarySerializer();
+        private readonly BinarySerialization.BinarySerializer _serializer = new BinarySerialization.BinarySerializer();
 
         public BinarySerializerTests()
         {

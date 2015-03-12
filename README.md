@@ -441,6 +441,48 @@ In other cases you may actually have a mix of big and little endian and again yo
 
     [SerializeAs(Endianness = Endianness.Big)]
     public uint SectorCountBig { get; set; }
+
+### Debugging ###
+
+To gain insight into the serialization or deserialization process, the serializer defines a number of events.  These events can be useful when attempting to troubleshoot when the debugger is insufficient.
+
+Here is an example implementation of basic tracing for the serialization and deserialization process.
+
+    {
+        var serializer = new BinarySerializer();
+
+        serializer.MemberSerializing += OnMemberSerializing;
+        serializer.MemberSerialized += OnMemberSerialized;
+        serializer.MemberDeserializing += OnMemberDeserializing;
+        serializer.MemberDeserialized += OnMemberDeserialized;
+    }
+
+    private static void OnMemberSerializing(object sender, MemberSerializingEventArgs e)
+    {
+        Console.CursorLeft = e.Context.Depth * 4;
+        Console.WriteLine("S-Start: {0}", e.MemberName);
+    }
+
+    private static void OnMemberSerialized(object sender, MemberSerializedEventArgs e)
+    {
+        Console.CursorLeft = e.Context.Depth * 4;
+        var value = e.Value ?? "null";
+        Console.WriteLine("S-End: {0} ({1})", e.MemberName, value);
+    }
+
+    private static void OnMemberDeserializing(object sender, MemberSerializingEventArgs e)
+    {
+        Console.CursorLeft = e.Context.Depth * 4;
+        Console.WriteLine("D-Start: {0}", e.MemberName);
+    }
+
+    private static void OnMemberDeserialized(object sender, MemberSerializedEventArgs e)
+    {
+        Console.CursorLeft = e.Context.Depth * 4;
+        var value = e.Value ?? "null";
+        Console.WriteLine("D-End: {0} ({1})", e.MemberName, value);
+    }
+
     
 ### Exceptions ###
 

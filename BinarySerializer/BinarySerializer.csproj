@@ -78,7 +78,6 @@
     <Compile Include="NullStream.cs" />
     <Compile Include="Graph\TypeGraph\ObjectTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\RootTypeNode.cs" />
-    <Compile Include="StreamKeeper.cs" />
     <Compile Include="StreamLimiter.cs" />
     <Compile Include="StreamResetter.cs" />
     <Compile Include="SubtypeAttribute.cs" />

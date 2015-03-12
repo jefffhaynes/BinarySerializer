@@ -3,10 +3,14 @@ using BinarySerialization;
 
 namespace BinarySerializer.Test.Count
 {
-    public class ConstCountClass
+    public class ConstCountClass<T>
     {
         [FieldOrder(0)]
         [FieldCount(3)]
-        public List<string> Field { get; set; }
+        public List<T> Field { get; set; }
+
+        [FieldOrder(1)]
+        [FieldCount(3)]
+        public T[] Field2 { get; set; }
     }
 }

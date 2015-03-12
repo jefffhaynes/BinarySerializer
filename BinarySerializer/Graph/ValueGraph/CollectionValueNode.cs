@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -11,13 +10,21 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void SerializeOverride(StreamKeeper stream, EventShuttle eventShuttle)
+        protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             var serializableChildren = GetSerializableChildren();
 
+            int? itemLength = null;
+            if (TypeNode.ItemLengthBinding != null && TypeNode.ItemLengthBinding.IsConst)
+                itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.ConstValue);
+
             foreach (var child in serializableChildren)
             {
-                child.Serialize(stream, eventShuttle);
+                if (stream.IsAtLimit)
+                    break;
+
+                var childStream = itemLength == null ? stream : new StreamLimiter(stream, itemLength.Value);
+                child.Serialize(childStream, eventShuttle);
             }
 
             var typeNode = (CollectionTypeNode)TypeNode;
@@ -38,6 +45,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild == null ? null : typeNode.TerminationChild.CreateSerializer(this);
+
+            int? itemLength = null;
+            if (TypeNode.ItemLengthBinding != null)
+                itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
 
             for (int i = 0; i < count; i++)
             {
@@ -60,7 +71,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 var child = typeNode.Child.CreateSerializer(this);
-                child.Deserialize(stream, eventShuttle);
+
+                var childStream = itemLength == null ? stream : new StreamLimiter(stream, itemLength.Value);
+                child.Deserialize(childStream, eventShuttle);
 
                 /* Check child termination case */
                 if (TypeNode.ItemSerializeUntilBinding != null)
@@ -90,7 +103,7 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override long MeasureItemOverride()
         {
             var nullStream = new NullStream();
-            var streamKeeper = new StreamKeeper(nullStream);
+            var streamKeeper = new StreamLimiter(nullStream);
 
             var serializableChildren = GetSerializableChildren();
 

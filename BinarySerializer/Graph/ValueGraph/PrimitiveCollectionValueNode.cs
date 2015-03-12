@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -14,9 +13,17 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value { get; set; }
 
-        protected override void SerializeOverride(StreamKeeper stream, EventShuttle eventShuttle)
+        protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
-            PrimitiveCollectionSerializeOverride(stream);
+            int? itemLength = null;
+            if (TypeNode.ItemLengthBinding != null && TypeNode.ItemLengthBinding.IsConst)
+                itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.ConstValue);
+
+            int? itemCount = null;
+            if (TypeNode.FieldCountBinding != null && TypeNode.FieldCountBinding.IsConst)
+                itemCount = Convert.ToInt32(TypeNode.FieldCountBinding.ConstValue);
+
+            PrimitiveCollectionSerializeOverride(stream, itemLength, itemCount);
 
             var typeNode = (CollectionTypeNode)TypeNode;
 
@@ -38,16 +45,16 @@ namespace BinarySerialization.Graph.ValueGraph
             var collection = (IList)Activator.CreateInstance(collectionType);
 
             /* Create single serializer to do all the work */
-            var dummyChild = (ValueValueNode)typeNode.Child.CreateSerializer(this);
+            var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
 
             var reader = new EndianAwareBinaryReader(stream, Endianness);
-            var childSerializedType = dummyChild.TypeNode.GetSerializedType();
+            var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
             var count = TypeNode.FieldCountBinding != null ? Convert.ToInt32(TypeNode.FieldCountBinding.GetValue(this)) : int.MaxValue;
 
-            int? length = null;
+            int? itemLength = null;
             if (TypeNode.ItemLengthBinding != null)
-                length = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
+                itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
 
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild == null ? null : typeNode.TerminationChild.CreateSerializer(this);
@@ -73,7 +80,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     }
                 }
 
-                var value = dummyChild.Deserialize(reader, childSerializedType, length);
+                var value = childSerializer.Deserialize(reader, childSerializedType, itemLength);
                 collection.Add(value);
 
                 itemCount++;
@@ -87,7 +94,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 SetCollectionValue(collection[i], i);
         }
 
-        protected abstract void PrimitiveCollectionSerializeOverride(Stream stream);
+        protected abstract void PrimitiveCollectionSerializeOverride(StreamLimiter stream, int? length, int? itemCount);
 
         protected abstract object CreateCollection(int size);
 

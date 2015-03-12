@@ -114,5 +114,26 @@ namespace BinarySerializer.Test.Length
             Assert.AreEqual(expected.InnerClass.Value, actual.InnerClass.Value);
             Assert.AreEqual(expected.InnerClass.Value.Length, actual.InnerClass.ValueLength);
         }
+
+        [TestMethod]
+        public void EmbeddedConstrainedCollectionTest()
+        {
+            var expected = new EmbeddedConstrainedCollectionClass
+            {
+                Inner = new EmbeddedConstrainedCollectionInnerClass
+                {
+                    Items = new List<string>
+                    {
+                        "we",
+                        "have",
+                        "nothing",
+                        "to",
+                        "fear"
+                    }
+                }
+            };
+
+            var actual = Roundtrip(expected, 10);
+        }
     }
 }

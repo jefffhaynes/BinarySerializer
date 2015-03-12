@@ -59,7 +59,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected override void SerializeOverride(StreamKeeper stream, EventShuttle eventShuttle)
+        protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }
@@ -75,6 +75,32 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             if (value == null)
                 return;
+
+            int? constLength = null;
+            long? maxLength = null;
+
+            var typeParent = TypeNode.Parent as TypeNode;
+
+            if (length != null)
+                constLength = length.Value;
+            else if (TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst)
+            {
+                constLength = Convert.ToInt32(TypeNode.FieldLengthBinding.ConstValue);
+            }
+            else if (typeParent != null && typeParent.ItemLengthBinding != null && typeParent.ItemLengthBinding.IsConst)
+            {
+                constLength = Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue);
+            }
+            else if (TypeNode.FieldCountBinding != null && TypeNode.FieldCountBinding.IsConst)
+            {
+                constLength = Convert.ToInt32(TypeNode.FieldCountBinding.ConstValue);
+            }
+            else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString || serializedType == SerializedType.NullTerminatedString)
+            {
+                // try to get bounded length from limiter
+                var baseStream = (StreamLimiter) writer.BaseStream;
+                maxLength = baseStream.AvailableForWriting;
+            }
 
             switch (serializedType)
             {
@@ -117,6 +143,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 case SerializedType.NullTerminatedString:
                 {
                     byte[] data = Encoding.GetBytes(value.ToString());
+
+                    if (constLength != null)
+                        Array.Resize(ref data, constLength.Value - 1);
+
+                    if(maxLength != null && data.Length > maxLength)
+                        Array.Resize(ref data, (int)maxLength.Value - 1);
+
                     writer.Write(data);
                     writer.Write((byte) 0);
                     break;
@@ -125,22 +158,11 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     byte[] data = Encoding.GetBytes(value.ToString());
 
-                    var typeParent = TypeNode.Parent as TypeNode;
+                    if (constLength != null)
+                        Array.Resize(ref data, constLength.Value);
 
-                    if (length != null)
-                    {
-                        Array.Resize(ref data, length.Value);
-                    }
-                    else if (TypeNode.FieldLengthBinding != null)
-                    {
-                        if (TypeNode.FieldLengthBinding.IsConst)
-                            Array.Resize(ref data, Convert.ToInt32(TypeNode.FieldLengthBinding.ConstValue));
-                    }
-                    else if (typeParent != null && typeParent.ItemLengthBinding != null)
-                    {
-                        if (typeParent.ItemLengthBinding.IsConst)
-                            Array.Resize(ref data, Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue));
-                    }
+                    if (maxLength != null && data.Length > maxLength)
+                        Array.Resize(ref data, (int)maxLength.Value);
 
                     writer.Write(data);
 
@@ -148,6 +170,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.LengthPrefixedString:
                 {
+                    if(constLength != null)
+                        throw new NotSupportedException("Length-prefixed strings cannot have a const length.");
+
                     writer.Write(value.ToString());
                     break;
                 }
@@ -192,14 +217,14 @@ namespace BinarySerialization.Graph.ValueGraph
                 object countValue = TypeNode.FieldCountBinding.GetValue(this);
                 effectiveLength = Convert.ToInt32(countValue);
             }
-            else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString)
+            else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString || serializedType == SerializedType.NullTerminatedString)
             {
                 // try to get bounded length from limiter
                 var baseStream = (StreamLimiter) reader.BaseStream;
 
                 checked
                 {
-                    effectiveLength = (int) (baseStream.Remainder);
+                    effectiveLength = (int) (baseStream.AvailableForReading);
                 }
             }
 
@@ -244,7 +269,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    byte[] data = ReadNullTerminatedString(reader).ToArray();
+                    byte[] data = effectiveLength == null
+                        ? ReadNullTerminatedString(reader).ToArray()
+                        : ReadNullTerminatedString(reader, effectiveLength.Value).ToArray();
+
                     value = Encoding.GetString(data, 0, data.Length);
                     break;
                 }
@@ -302,6 +330,17 @@ namespace BinarySerialization.Graph.ValueGraph
 
             byte b;
             while ((b = reader.ReadByte()) != 0)
+                buffer.WriteByte(b);
+
+            return buffer.ToArray();
+        }
+
+        private static IEnumerable<byte> ReadNullTerminatedString(BinaryReader reader, int maxLength)
+        {
+            var buffer = new MemoryStream();
+
+            byte b;
+            while (maxLength-- > 0 && (b = reader.ReadByte()) != 0)
                 buffer.WriteByte(b);
 
             return buffer.ToArray();
