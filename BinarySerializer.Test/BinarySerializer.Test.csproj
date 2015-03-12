@@ -55,8 +55,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BinarySerializerTests.cs" />
-    <Compile Include="Binding\CollectionBindingSourceClass.cs" />
-    <Compile Include="Binding\InvalidBindingTests.cs" />
     <Compile Include="CalciumCarbonate.cs" />
     <Compile Include="Cereal.cs" />
     <Compile Include="CerealShape.cs" />

@@ -15,6 +15,13 @@ namespace BinarySerialization.Test.Length
         }
 
         [TestMethod]
+        public void NullStringConstLengthTest()
+        {
+            var actual = Roundtrip(new ConstLengthClass(), 3);
+            Assert.AreEqual(string.Empty, actual.Field);
+        }
+
+        [TestMethod]
         public void LengthBindingTest()
         {
             var expected = new BoundLengthClass<string> {Field = "FieldValue"};
