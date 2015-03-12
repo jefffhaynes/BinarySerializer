@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 
-namespace BinarySerializer.Test.SerializeAs
+namespace BinarySerialization.Test.SerializeAs
 {
     public class LengthPrefixedStringClass
     {

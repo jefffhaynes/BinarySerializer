@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using BinarySerialization;
-using BinarySerializer.Test.Misc;
+using BinarySerialization.Test.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Unknown
+namespace BinarySerialization.Test.Unknown
 {
     [TestClass]
     public class UnknownTypeTests

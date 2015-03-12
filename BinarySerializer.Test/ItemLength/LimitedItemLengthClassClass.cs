@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BinarySerializer.Test.ItemLength
+namespace BinarySerialization.Test.ItemLength
 {
     public class LimitedItemLengthClassClass
     {

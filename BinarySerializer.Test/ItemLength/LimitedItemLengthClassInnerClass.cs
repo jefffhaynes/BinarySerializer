@@ -1,4 +1,4 @@
-﻿namespace BinarySerializer.Test.ItemLength
+﻿namespace BinarySerialization.Test.ItemLength
 {
     public class LimitedItemLengthClassInnerClass
     {

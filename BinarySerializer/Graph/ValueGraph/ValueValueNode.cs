@@ -74,7 +74,12 @@ namespace BinarySerialization.Graph.ValueGraph
             int? length = null)
         {
             if (value == null)
-                return;
+            {
+                /* In the special case of sized strings, don't allow nulls */
+                if (serializedType == SerializedType.SizedString)
+                    value = string.Empty;
+                else return;
+            }
 
             int? constLength = null;
             long? maxLength = null;
@@ -269,9 +274,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    byte[] data = effectiveLength == null
-                        ? ReadNullTerminatedString(reader).ToArray()
-                        : ReadNullTerminatedString(reader, effectiveLength.Value).ToArray();
+                    Debug.Assert(effectiveLength != null, "effectiveLength != null");
+                    byte[] data = ReadNullTerminatedString(reader, effectiveLength.Value).ToArray();
 
                     value = Encoding.GetString(data, 0, data.Length);
                     break;
@@ -322,17 +326,6 @@ namespace BinarySerialization.Graph.ValueGraph
                 return Enum.ToObject(nodeType, value);
 
             return value;
-        }
-
-        private static IEnumerable<byte> ReadNullTerminatedString(BinaryReader reader)
-        {
-            var buffer = new MemoryStream();
-
-            byte b;
-            while ((b = reader.ReadByte()) != 0)
-                buffer.WriteByte(b);
-
-            return buffer.ToArray();
         }
 
         private static IEnumerable<byte> ReadNullTerminatedString(BinaryReader reader, int maxLength)

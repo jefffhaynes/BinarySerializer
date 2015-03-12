@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BinarySerialization;
+﻿using System.IO;
 
-namespace BinarySerializer.Test.Custom
+namespace BinarySerialization.Test.Custom
 {
     public class CustomWithContextClass : IBinarySerializable
     {
-        public object Context { get; set; }
-
         public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)
         {
-
+            // TODO check context
         }
 
         public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)

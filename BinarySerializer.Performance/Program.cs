@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using BinarySerialization;
-using BinarySerializer.Test.Misc;
+using BinarySerialization.Test.Misc;
 
 namespace BinarySerializerTester
 {

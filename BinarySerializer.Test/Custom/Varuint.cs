@@ -2,7 +2,7 @@
 using System.IO;
 using BinarySerialization;
 
-namespace BinarySerializer.Test.Custom
+namespace BinarySerialization.Test.Custom
 {
     /// <summary>
     /// A class for multibyte representation of an integer.

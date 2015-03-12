@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using BinarySerialization;
 
-namespace BinarySerializer.Test.Until
+namespace BinarySerialization.Test.Until
 {
     public class UntilTestClass<TItem>
     {

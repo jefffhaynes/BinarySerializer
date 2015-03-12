@@ -1,4 +1,4 @@
-namespace BinarySerializer.Test.Subtype
+namespace BinarySerialization.Test.Subtype
 {
     public class SubclassA : Superclass
     {

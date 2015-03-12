@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BinarySerialization;
 
-namespace BinarySerializer.Test.ItemLength
+namespace BinarySerialization.Test.ItemLength
 {
     public class ItemLengthListOfByteArrayClass
     {

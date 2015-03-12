@@ -1,6 +1,6 @@
 using BinarySerialization;
 
-namespace BinarySerializer.Test.Converters
+namespace BinarySerialization.Test.Converters
 {
     public class ConverterClass
     {

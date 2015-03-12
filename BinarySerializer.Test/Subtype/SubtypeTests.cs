@@ -1,7 +1,7 @@
 ﻿using BinarySerialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Subtype
+namespace BinarySerialization.Test.Subtype
 {
     [TestClass]
     public class SubtypeTests : TestBase

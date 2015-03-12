@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.When
+namespace BinarySerialization.Test.When
 {
     [TestClass]
     public class WhenTests : TestBase

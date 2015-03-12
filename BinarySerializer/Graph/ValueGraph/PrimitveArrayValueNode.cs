@@ -55,6 +55,10 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override long CountOverride()
         {
             var array = (Array)Value;
+
+            if (array == null)
+                return 0;
+
             return array.Length;
         }
     }

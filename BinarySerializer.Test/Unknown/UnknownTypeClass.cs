@@ -1,4 +1,4 @@
-﻿namespace BinarySerializer.Test.Unknown
+﻿namespace BinarySerialization.Test.Unknown
 {
     public class UnknownTypeClass
     {

@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.ItemLength
+namespace BinarySerialization.Test.ItemLength
 {
     [TestClass]
     public class ItemLengthTests : TestBase

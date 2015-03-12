@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Converters
+namespace BinarySerialization.Test.Converters
 {
     [TestClass]
     public class ConverterTests : TestBase

@@ -1,6 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Custom
+namespace BinarySerialization.Test.Custom
 {
     [TestClass]
     public class CustomTests : TestBase
@@ -14,15 +15,15 @@ namespace BinarySerializer.Test.Custom
             Assert.AreEqual(expected.Value, actual.Value);
         }
 
-        //[TestMethod]
-        //public void CustomWithContextTest()
-        //{
-        //    var expected = new CustomWithContextClass();
+        [TestMethod]
+        public void CustomWithContextTest()
+        {
+            var expected = new CustomWithContextClass();
 
-        //    var serializer = new BinarySerialization.BinarySerializer();
-        //    var stream = new MemoryStream();
+            var serializer = new BinarySerializer();
+            var stream = new MemoryStream();
 
-        //    serializer.Serialize(stream, expected, "context");
-        //}
+            serializer.Serialize(stream, expected, "context");
+        }
     }
 }

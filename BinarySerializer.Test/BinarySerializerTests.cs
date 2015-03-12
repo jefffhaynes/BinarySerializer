@@ -5,7 +5,7 @@ using System.Linq;
 using BinarySerialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test
+namespace BinarySerialization.Test
 {
     [TestClass]
     public class BinarySerializerTests

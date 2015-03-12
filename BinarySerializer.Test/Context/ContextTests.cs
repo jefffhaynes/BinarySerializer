@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Context
+namespace BinarySerialization.Test.Context
 {
     [TestClass]
     public class ContextTests

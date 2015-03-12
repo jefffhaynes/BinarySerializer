@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test
+namespace BinarySerialization.Test
 {
     public abstract class TestBase
     {

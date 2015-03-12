@@ -1,6 +1,6 @@
 using BinarySerialization;
 
-namespace BinarySerializer.Test.Subtype
+namespace BinarySerialization.Test.Subtype
 {
     public class SubtypeClass
     {

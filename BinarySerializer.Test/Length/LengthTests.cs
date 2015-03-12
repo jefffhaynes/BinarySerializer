@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Length
+namespace BinarySerialization.Test.Length
 {
     [TestClass]
     public class LengthTests : TestBase

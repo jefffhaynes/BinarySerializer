@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 
-namespace BinarySerializer.Test.Order
+namespace BinarySerialization.Test.Order
 {
     public class OrderClass
     {

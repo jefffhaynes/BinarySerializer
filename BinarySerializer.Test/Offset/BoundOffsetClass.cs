@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 
-namespace BinarySerializer.Test.Offset
+namespace BinarySerialization.Test.Offset
 {
     public class BoundOffsetClass
     {

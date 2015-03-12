@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BinarySerialization;
 
-namespace BinarySerializer.Test.UntilItem
+namespace BinarySerialization.Test.UntilItem
 {
     public class UntilItemClass
     {

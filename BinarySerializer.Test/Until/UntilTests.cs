@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Until
+namespace BinarySerialization.Test.Until
 {
     [TestClass]
     public class UntilTests : TestBase

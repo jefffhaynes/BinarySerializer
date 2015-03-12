@@ -1,4 +1,4 @@
-﻿namespace BinarySerializer.Test.Misc
+﻿namespace BinarySerialization.Test.Misc
 {
     public class EmptyClass
     {

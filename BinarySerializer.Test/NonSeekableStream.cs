@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace BinarySerializer.Test
+namespace BinarySerialization.Test
 {
     /// <summary>
     /// Makes underlying stream appear as non-seekable.

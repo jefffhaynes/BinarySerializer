@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Streams
+namespace BinarySerialization.Test.Streams
 {
     [TestClass]
     public class StreamTests : TestBase

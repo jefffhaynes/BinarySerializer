@@ -1,6 +1,4 @@
-﻿using BinarySerialization;
-
-namespace BinarySerializer.Test.Count
+﻿namespace BinarySerialization.Test.Count
 {
     public class PrimitiveArrayBindingClass
     {

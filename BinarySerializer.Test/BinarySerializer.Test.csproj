@@ -6,7 +6,7 @@
     <ProjectGuid>{E6AC3910-60FE-4941-BF6B-FA8279927EC2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BinarySerializer.Test</RootNamespace>
+    <RootNamespace>BinarySerialization.Test</RootNamespace>
     <AssemblyName>BinarySerializer.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -55,6 +55,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BinarySerializerTests.cs" />
+    <Compile Include="Binding\CollectionBindingSourceClass.cs" />
+    <Compile Include="Binding\InvalidBindingTests.cs" />
     <Compile Include="CalciumCarbonate.cs" />
     <Compile Include="Cereal.cs" />
     <Compile Include="CerealShape.cs" />
@@ -67,6 +69,7 @@
     <Compile Include="Count\BoundCountClass.cs" />
     <Compile Include="Count\ConstCountClass.cs" />
     <Compile Include="Count\CountTests.cs" />
+    <Compile Include="Count\PrimitiveListBindingClass.cs" />
     <Compile Include="Count\PrimitiveArrayBindingClass.cs" />
     <Compile Include="Custom\CustomTests.cs" />
     <Compile Include="Custom\CustomWithContextClass.cs" />
@@ -78,6 +81,9 @@
     <Compile Include="Enums\BaseTypeEnumAsStringClass.cs" />
     <Compile Include="Enums\EnumTests.cs" />
     <Compile Include="Enums\NullableEnumClass.cs" />
+    <Compile Include="Events\EventTestClass.cs" />
+    <Compile Include="Events\EventTestInnerClass.cs" />
+    <Compile Include="Events\EventTests.cs" />
     <Compile Include="ItemLength\ItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemConstLengthClass.cs" />
     <Compile Include="ItemLength\ItemLengthListOfByteArrayClass.cs" />
@@ -100,6 +106,8 @@
     <Compile Include="Misc\LargeArrayTests.cs" />
     <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
     <Compile Include="Misc\NullTrailingMemberTests.cs" />
+    <Compile Include="Misc\ExtensionMethodTests.cs" />
+    <Compile Include="Primitives\ContainedStringClass.cs" />
     <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryChildClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryClass.cs" />

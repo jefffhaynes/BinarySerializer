@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Count
+namespace BinarySerialization.Test.Count
 {
     [TestClass]
     public class CountTests : TestBase
@@ -58,8 +58,21 @@ namespace BinarySerializer.Test.Count
         [TestMethod]
         public void PrimtiveConstCountMismatchTest()
         {
-            var actual = Roundtrip(new ConstCountClass<int> { Field = new List<int>(PrimitiveTestSequence.Take(2)) });
+            var actual = Roundtrip(new ConstCountClass<int>
+            {
+                Field = new List<int>(PrimitiveTestSequence.Take(2)),
+                Field2 = PrimitiveTestSequence.Take(2).ToArray()
+            });
             Assert.AreEqual(3, actual.Field.Count);
+        }
+
+        [TestMethod]
+        public void PrimitiveListBindingTest()
+        {
+            var expected = new PrimitiveListBindingClass { Ints = new List<int> { 1, 2, 3 } };
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Ints.Count, actual.ItemCount);
         }
 
         [TestMethod]
@@ -69,6 +82,24 @@ namespace BinarySerializer.Test.Count
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(expected.Ints.Length, actual.ItemCount);
+        }
+
+        [TestMethod]
+        public void NullListBindingTest()
+        {
+            var expected = new PrimitiveListBindingClass();
+            var actual = Roundtrip(expected);
+
+            Assert.IsNull(actual.Ints);
+        }
+
+        [TestMethod]
+        public void NullArrayBindingTest()
+        {
+            var expected = new PrimitiveArrayBindingClass();
+            var actual = Roundtrip(expected);
+
+            Assert.IsNull(actual.Ints);
         }
     }
 }

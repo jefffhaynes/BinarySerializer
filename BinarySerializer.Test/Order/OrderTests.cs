@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Order
+namespace BinarySerialization.Test.Order
 {
     [TestClass]
     public class OrderTests : TestBase

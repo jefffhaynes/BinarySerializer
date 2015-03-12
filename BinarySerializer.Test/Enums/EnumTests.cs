@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Enums
+namespace BinarySerialization.Test.Enums
 {
     [TestClass]
     public class EnumTests : TestBase

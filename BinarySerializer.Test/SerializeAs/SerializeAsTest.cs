@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.SerializeAs
+namespace BinarySerialization.Test.SerializeAs
 {
     [TestClass]
     public class SerializeAsTest : TestBase

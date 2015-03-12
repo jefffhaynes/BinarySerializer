@@ -58,6 +58,10 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override long CountOverride()
         {
             var list = (IList) Value;
+
+            if (list == null)
+                return 0;
+
             return list.Count;
         }
     }

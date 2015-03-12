@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using BinarySerialization;
 
-namespace BinarySerializer.Test
+namespace BinarySerialization.Test
 {
     public class NutritionalInformation
     {

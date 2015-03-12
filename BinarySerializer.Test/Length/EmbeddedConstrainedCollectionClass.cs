@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 
-namespace BinarySerializer.Test.Length
+namespace BinarySerialization.Test.Length
 {
     public class EmbeddedConstrainedCollectionClass
     {

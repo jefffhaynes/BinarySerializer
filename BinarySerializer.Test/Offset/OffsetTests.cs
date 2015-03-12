@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Offset
+namespace BinarySerialization.Test.Offset
 {
     [TestClass]
     public class OffsetTests : TestBase

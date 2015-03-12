@@ -217,22 +217,22 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected virtual long MeasureItemOverride()
         {
-            throw new NotSupportedException("Not a collection field.");
+            throw new InvalidOperationException("Not a collection field.");
         }
 
         protected virtual long CountOverride()
         {
-            throw new NotSupportedException("Not a collection field.");
+            throw new InvalidOperationException("Not a collection field.");
         }
 
         protected virtual Type GetValueTypeOverride()
         {
-            throw new NotSupportedException("Can't set subtypes on this field.");
+            throw new InvalidOperationException("Can't set subtypes on this field.");
         }
 
         protected virtual object GetLastItemValueOverride()
         {
-            throw new NotSupportedException("Not a collection field.");
+            throw new InvalidOperationException("Not a collection field.");
         }
 
         protected static bool ShouldTerminate(StreamLimiter stream)

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Primitives
+namespace BinarySerialization.Test.Primitives
 {
     [TestClass]
     public class PrimitiveTests : TestBase
@@ -95,6 +95,14 @@ namespace BinarySerializer.Test.Primitives
         {
             const string value = "hello";
             Roundtrip(value, System.Text.Encoding.UTF8.GetBytes(value));
+        }
+
+
+        [TestMethod]
+        public void NullTerminatedStringTest()
+        {
+            var container = new ContainedStringClass {Value = "hello"};
+            Roundtrip(container, container.Value.Length + 5);
         }
     }
 }

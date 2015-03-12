@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Encoding
+namespace BinarySerialization.Test.Encoding
 {
     [TestClass]
     public class EncodingTests : TestBase
