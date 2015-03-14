@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BinarySerialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test
@@ -11,7 +10,7 @@ namespace BinarySerialization.Test
     public class BinarySerializerTests
     {
         private const string Disclaimer = "This isn't really cereal";
-        private readonly BinarySerialization.BinarySerializer _serializer = new BinarySerialization.BinarySerializer();
+        private readonly BinarySerializer _serializer = new BinarySerializer();
 
         public BinarySerializerTests()
         {
@@ -28,47 +27,47 @@ namespace BinarySerialization.Test
             disclaimerStream.Position = 0;
 
             return new Cereal
+            {
+                IsLittleEndian = "false",
+                Name = "Cheerios",
+                Manufacturer = "General Mills",
+                NutritionalInformation = new NutritionalInformation
                 {
-                    IsLittleEndian = "false",
-                    Name = "Cheerios",
-                    Manufacturer = "General Mills",
-                    NutritionalInformation = new NutritionalInformation
-                        {
-                            Calories = 100,
-                            Fat = 1.5f,
-                            Cholesterol = 64,
-                            VitaminA = 2,
-                            VitaminB = 3,
-                            OtherNestedStuff = new List<string> {"it's", "got", "electrolytes"},
-                            OtherNestedStuff2 = new List<string> {"stuff", "plants", "crave"},
-                            Toys = new List<Toy>
-                                {
-                                    new Toy("Truck"),
-                                    new Toy("Godzilla"),
-                                    new Toy("EZ Bake Oven"),
-                                    new Toy("Bike", true)
-                                },
-                            WeirdOutlierLengthedField = "hihihihihi",
-                            Ingredients = new Ingredients
-                                {
-                                    MainIngredient = new Iron()
-                                }
-                        },
-                    DoubleField = 33.33333333,
-                    OtherStuff = new List<string> {"apple", "pear", "banana"},
-                    Shape = CerealShape.Circular,
-                    DefinitelyNotTheShape = CerealShape.Square,
-                    DontSerializeMe = "bro",
-                    SerializeMe = "!",
-                    Outlier = 0,
-                    ExplicitlyTerminatedList = new List<string> {"red", "white", "blue"},
-                    ImplicitlyTerminatedList =
-                        new List<CerealShape> {CerealShape.Circular, CerealShape.Circular, CerealShape.Square},
-                    ArrayOfInts = new[] {1, 2, 3},
-                    InvalidFieldLength = "oops",
-                    DisclaimerLength = disclaimerStream.Length,
-                    Disclaimer = disclaimerStream
-                };
+                    Calories = 100,
+                    Fat = 1.5f,
+                    Cholesterol = 64,
+                    VitaminA = 2,
+                    VitaminB = 3,
+                    OtherNestedStuff = new List<string> {"it's", "got", "electrolytes"},
+                    OtherNestedStuff2 = new List<string> {"stuff", "plants", "crave"},
+                    Toys = new List<Toy>
+                    {
+                        new Toy("Truck"),
+                        new Toy("Godzilla"),
+                        new Toy("EZ Bake Oven"),
+                        new Toy("Bike", true)
+                    },
+                    WeirdOutlierLengthedField = "hihihihihi",
+                    Ingredients = new Ingredients
+                    {
+                        MainIngredient = new Iron()
+                    }
+                },
+                DoubleField = 33.33333333,
+                OtherStuff = new List<string> {"apple", "pear", "banana"},
+                Shape = CerealShape.Circular,
+                DefinitelyNotTheShape = CerealShape.Square,
+                DontSerializeMe = "bro",
+                SerializeMe = "!",
+                Outlier = 0,
+                ExplicitlyTerminatedList = new List<string> {"red", "white", "blue"},
+                ImplicitlyTerminatedList =
+                    new List<CerealShape> {CerealShape.Circular, CerealShape.Circular, CerealShape.Square},
+                ArrayOfInts = new[] {1, 2, 3},
+                InvalidFieldLength = "oops",
+                DisclaimerLength = disclaimerStream.Length,
+                Disclaimer = disclaimerStream
+            };
         }
 
         [TestMethod]
@@ -161,7 +160,7 @@ namespace BinarySerialization.Test
         public void NonSeekableStreamSerializationTest()
         {
             var stream = new NonSeekableStream();
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
             serializer.Serialize(stream, new Iron());
         }
 
@@ -169,16 +168,16 @@ namespace BinarySerialization.Test
         public void NonSeekableStreamDeserializationTest()
         {
             var stream = new NonSeekableStream();
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
             serializer.Serialize(stream, new Iron());
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void NonSeekableStreamWithOffsetAttributeShouldThrowInvalidOperationException()
         {
             var stream = new NonSeekableStream();
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
             serializer.Serialize(stream, Cerealize());
         }
 
@@ -186,14 +185,14 @@ namespace BinarySerialization.Test
         [ExpectedException(typeof (ArgumentNullException))]
         public void NullStreamSerializationShouldThrowNullArgumentException()
         {
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
             serializer.Serialize(null, new object());
         }
 
         [TestMethod]
         public void NullGraphSerializationShouldSerializeNothing()
         {
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
             var stream = new MemoryStream();
             serializer.Serialize(stream, null);
             Assert.AreEqual(0, stream.Length);
@@ -214,7 +213,7 @@ namespace BinarySerialization.Test
         [TestMethod]
         public void UnresolvedSubtypeMemberDeserializationYieldsNull()
         {
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
             var ingredients = serializer.Deserialize<Ingredients>(new byte[] {0x4});
             Assert.AreEqual(null, ingredients.MainIngredient);
         }
@@ -224,7 +223,7 @@ namespace BinarySerialization.Test
         {
             var data = new byte[] {0x0, 0x1, 0x2, 0x3};
 
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
             var byteList = serializer.Deserialize<ImplictTermination>(data);
 
             Assert.AreEqual(4, byteList.Data.Count);
