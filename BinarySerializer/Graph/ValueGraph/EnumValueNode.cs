@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph

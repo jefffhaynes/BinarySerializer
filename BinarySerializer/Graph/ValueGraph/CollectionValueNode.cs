@@ -103,15 +103,15 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override long MeasureItemOverride()
         {
             var nullStream = new NullStream();
-            var streamKeeper = new StreamLimiter(nullStream);
+            var streamLimiter = new StreamLimiter(nullStream);
 
             var serializableChildren = GetSerializableChildren();
 
             var childLengths = serializableChildren.Select(child =>
             {
-                streamKeeper.RelativePosition = 0;
-                child.Serialize(streamKeeper, null);
-                return streamKeeper.RelativePosition;
+                streamLimiter.RelativePosition = 0;
+                child.Serialize(streamLimiter, null);
+                return streamLimiter.RelativePosition;
             }).ToList();
 
             if (!childLengths.Any())

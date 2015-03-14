@@ -210,9 +210,9 @@ namespace BinarySerialization.Graph.ValueGraph
         protected virtual long MeasureOverride()
         {
             var nullStream = new NullStream();
-            var streamKeeper = new StreamLimiter(nullStream);
-            Serialize(streamKeeper, null);
-            return streamKeeper.RelativePosition;
+            var streamLimiter = new StreamLimiter(nullStream);
+            Serialize(streamLimiter, null);
+            return streamLimiter.RelativePosition;
         }
 
         protected virtual long MeasureItemOverride()
