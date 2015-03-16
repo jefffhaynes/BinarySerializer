@@ -74,7 +74,7 @@
         SizedString,
 
         /// <summary>
-        /// A null (zero) terminated string.
+        /// An encoded string with a null (zero byte) termination.
         /// </summary>
         NullTerminatedString,
 
