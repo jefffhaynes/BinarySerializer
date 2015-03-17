@@ -140,6 +140,19 @@ namespace BinarySerialization.Graph.ValueGraph
                 if(eventShuttle != null)
                     eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, context);
             }
+
+            /* Check if we need to read past padding */
+            if (TypeNode.FieldLengthBinding != null)
+            {
+                var length = Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this));
+
+                if (length > stream.RelativePosition)
+                {
+                    var padLength = length - stream.RelativePosition;
+                    var pad = new byte[padLength];
+                    stream.Read(pad, 0, pad.Length);
+                }
+            }
         }
 
         protected override Type GetValueTypeOverride()

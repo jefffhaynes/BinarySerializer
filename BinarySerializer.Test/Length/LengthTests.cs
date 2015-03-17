@@ -113,13 +113,20 @@ namespace BinarySerialization.Test.Length
                 InnerClass = new PaddedLengthClassInnerClass
                 {
                     Value = "hello"
+                },
+
+                InnerClass2 = new PaddedLengthClassInnerClass
+                {
+                    Value = "world"
                 }
             };
 
-            var actual = Roundtrip(expected, 20);
+            var actual = Roundtrip(expected, 40);
 
             Assert.AreEqual(expected.InnerClass.Value, actual.InnerClass.Value);
             Assert.AreEqual(expected.InnerClass.Value.Length, actual.InnerClass.ValueLength);
+            Assert.AreEqual(expected.InnerClass2.Value, actual.InnerClass2.Value);
+            Assert.AreEqual(expected.InnerClass2.Value.Length, actual.InnerClass2.ValueLength);
         }
 
         [TestMethod]

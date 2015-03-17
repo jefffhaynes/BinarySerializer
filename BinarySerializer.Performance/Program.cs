@@ -20,11 +20,34 @@ namespace BinarySerializerTester
         }
     }
 
+    public class Entry
+    {
+        [FieldOrder(0)]
+        public byte Length { get; set; }
+
+        [FieldOrder(1)]
+        [FieldLength("Length")]
+        public string Value { get; set; }
+    }
+
+    public class ElementClass
+    {
+        [FieldOrder(0)]
+        [FieldLength(20)]
+        public Entry Entry1 { get; set; }
+
+        [FieldOrder(1)]
+        [FieldLength(20)]
+        public Entry Entry2 { get; set; }
+
+        // etc
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            var test = new BinarySerialization.Test.BinarySerializerTests();
+            //var test = new BinarySerialization.Test.BinarySerializerTests();
 
             //Enumerable.Range(0, 10000).AsParallel().ForAll(i =>
             //{
@@ -32,20 +55,20 @@ namespace BinarySerializerTester
             //    Console.WriteLine(i);
             //});
 
-            for (int i = 0; i < 10000; i++)
-            {
-                test.Roundtrip();
-            }
-
-            //var ser = new BinarySerialization.BinarySerializer();
-            //var arr = new SmallCase();
-            //byte[] data;
-
-            //using (var ms = new MemoryStream())
+            //for (int i = 0; i < 10000; i++)
             //{
-            //    ser.Serialize(ms, arr);
-            //    data = ms.ToArray();
+            //    test.Roundtrip();
             //}
+
+            var ser = new BinarySerialization.BinarySerializer();
+            var arr = new ElementClass();
+            byte[] data;
+
+            using (var ms = new MemoryStream())
+            {
+                ser.Serialize(ms, arr);
+                data = ms.ToArray();
+            }
 
             //for (int i = 0; i < 1000; i++)
             //{
