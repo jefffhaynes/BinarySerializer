@@ -54,6 +54,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AssemblyLoader.cs" />
+    <Compile Include="Converters\WhereNotIgnoredConverter.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ViewModels\ClassViewModel.cs" />
     <Compile Include="ViewModels\ObjectViewModel.cs" />

@@ -4,9 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:typeGraph="clr-namespace:BinarySerialization.Graph.TypeGraph;assembly=BinarySerializer"
+        xmlns:converters="clr-namespace:BinarySerializer.Editor.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525" >
     <Window.Resources>
+        <converters:WhereNotIgnoredConverter x:Key="WhereNotIgnoredConverter"/>
+        
         <DataTemplate DataType="{x:Type typeGraph:RootTypeNode}">
             <ContentPresenter Content="{Binding Child}"/>
         </DataTemplate>
@@ -14,7 +17,48 @@
             <TextBlock Text="{Binding Type.Name}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type typeGraph:EnumTypeNode}">
-            <TextBlock Text="Enum values..."/>
+            <ContentPresenter Content="{Binding}">
+                <ContentPresenter.Style>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <DataGrid ItemsSource="{Binding EnumInfo.EnumValues}" AutoGenerateColumns="False" HeadersVisibility="None">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Binding="{Binding Key}" />
+                                            <DataGridTextColumn Binding="{Binding Value}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding EnumInfo.EnumValues}" Value="{x:Null}">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding UnderlyingEnumValues}"
+                                                      CanUserResizeColumns="False" CanUserResizeRows="False" HeadersVisibility="None">
+                                                <DataGrid.Columns>
+                                                    <DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate >
+                                                                <TextBlock Text="{Binding Mode=OneWay, StringFormat=\{0:D\}}"/>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTextColumn Binding="{Binding}" />
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentPresenter.Style>
+            </ContentPresenter>
+         
         </DataTemplate>
         <DataTemplate DataType="{x:Type typeGraph:UnknownTypeNode}">
             <TextBlock Text="Unknown (object)"/>
@@ -44,11 +88,10 @@
                     </Style>
                 </DataGrid.RowHeaderStyle>
                 <DataGrid.Columns>
-                    <!--<DataGridTextColumn Binding="{Binding Key}" Header="Key"/>-->
                     <DataGridTemplateColumn Header="Subtype">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <DataGrid ItemsSource="{Binding Value}" AutoGenerateColumns="False" HeadersVisibility="None">
+                                <DataGrid ItemsSource="{Binding Value, Converter={StaticResource WhereNotIgnoredConverter}}" AutoGenerateColumns="False" HeadersVisibility="None">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Type" Binding="{Binding Name}"/>
                                         <DataGridTemplateColumn>

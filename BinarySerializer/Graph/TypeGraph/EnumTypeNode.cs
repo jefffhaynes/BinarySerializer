@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BinarySerialization.Graph.ValueGraph;
@@ -24,14 +25,17 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public EnumInfo EnumInfo { get; private set; }
 
+        public IEnumerable<Enum> UnderlyingEnumValues
+        {
+            get { return Enum.GetValues(Type).Cast<Enum>(); }
+        }
+
         private void InitializeEnumValues()
         {
             var serializedType = GetSerializedType();
 
-            var values = Enum.GetValues(Type).Cast<Enum>();
-
             /* Get enum attributes */
-            var enumAttributes = values.ToDictionary(value => value, value =>
+            var enumAttributes = UnderlyingEnumValues.ToDictionary(value => value, value =>
             {
                 var memberInfo = Type.GetMember(value.ToString()).Single();
                 return (SerializeAsEnumAttribute) memberInfo.GetCustomAttributes(
