@@ -14,7 +14,7 @@
             <TextBlock Text="{Binding Type.Name}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type typeGraph:EnumTypeNode}">
-            <TextBlock Text="{Binding}"/>
+            <TextBlock Text="Enum values..."/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type typeGraph:UnknownTypeNode}">
             <TextBlock Text="Unknown (object)"/>
@@ -26,6 +26,9 @@
                         <Setter Property="ItemsSource" Value="{Binding KeysAndChildren}"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding SubtypeAttributes}" Value="{x:Null}">
+                                <Setter Property="ItemsSource" Value="{Binding TypeChildren}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SubtypeAttributes.Count}" Value="0">
                                 <Setter Property="ItemsSource" Value="{Binding TypeChildren}"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -42,7 +45,7 @@
                             <Border BorderBrush="Black" BorderThickness="0,0,0,1">
                                 <TextBlock Text="{Binding Key}"/>
                             </Border>
-                            <DataGrid Grid.Row="1" ItemsSource="{Binding Value}" AutoGenerateColumns="False" HeadersVisibility="All">
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding Value}" AutoGenerateColumns="False" HeadersVisibility="None">
                                 <DataGrid.CellStyle>
                                     <Style TargetType="DataGridCell">
                                         <Setter Property="Padding" Value="0"/>
