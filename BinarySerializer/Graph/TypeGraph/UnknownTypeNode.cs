@@ -4,7 +4,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal class UnknownTypeNode : TypeNode
+    public class UnknownTypeNode : TypeNode
     {
         public UnknownTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
@@ -14,7 +14,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new UnknownValueNode(parent, Name, this);
         }

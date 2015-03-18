@@ -1,6 +1,6 @@
 ﻿namespace BinarySerialization.Graph
 {
-    internal class ConditionalBinding : Binding
+    public class ConditionalBinding : Binding
     {
         public ConditionalBinding(SerializeWhenAttribute attribute, int level)
             : base(attribute, level)

@@ -1,0 +1,96 @@
+﻿<Window x:Class="BinarySerializer.Editor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:typeGraph="clr-namespace:BinarySerialization.Graph.TypeGraph;assembly=BinarySerializer"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525" >
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type typeGraph:RootTypeNode}">
+            <ContentPresenter Content="{Binding Child}"/>
+       </DataTemplate>
+        <DataTemplate DataType="{x:Type typeGraph:ValueTypeNode}">
+            <TextBlock Text="{Binding Type.Name}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type typeGraph:EnumTypeNode}">
+            <TextBlock Text="{Binding}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type typeGraph:UnknownTypeNode}">
+            <TextBlock Text="Unknown (object)"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type typeGraph:ObjectTypeNode}">
+            <ListView>
+                <ListView.Style>
+                    <Style TargetType="ListView">
+                        <Setter Property="ItemsSource" Value="{Binding KeysAndChildren}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SubtypeAttributes}" Value="{x:Null}">
+                                <Setter Property="ItemsSource" Value="{Binding TypeChildren}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.Style>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <Border BorderBrush="Black" BorderThickness="0,0,0,1">
+                                <TextBlock Text="{Binding Key}"/>
+                            </Border>
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding Value}" AutoGenerateColumns="False" HeadersVisibility="All">
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="Margin" Value="0"/>
+                                    </Style>
+                                </DataGrid.CellStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Type" Binding="{Binding Name}"/>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ContentPresenter Content="{Binding}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20*"/>
+            <ColumnDefinition Width="80*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Name="AddAssmeblyButton" Click="AddAssmeblyButton_OnClick">
+                <Path Data="M24.434036,27.468077L24.434036,31.645754 20.254164,31.645754 20.254164,33.732941 24.434036,33.732941 24.434036,37.911316 26.519873,37.911316 26.519873,33.732941 30.699045,33.732941 30.699045,31.645754 26.519873,31.645754 26.519873,27.468077z M25.27775,23.762999C30.028532,23.762999 33.880001,27.614477 33.880001,32.36375 33.880001,37.114922 30.028532,40.966 25.27775,40.966 20.527668,40.966 16.676001,37.114922 16.676001,32.36375 16.676001,27.614477 20.527668,23.762999 25.27775,23.762999z M3.6816251,20.981438L3.6816251,22.724358 15.914062,22.724358 15.914062,20.981438z M3.6816251,13.428652L3.6816251,15.171572 21.208984,15.171572 21.208984,13.428652z M18.205,1.2339997L23.716999,7.0999999 19.367243,7.0999999C18.725819,7.0999999,18.205,6.5792465,18.205,5.938612z M2.5176203,0L16.526064,0 16.526064,6.2625213C16.526064,7.6524267,17.654369,8.7801294,19.044975,8.7801294L24.919998,8.7801294 24.919998,21.413042C19.037775,21.604445 14.309856,26.437799 14.309856,32.364365 14.309856,33.456879 14.475257,34.510189 14.774158,35.507L2.5176203,35.507C1.1282744,35.507,-2.433697E-08,34.37999,0,32.989372L0,2.5176086C-2.433697E-08,1.1264727,1.1282744,0,2.5176203,0z" Stretch="Uniform" Fill="#0079CB" Width="26" Height="26" />
+            </Button>
+        </Grid>
+
+        <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Objects}" DisplayMemberPath="Type.Name" SelectionMode="Single" SelectedValue="{Binding SelectedObject, Mode=TwoWay}"/>
+        <GridSplitter Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="6"/>
+
+        <ScrollViewer Grid.Column="1" Grid.Row="1" >
+            <ContentPresenter Content="{Binding SelectedTypeNode}"/>
+        </ScrollViewer>
+    </Grid>
+</Window>

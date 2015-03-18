@@ -5,7 +5,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal class ValueTypeNode : TypeNode
+    public class ValueTypeNode : TypeNode
     {
         protected static readonly Dictionary<Type, Func<object, object>> TypeConverters =
             new Dictionary<Type, Func<object, object>>
@@ -33,7 +33,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new ValueValueNode(parent, Name, this);
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal class EnumInfo
+    public class EnumInfo
     {
         public Type UnderlyingType { get; set; }
 

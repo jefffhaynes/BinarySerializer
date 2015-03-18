@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal abstract class ContainerTypeNode : TypeNode
+    public abstract class ContainerTypeNode : TypeNode
     {
         protected ContainerTypeNode(TypeNode parent, Type type)
             : base(parent, type)

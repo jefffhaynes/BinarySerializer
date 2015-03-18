@@ -29,7 +29,7 @@ namespace BinarySerialization.Graph.TypeGraph
             return collectionType.GetGenericArguments().Single();
         }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             if(ChildType.IsPrimitive)
                 return new PrimitiveListValueNode(parent, Name, this);

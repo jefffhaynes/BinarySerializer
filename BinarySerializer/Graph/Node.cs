@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BinarySerialization.Graph
 {
-    internal abstract class Node
+    public abstract class Node
     {
         protected Node(Node parent)
         {

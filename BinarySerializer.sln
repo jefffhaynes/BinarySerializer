@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 		BinarySerializer.Docs\SimpleBinding_2.png = BinarySerializer.Docs\SimpleBinding_2.png
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializer.Editor", "BinarySerializer.Editor\BinarySerializer.Editor.csproj", "{38E2362C-452B-4B28-97EA-8706D83066CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,16 @@ Global
 		{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}.Release|x86.ActiveCfg = Release|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{38E2362C-452B-4B28-97EA-8706D83066CA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

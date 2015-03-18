@@ -5,7 +5,7 @@ namespace BinarySerialization
     /// <summary>
     /// Implemented by attributes that support field binding.
     /// </summary>
-	internal interface IBindableFieldAttribute
+    public interface IBindableFieldAttribute
     {
         /// <summary>
         /// The field binding.

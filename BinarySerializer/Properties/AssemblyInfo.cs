@@ -30,3 +30,4 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("BinarySerializer.Test")]
 [assembly: InternalsVisibleTo("BinarySerializer.Performance")]
+[assembly: InternalsVisibleTo("BinarySerializer.Editor")]

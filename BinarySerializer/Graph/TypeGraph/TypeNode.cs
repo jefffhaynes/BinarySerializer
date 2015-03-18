@@ -8,7 +8,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal abstract class TypeNode : Node
+    public abstract class TypeNode : Node
     {
         public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
             new Dictionary<Type, SerializedType>
@@ -267,7 +267,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-        public abstract ValueNode CreateSerializerOverride(ValueNode parent);
+        internal abstract ValueNode CreateSerializerOverride(ValueNode parent);
 
         public int GetBindingLevel(BindingInfo binding)
         {

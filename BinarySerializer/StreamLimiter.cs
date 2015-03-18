@@ -3,7 +3,7 @@ using System.IO;
 
 namespace BinarySerialization
 {
-    internal class StreamLimiter : Stream
+    public class StreamLimiter : Stream
     {
         private readonly bool _canSeek;
         private readonly long _length;

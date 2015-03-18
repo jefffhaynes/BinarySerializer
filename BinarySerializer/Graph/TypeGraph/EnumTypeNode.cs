@@ -5,7 +5,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal class EnumTypeNode : ValueTypeNode
+    public class EnumTypeNode : ValueTypeNode
     {
         public EnumTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
@@ -17,7 +17,7 @@ namespace BinarySerialization.Graph.TypeGraph
             InitializeEnumValues();
         }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new EnumValueNode(parent, Name, this);
         }

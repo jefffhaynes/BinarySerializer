@@ -7,7 +7,7 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal abstract class ValueNode : Node
+    public abstract class ValueNode : Node
     {
         private const char PathSeparator = '.';
 
