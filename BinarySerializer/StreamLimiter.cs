@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BinarySerialization
 {
@@ -28,6 +30,28 @@ namespace BinarySerialization
         }
 
         public long RelativePosition { get; set; }
+
+        public long GlobalRelativePosition
+        {
+            get
+            {
+                return Ancestors.Sum(limiter => limiter.RelativePosition);
+            }
+        }
+
+        private IEnumerable<StreamLimiter> Ancestors
+        {
+            get
+            {
+                var parent = this;
+
+                while (parent != null)
+                {
+                    yield return parent;
+                    parent = parent.Source as StreamLimiter;
+                }
+            }
+        }
 
         /// <summary>
         ///     The underlying source <see cref="Stream" />.
