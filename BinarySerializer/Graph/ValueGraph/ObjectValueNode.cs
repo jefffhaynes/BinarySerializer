@@ -77,12 +77,12 @@ namespace BinarySerialization.Graph.ValueGraph
             foreach (var child in serializableChildren)
             {
                 if (eventShuttle != null)
-                    eventShuttle.OnMemberSerializing(this, child.Name, serializationContext);
+                    eventShuttle.OnMemberSerializing(this, child.Name, serializationContext, GetOffset(stream));
 
                 child.Serialize(stream, eventShuttle);
 
                 if (eventShuttle != null)
-                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContext);
+                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContext, GetOffset(stream));
             }
 
             /* Check if we need to pad out object */
@@ -130,7 +130,7 @@ namespace BinarySerialization.Graph.ValueGraph
             foreach (var child in GetSerializableChildren())
             {
                 if(eventShuttle != null)
-                    eventShuttle.OnMemberDeserializing(this, child.Name, context);
+                    eventShuttle.OnMemberDeserializing(this, child.Name, context, GetOffset(stream));
 
                 if (ShouldTerminate(stream))
                     break;
@@ -138,7 +138,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 child.Deserialize(stream, eventShuttle);
 
                 if(eventShuttle != null)
-                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, context);
+                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, context, GetOffset(stream));
             }
 
             /* Check if we need to read past padding */
@@ -158,6 +158,23 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override Type GetValueTypeOverride()
         {
             return _valueType;
+        }
+
+        private static long GetOffset(StreamLimiter streamLimiter)
+        {
+            var ancestors = GetStreamLimiterAncestry(streamLimiter);
+            return ancestors.Sum(limiter => limiter.RelativePosition);
+        }
+
+        private static IEnumerable<StreamLimiter> GetStreamLimiterAncestry(StreamLimiter decendant)
+        {
+            var parent = decendant;
+
+            while (parent != null)
+            {
+                yield return parent;
+                parent = parent.Source as StreamLimiter;
+            }
         }
     }
 }

@@ -12,7 +12,8 @@ namespace BinarySerialization
         /// <param name="memberName">The name of the member.</param>
         /// <param name="value">The value of the member.</param>
         /// <param name="context">The current serialization context.</param>
-        public MemberSerializedEventArgs(string memberName, object value, BinarySerializationContext context) : base(memberName, context)
+        /// <param name="offset">The current offset in the stream relative to the start of the overall operation.</param>
+        public MemberSerializedEventArgs(string memberName, object value, BinarySerializationContext context, long offset) : base(memberName, context, offset)
         {
             Value = value;
         }

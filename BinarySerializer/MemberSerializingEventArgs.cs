@@ -12,10 +12,12 @@ namespace BinarySerialization
         /// </summary>
         /// <param name="memberName">The name of the member.</param>
         /// <param name="context">The current serialization context.</param>
-        public MemberSerializingEventArgs(string memberName, BinarySerializationContext context)
+        /// <param name="offset">The current offset in the stream relative to the start of the overall operation.</param>
+        public MemberSerializingEventArgs(string memberName, BinarySerializationContext context, long offset)
         {
             MemberName = memberName;
             Context = context;
+            Offset = offset;
         }
 
         /// <summary>
@@ -27,5 +29,7 @@ namespace BinarySerialization
         /// The current serialization context.
         /// </summary>
         public BinarySerializationContext Context { get; private set; }
+
+        public long Offset { get; private set; }
     }
 }

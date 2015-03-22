@@ -24,32 +24,32 @@ namespace BinarySerialization.Graph.ValueGraph
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 
-        public void OnMemberSerialized(ValueNode sender, string name, object value, BinarySerializationContext context)
+        public void OnMemberSerialized(ValueNode sender, string name, object value, BinarySerializationContext context, long offset)
         {
             var handle = MemberSerialized;
             if(handle != null)
-                handle(sender, new MemberSerializedEventArgs(name, value, context));
+                handle(sender, new MemberSerializedEventArgs(name, value, context, offset));
         }
 
-        public void OnMemberDeserialized(ValueNode sender, string name, object value, BinarySerializationContext context)
+        public void OnMemberDeserialized(ValueNode sender, string name, object value, BinarySerializationContext context, long offset)
         {
             var handle = MemberDeserialized;
             if (handle != null)
-                handle(sender, new MemberSerializedEventArgs(name, value, context));
+                handle(sender, new MemberSerializedEventArgs(name, value, context, offset));
         }
 
-        public void OnMemberSerializing(ValueNode sender, string name, BinarySerializationContext context)
+        public void OnMemberSerializing(ValueNode sender, string name, BinarySerializationContext context, long offset)
         {
             var handle = MemberSerializing;
             if (handle != null)
-                handle(sender, new MemberSerializingEventArgs(name, context));
+                handle(sender, new MemberSerializingEventArgs(name, context, offset));
         }
 
-        public void OnMemberDeserializing(ValueNode sender, string name, BinarySerializationContext context)
+        public void OnMemberDeserializing(ValueNode sender, string name, BinarySerializationContext context, long offset)
         {
             var handle = MemberDeserializing;
             if (handle != null)
-                handle(sender, new MemberSerializingEventArgs(name, context));
+                handle(sender, new MemberSerializingEventArgs(name, context, offset));
         }
     }
 }

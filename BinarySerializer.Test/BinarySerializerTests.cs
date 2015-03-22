@@ -141,7 +141,7 @@ namespace BinarySerialization.Test
                     _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
 
-            //Console.WriteLine("write {0}: {1}", e.MemberName, e.Value);
+            Console.WriteLine("write {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
         }
 
         private void SerializerMemberDeserialized(object sender, MemberSerializedEventArgs e)
@@ -153,7 +153,7 @@ namespace BinarySerialization.Test
                     _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
 
-            //Console.WriteLine("read {0}: {1}", e.MemberName, e.Value);
+            Console.WriteLine("read {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
         }
 
         [TestMethod]

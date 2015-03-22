@@ -460,27 +460,27 @@ Here is an example implementation of basic tracing for the serialization and des
     private static void OnMemberSerializing(object sender, MemberSerializingEventArgs e)
     {
         Console.CursorLeft = e.Context.Depth * 4;
-        Console.WriteLine("S-Start: {0}", e.MemberName);
+        Console.WriteLine("S-Start: {0} @ {1}", e.MemberName, e.Offset);
     }
 
     private static void OnMemberSerialized(object sender, MemberSerializedEventArgs e)
     {
         Console.CursorLeft = e.Context.Depth * 4;
         var value = e.Value ?? "null";
-        Console.WriteLine("S-End: {0} ({1})", e.MemberName, value);
+        Console.WriteLine("S-End: {0} ({1}) @ {2}", e.MemberName, value, e.Offset);
     }
 
     private static void OnMemberDeserializing(object sender, MemberSerializingEventArgs e)
     {
         Console.CursorLeft = e.Context.Depth * 4;
-        Console.WriteLine("D-Start: {0}", e.MemberName);
+        Console.WriteLine("D-Start: {0} @ {1}", e.MemberName, e.Offset);
     }
 
     private static void OnMemberDeserialized(object sender, MemberSerializedEventArgs e)
     {
         Console.CursorLeft = e.Context.Depth * 4;
         var value = e.Value ?? "null";
-        Console.WriteLine("D-End: {0} ({1})", e.MemberName, value);
+        Console.WriteLine("D-End: {0} ({1}) @ {2}", e.MemberName, value, e.Offset);
     }
 
     
