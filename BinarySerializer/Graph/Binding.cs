@@ -68,7 +68,8 @@ namespace BinarySerialization.Graph
                 return _constValue;
 
             var source = GetSource(target);
-            return Convert(source.Value, target.CreateSerializationContext());
+
+            return ValueConverter == null ? source.Value : Convert(source.Value, target.CreateSerializationContext());
         }
 
         public object GetBoundValue(ValueNode target)
@@ -83,7 +84,9 @@ namespace BinarySerialization.Graph
             if(bindingSource == null)
                 throw new InvalidOperationException("Not a bindable source.");
 
-            return Convert(bindingSource.BoundValue, target.CreateSerializationContext());
+            return ValueConverter == null
+                ? bindingSource.BoundValue
+                : Convert(bindingSource.BoundValue, target.CreateSerializationContext());
         }
 
         public ValueNode GetSource(ValueNode target)
@@ -102,8 +105,6 @@ namespace BinarySerialization.Graph
                     source = target.Parent;
                     break;
                 case RelativeSourceMode.FindAncestor:
-                    source = FindAncestor(target);
-                    break;
                 case RelativeSourceMode.SerializationContext:
                     source = FindAncestor(target);
                     break;
@@ -141,22 +142,21 @@ namespace BinarySerialization.Graph
                 return;
 
             var source = GetSource(target);
-            source.TargetBindings.Add(() => ConvertBack(callback(), target.CreateSerializationContext()));
+
+            Func<object> finalCallback = ValueConverter == null
+                ? callback
+                : () => ConvertBack(callback(), target.CreateSerializationContext());
+
+            source.TargetBindings.Add(finalCallback);
         }
 
         private object Convert(object value, BinarySerializationContext context)
         {
-            if (ValueConverter == null)
-                return value;
-
             return ValueConverter.Convert(value, ConverterParameter, context);
         }
 
         private object ConvertBack(object value, BinarySerializationContext context)
         {
-            if (ValueConverter == null)
-                return value;
-
             return ValueConverter.ConvertBack(value, ConverterParameter, context);
         }
     }
