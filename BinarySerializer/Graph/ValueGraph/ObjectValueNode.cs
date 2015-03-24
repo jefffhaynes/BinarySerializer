@@ -72,17 +72,17 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var serializableChildren = GetSerializableChildren();
 
-            var serializationContext = CreateSerializationContext();
+            var serializationContextLazy = new Lazy<BinarySerializationContext>(CreateSerializationContext);
 
             foreach (var child in serializableChildren)
             {
-                if (eventShuttle != null)
-                    eventShuttle.OnMemberSerializing(this, child.Name, serializationContext, stream.GlobalRelativePosition);
+                if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
+                    eventShuttle.OnMemberSerializing(this, child.Name, serializationContextLazy.Value, stream.GlobalRelativePosition);
 
                 child.Serialize(stream, eventShuttle);
 
-                if (eventShuttle != null)
-                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContext, stream.GlobalRelativePosition);
+                if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
+                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContextLazy.Value, stream.GlobalRelativePosition);
             }
 
             /* Check if we need to pad out object */
@@ -125,20 +125,20 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeChildren = typeNode.GetTypeChildren(_valueType);
             Children = new List<ValueNode>(typeChildren.Select(child => child.CreateSerializer(this)));
 
-            var context = CreateSerializationContext();
+            var serializationContextLazy = new Lazy<BinarySerializationContext>(CreateSerializationContext);
 
             foreach (var child in GetSerializableChildren())
             {
-                if(eventShuttle != null)
-                    eventShuttle.OnMemberDeserializing(this, child.Name, context, stream.GlobalRelativePosition);
+                if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
+                    eventShuttle.OnMemberDeserializing(this, child.Name, serializationContextLazy.Value, stream.GlobalRelativePosition);
 
                 if (ShouldTerminate(stream))
                     break;
 
                 child.Deserialize(stream, eventShuttle);
 
-                if(eventShuttle != null)
-                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, context, stream.GlobalRelativePosition);
+                if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
+                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, serializationContextLazy.Value, stream.GlobalRelativePosition);
             }
 
             /* Check if we need to read past padding */

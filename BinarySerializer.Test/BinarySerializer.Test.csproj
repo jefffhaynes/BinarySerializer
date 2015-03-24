@@ -82,6 +82,9 @@
     <Compile Include="Events\EventTestClass.cs" />
     <Compile Include="Events\EventTestInnerClass.cs" />
     <Compile Include="Events\EventTests.cs" />
+    <Compile Include="Issues\Issue9\ElementClass.cs" />
+    <Compile Include="Issues\Issue9\Entry.cs" />
+    <Compile Include="Issues\Issue9\Issue9Tests.cs" />
     <Compile Include="ItemLength\ItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemConstLengthClass.cs" />
     <Compile Include="ItemLength\ItemLengthListOfByteArrayClass.cs" />

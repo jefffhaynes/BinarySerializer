@@ -1,6 +1,7 @@
 ﻿using System;
+using BinarySerialization.Graph.ValueGraph;
 
-namespace BinarySerialization.Graph.ValueGraph
+namespace BinarySerialization
 {
     internal class EventShuttle
     {
@@ -23,6 +24,16 @@ namespace BinarySerialization.Graph.ValueGraph
         ///     Occurrs before a member has been deserialized.
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
+
+        public bool HasSerializationSubscribers
+        {
+            get { return MemberSerializing != null || MemberSerialized != null; }
+        }
+
+        public bool HasDeserializationSubscribers
+        {
+            get { return MemberDeserializing != null || MemberDeserialized != null; }
+        }
 
         public void OnMemberSerialized(ValueNode sender, string name, object value, BinarySerializationContext context, long offset)
         {
