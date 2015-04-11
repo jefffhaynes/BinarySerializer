@@ -25,7 +25,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var list = (IList)Activator.CreateInstance(typeNode.Type);
 
-                foreach (var child in Children)
+                foreach (var child in ValueChildren)
                     list.Add(child.Value);
 
                 return list;

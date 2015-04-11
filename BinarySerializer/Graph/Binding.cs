@@ -67,7 +67,7 @@ namespace BinarySerialization.Graph
             if (IsConst)
                 return _constValue;
 
-            var source = GetSource(target);
+            var source = (ValueNode)GetSource(target);
             return Convert(source.Value, target.CreateSerializationContext());
         }
 
@@ -86,9 +86,9 @@ namespace BinarySerialization.Graph
             return Convert(bindingSource.BoundValue, target.CreateSerializationContext());
         }
 
-        public ValueNode GetSource(ValueNode target)
+        public Node GetSource(Node target)
         {
-            var relativeSource = (ValueNode) GetRelativeSource(target);
+            var relativeSource = GetRelativeSource(target);
             return relativeSource.GetChild(Path);
         }
 

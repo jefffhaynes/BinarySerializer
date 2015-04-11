@@ -54,7 +54,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 IEnumerable<TypeNode> typeChildren = typeNode.GetTypeChildren(valueType);
 
-                Children = new List<ValueNode>(typeChildren.Select(child => child.CreateSerializer(this)));
+                Children = new List<Node>(typeChildren.Select(child => child.CreateSerializer(this)));
 
                 var serializableChildren = GetSerializableChildren();
 
@@ -123,7 +123,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeNode = (ObjectTypeNode)TypeNode;
 
             var typeChildren = typeNode.GetTypeChildren(_valueType);
-            Children = new List<ValueNode>(typeChildren.Select(child => child.CreateSerializer(this)));
+            Children = new List<Node>(typeChildren.Select(child => child.CreateSerializer(this)));
 
             var context = CreateSerializationContext();
 

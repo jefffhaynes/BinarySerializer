@@ -9,19 +9,19 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     public abstract class ValueNode : Node
     {
-        private const char PathSeparator = '.';
-
         protected ValueNode(Node parent, string name, TypeNode typeNode) : base(parent)
         {
             Name = name;
             TypeNode = typeNode;
-            Children = new List<ValueNode>();
+            Children = new List<Node>();
+        }
+
+        public IEnumerable<ValueNode> ValueChildren
+        {
+            get { return Children.Cast<ValueNode>(); }
         }
 
         public TypeNode TypeNode { get; set; }
-
-        public List<ValueNode> Children { get; set; }
-
 
         public virtual Encoding Encoding
         {
@@ -95,7 +95,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected IEnumerable<ValueNode> GetSerializableChildren()
         {
-            return Children.Where(child => child.TypeNode.IgnoreAttribute == null);
+            return ValueChildren.Where(child => child.TypeNode.IgnoreAttribute == null);
         }
 
         public void Serialize(StreamLimiter stream, EventShuttle eventShuttle)
@@ -179,24 +179,6 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public abstract void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle);
 
-        public ValueNode GetChild(string path)
-        {
-            string[] memberNames = path.Split(PathSeparator);
-
-            if (!memberNames.Any())
-                throw new BindingException("Path cannot be empty.");
-
-            ValueNode child = this;
-            foreach (string name in memberNames)
-            {
-                child = child.Children.SingleOrDefault(c => c.Name == name);
-
-                if (child == null)
-                    throw new BindingException(string.Format("No field found at '{0}'.", path));
-            }
-
-            return child;
-        }
 
         public virtual BinarySerializationContext CreateSerializationContext()
         {

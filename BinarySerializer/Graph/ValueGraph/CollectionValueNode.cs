@@ -79,7 +79,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (TypeNode.ItemSerializeUntilBinding != null)
                 {
                     var itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
-                    var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
+                    var itemTerminationChild = (ValueNode)child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
 
                     if (itemTerminationChild.Value.Equals(itemTerminationValue))
                     {

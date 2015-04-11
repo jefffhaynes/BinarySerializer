@@ -34,18 +34,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        //public override Node Parent
-        //{
-        //    get
-        //    {
-        //        var parent = base.Parent;
-        //        return parent.Parent;
-        //    }
-        //}
-
         protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
-            foreach(var child in Children)
+            foreach(var child in ValueChildren)
                 child.Serialize(stream, eventShuttle);
         }
 
