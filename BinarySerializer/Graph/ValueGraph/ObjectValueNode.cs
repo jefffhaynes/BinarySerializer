@@ -30,7 +30,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (_valueType.IsAbstract)
                     return null;
 
-                var value = Activator.CreateInstance(_valueType);
+                var objectTypeNode = (ObjectTypeNode) TypeNode;
+                var subType = objectTypeNode.GetSubType(_valueType);
+
+                if (subType.ParameterlessConstructor == null)
+                    throw new InvalidOperationException("No parameterless constructor.");
+
+                var value = subType.ParameterlessConstructor.Invoke(null);
 
                 var serializableChildren = GetSerializableChildren();
 
@@ -52,9 +58,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var valueType = value.GetType();
 
-                IEnumerable<TypeNode> typeChildren = typeNode.GetTypeChildren(valueType);
+                var subTypes = typeNode.GetSubType(valueType);
 
-                Children = new List<ValueNode>(typeChildren.Select(child => child.CreateSerializer(this)));
+                Children = new List<ValueNode>(subTypes.Children.Select(child => child.CreateSerializer(this)));
 
                 var serializableChildren = GetSerializableChildren();
 
@@ -122,8 +128,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var typeNode = (ObjectTypeNode)TypeNode;
 
-            var typeChildren = typeNode.GetTypeChildren(_valueType);
-            Children = new List<ValueNode>(typeChildren.Select(child => child.CreateSerializer(this)));
+            var subType = typeNode.GetSubType(_valueType);
+            Children = new List<ValueNode>(subType.Children.Select(child => child.CreateSerializer(this)));
 
             var serializationContextLazy = new Lazy<BinarySerializationContext>(CreateSerializationContext);
 

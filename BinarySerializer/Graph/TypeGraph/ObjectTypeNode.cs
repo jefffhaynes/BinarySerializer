@@ -21,8 +21,8 @@ namespace BinarySerialization.Graph.TypeGraph
             Construct();
         }
 
-        private IDictionary<Type, List<TypeNode>> _typeChildren;
-        private readonly object _typeChildrenLock = new object();
+        private IDictionary<Type, SubTypeInfo> _subTypes;
+        private readonly object _subTypesLock = new object();
 
         public IDictionary<Type, object> SubTypeKeys { get; private set; }
 
@@ -31,9 +31,7 @@ namespace BinarySerialization.Graph.TypeGraph
             if (IgnoreAttribute != null)
                 return;
 
-            List<TypeNode> baseChildren = GenerateChildrenImpl(Type).ToList();
-
-            _typeChildren = new Dictionary<Type, List<TypeNode>> {{Type, baseChildren}};
+            _subTypes = new Dictionary<Type, SubTypeInfo> {{Type, CreateSubTypeInfo(Type)}};
 
             /* Add subtypes, if any */
             if (SubtypeAttributes == null || SubtypeAttributes.Count <= 0)
@@ -57,23 +55,33 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void GenerateChildren(Type type)
         {
-            lock (_typeChildrenLock)
+            lock (_subTypesLock)
             {
-                if (!_typeChildren.ContainsKey(type))
-                    _typeChildren.Add(type, GenerateChildrenImpl(type).ToList());
+                if (!_subTypes.ContainsKey(type))
+                {
+                    _subTypes.Add(type, CreateSubTypeInfo(type));
+                }
             }
         }
 
-        public IEnumerable<TypeNode> GetTypeChildren(Type type)
+        public SubTypeInfo GetSubType(Type type)
         {
-            lock (_typeChildrenLock)
+            lock (_subTypesLock)
             {
                 /* If this is a type we've never seen before so let's update our reference type. */
-                if (!_typeChildren.ContainsKey(type))
-                    _typeChildren.Add(type, GenerateChildrenImpl(type).ToList());
+                if (!_subTypes.ContainsKey(type))
+                    _subTypes.Add(type, CreateSubTypeInfo(type));
 
-                return _typeChildren[type];
+                return _subTypes[type];
             }
+        }
+
+        private SubTypeInfo CreateSubTypeInfo(Type type)
+        {
+            var parameterlessConstructor = type.GetConstructor(new Type[0]);
+            var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
+            var children = GenerateChildrenImpl(type);
+            return new SubTypeInfo(parameterlessConstructor, constructors, children);
         }
 
         private IEnumerable<TypeNode> GenerateChildrenImpl(Type type)

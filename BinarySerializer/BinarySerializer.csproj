@@ -50,6 +50,7 @@
     <Compile Include="Graph\TypeGraph\EnumTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\ListTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\StreamTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\SubTypeInfo.cs" />
     <Compile Include="Graph\TypeGraph\UnknownTypeNode.cs" />
     <Compile Include="Graph\ValueGraph\ArrayValueNode.cs" />
     <Compile Include="Graph\ValueGraph\CollectionValueNode.cs" />
