@@ -1,47 +1,92 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using BinarySerialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using BinarySerialization.Test.Issues.Issue9;
-using BinarySerialization.Test.Misc;
 
-namespace BinarySerializerTester
+namespace BinarySerialization.Performance
 {
-   
-
     class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            //var test = new BinarySerialization.Test.BinarySerializerTests();
+            DoBS(10000);
+            //DoBF(10000);
+            Console.ReadKey();
+        }
 
-            //Enumerable.Range(0, 10000).AsParallel().ForAll(i =>
-            //{
-            //    test.Roundtrip();
-            //    Console.WriteLine(i);
-            //});
-
-            //for (int i = 0; i < 10000; i++)
-            //{
-            //    test.Roundtrip();
-            //}
+        private static void DoBS(int iterations)
+        {
+            var stopwatch = new Stopwatch();
 
             var ser = new BinarySerializer();
-            var arr = new ElementClass();
-            byte[] data;
+            var obj = new BasicClass();
 
             using (var ms = new MemoryStream())
             {
-                ser.Serialize(ms, arr);
-                data = ms.ToArray();
+                stopwatch.Start();
+                for (int i = 0; i < iterations; i++)
+                {
+                    ser.Serialize(ms, obj);
+                }
+                stopwatch.Stop();
+                Console.WriteLine("BS SER: {0}", stopwatch.Elapsed);
+                stopwatch.Reset();
             }
 
-            for (int i = 0; i < 100000; i++)
+            var dataStream = new MemoryStream();
+            ser.Serialize(dataStream, obj);
+            byte[] data = dataStream.ToArray();
+
+            using (var ms = new MemoryStream(data))
             {
-                using (var ms = new MemoryStream(data))
+                stopwatch.Start();
+                for (int i = 0; i < iterations; i++)
                 {
-                    var des = ser.Deserialize<ElementClass>(ms);
+                    ser.Deserialize<ElementClass>(ms);
+                    ms.Position = 0;
                 }
+                stopwatch.Stop();
+                Console.WriteLine("BS DESER: {0}", stopwatch.Elapsed);
+                stopwatch.Reset();
+            }
+        }
+
+        private static void DoBF(int iterations)
+        {
+            var formatter = new BinaryFormatter();
+
+            var stopwatch = new Stopwatch();
+
+            var obj = new BasicClass();
+
+            using (var ms = new MemoryStream())
+            {
+                stopwatch.Start();
+                for (int i = 0; i < iterations; i++)
+                {
+                    formatter.Serialize(ms, obj);
+                }
+                stopwatch.Stop();
+                Console.WriteLine("BF SER: {0}", stopwatch.Elapsed);
+                stopwatch.Reset();
+            }
+
+            var dataStream = new MemoryStream();
+            formatter.Serialize(dataStream, obj);
+            byte[] data = dataStream.ToArray();
+
+            using (var ms = new MemoryStream(data))
+            {
+                stopwatch.Start();
+                for (int i = 0; i < iterations; i++)
+                {
+                    formatter.Deserialize(ms);
+                    ms.Position = 0;
+                }
+                stopwatch.Stop();
+                Console.WriteLine("BF DESER: {0}", stopwatch.Elapsed);
+                stopwatch.Reset();
             }
         }
     }

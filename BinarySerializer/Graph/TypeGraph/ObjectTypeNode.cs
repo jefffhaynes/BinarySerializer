@@ -11,6 +11,8 @@ namespace BinarySerialization.Graph.TypeGraph
         private const BindingFlags MemberBindingFlags =
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
+        private const BindingFlags ConstructorBindingFlags = BindingFlags.Instance | BindingFlags.Public;
+
         public ObjectTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
             Construct();
@@ -79,7 +81,7 @@ namespace BinarySerialization.Graph.TypeGraph
         private SubTypeInfo CreateSubTypeInfo(Type type)
         {
             var parameterlessConstructor = type.GetConstructor(new Type[0]);
-            var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
+            var constructors = type.GetConstructors(ConstructorBindingFlags);
             var children = GenerateChildrenImpl(type);
             return new SubTypeInfo(parameterlessConstructor, constructors, children);
         }
