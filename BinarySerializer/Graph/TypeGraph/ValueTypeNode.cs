@@ -41,10 +41,5 @@ namespace BinarySerialization.Graph.TypeGraph
         }
 
         public Lazy<EndianAwareBinaryWriter> LazyWriter { get; private set; }
-
-        protected override Func<object, object> GetValueGetter(Type parentType, PropertyInfo propertyInfo)
-        {
-            return MagicMethods.MagicMethod(parentType, propertyInfo.GetGetMethod());
-        }
     }
 }

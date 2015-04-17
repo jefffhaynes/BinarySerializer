@@ -62,13 +62,13 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 _type = propertyInfo.PropertyType;
 
-                _lazyValueGetter = new Lazy<Func<object, object>>(() => GetValueGetter(parentType, propertyInfo));
+                ValueGetter = MagicMethods.MagicMethod(parentType, propertyInfo.GetGetMethod());
                 ValueSetter = (obj, value) => propertyInfo.SetValue(obj, value, null);
             }
             else if (fieldInfo != null)
             {
                 _type = fieldInfo.FieldType;
-                _lazyValueGetter = new Lazy<Func<object, object>>(() => GetValueGetter(parentType, fieldInfo));
+                ValueGetter = fieldInfo.GetValue;
                 ValueSetter = fieldInfo.SetValue;
             }
             else throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
@@ -183,10 +183,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public Action<object, object> ValueSetter { get; private set; }
 
-        public Func<object, object> ValueGetter
-        {
-            get { return _lazyValueGetter.Value; }
-        }
+        public Func<object, object> ValueGetter { get; private set; }
 
         public Binding FieldLengthBinding { get; private set; }
         public Binding ItemLengthBinding { get; private set; }
@@ -211,16 +208,6 @@ namespace BinarySerialization.Graph.TypeGraph
         public int? Order
         {
             get { return _order ?? int.MaxValue; }
-        }
-
-        protected virtual Func<object, object> GetValueGetter(Type parentType, PropertyInfo propertyInfo)
-        {
-            return declaringValue => propertyInfo.GetValue(declaringValue, null);
-        }
-
-        protected virtual Func<object, object> GetValueGetter(Type parentType, FieldInfo fieldInfo)
-        {
-            return fieldInfo.GetValue;
         }
 
         public SerializedType GetSerializedType(Type referenceType = null)

@@ -6,7 +6,7 @@ namespace BinarySerialization
     internal static class MagicMethods
     {
         /// <summary>
-        /// Based on "MAKING REFLECTION FLY AND EXPLORING DELEGATES" by Jon Skeet
+        /// Based on Making Reflection Fly And Exploring Delegates by Jon Skeet
         /// </summary>
         /// <param name="targetType"></param>
         /// <param name="method"></param>
