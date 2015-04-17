@@ -98,7 +98,6 @@ namespace BinarySerialization.Graph.TypeGraph
                     Encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
             }
 
-
             FieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
             if (FieldLengthAttribute != null)
             {

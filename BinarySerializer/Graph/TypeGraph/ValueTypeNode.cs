@@ -27,19 +27,15 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public ValueTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
-            LazyWriter = new Lazy<EndianAwareBinaryWriter>(() => new EndianAwareBinaryWriter());
         }
 
         public ValueTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
-            LazyWriter = new Lazy<EndianAwareBinaryWriter>(() => new EndianAwareBinaryWriter());
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new ValueValueNode(parent, Name, this);
         }
-
-        public Lazy<EndianAwareBinaryWriter> LazyWriter { get; private set; }
     }
 }

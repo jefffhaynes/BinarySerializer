@@ -66,12 +66,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public void Serialize(Stream stream, object value, SerializedType serializedType, int? length = null)
         {
-            var valueTypeNode = (ValueTypeNode) TypeNode;
-            var writer = valueTypeNode.LazyWriter.Value;
-            writer.SetStream(stream);
-            writer.Endianness = Endianness;
-
-            //var writer = new EndianAwareBinaryWriter(stream, Endianness);
+            var writer = new EndianAwareBinaryWriter(stream, Endianness);
             Serialize(writer, value, serializedType, length);
         }
 
