@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.TypeGraph
             TerminationValue = terminationValue;
         }
 
-        protected CollectionTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        protected CollectionTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
             object terminationValue;
             TerminationChild = GetTerminationChild(out terminationValue);

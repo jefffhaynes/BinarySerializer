@@ -14,7 +14,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        public CustomTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        public CustomTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
         }
 

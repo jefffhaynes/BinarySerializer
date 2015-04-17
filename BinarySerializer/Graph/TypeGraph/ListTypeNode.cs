@@ -13,7 +13,7 @@ namespace BinarySerialization.Graph.TypeGraph
             Child = GenerateChild(ChildType);
         }
 
-        public ListTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        public ListTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
             ChildType = GetChildType(Type);
             Child = GenerateChild(ChildType);

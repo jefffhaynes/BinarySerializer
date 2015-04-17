@@ -10,8 +10,8 @@ namespace BinarySerialization.Performance
     {
         private static void Main(string[] args)
         {
-            DoBS(10000);
-            //DoBF(10000);
+            DoBS(100000);
+            DoBF(100000);
             Console.ReadKey();
         }
 

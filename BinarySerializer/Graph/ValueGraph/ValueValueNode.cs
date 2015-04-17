@@ -40,7 +40,7 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 object value;
 
-                if (TargetBindings.Any())
+                if (TargetBindings.Count > 0)
                 {
                     value = TargetBindings[0]();
 
@@ -66,7 +66,12 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public void Serialize(Stream stream, object value, SerializedType serializedType, int? length = null)
         {
-            var writer = new EndianAwareBinaryWriter(stream, Endianness);
+            var valueTypeNode = (ValueTypeNode) TypeNode;
+            var writer = valueTypeNode.LazyWriter.Value;
+            writer.SetStream(stream);
+            writer.Endianness = Endianness;
+
+            //var writer = new EndianAwareBinaryWriter(stream, Endianness);
             Serialize(writer, value, serializedType, length);
         }
 

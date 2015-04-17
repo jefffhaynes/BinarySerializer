@@ -12,7 +12,8 @@ namespace BinarySerialization.Graph.TypeGraph
             Child = GenerateChild(ChildType);
         }
 
-        public ArrayTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        public ArrayTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
+            : base(parent, parentType, memberInfo)
         {
             ChildType = Type.GetElementType();
             Child = GenerateChild(ChildType);

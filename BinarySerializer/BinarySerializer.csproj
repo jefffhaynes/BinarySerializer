@@ -65,6 +65,7 @@
     <Compile Include="Graph\ValueGraph\PrimitveArrayValueNode.cs" />
     <Compile Include="Graph\ValueGraph\StreamValueNode.cs" />
     <Compile Include="Graph\ValueGraph\UnknownValueNode.cs" />
+    <Compile Include="MagicMethods.cs" />
     <Compile Include="SerializeAsAttribute.cs" />
     <Compile Include="BinarySerializer.cs" />
     <Compile Include="BindingException.cs" />

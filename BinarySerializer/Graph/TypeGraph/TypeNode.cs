@@ -33,18 +33,22 @@ namespace BinarySerialization.Graph.TypeGraph
         private readonly SerializedType? _serializedType;
         private readonly Type _type;
         private readonly Type _underlyingType;
+        private readonly Lazy<Func<object, object>> _lazyValueGetter;
 
-        protected TypeNode(TypeNode parent) : base(parent)
+        protected TypeNode(TypeNode parent)
+            : base(parent)
         {
         }
 
-        protected TypeNode(TypeNode parent, Type type) : this(parent)
+        protected TypeNode(TypeNode parent, Type type)
+            : this(parent)
         {
             _type = type;
             _underlyingType = Nullable.GetUnderlyingType(Type);
         }
 
-        protected TypeNode(TypeNode parent, MemberInfo memberInfo) : this(parent)
+        protected TypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
+            : this(parent)
         {
             if (memberInfo == null)
                 return;
@@ -57,20 +61,21 @@ namespace BinarySerialization.Graph.TypeGraph
             if (propertyInfo != null)
             {
                 _type = propertyInfo.PropertyType;
-                ValueGetter = declaringValue => propertyInfo.GetValue(declaringValue, null);
+
+                _lazyValueGetter = new Lazy<Func<object, object>>(() => GetValueGetter(parentType, propertyInfo));
                 ValueSetter = (obj, value) => propertyInfo.SetValue(obj, value, null);
             }
             else if (fieldInfo != null)
             {
                 _type = fieldInfo.FieldType;
-                ValueGetter = fieldInfo.GetValue;
+                _lazyValueGetter = new Lazy<Func<object, object>>(() => GetValueGetter(parentType, fieldInfo));
                 ValueSetter = fieldInfo.SetValue;
             }
             else throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
 
             _underlyingType = Nullable.GetUnderlyingType(Type);
 
-            object[] attributes = memberInfo.GetCustomAttributes(true);
+            var attributes = memberInfo.GetCustomAttributes(true);
 
             IgnoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
 
@@ -78,11 +83,11 @@ namespace BinarySerialization.Graph.TypeGraph
             if (IgnoreAttribute != null)
                 return;
 
-            FieldOrderAttribute fieldOrderAttribute = attributes.OfType<FieldOrderAttribute>().SingleOrDefault();
+            var fieldOrderAttribute = attributes.OfType<FieldOrderAttribute>().SingleOrDefault();
             if (fieldOrderAttribute != null)
                 _order = fieldOrderAttribute.Order;
 
-            SerializeAsAttribute serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
+            var serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
             if (serializeAsAttribute != null)
             {
                 _serializedType = serializeAsAttribute.SerializedType;
@@ -111,7 +116,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 FieldOffsetBinding = new Binding(FieldOffsetAttribute, GetBindingLevel(FieldOffsetAttribute.Binding));
             }
 
-            SerializeWhenAttribute[] serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
+            var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
             SerializeWhenAttributes = new ReadOnlyCollection<SerializeWhenAttribute>(serializeWhenAttributes);
 
             if (SerializeWhenAttributes.Any())
@@ -121,29 +126,30 @@ namespace BinarySerialization.Graph.TypeGraph
                         attribute => new ConditionalBinding(attribute, GetBindingLevel(attribute.Binding))).ToList());
             }
 
-            SubtypeAttribute[] subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
+            var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
             SubtypeAttributes = new ReadOnlyCollection<SubtypeAttribute>(subtypeAttributes);
 
             if (SubtypeAttributes.Count > 0)
             {
-                IEnumerable<IGrouping<BindingInfo, SubtypeAttribute>> bindingGroups =
+                var bindingGroups =
                     SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
 
                 if (bindingGroups.Count() > 1)
                     throw new BindingException("Subtypes must all use the same binding configuration.");
 
-                SubtypeAttribute firstBinding = SubtypeAttributes[0];
+                var firstBinding = SubtypeAttributes[0];
                 SubtypeBinding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
 
                 var valueGroups = SubtypeAttributes.GroupBy(attribute => attribute.Value);
-                if(valueGroups.Count() < SubtypeAttributes.Count)
+                if (valueGroups.Count() < SubtypeAttributes.Count)
                     throw new InvalidOperationException("Subtype values must be unique.");
 
                 if (SubtypeBinding.BindingMode == BindingMode.TwoWay)
                 {
                     var subTypeGroups = SubtypeAttributes.GroupBy(attribute => attribute.Subtype);
                     if (subTypeGroups.Count() < SubtypeAttributes.Count)
-                        throw new InvalidOperationException("Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
+                        throw new InvalidOperationException(
+                            "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
                 }
             }
 
@@ -170,60 +176,51 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-
         public Type Type
         {
-            get
-            {
-                return _underlyingType ?? _type;
-            }
+            get { return _underlyingType ?? _type; }
         }
 
         public Action<object, object> ValueSetter { get; private set; }
 
-        public Func<object, object> ValueGetter { get; private set; }
+        public Func<object, object> ValueGetter
+        {
+            get { return _lazyValueGetter.Value; }
+        }
 
         public Binding FieldLengthBinding { get; private set; }
-
         public Binding ItemLengthBinding { get; private set; }
-
         public Binding FieldCountBinding { get; private set; }
-
         public Binding FieldOffsetBinding { get; private set; }
-
         public Binding SerializeUntilBinding { get; private set; }
-
         public Binding ItemSerializeUntilBinding { get; private set; }
-
         public Binding SubtypeBinding { get; private set; }
-
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; private set; }
-
         public IgnoreAttribute IgnoreAttribute { get; private set; }
-
         public FieldLengthAttribute FieldLengthAttribute { get; private set; }
-
         public FieldCountAttribute FieldCountAttribute { get; private set; }
-
         public FieldOffsetAttribute FieldOffsetAttribute { get; private set; }
-
         public ItemLengthAttribute ItemLengthAttribute { get; private set; }
-
         public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; private set; }
-
         public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; private set; }
-
         public SerializeUntilAttribute SerializeUntilAttribute { get; private set; }
-
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; private set; }
-
         public Endianness? Endianness { get; private set; }
-
         public Encoding Encoding { get; private set; }
 
         public int? Order
         {
             get { return _order ?? int.MaxValue; }
+        }
+
+        protected virtual Func<object, object> GetValueGetter(Type parentType, PropertyInfo propertyInfo)
+        {
+            return declaringValue => propertyInfo.GetValue(declaringValue, null);
+        }
+
+        protected virtual Func<object, object> GetValueGetter(Type parentType, FieldInfo fieldInfo)
+        {
+            return fieldInfo.GetValue;
         }
 
         public SerializedType GetSerializedType(Type referenceType = null)
@@ -259,10 +256,10 @@ namespace BinarySerialization.Graph.TypeGraph
             }
             catch (Exception e)
             {
-                string reference = Name == null
+                var reference = Name == null
                     ? string.Format("type '{0}'", Type)
                     : string.Format("member '{0}'", Name);
-                string message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
+                var message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
             }
         }
@@ -271,7 +268,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public int GetBindingLevel(BindingInfo binding)
         {
-            int level = 0;
+            var level = 0;
 
             switch (binding.RelativeSourceMode)
             {
@@ -293,7 +290,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private int FindAncestorLevel(BindingInfo binding)
         {
-            int level = 1;
+            var level = 1;
             var parent = (TypeNode) Parent;
             while (parent != null)
             {

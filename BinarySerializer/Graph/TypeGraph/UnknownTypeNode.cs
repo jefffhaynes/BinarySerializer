@@ -10,7 +10,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        public UnknownTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        public UnknownTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
         }
 

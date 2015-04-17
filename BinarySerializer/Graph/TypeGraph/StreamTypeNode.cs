@@ -10,7 +10,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        public StreamTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        public StreamTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
         }
 

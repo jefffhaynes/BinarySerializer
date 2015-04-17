@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.TypeGraph
             InitializeEnumValues();
         }
 
-        public EnumTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        public EnumTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
             InitializeEnumValues();
         }

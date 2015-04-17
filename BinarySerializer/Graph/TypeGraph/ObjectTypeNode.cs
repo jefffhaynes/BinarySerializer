@@ -18,7 +18,8 @@ namespace BinarySerialization.Graph.TypeGraph
             Construct();
         }
 
-        public ObjectTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        public ObjectTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
+            : base(parent, parentType, memberInfo)
         {
             Construct();
         }
@@ -86,13 +87,14 @@ namespace BinarySerialization.Graph.TypeGraph
             return new SubTypeInfo(parameterlessConstructor, constructors, children);
         }
 
-        private IEnumerable<TypeNode> GenerateChildrenImpl(Type type)
+        private IEnumerable<TypeNode> GenerateChildrenImpl(Type parentType)
         {
-            IEnumerable<MemberInfo> properties = type.GetProperties(MemberBindingFlags);
-            IEnumerable<MemberInfo> fields = type.GetFields(MemberBindingFlags);
+            IEnumerable<MemberInfo> properties = parentType.GetProperties(MemberBindingFlags);
+            IEnumerable<MemberInfo> fields = parentType.GetFields(MemberBindingFlags);
             IEnumerable<MemberInfo> all = properties.Union(fields);
 
-            List<TypeNode> children = all.Select(GenerateChild).OrderBy(child => child.Order).ToList();
+            List<TypeNode> children =
+                all.Select(memberInfo => GenerateChild(parentType, memberInfo)).OrderBy(child => child.Order).ToList();
 
             List<TypeNode> serializableChildren = children.Where(child => child.IgnoreAttribute == null).ToList();
 
@@ -113,9 +115,9 @@ namespace BinarySerialization.Graph.TypeGraph
                     throw new InvalidOperationException("All fields must have a unique order number.");
             }
 
-            if (type.BaseType != null)
+            if (parentType.BaseType != null)
             {
-                IEnumerable<TypeNode> baseChildren = GenerateChildrenImpl(type.BaseType);
+                IEnumerable<TypeNode> baseChildren = GenerateChildrenImpl(parentType.BaseType);
                 return baseChildren.Concat(children);
             }
 

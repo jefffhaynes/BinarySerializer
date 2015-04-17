@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        protected ContainerTypeNode(TypeNode parent, MemberInfo memberInfo) : base(parent, memberInfo)
+        protected ContainerTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
         }
 
@@ -34,7 +34,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-        protected TypeNode GenerateChild(MemberInfo memberInfo)
+        protected TypeNode GenerateChild(Type parentType, MemberInfo memberInfo)
         {
             var memberType = GetMemberType(memberInfo);
 
@@ -44,7 +44,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 var nodeType = GetNodeType(memberType);
 
-                return (TypeNode) Activator.CreateInstance(nodeType, this, memberInfo);
+                return (TypeNode)Activator.CreateInstance(nodeType, this, parentType, memberInfo);
             }
             catch (Exception exception)
             {
