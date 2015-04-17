@@ -9,6 +9,7 @@
         Title="MainWindow" Height="350" Width="525" >
     <Window.Resources>
         <converters:WhereNotIgnoredConverter x:Key="WhereNotIgnoredConverter"/>
+        <converters:EnumStringListConverter x:Key="EnumStringListConverter"/>
         
         <DataTemplate DataType="{x:Type typeGraph:RootTypeNode}">
             <ContentPresenter Content="{Binding Child}"/>
@@ -23,7 +24,8 @@
                         <Setter Property="ContentTemplate">
                             <Setter.Value>
                                 <DataTemplate>
-                                    <DataGrid ItemsSource="{Binding EnumInfo.EnumValues}" AutoGenerateColumns="False" HeadersVisibility="None">
+                                    <DataGrid ItemsSource="{Binding EnumInfo.EnumValues}" AutoGenerateColumns="False" HeadersVisibility="Column" BorderBrush="Purple" BorderThickness="1"
+                                              IsReadOnly="True">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Binding="{Binding Key}" />
                                             <DataGridTextColumn Binding="{Binding Value}" />
@@ -37,19 +39,20 @@
                                 <Setter Property="ContentTemplate">
                                     <Setter.Value>
                                         <DataTemplate>
-                                            <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding UnderlyingEnumValues}"
-                                                      CanUserResizeColumns="False" CanUserResizeRows="False" HeadersVisibility="None">
+                                            <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding UnderlyingEnumValues}" BorderBrush="Violet" BorderThickness="1"
+                                                      CanUserResizeColumns="False" CanUserResizeRows="False" HeadersVisibility="None" IsReadOnly="True">
                                                 <DataGrid.Columns>
-                                                    <DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="Value">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate >
-                                                                <TextBlock Text="{Binding Mode=OneWay, StringFormat=\{0:D\}}"/>
+                                                                <TextBlock Text="{Binding Mode=OneWay, StringFormat=0x\{0:X\}}"/>
                                                             </DataTemplate>
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
                                                     <DataGridTextColumn Binding="{Binding}" />
                                                 </DataGrid.Columns>
                                             </DataGrid>
+                                            <!--<TextBlock Text="{Binding UnderlyingEnumValues, Converter={StaticResource EnumStringListConverter}}" TextWrapping="Wrap"/>-->
                                         </DataTemplate>
                                     </Setter.Value>
                                 </Setter>
@@ -64,7 +67,7 @@
             <TextBlock Text="Unknown (object)"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type typeGraph:ObjectTypeNode}">
-            <DataGrid AutoGenerateColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False">
+            <DataGrid IsReadOnly="True" AutoGenerateColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" BorderBrush="Red" BorderThickness="0">
                 <DataGrid.Style>
                     <Style TargetType="DataGrid">
                         <Setter Property="ItemsSource" Value="{Binding KeysAndChildren}"/>
@@ -91,10 +94,11 @@
                     <DataGridTemplateColumn Header="Subtype">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <DataGrid ItemsSource="{Binding Value, Converter={StaticResource WhereNotIgnoredConverter}}" AutoGenerateColumns="False" HeadersVisibility="None">
+                                <DataGrid ItemsSource="{Binding Value, Converter={StaticResource WhereNotIgnoredConverter}}" 
+                                          AutoGenerateColumns="False" HeadersVisibility="Column" BorderBrush="Blue" BorderThickness="0">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Type" Binding="{Binding Name}"/>
-                                        <DataGridTemplateColumn>
+                                        <DataGridTextColumn Header="Field" Binding="{Binding Name}" FontWeight="Bold"/>
+                                        <DataGridTemplateColumn Header="Type">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <ContentPresenter Content="{Binding}"/>
