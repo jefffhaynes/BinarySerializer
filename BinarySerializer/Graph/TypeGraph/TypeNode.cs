@@ -62,12 +62,13 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 _type = propertyInfo.PropertyType;
 
-                ValueGetter = MagicMethods.MagicMethod(parentType, propertyInfo.GetGetMethod());
-                ValueSetter = (obj, value) => propertyInfo.SetValue(obj, value, null);
+                ValueGetter = MagicMethods.MagicFunc(parentType, propertyInfo.GetGetMethod());
+                ValueSetter = MagicMethods.MagicAction(parentType, propertyInfo.GetSetMethod());
             }
             else if (fieldInfo != null)
             {
                 _type = fieldInfo.FieldType;
+
                 ValueGetter = fieldInfo.GetValue;
                 ValueSetter = fieldInfo.SetValue;
             }
