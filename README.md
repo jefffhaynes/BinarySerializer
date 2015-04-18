@@ -152,6 +152,10 @@ In some cases you may want to limit a collection of items by the total serialize
         public List<string> Names { get; set; }
     }
 
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/CollectionLengthBinding.png" />
+</p>
+
 Some formats and protocols will define a set of fields of specified size, with "optional" trailing fields.  In the following example, EntryLength will either be 32 or 36, depending on whether or not Age is specified.  
 
     public class Person
