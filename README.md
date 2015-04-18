@@ -132,7 +132,7 @@ Alternatively, the length of the Name field could be bound to a NameLength field
         [FieldOrder(1)]
         [FieldLength("NameLength")]
         public string Name { get; set; }
-    }
+    } 
 
 In some cases you may want to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the serialized length in bytes.
 
