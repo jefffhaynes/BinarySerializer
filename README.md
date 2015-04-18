@@ -56,7 +56,7 @@ The most powerful feature of BinarySerializer is the ability to bind attributes 
     
     var person = new Person { Name = "Alice" };
 
-![](/BinarySerializer.Docs/SimpleBinding_2.png)
+![](/BinarySerializer.Docs/LengthBinding.png)
 
 Note that it is not necessary that NameLength contains the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
 
@@ -185,6 +185,20 @@ The FieldCount attribute is used to define how many items are contained in a col
     }
 
 Note the special case of a byte array, for which length and count attributes are interchangeable.
+
+By default strings will be serialized as null terminated, which allows for this construction:
+
+    public class Directory
+    {
+        [FieldOrder(0)]
+        public int NameCount { get; set; }
+
+        [FieldOrder(1)]
+        [FieldCount("NameCount")]
+        public List<string> Names { get; set; }
+    }
+
+![](/BinarySerializer.Docs/CountBinding.png)
 
 ### ItemLengthAttribute ###
 
