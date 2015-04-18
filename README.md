@@ -136,6 +136,10 @@ Alternatively, the length of the Name field could be bound to a NameLength field
         public string Name { get; set; }
     } 
 
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/LengthBinding.png" />
+</p>
+
 In some cases you may want to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the serialized length in bytes.
 
     public class MyBoundCollectionClass
