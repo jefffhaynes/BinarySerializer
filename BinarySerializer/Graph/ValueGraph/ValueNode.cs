@@ -183,7 +183,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             string[] memberNames = path.Split(PathSeparator);
 
-            if (!memberNames.Any())
+            if (memberNames.Length > 0)
                 throw new BindingException("Path cannot be empty.");
 
             ValueNode child = this;

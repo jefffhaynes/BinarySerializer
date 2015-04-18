@@ -43,7 +43,7 @@ namespace BinarySerialization.Performance
                 stopwatch.Start();
                 for (int i = 0; i < iterations; i++)
                 {
-                    ser.Deserialize<ElementClass>(ms);
+                    ser.Deserialize<BasicClass>(ms);
                     ms.Position = 0;
                 }
                 stopwatch.Stop();
