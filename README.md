@@ -156,6 +156,35 @@ In some cases you may want to limit a collection of items by the total serialize
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/CollectionLengthBinding.png" />
 </p>
 
+If you want to enforce the size of an entire object, you can write:
+
+    public class Person
+    {
+        [FieldOrder(0)]
+        public string FirstName { get; set; }
+
+        [FieldOrder(1)]
+        public string LastName { get; set; }
+    }
+
+    public class Message
+    {
+        [FieldLength(24)]
+        public Person Person { get; set; }
+    }
+
+Note that if the field length is constant, Person will *always* be 24 bytes long and will be padded out if the actual Person length is less than 24 (e.g. Bob Smith).  However, if the length is bound the actual length of Person will take precendence and PersonLength will be updated accordingly during serialization.
+
+    public class Message
+    {
+        [FieldOrder(0)]
+        public int PersonLength { get; set; } // will be set to the length of Person during serialization.
+
+        [FieldOrder(1)]
+        [FieldLength("PersonLength")]
+        public Person Person { get; set; }
+    }
+
 Some formats and protocols will define a set of fields of specified size, with "optional" trailing fields.  In the following example, EntryLength will either be 32 or 36, depending on whether or not Age is specified.  
 
     public class Person
