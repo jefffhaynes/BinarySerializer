@@ -56,7 +56,9 @@ The most powerful feature of BinarySerializer is the ability to bind attributes 
     
     var person = new Person { Name = "Alice" };
 
-![](/BinarySerializer.Docs/LengthBinding.png)
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/LengthBinding.png" />
+</p>
 
 Note that it is not necessary that NameLength contains the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
 
@@ -198,7 +200,9 @@ By default strings will be serialized as null terminated, which allows for this 
         public List<string> Names { get; set; }
     }
 
-![](/BinarySerializer.Docs/CountBinding.png)
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/CountBinding.png" />
+</p>
 
 ### ItemLengthAttribute ###
 
