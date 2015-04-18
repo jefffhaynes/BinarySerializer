@@ -9,7 +9,7 @@ BinarySerializer is not a competitor to BinaryFormatter, protobuf, or any other 
 
 ### Field Ordering ###
 
-There is no completely reliable way to get member ordering from the CLR so as of 3.0 <code>FieldOrder</code> attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following class will serialize in the order A, B, C.
+There is no completely reliable way to get member ordering from the CLR so as of BinarySerializer 3.0 <code>FieldOrder</code> attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following class will serialize in the order A, B, C.
 
     public class MyBaseClass
     {
