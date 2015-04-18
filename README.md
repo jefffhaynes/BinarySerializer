@@ -3,7 +3,7 @@ BinarySerializer
 
 A .NET declarative serialization framework for controlling formatting of data at the byte level.  BinarySerializer is designed to make working with binary formats and protocols fast and simple.  The Portable Class Library (PCL) is available on [nuget](https://www.nuget.org/packages/BinarySerializer).
 
-## What BinarySerializer is not ##
+### What BinarySerializer is not ###
 
 BinarySerializer is not a competitor to BinaryFormatter, protobuf, or any other number of fixed-format serializers.  While fast, BinarySerializer is slower than most of these specialized serializers as it is designed to be fist and foremost flexible in terms of the underlying data format.  If you don't like the way BinaryFormatter is serializing your data, you're stuck with it.  With BinarySerializer you can define precisely how your data is formatted using types, bindings, converters, and code.
 
