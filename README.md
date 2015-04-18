@@ -173,12 +173,12 @@ If you want to enforce the size of an entire object, you can write:
         public Person Person { get; set; }
     }
 
-Note that if the field length is constant, Person will *always* be 24 bytes long and will be padded out if the actual Person length is less than 24 (e.g. Bob Smith).  However, if the length is bound the actual length of Person will take precendence and PersonLength will be updated accordingly during serialization.
+Note that if the field length is constant, Person will *always* be 24 bytes long and will be padded out if the actual Person length is less than 24 (e.g. Bob Smith).  However, if the length is bound then the actual length of Person will take precendence and PersonLength will be updated accordingly during serialization.
 
     public class Message
     {
         [FieldOrder(0)]
-        public int PersonLength { get; set; } // will be set to the length of Person during serialization.
+        public int PersonLength { get; set; } // set to the length of Person during serialization.
 
         [FieldOrder(1)]
         [FieldLength("PersonLength")]
