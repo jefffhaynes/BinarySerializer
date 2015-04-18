@@ -71,7 +71,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             lock (_subTypesLock)
             {
-                /* If this is a type we've never seen before so let's update our reference type. */
+                /* This is a type we've never seen before so let's update our reference type. */
                 if (!_subTypes.ContainsKey(type))
                     _subTypes.Add(type, CreateSubTypeInfo(type));
 
