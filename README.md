@@ -186,7 +186,7 @@ The FieldCount attribute is used to define how many items are contained in a col
         public List<Entry> Entries { get; set; }
     }
 
-Note the special case of a byte array, for which length and count attributes are interchangeable.
+*Note there is the special case of a byte array, for which FieldLength and FieldCount attributes are interchangeable.*
 
 By default strings will be serialized as null terminated, which allows for this construction:
 
