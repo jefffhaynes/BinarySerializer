@@ -330,10 +330,11 @@ The SerializedUntil attribute can be used to terminate a collection once a speci
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/Until.png" />
 </p>
 
+Note that a significant disadvantage of this approach is that the DirectoryRecord object cannot start with a null!  In general, you should avoid this approach when defining formats.  However, in some cases you may not have a choice (this exact construct appears in the ISO 9660 specification).
 
 ### ItemSerializeUntilAttribute ###
 
-The ItemSerializeUntil attribute can be used to terminate a collection when an item with a specified value is encountered.
+The ItemSerializeUntil attribute can be used to terminate a collection when an item with a specified value is encountered.  This is similar to the SerializeUntil attribute, except the ItemSerializeUntil attribute will first attempt to deserialize a valid item and then check the equality, whereas SerializeUntil will first check the equality and then only deserialize the result if the collection has not terminated.
 
     public class Toy
     {
@@ -346,6 +347,10 @@ The ItemSerializeUntil attribute can be used to terminate a collection when an i
         [ItemSerializeUntil("IsLast", true)]
         public List<Toy> Toys { get; set; }
     }
+
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/ItemUntil.png" />
+</p>
 
 ### SerializeAsEnumAttribute ###
 
