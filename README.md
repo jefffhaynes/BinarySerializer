@@ -275,6 +275,10 @@ In this case, the collection deserialization terminates correctly if this is the
         public List<string> Entries { get; set; }
     }
 
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/ItemLengthAndCountBinding.png" />
+</p>
+
 ### FieldOffsetAttribute ###
 
 The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases implicit offset (e.g. just define the structure) is preferable.  After moving to the offset the serializer will reset to the origin so subsequent fields must manage their own offsets.  This attribute is not supported when serializing to non-seekable streams.
