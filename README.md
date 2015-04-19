@@ -431,7 +431,7 @@ Binding is not limited to fields in the same object but can be used to reference
     public class Container
     {
         [FieldOrder(0)]
-        public int NameLength { get; set; }
+        public byte NameLength { get; set; }
         
         [FieldOrder(1)]
         public Person Person { get; set; }
@@ -535,7 +535,7 @@ Text encoding can be specified by the <code>SerializeAsAttribute</code> and is i
     
 ### Endianness ###
 
-Maybe a quiant topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or field-local.  If you're working in a system that deals entirely in big endian, you can simply do:
+Maybe a quiant topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or on a field-by-field basis.  If you're working in a system that deals entirely in big endian, you can simply do:
 
     serializer.Endianness = Endianness.Big;
     
@@ -546,7 +546,7 @@ In other cases you may actually have a mix of big and little endian and again yo
 
 ### Debugging ###
 
-To gain insight into the serialization or deserialization process, the serializer defines a number of events.  These events can be useful when attempting to troubleshoot when the debugger is insufficient.
+To gain insight into the serialization or deserialization process the serializer defines a number of events.  These events can be useful when attempting to troubleshoot if the debugger is insufficient (a common problem in declarative frameworks).
 
 Here is an example implementation of basic tracing for the serialization and deserialization process.
 
