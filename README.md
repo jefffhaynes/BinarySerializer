@@ -129,7 +129,7 @@ Alternatively, the length of the Name field could be bound to a NameLength field
     public class MyBoundFieldClass
     {
         [FieldOrder(0)]
-        public int NameLength { get; set; }
+        public byte NameLength { get; set; }
 
         [FieldOrder(1)]
         [FieldLength("NameLength")]
@@ -145,7 +145,7 @@ In some cases you may want to limit a collection of items by the total serialize
     public class MyBoundCollectionClass
     {
         [FieldOrder(0)]
-        public int NameLength { get; set; }
+        public byte NameLength { get; set; }
 
         [FieldOrder(1)]
         [FieldLength("NameLength")]
@@ -216,7 +216,7 @@ The FieldCount attribute is used to define how many items are contained in a col
     public class Directory
     {
         [FieldOrder(0)]
-        public int EntryCount { get; set; }
+        public byte EntryCount { get; set; }
 
         [FieldOrder(1)]
         [FieldCount("EntryCount")]
@@ -230,7 +230,7 @@ By default strings will be serialized as null terminated, which allows for this 
     public class Directory
     {
         [FieldOrder(0)]
-        public int NameCount { get; set; }
+        public byte NameCount { get; set; }
 
         [FieldOrder(1)]
         [FieldCount("NameCount")]
@@ -248,13 +248,32 @@ This attribute can be used to control the length of items in a collection.
     public class Manifest
     {
         [FieldOrder(0)]
-        public int EntryLength { get; set; }
+        public byte EntryLength { get; set; }
 
         [FieldOrder(1)]
         [ItemLength("EntryLength")]
         public List<string> Entries { get; set; }
     }
 
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/ItemLengthBinding.png" />
+</p>
+
+In this case, the collection deserialization terminates correctly if this is the only thing in the object graph.  However, if this is part of a larger graph, we might need to also declare a count.
+
+    public class Manifest
+    {
+        [FieldOrder(0)]
+        public byte EntryCount { get; set; }
+
+        [FieldOrder(1)]
+        public byte EntryLength { get; set; }
+
+        [FieldOrder(2)]
+        [FieldCount("EntryCount")]
+        [ItemLength("EntryLength")]
+        public List<string> Entries { get; set; }
+    }
 
 ### FieldOffsetAttribute ###
 
