@@ -325,6 +325,12 @@ The SerializedUntil attribute can be used to terminate a collection once a speci
     [SerializeUntil((byte)0)]
     public List<DirectoryRecord> Records { get; set; }
 
+
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/Until.png" />
+</p>
+
+
 ### ItemSerializeUntilAttribute ###
 
 The ItemSerializeUntil attribute can be used to terminate a collection when an item with a specified value is encountered.
