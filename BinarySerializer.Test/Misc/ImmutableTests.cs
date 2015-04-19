@@ -6,6 +6,13 @@ namespace BinarySerialization.Test.Misc
     [TestClass]
     public class ImmutableTests : TestBase
     {
+        [TestMethod]
+        public void PrivateSetterTest()
+        {
+            var expected = new PrivateSetterClass();
+            Roundtrip(expected);
+        }
+
         //[TestMethod]
         //public void ImmutableTest()
         //{

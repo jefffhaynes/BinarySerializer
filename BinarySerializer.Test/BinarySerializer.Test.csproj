@@ -111,6 +111,7 @@
     <Compile Include="Misc\LargeArrayTests.cs" />
     <Compile Include="Misc\MismatchBindingClass.cs" />
     <Compile Include="Misc\MismatchBindingTests.cs" />
+    <Compile Include="Misc\PrivateSetterClass.cs" />
     <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
     <Compile Include="Misc\NullTrailingMemberTests.cs" />
     <Compile Include="Misc\ExtensionMethodTests.cs" />
