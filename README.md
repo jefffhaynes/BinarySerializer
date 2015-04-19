@@ -309,9 +309,14 @@ It is not necessary that FrameType be correct during serialization; it will be u
 
 The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  Multiple SerializeWhen attributes will be or'd together.
 
-    [SerializeWhen("ControllerHardwareVersion", HardwareVersion.XBeeSeries1)]
-    [SerializeWhen("ControllerHardwareVersion", HardwareVersion.XBeeProSeries1)]
-    public ReceivedSignalStrengthIndicator ReceivedSignalStrengthIndicator { get; set; }
+    [SerializeWhen("Version", HardwareVersion.XBeeSeries1)]
+    [SerializeWhen("Version", HardwareVersion.XBeeProSeries1)]
+    public ReceivedSignalStrengthIndicator RSSI { get; set; }
+
+
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/WhenBinding.png" />
+</p>
 
 ### SerializeUntilAttribute ###
 
