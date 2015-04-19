@@ -299,6 +299,10 @@ The Subtype attribute allows dynamic switching of subtypes based on a binding.
         public Frame Frame { get; set; }
     }
 
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/SubtypeBinding.png" />
+</p>
+
 It is not necessary that FrameType be correct during serialization; it will be updated with the appropriate value based on the instantiated type.  During deserialization the FrameType field will be used to construct the correct type.
 
 ### SerializeWhenAttribute ###

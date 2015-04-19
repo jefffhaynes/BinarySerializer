@@ -22,7 +22,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 	ProjectSection(SolutionItems) = preProject
 		BinarySerializer.Docs\CollectionLengthBinding.png = BinarySerializer.Docs\CollectionLengthBinding.png
 		BinarySerializer.Docs\CountBinding.png = BinarySerializer.Docs\CountBinding.png
+		BinarySerializer.Docs\ItemLengthAndCountBinding.png = BinarySerializer.Docs\ItemLengthAndCountBinding.png
+		BinarySerializer.Docs\ItemLengthBinding.png = BinarySerializer.Docs\ItemLengthBinding.png
 		BinarySerializer.Docs\LengthBinding.png = BinarySerializer.Docs\LengthBinding.png
+		BinarySerializer.Docs\SubtypeBinding.png = BinarySerializer.Docs\SubtypeBinding.png
 	EndProjectSection
 EndProject
 Global
