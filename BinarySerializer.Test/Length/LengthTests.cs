@@ -147,7 +147,27 @@ namespace BinarySerialization.Test.Length
                 }
             };
 
-            var actual = Roundtrip(expected, 10);
+            Roundtrip(expected, 10);
+        }
+
+        [TestMethod]
+        public void BoundItemTest()
+        {
+            var expected = new BoundItemContainerClass
+            {
+                Items = new List<BoundItemClass>
+                {
+                    new BoundItemClass {Name = "Alice"},
+                    new BoundItemClass {Name = "Frank"},
+                    new BoundItemClass {Name = "Steve"}
+                }
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Items[0].Name, actual.Items[0].Name);
+            Assert.AreEqual(expected.Items[1].Name, actual.Items[1].Name);
+            Assert.AreEqual(expected.Items[2].Name, actual.Items[2].Name);
         }
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using BinarySerialization;
 
 namespace BinarySerialization.Test.ItemLength
 {

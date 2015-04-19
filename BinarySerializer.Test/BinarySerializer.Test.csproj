@@ -90,6 +90,8 @@
     <Compile Include="ItemLength\ItemLengthListOfByteArrayClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassInnerClass.cs" />
+    <Compile Include="Length\BoundItemClass.cs" />
+    <Compile Include="Length\BoundItemContainerClass.cs" />
     <Compile Include="Length\EmbeddedConstrainedCollectionClass.cs" />
     <Compile Include="Length\EmbeddedConstrainedCollectionInnerClass.cs" />
     <Compile Include="Length\PaddedLengthClassClass.cs" />
@@ -107,6 +109,8 @@
     <Compile Include="Misc\IntArray64K.cs" />
     <Compile Include="Misc\IOExceptionTest.cs" />
     <Compile Include="Misc\LargeArrayTests.cs" />
+    <Compile Include="Misc\MismatchBindingClass.cs" />
+    <Compile Include="Misc\MismatchBindingTests.cs" />
     <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
     <Compile Include="Misc\NullTrailingMemberTests.cs" />
     <Compile Include="Misc\ExtensionMethodTests.cs" />

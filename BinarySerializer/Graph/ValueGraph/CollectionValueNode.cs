@@ -117,12 +117,12 @@ namespace BinarySerialization.Graph.ValueGraph
             if (!childLengths.Any())
                 return 0;
 
-            var childLengthGroups = childLengths.GroupBy(childLength => childLength);
+            var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
 
-            var childLengthGroup = childLengthGroups.SingleOrDefault();
-
-            if (childLengthGroup == null)
+            if (childLengthGroups.Count > 1)
                 throw new InvalidOperationException("Unable to update binding source because not all items have equal lengths.");
+
+            var childLengthGroup = childLengthGroups.Single();
 
             return childLengthGroup.Key;
         }
