@@ -21,5 +21,13 @@ namespace BinarySerialization.Test.Misc
             var actual = Roundtrip(expected);
             Assert.AreEqual(expected.Value, actual.Value);
         }
+
+        [TestMethod]
+        public void ImmutableTest2()
+        {
+            var expected = new ImmutableClass2(3, 4);
+            var actual = Roundtrip(expected);
+            Assert.AreEqual(expected.Value, actual.Value);
+        }
     }
 }

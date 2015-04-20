@@ -11,13 +11,19 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             Children = children.ToArray();
 
-            var validConstructors =
-                constructors.Where(constructor => constructor.GetParameters().Count() <= Children.Count());
+            var serializableChildren = Children.Where(child => child.IgnoreAttribute == null);
 
-            // TODO CHECK TYPES
-            var constructorParameterMap = validConstructors.Select(constructor => new { Constructor = constructor, ParameterMap = constructor.GetParameters()
-                .Join(Children, parameter => parameter.Name.ToLower(), child => child.Name.ToLower(),
-                    (parameter, child) => parameter.Name)});
+            var validConstructors =
+                constructors.Where(constructor => constructor.GetParameters().Count() <= serializableChildren.Count());
+
+            var constructorParameterMap = validConstructors.Select(constructor => new
+            {
+                Constructor = constructor,
+                ParameterMap = constructor.GetParameters()
+                    .Join(serializableChildren, parameter => new { Name = parameter.Name.ToLower(), Type = parameter.ParameterType },
+                        child => new {Name = child.Name.ToLower(), child.Type},
+                        (parameter, child) => parameter.Name)
+            });
 
             var bestConstructor = constructorParameterMap.OrderByDescending(constructor => constructor.ParameterMap.Count()).FirstOrDefault();
 
