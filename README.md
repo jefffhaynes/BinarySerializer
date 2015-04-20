@@ -544,6 +544,23 @@ In other cases you may actually have a mix of big and little endian and again yo
     [SerializeAs(Endianness = Endianness.Big)]
     public uint SectorCountBig { get; set; }
 
+### Immutable Types ###
+
+In certain cases you may not want to expose public setters on deserialized objects.  BinarySerializer will look for constructors with matching property or field parameter names and favor those over the default constructor.  In cases where multiple constructors are defined, the serializer will look for a best fit.
+
+    public class LongAddress
+    {
+        public LongAddress(int low, int high)
+        {
+            Low = low;
+            High = high;
+        }
+
+        public int Low { get; private set; }
+
+        public int High { get; private set; }
+    }
+
 ### Debugging ###
 
 To gain insight into the serialization or deserialization process the serializer defines a number of events.  These events can be useful when attempting to troubleshoot if the debugger is insufficient (a common problem in declarative frameworks).
