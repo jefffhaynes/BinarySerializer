@@ -41,9 +41,6 @@ namespace BinarySerialization
 
         public static Action<object, object> MagicAction(Type targetType, MethodInfo method)
         {
-            if(method == null)
-                return (target, value) => { };
-
             // First fetch the generic form
             MethodInfo genericHelper = typeof(MagicMethods).GetMethod("MagicActionHelper",
                 BindingFlags.Static | BindingFlags.NonPublic);

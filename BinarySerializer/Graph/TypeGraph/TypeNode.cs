@@ -33,7 +33,6 @@ namespace BinarySerialization.Graph.TypeGraph
         private readonly SerializedType? _serializedType;
         private readonly Type _type;
         private readonly Type _underlyingType;
-        private readonly Lazy<Func<object, object>> _lazyValueGetter;
 
         protected TypeNode(TypeNode parent)
             : base(parent)
@@ -63,7 +62,11 @@ namespace BinarySerialization.Graph.TypeGraph
                 _type = propertyInfo.PropertyType;
 
                 ValueGetter = MagicMethods.MagicFunc(parentType, propertyInfo.GetGetMethod());
-                ValueSetter = MagicMethods.MagicAction(parentType, propertyInfo.GetSetMethod());
+
+                var setMethod = propertyInfo.GetSetMethod();
+
+                if(setMethod != null)
+                    ValueSetter = MagicMethods.MagicAction(parentType, setMethod);
             }
             else if (fieldInfo != null)
             {

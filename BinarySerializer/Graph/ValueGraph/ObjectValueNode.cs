@@ -42,9 +42,6 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (subType.ConstructorParameterNames.Length == 0)
                 {
                     value = subType.Constructor.Invoke(null);
-
-                    foreach (var child in serializableChildren)
-                        child.TypeNode.ValueSetter(value, child.Value);
                 }
                 else
                 {
@@ -56,10 +53,17 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     value = subType.Constructor.Invoke(parameterValues);
 
-                    var remainingChildren = Children.Except(parameterizedChildren);
+                    serializableChildren = Children.Except(parameterizedChildren);
+                }
 
-                    foreach (var child in remainingChildren)
-                        child.TypeNode.ValueSetter(value, child.Value);
+                foreach (var child in serializableChildren)
+                {
+                    var setter = child.TypeNode.ValueSetter;
+
+                    if(setter == null)
+                        throw new InvalidOperationException("No public setter.");
+
+                    setter(value, child.Value);
                 }
 
                 return value;

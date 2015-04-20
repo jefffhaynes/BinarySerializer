@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Misc
@@ -7,6 +7,7 @@ namespace BinarySerialization.Test.Misc
     public class ImmutableTests : TestBase
     {
         [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
         public void PrivateSetterTest()
         {
             var expected = new PrivateSetterClass();
