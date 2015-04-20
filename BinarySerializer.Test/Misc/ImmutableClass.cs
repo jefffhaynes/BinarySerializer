@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Reflection.Emit;
 
 namespace BinarySerialization.Test.Misc
 {
     public class ImmutableClass
     {
+        public ImmutableClass(string value, string value2)
+        {
+            throw new NotImplementedException();
+        }
+
         public ImmutableClass(int value, int value2)
         {
             Value = value;

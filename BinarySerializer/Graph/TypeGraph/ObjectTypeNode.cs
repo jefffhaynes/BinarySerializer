@@ -12,26 +12,27 @@ namespace BinarySerialization.Graph.TypeGraph
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
         private const BindingFlags ConstructorBindingFlags = BindingFlags.Instance | BindingFlags.Public;
+        private readonly object _subTypesLock = new object();
+        private IDictionary<Type, SubTypeInfo> _subTypes;
+        private bool _subTypesConstructed;
 
         public ObjectTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
-            Construct();
         }
 
         public ObjectTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
             : base(parent, parentType, memberInfo)
         {
-            Construct();
         }
-
-        private IDictionary<Type, SubTypeInfo> _subTypes;
-        private readonly object _subTypesLock = new object();
 
         public IDictionary<Type, object> SubTypeKeys { get; private set; }
 
         private void Construct()
         {
             if (IgnoreAttribute != null)
+                return;
+
+            if (_subTypesConstructed)
                 return;
 
             _subTypes = new Dictionary<Type, SubTypeInfo> {{Type, CreateSubTypeInfo(Type)}};
@@ -41,19 +42,36 @@ namespace BinarySerialization.Graph.TypeGraph
                 return;
 
             /* Get subtype keys */
-            if(SubtypeBinding.BindingMode == BindingMode.TwoWay)
-                SubTypeKeys = SubtypeAttributes.ToDictionary(attribute => attribute.Subtype, attribute => attribute.Value);
+            if (SubtypeBinding.BindingMode == BindingMode.TwoWay)
+                SubTypeKeys = SubtypeAttributes.ToDictionary(attribute => attribute.Subtype,
+                    attribute => attribute.Value);
 
             /* Generate subtype children */
-            IEnumerable<Type> subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
+            var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
 
-            foreach (Type subType in subTypes)
+            foreach (var subType in subTypes)
                 GenerateChildren(subType);
+
+            _subTypesConstructed = true;
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new ObjectValueNode(parent, Name, this);
+        }
+
+        public SubTypeInfo GetSubType(Type type)
+        {
+            lock (_subTypesLock)
+            {
+                Construct();
+
+                /* If this is a type we've never seen before let's update our reference types. */
+                if (!_subTypes.ContainsKey(type))
+                    _subTypes.Add(type, CreateSubTypeInfo(type));
+
+                return _subTypes[type];
+            }
         }
 
         private void GenerateChildren(Type type)
@@ -64,18 +82,6 @@ namespace BinarySerialization.Graph.TypeGraph
                 {
                     _subTypes.Add(type, CreateSubTypeInfo(type));
                 }
-            }
-        }
-
-        public SubTypeInfo GetSubType(Type type)
-        {
-            lock (_subTypesLock)
-            {
-                /* If this is a type we've never seen before let's update our reference types. */
-                if (!_subTypes.ContainsKey(type))
-                    _subTypes.Add(type, CreateSubTypeInfo(type));
-
-                return _subTypes[type];
             }
         }
 
@@ -90,16 +96,16 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             IEnumerable<MemberInfo> properties = parentType.GetProperties(MemberBindingFlags);
             IEnumerable<MemberInfo> fields = parentType.GetFields(MemberBindingFlags);
-            IEnumerable<MemberInfo> all = properties.Union(fields);
+            var all = properties.Union(fields);
 
-            List<TypeNode> children =
+            var children =
                 all.Select(memberInfo => GenerateChild(parentType, memberInfo)).OrderBy(child => child.Order).ToList();
 
-            List<TypeNode> serializableChildren = children.Where(child => child.IgnoreAttribute == null).ToList();
+            var serializableChildren = children.Where(child => child.IgnoreAttribute == null).ToList();
 
             if (serializableChildren.Count > 1)
             {
-                TypeNode unorderedChild = serializableChildren.FirstOrDefault(child => child.Order == null);
+                var unorderedChild = serializableChildren.FirstOrDefault(child => child.Order == null);
 
                 if (unorderedChild != null)
                     throw new InvalidOperationException(
@@ -108,7 +114,7 @@ namespace BinarySerialization.Graph.TypeGraph
                             "All serializable fields or properties in a class with more than one member must specify a FieldOrder attribute.",
                             unorderedChild.Name));
 
-                IEnumerable<IGrouping<int?, TypeNode>> orderGroups = serializableChildren.GroupBy(child => child.Order);
+                var orderGroups = serializableChildren.GroupBy(child => child.Order);
 
                 if (orderGroups.Count() != serializableChildren.Count)
                     throw new InvalidOperationException("All fields must have a unique order number.");
@@ -116,7 +122,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (parentType.BaseType != null)
             {
-                IEnumerable<TypeNode> baseChildren = GenerateChildrenImpl(parentType.BaseType);
+                var baseChildren = GenerateChildrenImpl(parentType.BaseType);
                 return baseChildren.Concat(children);
             }
 

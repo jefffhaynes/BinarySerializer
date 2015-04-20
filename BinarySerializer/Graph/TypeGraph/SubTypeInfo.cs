@@ -14,6 +14,7 @@ namespace BinarySerialization.Graph.TypeGraph
             var validConstructors =
                 constructors.Where(constructor => constructor.GetParameters().Count() <= Children.Count());
 
+            // TODO CHECK TYPES
             var constructorParameterMap = validConstructors.Select(constructor => new { Constructor = constructor, ParameterMap = constructor.GetParameters()
                 .Join(Children, parameter => parameter.Name.ToLower(), child => child.Name.ToLower(),
                     (parameter, child) => parameter.Name)});

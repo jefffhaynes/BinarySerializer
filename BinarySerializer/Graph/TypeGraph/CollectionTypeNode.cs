@@ -5,11 +5,14 @@ namespace BinarySerialization.Graph.TypeGraph
 {
     internal abstract class CollectionTypeNode : ContainerTypeNode
     {
+        private readonly Lazy<TypeNode> _lazyChild; 
+
         protected CollectionTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
             object terminationValue;
             TerminationChild = GetTerminationChild(out terminationValue);
             TerminationValue = terminationValue;
+            _lazyChild = new Lazy<TypeNode>(() => GenerateChild(ChildType));
         }
 
         protected CollectionTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
@@ -17,11 +20,15 @@ namespace BinarySerialization.Graph.TypeGraph
             object terminationValue;
             TerminationChild = GetTerminationChild(out terminationValue);
             TerminationValue = terminationValue;
+            _lazyChild = new Lazy<TypeNode>(() => GenerateChild(ChildType));
         }
 
         public Type ChildType { get; set; }
 
-        public TypeNode Child { get; set; }
+        public TypeNode Child
+        {
+            get { return _lazyChild.Value; }
+        }
 
         public TypeNode TerminationChild { get; private set; }
 

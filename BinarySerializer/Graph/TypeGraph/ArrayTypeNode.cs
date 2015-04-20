@@ -9,14 +9,12 @@ namespace BinarySerialization.Graph.TypeGraph
         public ArrayTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
             ChildType = Type.GetElementType();
-            Child = GenerateChild(ChildType);
         }
 
         public ArrayTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
             : base(parent, parentType, memberInfo)
         {
             ChildType = Type.GetElementType();
-            Child = GenerateChild(ChildType);
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)

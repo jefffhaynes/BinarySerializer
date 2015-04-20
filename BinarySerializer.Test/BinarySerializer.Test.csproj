@@ -82,6 +82,15 @@
     <Compile Include="Events\EventTestClass.cs" />
     <Compile Include="Events\EventTestInnerClass.cs" />
     <Compile Include="Events\EventTests.cs" />
+    <Compile Include="Issues\Issue12\CatChunk.cs" />
+    <Compile Include="Issues\Issue12\Chunk.cs" />
+    <Compile Include="Issues\Issue12\ChunkContainer.cs" />
+    <Compile Include="Issues\Issue12\ChunkType.cs" />
+    <Compile Include="Issues\Issue12\FormChunk.cs" />
+    <Compile Include="Issues\Issue12\IsEvenConverter.cs" />
+    <Compile Include="Issues\Issue12\Issue12Tests.cs" />
+    <Compile Include="Issues\Issue12\ListChunk.cs" />
+    <Compile Include="Issues\Issue12\RefeChunk.cs" />
     <Compile Include="Issues\Issue9\ElementClass.cs" />
     <Compile Include="Issues\Issue9\Entry.cs" />
     <Compile Include="Issues\Issue9\Issue9Tests.cs" />
@@ -115,6 +124,8 @@
     <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
     <Compile Include="Misc\NullTrailingMemberTests.cs" />
     <Compile Include="Misc\ExtensionMethodTests.cs" />
+    <Compile Include="Misc\RecursiveGraphClass.cs" />
+    <Compile Include="Misc\RecursiveGraphTests.cs" />
     <Compile Include="Primitives\ContainedStringClass.cs" />
     <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryChildClass.cs" />

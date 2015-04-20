@@ -10,13 +10,11 @@ namespace BinarySerialization.Graph.TypeGraph
         public ListTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
             ChildType = GetChildType(Type);
-            Child = GenerateChild(ChildType);
         }
 
         public ListTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
             ChildType = GetChildType(Type);
-            Child = GenerateChild(ChildType);
         }
 
         private Type GetChildType(Type collectionType)
