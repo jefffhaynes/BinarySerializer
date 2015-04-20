@@ -119,7 +119,7 @@ namespace BinarySerialization.Graph.TypeGraph
             var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
             SerializeWhenAttributes = new ReadOnlyCollection<SerializeWhenAttribute>(serializeWhenAttributes);
 
-            if (SerializeWhenAttributes.Any())
+            if (SerializeWhenAttributes.Count > 0)
             {
                 SerializeWhenBindings = new ReadOnlyCollection<ConditionalBinding>(
                     serializeWhenAttributes.Select(

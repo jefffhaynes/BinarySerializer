@@ -22,7 +22,6 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public List<ValueNode> Children { get; set; }
 
-
         public virtual Encoding Encoding
         {
             get

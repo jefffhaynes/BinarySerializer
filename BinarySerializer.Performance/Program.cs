@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using BinarySerialization.Test.Issues.Issue9;
 
 namespace BinarySerialization.Performance
 {

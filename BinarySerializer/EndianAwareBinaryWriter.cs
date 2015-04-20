@@ -9,10 +9,6 @@ namespace BinarySerialization
     /// </summary>
     public class EndianAwareBinaryWriter : BinaryWriter
     {
-        public EndianAwareBinaryWriter()
-        {
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="EndianAwareBinaryWriter"/> class based on the specified
         /// stream and using UTF-8 encoding.
@@ -55,11 +51,6 @@ namespace BinarySerialization
         /// The byte ordering to use.
         /// </summary>
         public Endianness Endianness { get; set; }
-
-        public void SetStream(Stream stream)
-        {
-            OutStream = stream;
-        }
 
         public override void Write(Int16 value)
         {

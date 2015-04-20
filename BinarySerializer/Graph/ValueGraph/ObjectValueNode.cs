@@ -7,14 +7,13 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ObjectValueNode : ValueNode
     {
+        private object _cachedValue;
+        private Type _valueType;
+
         public ObjectValueNode(Node parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
         }
-
-        private Type _valueType;
-
-        private object _cachedValue;
 
         public override object Value
         {
@@ -33,22 +32,42 @@ namespace BinarySerialization.Graph.ValueGraph
                 var objectTypeNode = (ObjectTypeNode) TypeNode;
                 var subType = objectTypeNode.GetSubType(_valueType);
 
-                if (subType.ParameterlessConstructor == null)
-                    throw new InvalidOperationException("No parameterless constructor.");
-
-                var value = subType.ParameterlessConstructor.Invoke(null);
-
                 var serializableChildren = GetSerializableChildren();
 
-                foreach (var child in serializableChildren)
-                    child.TypeNode.ValueSetter(value, child.Value);
+                if (subType.Constructor == null)
+                    throw new InvalidOperationException("No public constructors.");
+
+                object value;
+
+                if (subType.ConstructorParameterNames.Length == 0)
+                {
+                    value = subType.Constructor.Invoke(null);
+
+                    foreach (var child in serializableChildren)
+                        child.TypeNode.ValueSetter(value, child.Value);
+                }
+                else
+                {
+                    var parameterizedChildren = subType.ConstructorParameterNames.Join(serializableChildren,
+                        parameter => parameter, serializableChild => serializableChild.Name.ToLower(),
+                        (parameter, serializableChild) => serializableChild).ToList();
+
+                    var parameterValues = parameterizedChildren.Select(child => child.Value).ToArray();
+
+                    value = subType.Constructor.Invoke(parameterValues);
+
+                    var remainingChildren = Children.Except(parameterizedChildren);
+
+                    foreach (var child in remainingChildren)
+                        child.TypeNode.ValueSetter(value, child.Value);
+                }
 
                 return value;
             }
 
             set
             {
-                if (Children.Any())
+                if (Children.Count > 0)
                     throw new InvalidOperationException("Value already set.");
 
                 if (value == null)
@@ -83,12 +102,14 @@ namespace BinarySerialization.Graph.ValueGraph
             foreach (var child in serializableChildren)
             {
                 if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
-                    eventShuttle.OnMemberSerializing(this, child.Name, serializationContextLazy.Value, stream.GlobalRelativePosition);
+                    eventShuttle.OnMemberSerializing(this, child.Name, serializationContextLazy.Value,
+                        stream.GlobalRelativePosition);
 
                 child.Serialize(stream, eventShuttle);
 
                 if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
-                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContextLazy.Value, stream.GlobalRelativePosition);
+                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContextLazy.Value,
+                        stream.GlobalRelativePosition);
             }
 
             /* Check if we need to pad out object */
@@ -126,7 +147,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (_valueType == null)
                 return;
 
-            var typeNode = (ObjectTypeNode)TypeNode;
+            var typeNode = (ObjectTypeNode) TypeNode;
 
             var subType = typeNode.GetSubType(_valueType);
             Children = new List<ValueNode>(subType.Children.Select(child => child.CreateSerializer(this)));
@@ -136,7 +157,8 @@ namespace BinarySerialization.Graph.ValueGraph
             foreach (var child in GetSerializableChildren())
             {
                 if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
-                    eventShuttle.OnMemberDeserializing(this, child.Name, serializationContextLazy.Value, stream.GlobalRelativePosition);
+                    eventShuttle.OnMemberDeserializing(this, child.Name, serializationContextLazy.Value,
+                        stream.GlobalRelativePosition);
 
                 if (ShouldTerminate(stream))
                     break;
@@ -144,7 +166,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 child.Deserialize(stream, eventShuttle);
 
                 if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
-                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, serializationContextLazy.Value, stream.GlobalRelativePosition);
+                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, serializationContextLazy.Value,
+                        stream.GlobalRelativePosition);
             }
 
             /* Check if we need to read past padding */

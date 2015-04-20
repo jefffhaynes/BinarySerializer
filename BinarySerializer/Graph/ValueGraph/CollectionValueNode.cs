@@ -114,7 +114,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 return streamLimiter.RelativePosition;
             }).ToList();
 
-            if (!childLengths.Any())
+            if (childLengths.Count == 0)
                 return 0;
 
             var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();

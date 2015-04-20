@@ -6,18 +6,31 @@ namespace BinarySerialization.Graph.TypeGraph
 {
     internal class SubTypeInfo
     {
-        public SubTypeInfo(ConstructorInfo parameterlessConstructor, 
-            IEnumerable<ConstructorInfo> constructors,
+        public SubTypeInfo(IEnumerable<ConstructorInfo> constructors,
             IEnumerable<TypeNode> children)
         {
-            ParameterlessConstructor = parameterlessConstructor;
-            Constructors = constructors.ToArray();
             Children = children.ToArray();
+
+            var validConstructors =
+                constructors.Where(constructor => constructor.GetParameters().Count() <= Children.Count());
+
+            var constructorParameterMap = validConstructors.Select(constructor => new { Constructor = constructor, ParameterMap = constructor.GetParameters()
+                .Join(Children, parameter => parameter.Name.ToLower(), child => child.Name.ToLower(),
+                    (parameter, child) => parameter.Name)});
+
+            var bestConstructor = constructorParameterMap.OrderByDescending(constructor => constructor.ParameterMap.Count()).FirstOrDefault();
+
+            if (bestConstructor == null)
+                return;
+
+            Constructor = bestConstructor.Constructor;
+
+            ConstructorParameterNames = bestConstructor.ParameterMap.ToArray();
         }
 
-        public ConstructorInfo ParameterlessConstructor { get; private set; }
+        public ConstructorInfo Constructor { get; private set; }
 
-        public ConstructorInfo[] Constructors { get; private set; }
+        public string[] ConstructorParameterNames { get; private set; }
 
         public TypeNode[] Children { get; private set; }
     }

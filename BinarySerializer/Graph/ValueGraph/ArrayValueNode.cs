@@ -29,7 +29,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             set
             {
-                if(Children.Any())
+                if(Children.Count > 0)
                     throw new InvalidOperationException("Value already set.");
 
                 if (value == null)

@@ -13,12 +13,12 @@ namespace BinarySerialization.Test.Misc
             Roundtrip(expected);
         }
 
-        //[TestMethod]
-        //public void ImmutableTest()
-        //{
-        //    var expected = new ImmutableClass(3);
-        //    var actual = Roundtrip(expected);
-        //    Assert.AreEqual(expected.Value, actual.Value);
-        //}
+        [TestMethod]
+        public void ImmutableTest()
+        {
+            var expected = new ImmutableClass(3, 4);
+            var actual = Roundtrip(expected);
+            Assert.AreEqual(expected.Value, actual.Value);
+        }
     }
 }

@@ -81,10 +81,9 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private SubTypeInfo CreateSubTypeInfo(Type type)
         {
-            var parameterlessConstructor = type.GetConstructor(new Type[0]);
             var constructors = type.GetConstructors(ConstructorBindingFlags);
             var children = GenerateChildrenImpl(type);
-            return new SubTypeInfo(parameterlessConstructor, constructors, children);
+            return new SubTypeInfo(constructors, children);
         }
 
         private IEnumerable<TypeNode> GenerateChildrenImpl(Type parentType)
