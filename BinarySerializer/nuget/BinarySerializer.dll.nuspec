@@ -8,7 +8,7 @@
     <projectUrl>https://github.com/jefffhaynes/BinarySerializer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level.</description>
-    <releaseNotes>Bug fixes, support for parameterized constructors, optimizations.</releaseNotes>
+    <releaseNotes>Changed to PCL profile 344 for Windows Phone 8.1 support.  Support for recursive graphs.  Support for immutable types.  Optimizations, bug fixes.</releaseNotes>
     <tags>Serialization</tags>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
   </metadata>
