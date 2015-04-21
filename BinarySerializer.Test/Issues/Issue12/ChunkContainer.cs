@@ -21,10 +21,10 @@
 
         [FieldOrder(2)]
         [FieldLength("ChunkLength")]
-        [Subtype("TypeId", ChunkType.Form, typeof(FormChunk))]
-        [Subtype("TypeId", ChunkType.Cat, typeof(CatChunk))]
-        [Subtype("TypeId", ChunkType.List, typeof(ListChunk))]
-        [Subtype("TypeId", ChunkType.Refe, typeof(RefeChunk))]
+        [Subtype("TypeId", "FORM", typeof(FormChunk))]
+        [Subtype("TypeId", "CAT ", typeof(CatChunk))]
+        [Subtype("TypeId", "LIST", typeof(ListChunk))]
+        [Subtype("TypeId", "REFE", typeof(RefeChunk))]
         public Chunk Chunk { get; set; }
 
         [FieldOrder(3)]

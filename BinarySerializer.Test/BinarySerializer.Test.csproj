@@ -85,7 +85,6 @@
     <Compile Include="Issues\Issue12\CatChunk.cs" />
     <Compile Include="Issues\Issue12\Chunk.cs" />
     <Compile Include="Issues\Issue12\ChunkContainer.cs" />
-    <Compile Include="Issues\Issue12\ChunkType.cs" />
     <Compile Include="Issues\Issue12\FormChunk.cs" />
     <Compile Include="Issues\Issue12\IsEvenConverter.cs" />
     <Compile Include="Issues\Issue12\Issue12Tests.cs" />

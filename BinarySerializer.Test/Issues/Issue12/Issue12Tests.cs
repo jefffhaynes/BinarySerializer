@@ -9,25 +9,42 @@ namespace BinarySerialization.Test.Issues.Issue12
         [TestMethod]
         public void Roundtrip12()
         {
-            var expected = new FormChunk
+            var expected = new ChunkContainer
             {
-                Chunks = new List<ChunkContainer>
+                Chunk = new FormChunk
                 {
-                    new ChunkContainer
+                    TypeId = "PTCH",
+                    Chunks = new List<ChunkContainer>
                     {
-                        Chunk = new CatChunk
+                        new ChunkContainer
                         {
-                            Chunks = new List<ChunkContainer>
+                            Chunk = new CatChunk
                             {
-                                new ChunkContainer(new RefeChunk {SomeStuffInThisChunk = "hello"}),
-                                new ChunkContainer(new RefeChunk {SomeStuffInThisChunk = "world"}),
+                                Chunks = new List<ChunkContainer>
+                                {
+                                    new ChunkContainer(new RefeChunk {SomeStuffInThisChunk = "hello"}),
+                                    new ChunkContainer(new RefeChunk {SomeStuffInThisChunk = "worlds"}),
+                                }
                             }
                         }
                     }
                 }
             };
 
-            Roundtrip(expected);
+            Roundtrip(expected, new[] 
+            {
+                (byte)'F', (byte)'O', (byte)'R', (byte)'M', 
+                (byte)0, (byte)0, (byte)0, (byte)40, 
+                (byte)'P', (byte)'T', (byte)'C', (byte)'H', 
+                (byte)'C', (byte)'A', (byte)'T', (byte)' ',
+                (byte)0, (byte)0, (byte)0, (byte)28, 
+                (byte)'R', (byte)'E', (byte)'F', (byte)'E',
+                (byte)0, (byte)0, (byte)0, (byte)5, 
+                (byte)'h', (byte)'e', (byte)'l', (byte)'l', (byte)'o',
+                (byte)0,
+                (byte)'R', (byte)'E', (byte)'F', (byte)'E',
+                (byte)0, (byte)0, (byte)0, (byte)6,
+                (byte)'w', (byte)'o', (byte)'r', (byte)'l', (byte)'d', (byte)'s' });
         }
     }
 }
