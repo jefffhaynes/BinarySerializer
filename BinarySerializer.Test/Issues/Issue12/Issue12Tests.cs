@@ -60,5 +60,11 @@ namespace BinarySerialization.Test.Issues.Issue12
         {
             var actual = Deserialize<ChunkContainer>(@"Issues/Issue12/TestFiles/2Z2S.sxt");
         }
+
+        [TestMethod]
+        public void NoRefeTest()
+        {
+            var actual = Deserialize<ChunkContainer>(@"Issues/Issue12/TestFiles/Init Patch 8.1.5679.sxt");
+        }
     }
 }

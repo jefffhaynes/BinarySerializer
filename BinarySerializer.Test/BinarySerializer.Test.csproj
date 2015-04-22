@@ -82,14 +82,19 @@
     <Compile Include="Events\EventTestClass.cs" />
     <Compile Include="Events\EventTestInnerClass.cs" />
     <Compile Include="Events\EventTests.cs" />
+    <Compile Include="Issues\Issue12\BeerChunk.cs" />
+    <Compile Include="Issues\Issue12\BodyChunk.cs" />
     <Compile Include="Issues\Issue12\CatChunk.cs" />
     <Compile Include="Issues\Issue12\Chunk.cs" />
     <Compile Include="Issues\Issue12\ChunkContainer.cs" />
+    <Compile Include="Issues\Issue12\DescChunk.cs" />
     <Compile Include="Issues\Issue12\FormChunk.cs" />
     <Compile Include="Issues\Issue12\IsEvenConverter.cs" />
     <Compile Include="Issues\Issue12\Issue12Tests.cs" />
     <Compile Include="Issues\Issue12\ListChunk.cs" />
+    <Compile Include="Issues\Issue12\ParmChunk.cs" />
     <Compile Include="Issues\Issue12\RefeChunk.cs" />
+    <Compile Include="Issues\Issue12\SnaxChunk.cs" />
     <Compile Include="Issues\Issue9\ElementClass.cs" />
     <Compile Include="Issues\Issue9\Entry.cs" />
     <Compile Include="Issues\Issue9\Issue9Tests.cs" />
@@ -200,7 +205,17 @@
       <Name>BinarySerializer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Issues\Issue12\TestFiles\1Z1S.sxt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Issues\Issue12\TestFiles\2Z2S.sxt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Issues\Issue12\TestFiles\Init Patch 8.1.5679.sxt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

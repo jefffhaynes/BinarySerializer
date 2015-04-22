@@ -58,5 +58,13 @@ namespace BinarySerialization.Test
 
             return result;
         }
+
+        protected T Deserialize<T>(string filename)
+        {
+            using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+            {
+                return Serializer.Deserialize<T>(stream);
+            }
+        }
     }
 }
