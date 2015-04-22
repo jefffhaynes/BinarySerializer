@@ -205,17 +205,6 @@
       <Name>BinarySerializer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Issues\Issue12\TestFiles\1Z1S.sxt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Issues\Issue12\TestFiles\2Z2S.sxt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Issues\Issue12\TestFiles\Init Patch 8.1.5679.sxt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
