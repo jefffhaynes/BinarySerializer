@@ -48,5 +48,11 @@ namespace BinarySerialization.Test.Issues.Issue12
                 (byte)0, (byte)0, (byte)0, (byte)6,
                 (byte)'w', (byte)'o', (byte)'r', (byte)'l', (byte)'d', (byte)'s' });
         }
+
+        [TestMethod]
+        public void SingleRefeTest()
+        {
+            var actual = Deserialize<ChunkContainer>(@"Issues/Issue12/TestFiles/1Z1S.sxt");
+        }
     }
 }

@@ -2,6 +2,6 @@
 {
     public class DescChunk : Chunk
     {
-        public byte[] Stuff { get; set; }
+        public string Description { get; set; }
     }
 }
