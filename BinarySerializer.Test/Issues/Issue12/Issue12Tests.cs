@@ -20,6 +20,7 @@ namespace BinarySerialization.Test.Issues.Issue12
                         {
                             Chunk = new CatChunk
                             {
+                                TypeId = "REFS",
                                 Chunks = new List<ChunkContainer>
                                 {
                                     new ChunkContainer(new RefeChunk {SomeStuffInThisChunk = "hello"}),
@@ -34,10 +35,11 @@ namespace BinarySerialization.Test.Issues.Issue12
             Roundtrip(expected, new[] 
             {
                 (byte)'F', (byte)'O', (byte)'R', (byte)'M', 
-                (byte)0, (byte)0, (byte)0, (byte)40, 
+                (byte)0, (byte)0, (byte)0, (byte)44, 
                 (byte)'P', (byte)'T', (byte)'C', (byte)'H', 
                 (byte)'C', (byte)'A', (byte)'T', (byte)' ',
-                (byte)0, (byte)0, (byte)0, (byte)28, 
+                (byte)0, (byte)0, (byte)0, (byte)32, 
+                (byte)'R', (byte)'E', (byte)'F', (byte)'S',
                 (byte)'R', (byte)'E', (byte)'F', (byte)'E',
                 (byte)0, (byte)0, (byte)0, (byte)5, 
                 (byte)'h', (byte)'e', (byte)'l', (byte)'l', (byte)'o',

@@ -25,6 +25,9 @@
         [Subtype("TypeId", "CAT ", typeof(CatChunk))]
         [Subtype("TypeId", "LIST", typeof(ListChunk))]
         [Subtype("TypeId", "REFE", typeof(RefeChunk))]
+        [Subtype("TypeId", "DESC", typeof(DescChunk))]
+        [Subtype("TypeId", "BEER", typeof(BeerChunk))]
+        [Subtype("TypeId", "SNAX", typeof(SnaxChunk))]
         public Chunk Chunk { get; set; }
 
         [FieldOrder(3)]
