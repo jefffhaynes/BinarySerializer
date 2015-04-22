@@ -46,7 +46,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 else
                 {
                     var parameterizedChildren = subType.ConstructorParameterNames.Join(serializableChildren,
-                        parameter => parameter, serializableChild => serializableChild.Name.ToLower(),
+                        parameter => parameter.ToLower(), serializableChild => serializableChild.Name.ToLower(),
                         (parameter, serializableChild) => serializableChild).ToList();
 
                     var parameterValues = parameterizedChildren.Select(child => child.Value).ToArray();

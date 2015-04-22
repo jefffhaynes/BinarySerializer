@@ -10,9 +10,9 @@ namespace BinarySerialization.Test.Misc
             throw new NotImplementedException();
         }
 
-        public ImmutableClass(int value, int value2)
+        public ImmutableClass(int valuE, int value2)
         {
-            Value = value;
+            Value = valuE;
             Value2 = value2;
         }
 
