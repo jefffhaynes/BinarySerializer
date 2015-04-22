@@ -54,5 +54,11 @@ namespace BinarySerialization.Test.Issues.Issue12
         {
             var actual = Deserialize<ChunkContainer>(@"Issues/Issue12/TestFiles/1Z1S.sxt");
         }
+
+        [TestMethod]
+        public void MultipleRefeTest()
+        {
+            var actual = Deserialize<ChunkContainer>(@"Issues/Issue12/TestFiles/2Z2S.sxt");
+        }
     }
 }
