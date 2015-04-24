@@ -120,6 +120,7 @@
     <Compile Include="Misc\ImmutableClass.cs" />
     <Compile Include="Misc\ImmutableClass2.cs" />
     <Compile Include="Misc\ImmutableClass3.cs" />
+    <Compile Include="Misc\ImmutableClass4.cs" />
     <Compile Include="Misc\ImmutableTests.cs" />
     <Compile Include="Misc\IntArray64K.cs" />
     <Compile Include="Misc\IOExceptionTest.cs" />

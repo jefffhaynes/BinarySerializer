@@ -37,5 +37,14 @@ namespace BinarySerialization.Test.Misc
             var actual = Roundtrip(expected);
             Assert.AreEqual(expected.Value, actual.Value);
         }
+
+        [TestMethod]
+        public void ImmutableWithNullableParametersAndIgnoreTest()
+        {
+            var expected = new ImmutableClass4(4, 5);
+            var actual = Roundtrip(expected);
+            Assert.AreEqual(expected.Header, actual.Header);
+            Assert.IsNull(actual.ResponseId);
+        }
     }
 }

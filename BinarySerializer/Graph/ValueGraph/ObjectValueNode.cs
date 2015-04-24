@@ -32,7 +32,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 var objectTypeNode = (ObjectTypeNode) TypeNode;
                 var subType = objectTypeNode.GetSubType(_valueType);
 
-                var serializableChildren = GetSerializableChildren();
+                var serializableChildren = GetSerializableChildren().ToList();
 
                 if (subType.Constructor == null)
                     throw new InvalidOperationException("No public constructors.");
@@ -53,7 +53,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     value = subType.Constructor.Invoke(parameterValues);
 
-                    serializableChildren = Children.Except(parameterizedChildren);
+                    serializableChildren = serializableChildren.Except(parameterizedChildren).ToList();
                 }
 
                 foreach (var child in serializableChildren)
