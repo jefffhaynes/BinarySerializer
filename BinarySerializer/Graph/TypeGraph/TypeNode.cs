@@ -31,8 +31,6 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private readonly int? _order;
         private readonly SerializedType? _serializedType;
-        private readonly Type _type;
-        private readonly Type _underlyingType;
 
         protected TypeNode(TypeNode parent)
             : base(parent)
@@ -42,8 +40,8 @@ namespace BinarySerialization.Graph.TypeGraph
         protected TypeNode(TypeNode parent, Type type)
             : this(parent)
         {
-            _type = type;
-            _underlyingType = Nullable.GetUnderlyingType(Type);
+            Type = type;
+            NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
         }
 
         protected TypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
@@ -59,7 +57,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (propertyInfo != null)
             {
-                _type = propertyInfo.PropertyType;
+                Type = propertyInfo.PropertyType;
 
                 ValueGetter = MagicMethods.MagicFunc(parentType, propertyInfo.GetGetMethod());
 
@@ -70,14 +68,14 @@ namespace BinarySerialization.Graph.TypeGraph
             }
             else if (fieldInfo != null)
             {
-                _type = fieldInfo.FieldType;
+                Type = fieldInfo.FieldType;
 
                 ValueGetter = fieldInfo.GetValue;
                 ValueSetter = fieldInfo.SetValue;
             }
             else throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
 
-            _underlyingType = Nullable.GetUnderlyingType(Type);
+            NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
             var attributes = memberInfo.GetCustomAttributes(true);
 
@@ -179,10 +177,11 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-        public Type Type
-        {
-            get { return _underlyingType ?? _type; }
-        }
+        public Type Type { get; private set; }
+
+        public Type NullableUnderlyingType { get; private set; }
+
+        public Type BaseSerializedType { get { return NullableUnderlyingType ?? Type; } }
 
         public Action<object, object> ValueSetter { get; private set; }
 
@@ -216,7 +215,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public SerializedType GetSerializedType(Type referenceType = null)
         {
             if (referenceType == null)
-                referenceType = Type;
+                referenceType = BaseSerializedType;
 
             if (_serializedType != null && _serializedType.Value != SerializedType.Default)
                 return _serializedType.Value;

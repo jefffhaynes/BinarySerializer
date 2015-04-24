@@ -34,7 +34,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 ? converter(value)
                 : value;
 
-            Value = Enum.ToObject(TypeNode.Type, underlyingValue);
+            Value = Enum.ToObject(TypeNode.BaseSerializedType, underlyingValue);
         }
     }
 }

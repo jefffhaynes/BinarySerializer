@@ -28,12 +28,12 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             var serializedType = GetSerializedType();
 
-            var values = Enum.GetValues(Type).Cast<Enum>();
+            var values = Enum.GetValues(BaseSerializedType).Cast<Enum>();
 
             /* Get enum attributes */
             var enumAttributes = values.ToDictionary(value => value, value =>
             {
-                var memberInfo = Type.GetMember(value.ToString()).Single();
+                var memberInfo = BaseSerializedType.GetMember(value.ToString()).Single();
                 return (SerializeAsEnumAttribute) memberInfo.GetCustomAttributes(
                     typeof (SerializeAsEnumAttribute),
                     false).FirstOrDefault();
@@ -91,7 +91,7 @@ namespace BinarySerialization.Graph.TypeGraph
             //        throw new InvalidOperationException("Field length cannot be less than max enum name length.");
             //}
 
-            EnumInfo.UnderlyingType = Enum.GetUnderlyingType(Type);
+            EnumInfo.UnderlyingType = Enum.GetUnderlyingType(BaseSerializedType);
 
             if (EnumInfo.SerializedType == SerializedType.Default)
             {
