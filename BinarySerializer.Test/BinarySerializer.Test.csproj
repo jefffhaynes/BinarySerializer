@@ -135,6 +135,10 @@
     <Compile Include="Misc\RecursiveGraphTests.cs" />
     <Compile Include="Primitives\ContainedStringClass.cs" />
     <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingBaseClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingContainerClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingInnerClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryChildClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryClass.cs" />
     <Compile Include="Unknown\InvalidUnknownTypeClass.cs" />

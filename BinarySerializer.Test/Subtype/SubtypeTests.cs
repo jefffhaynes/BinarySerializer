@@ -42,5 +42,20 @@ namespace BinarySerialization.Test.Subtype
         //    Assert.AreEqual(SubclassType.B, actual.Subtype);
         //    Assert.IsInstanceOfType(actual.Field, typeof(SubclassB));
         //}
+
+        //[TestMethod]
+        //public void AncestorSubtypeBindingTest()
+        //{
+        //    var expected = new AncestorSubtypeBindingContainerClass
+        //    {
+        //        AncestorSubtypeBindingClass =
+        //            new AncestorSubtypeBindingClass
+        //            {
+        //                InnerClass = new AncestorSubtypeBindingInnerClass {Value = "hello"}
+        //            }
+        //    };
+
+        //    var actual = Roundtrip(expected);
+        //}
     }
 }
