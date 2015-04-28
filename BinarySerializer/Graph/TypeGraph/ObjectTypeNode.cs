@@ -13,9 +13,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private const BindingFlags ConstructorBindingFlags = BindingFlags.Instance | BindingFlags.Public;
         private readonly object _subTypesLock = new object();
-        //private IDictionary<Type, SubTypeInfo> _subTypes;
 
-        public List<TypeNode> Children;
+        public List<TypeNode> Children { get; private set; }
 
         public ConstructorInfo Constructor { get; private set; }
 
@@ -42,11 +41,9 @@ namespace BinarySerialization.Graph.TypeGraph
             if (_subTypes != null)
                 return;
 
-
             Children = GenerateChildrenImpl(Type).ToList();
 
             _subTypes = new Dictionary<Type, ObjectTypeNode>();
-           // _subTypes = new Dictionary<Type, SubTypeInfo> {{Type, CreateSubTypeInfo(Type)}};
 
             if (!Type.IsAbstract)
             {
