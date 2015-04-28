@@ -31,8 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 		BinarySerializer.Docs\WhenBinding.png = BinarySerializer.Docs\WhenBinding.png
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializer.PhoneApp", "BinarySerializer.PhoneApp\BinarySerializer.PhoneApp.csproj", "{7B614FA4-B001-46C5-A6F0-5D773CE39E22}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,30 +103,6 @@ Global
 		{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}.Release|x86.ActiveCfg = Release|Any CPU
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|ARM.ActiveCfg = Debug|ARM
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|ARM.Build.0 = Debug|ARM
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|ARM.Deploy.0 = Debug|ARM
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|Mixed Platforms.Deploy.0 = Debug|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|x86.ActiveCfg = Debug|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|x86.Build.0 = Debug|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Debug|x86.Deploy.0 = Debug|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|ARM.ActiveCfg = Release|ARM
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|ARM.Build.0 = Release|ARM
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|ARM.Deploy.0 = Release|ARM
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|Mixed Platforms.Build.0 = Release|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|Mixed Platforms.Deploy.0 = Release|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|x86.ActiveCfg = Release|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|x86.Build.0 = Release|x86
-		{7B614FA4-B001-46C5-A6F0-5D773CE39E22}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
