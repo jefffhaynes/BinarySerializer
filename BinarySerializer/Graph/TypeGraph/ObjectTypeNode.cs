@@ -13,7 +13,15 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private const BindingFlags ConstructorBindingFlags = BindingFlags.Instance | BindingFlags.Public;
         private readonly object _subTypesLock = new object();
-        private IDictionary<Type, SubTypeInfo> _subTypes;
+        //private IDictionary<Type, SubTypeInfo> _subTypes;
+
+        public List<TypeNode> Children;
+
+        public ConstructorInfo Constructor { get; private set; }
+
+        public string[] ConstructorParameterNames { get; private set; }
+
+        private IDictionary<Type, ObjectTypeNode> _subTypes;
 
         public ObjectTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
@@ -34,7 +42,43 @@ namespace BinarySerialization.Graph.TypeGraph
             if (_subTypes != null)
                 return;
 
-            _subTypes = new Dictionary<Type, SubTypeInfo> {{Type, CreateSubTypeInfo(Type)}};
+
+            Children = GenerateChildrenImpl(Type).ToList();
+
+            _subTypes = new Dictionary<Type, ObjectTypeNode>();
+           // _subTypes = new Dictionary<Type, SubTypeInfo> {{Type, CreateSubTypeInfo(Type)}};
+
+            if (!Type.IsAbstract)
+            {
+                var constructors = Type.GetConstructors(ConstructorBindingFlags);
+
+                var serializableChildren = Children.Where(child => child.IgnoreAttribute == null);
+
+                var validConstructors =
+                    constructors.Where(
+                        constructor => constructor.GetParameters().Count() <= serializableChildren.Count());
+
+                var constructorParameterMap = validConstructors.Select(constructor => new
+                {
+                    Constructor = constructor,
+                    ParameterMap = constructor.GetParameters()
+                        .Join(serializableChildren,
+                            parameter => new {Name = parameter.Name.ToLower(), Type = parameter.ParameterType},
+                            child => new {Name = child.Name.ToLower(), child.Type},
+                            (parameter, child) => parameter.Name)
+                });
+
+                var bestConstructor =
+                    constructorParameterMap.OrderByDescending(constructor => constructor.ParameterMap.Count())
+                        .FirstOrDefault();
+
+                if (bestConstructor == null)
+                    return;
+
+                Constructor = bestConstructor.Constructor;
+
+                ConstructorParameterNames = bestConstructor.ParameterMap.ToArray();
+            }
 
             /* Add subtypes, if any */
             if (SubtypeAttributes == null || SubtypeAttributes.Count <= 0)
@@ -49,7 +93,7 @@ namespace BinarySerialization.Graph.TypeGraph
             var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
 
             foreach (var subType in subTypes)
-                GenerateChildren(subType);
+                GenerateSubtype(subType);
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
@@ -57,36 +101,34 @@ namespace BinarySerialization.Graph.TypeGraph
             return new ObjectValueNode(parent, Name, this);
         }
 
-        public SubTypeInfo GetSubType(Type type)
+        public ObjectTypeNode GetSubType(Type type)
         {
             lock (_subTypesLock)
             {
                 Construct();
 
+                if (type == Type)
+                    return this;
+
                 /* If this is a type we've never seen before let's update our reference types. */
                 if (!_subTypes.ContainsKey(type))
-                    _subTypes.Add(type, CreateSubTypeInfo(type));
+                    _subTypes.Add(type, new ObjectTypeNode((TypeNode)Parent, type));
 
-                return _subTypes[type];
+                var subType = _subTypes[type];
+                subType.Construct();
+                return subType;
             }
         }
 
-        private void GenerateChildren(Type type)
+        private void GenerateSubtype(Type type)
         {
             lock (_subTypesLock)
             {
                 if (!_subTypes.ContainsKey(type))
                 {
-                    _subTypes.Add(type, CreateSubTypeInfo(type));
+                    _subTypes.Add(type, new ObjectTypeNode((TypeNode)Parent, type));
                 }
             }
-        }
-
-        private SubTypeInfo CreateSubTypeInfo(Type type)
-        {
-            var constructors = type.GetConstructors(ConstructorBindingFlags);
-            var children = GenerateChildrenImpl(type);
-            return new SubTypeInfo(constructors, children);
         }
 
         private IEnumerable<TypeNode> GenerateChildrenImpl(Type parentType)

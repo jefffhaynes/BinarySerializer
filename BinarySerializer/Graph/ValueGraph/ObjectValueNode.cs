@@ -81,9 +81,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var valueType = value.GetType();
 
-                var subTypes = typeNode.GetSubType(valueType);
+                var subType = typeNode.GetSubType(valueType);
 
-                Children = new List<ValueNode>(subTypes.Children.Select(child => child.CreateSerializer(this)));
+                Children = new List<ValueNode>(subType.Children.Select(child => child.CreateSerializer(this)));
 
                 var serializableChildren = GetSerializableChildren();
 

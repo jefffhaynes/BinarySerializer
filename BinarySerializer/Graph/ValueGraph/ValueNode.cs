@@ -171,7 +171,10 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (Exception e)
             {
-                string message = string.Format("Error deserializing {0}.", Name);
+                string reference = Name == null
+                    ? string.Format("type '{0}'", TypeNode.Type)
+                    : string.Format("member '{0}'", Name);
+                string message = string.Format("Error deserializing '{0}'.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
             }
         }
