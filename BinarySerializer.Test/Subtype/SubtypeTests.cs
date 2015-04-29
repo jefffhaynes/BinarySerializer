@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Subtype
@@ -36,6 +39,30 @@ namespace BinarySerialization.Test.Subtype
             Assert.AreEqual(((SubSubclassC)actual.Field).SomethingForClassC, ((SubSubclassC)expected.Field).SomethingForClassC);
         }
 
+        [TestMethod]
+        public void RecoverableMissingSubtypeTest()
+        {
+            var expected = new RecoverableMissingSubtypeClass<SuperclassContainer>
+            {
+                Items = new List<SuperclassContainer>
+                {
+                    new SuperclassContainer {Value = new SubclassA()},
+                    new SuperclassContainer {Value = new SubclassB()},
+                    new SuperclassContainer {Value = new SubSubclassC(33)}
+                }
+            };
+
+            var stream = new MemoryStream();
+
+            Serializer.Serialize(stream, expected);
+
+            stream.Position = 0;
+
+            var actual =
+                Serializer.Deserialize<RecoverableMissingSubtypeClass<SuperclassContainerWithMissingSubclass>>(stream);
+
+        }
+
         //[TestMethod]
         //[ExpectedException(typeof(BindingException))]
         //public void MissingSubtypeTest()
@@ -67,6 +94,8 @@ namespace BinarySerialization.Test.Subtype
             };
 
             var actual = Roundtrip(expected);
+            Assert.AreEqual(((AncestorSubtypeBindingClass) expected.AncestorSubtypeBindingClass).InnerClass.Value,
+                ((AncestorSubtypeBindingClass) actual.AncestorSubtypeBindingClass).InnerClass.Value);
         }
 
         [TestMethod]

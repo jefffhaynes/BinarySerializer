@@ -147,6 +147,9 @@
     <Compile Include="Subtype\InvalidSubtypeClass.cs" />
     <Compile Include="Subtype\NonUniqueSubtypeValuesClass.cs" />
     <Compile Include="Subtype\NonUniqueSubtypesClass.cs" />
+    <Compile Include="Subtype\RecoverableMissingSubtypeClass.cs" />
+    <Compile Include="Subtype\SuperclassContainerWithMissingSubclass.cs" />
+    <Compile Include="Subtype\SuperclassContainer.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryChildClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryClass.cs" />
     <Compile Include="Unknown\InvalidUnknownTypeClass.cs" />
