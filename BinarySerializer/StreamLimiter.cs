@@ -10,8 +10,14 @@ namespace BinarySerialization
         private readonly bool _canSeek;
         private readonly long _length;
         private readonly long _maxLength;
+        private readonly bool _unbounded;
 
-        public StreamLimiter(Stream source, long maxLength = long.MaxValue)
+        public StreamLimiter(Stream source) : this(source, long.MaxValue)
+        {
+            _unbounded = true;
+        }
+
+        public StreamLimiter(Stream source, long maxLength)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -60,7 +66,13 @@ namespace BinarySerialization
 
         public bool IsAtLimit
         {
-            get { return Position >= MaxLength; }
+            get
+            {
+                if (_unbounded)
+                    return false;
+
+                return Position >= MaxLength;
+            }
         }
 
         public override bool CanRead
