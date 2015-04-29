@@ -61,6 +61,11 @@ namespace BinarySerialization.Test.Subtype
             var actual =
                 Serializer.Deserialize<RecoverableMissingSubtypeClass<SuperclassContainerWithMissingSubclass>>(stream);
 
+            var actualItems = actual.Items;
+
+            Assert.AreEqual(typeof(SubclassA), actualItems[0].Value.GetType());
+            Assert.IsNull(actualItems[1].Value);
+            Assert.AreEqual(typeof(SubSubclassC), actualItems[2].Value.GetType());
         }
 
         //[TestMethod]
