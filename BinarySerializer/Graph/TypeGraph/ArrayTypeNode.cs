@@ -8,13 +8,19 @@ namespace BinarySerialization.Graph.TypeGraph
     {
         public ArrayTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
-            ChildType = Type.GetElementType();
+            Construct();
         }
 
         public ArrayTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
             : base(parent, parentType, memberInfo)
         {
+            Construct();
+        }
+
+        private void Construct()
+        {
             ChildType = Type.GetElementType();
+            ChildConstructor = ChildType.GetConstructor(new Type[0]);
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)

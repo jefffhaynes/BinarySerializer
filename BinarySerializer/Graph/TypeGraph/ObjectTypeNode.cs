@@ -11,7 +11,6 @@ namespace BinarySerialization.Graph.TypeGraph
         private const BindingFlags MemberBindingFlags =
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
-        private const BindingFlags ConstructorBindingFlags = BindingFlags.Instance | BindingFlags.Public;
         private readonly object _subTypesLock = new object();
 
         public List<TypeNode> Children { get; private set; }

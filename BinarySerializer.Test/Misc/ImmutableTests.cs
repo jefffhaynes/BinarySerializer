@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -54,6 +55,23 @@ namespace BinarySerialization.Test.Misc
         {
             var stream = new MemoryStream(new[] {(byte)0x1});
             Serializer.Deserialize<ImmutableNoPublicConstructorClass>(stream);
+        }
+
+        [TestMethod]
+        public void ImmutableItemsList()
+        {
+            var expected = new List<ImmutableClass>
+            {
+                new ImmutableClass(1, 2),
+                new ImmutableClass(3, 4)
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected[0].Value, actual[0].Value);
+            Assert.AreEqual(expected[0].Value2, actual[0].Value2);
+            Assert.AreEqual(expected[1].Value, actual[1].Value);
+            Assert.AreEqual(expected[1].Value2, actual[1].Value2);
         }
     }
 }

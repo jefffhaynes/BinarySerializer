@@ -9,12 +9,18 @@ namespace BinarySerialization.Graph.TypeGraph
     {
         public ListTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
-            ChildType = GetChildType(Type);
+            Construct();
         }
 
         public ListTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
         {
+            Construct();
+        }
+
+        private void Construct()
+        {
             ChildType = GetChildType(Type);
+            ChildConstructor = ChildType.GetConstructor(new Type[0]);
         }
 
         private Type GetChildType(Type collectionType)

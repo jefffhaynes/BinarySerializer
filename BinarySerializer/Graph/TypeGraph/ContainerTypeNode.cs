@@ -7,6 +7,8 @@ namespace BinarySerialization.Graph.TypeGraph
 {
     internal abstract class ContainerTypeNode : TypeNode
     {
+        protected const BindingFlags ConstructorBindingFlags = BindingFlags.Instance | BindingFlags.Public;
+
         protected ContainerTypeNode(TypeNode parent, Type type)
             : base(parent, type)
         {
