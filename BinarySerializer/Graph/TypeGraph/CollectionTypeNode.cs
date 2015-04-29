@@ -42,7 +42,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 return null;
             }
 
-            terminationValue = SerializeUntilAttribute == null ? null : SerializeUntilAttribute.ConstValue ?? (byte)0;
+            terminationValue = SerializeUntilAttribute.ConstValue;
 
             TypeNode terminationChild = null;
             if (terminationValue != null)

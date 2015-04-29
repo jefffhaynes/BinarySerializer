@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Misc
@@ -45,6 +46,14 @@ namespace BinarySerialization.Test.Misc
             var actual = Roundtrip(expected);
             Assert.AreEqual(expected.Header, actual.Header);
             Assert.IsNull(actual.ResponseId);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ImmutableNoPublicConstructorTest()
+        {
+            var stream = new MemoryStream(new[] {(byte)0x1});
+            Serializer.Deserialize<ImmutableNoPublicConstructorClass>(stream);
         }
     }
 }

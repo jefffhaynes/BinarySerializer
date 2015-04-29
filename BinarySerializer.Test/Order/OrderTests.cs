@@ -24,7 +24,15 @@ namespace BinarySerialization.Test.Order
         [ExpectedException(typeof(InvalidOperationException))]
         public void MultipleMembersNoOrderAttributeShouldThrowTest()
         {
-            var order = new MutlipleMembersInvalidOrderClass();
+            var order = new MutlipleMembersNoOrderClass();
+            Roundtrip(order);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void MultipleMembersDuplicateOrderAttributeShouldThrowTest()
+        {
+            var order = new MutlipleMembersDuplicateOrderClass();
             Roundtrip(order);
         }
 

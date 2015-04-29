@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Subtype
 {
@@ -66,6 +67,38 @@ namespace BinarySerialization.Test.Subtype
             };
 
             var actual = Roundtrip(expected);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void IncompatibleBindingsTest()
+        {
+            var expected = new IncompatibleBindingsClass();
+            Roundtrip(expected);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void InvalidSubtypeTest()
+        {
+            var expected = new InvalidSubtypeClass();
+            Roundtrip(expected);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void NonUniqueSubtypesTest()
+        {
+            var expected = new NonUniqueSubtypesClass();
+            Roundtrip(expected);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void NonUniqueSubtypeValuesTest()
+        {
+            var expected = new NonUniqueSubtypeValuesClass();
+            Roundtrip(expected);
         }
     }
 }

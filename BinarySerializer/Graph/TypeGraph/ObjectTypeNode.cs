@@ -35,9 +35,6 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void Construct()
         {
-            if (IgnoreAttribute != null)
-                return;
-
             if (_subTypes != null)
                 return;
 

@@ -1,6 +1,6 @@
 ﻿namespace BinarySerialization.Test.Order
 {
-    public class MutlipleMembersInvalidOrderClass
+    public class MutlipleMembersNoOrderClass
     {
         public int First { get; set; }
 

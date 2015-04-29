@@ -82,6 +82,8 @@
     <Compile Include="Events\EventTestClass.cs" />
     <Compile Include="Events\EventTestInnerClass.cs" />
     <Compile Include="Events\EventTests.cs" />
+    <Compile Include="Ignore\IgnoreObjectClass.cs" />
+    <Compile Include="Ignore\IgnoreTests.cs" />
     <Compile Include="Issues\Issue12\BeerChunk.cs" />
     <Compile Include="Issues\Issue12\BodyChunk.cs" />
     <Compile Include="Issues\Issue12\CatChunk.cs" />
@@ -121,6 +123,7 @@
     <Compile Include="Misc\ImmutableClass2.cs" />
     <Compile Include="Misc\ImmutableClass3.cs" />
     <Compile Include="Misc\ImmutableClass4.cs" />
+    <Compile Include="Misc\ImmutableNoPublicConstructorClass.cs" />
     <Compile Include="Misc\ImmutableTests.cs" />
     <Compile Include="Misc\IntArray64K.cs" />
     <Compile Include="Misc\IOExceptionTest.cs" />
@@ -133,12 +136,17 @@
     <Compile Include="Misc\ExtensionMethodTests.cs" />
     <Compile Include="Misc\RecursiveGraphClass.cs" />
     <Compile Include="Misc\RecursiveGraphTests.cs" />
+    <Compile Include="Order\MutlipleMembersDuplicateOrderClass.cs" />
     <Compile Include="Primitives\ContainedStringClass.cs" />
     <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingBaseClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingContainerClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingInnerClass.cs" />
+    <Compile Include="Subtype\IncompatibleBindingsClass.cs" />
+    <Compile Include="Subtype\InvalidSubtypeClass.cs" />
+    <Compile Include="Subtype\NonUniqueSubtypeValuesClass.cs" />
+    <Compile Include="Subtype\NonUniqueSubtypesClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryChildClass.cs" />
     <Compile Include="Unknown\BindingAcrossUnknownBoundaryClass.cs" />
     <Compile Include="Unknown\InvalidUnknownTypeClass.cs" />
@@ -172,7 +180,7 @@
     <Compile Include="Offset\BoundOffsetClass.cs" />
     <Compile Include="Offset\ConstOffsetClass.cs" />
     <Compile Include="Offset\OffsetTests.cs" />
-    <Compile Include="Order\MutlipleMembersInvalidOrderClass.cs" />
+    <Compile Include="Order\MutlipleMembersNoOrderClass.cs" />
     <Compile Include="Order\OrderBaseClass.cs" />
     <Compile Include="Order\OrderClass.cs" />
     <Compile Include="Order\OrderDerivedClass.cs" />

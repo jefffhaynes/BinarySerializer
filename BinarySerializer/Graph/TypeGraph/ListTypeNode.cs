@@ -19,11 +19,6 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private Type GetChildType(Type collectionType)
         {
-            if (collectionType.GetGenericArguments().Length > 1)
-            {
-                throw new NotSupportedException("Multiple generic arguments not supported");
-            }
-
             return collectionType.GetGenericArguments().Single();
         }
 

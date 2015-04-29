@@ -152,6 +152,13 @@ namespace BinarySerialization.Graph.TypeGraph
                         throw new InvalidOperationException(
                             "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
                 }
+
+                var invalidSubtype =
+                    SubtypeAttributes.FirstOrDefault(attribute => !Type.IsAssignableFrom(attribute.Subtype));
+
+                if (invalidSubtype != null)
+                    throw new InvalidOperationException(string.Format("{0} is not a subtype of {1}",
+                        invalidSubtype.Subtype, Type));
             }
 
 
@@ -209,7 +216,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public int? Order
         {
-            get { return _order ?? int.MaxValue; }
+            get { return _order; }
         }
 
         public SerializedType GetSerializedType(Type referenceType = null)
