@@ -148,6 +148,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 _valueType = matchingAttribute == null ? null : matchingAttribute.Subtype;
             }
 
+            // skip over if null (this may happen if subtypes are unknown during deserialization)
             if (_valueType != null)
             {
                 var typeNode = (ObjectTypeNode) TypeNode;
