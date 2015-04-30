@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -9,17 +10,28 @@ namespace BinarySerialization.Performance
     {
         private static void Main(string[] args)
         {
-            DoBS(100000);
-            DoBF(100000);
+            var beer = new Beer
+            {
+                Alcohol = 6,
+
+                Brand = "Brand",
+                Sort = new List<SortContainer>
+                {
+                    new SortContainer{Name = "some sort of beer"}
+                },
+                Brewery = "Brasserie Grain d'Orge"
+            };
+
+            DoBS(beer, 100000);
+            DoBF(beer, 100000);
             Console.ReadKey();
         }
 
-        private static void DoBS(int iterations)
+        private static void DoBS<T>(T obj, int iterations)
         {
             var stopwatch = new Stopwatch();
 
             var ser = new BinarySerializer();
-            var obj = new BasicClass();
 
             using (var ms = new MemoryStream())
             {
@@ -42,7 +54,7 @@ namespace BinarySerialization.Performance
                 stopwatch.Start();
                 for (int i = 0; i < iterations; i++)
                 {
-                    ser.Deserialize<BasicClass>(ms);
+                    ser.Deserialize<T>(ms);
                     ms.Position = 0;
                 }
                 stopwatch.Stop();
@@ -51,13 +63,11 @@ namespace BinarySerialization.Performance
             }
         }
 
-        private static void DoBF(int iterations)
+        private static void DoBF(object obj, int iterations)
         {
             var formatter = new BinaryFormatter();
 
             var stopwatch = new Stopwatch();
-
-            var obj = new BasicClass();
 
             using (var ms = new MemoryStream())
             {
