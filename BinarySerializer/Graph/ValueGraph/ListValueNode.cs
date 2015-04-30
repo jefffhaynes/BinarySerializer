@@ -23,7 +23,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var typeNode = (ListTypeNode)TypeNode;
 
-                var list = (IList) typeNode.Constructor.Invoke(null);
+                var list = (IList) Activator.CreateInstance(typeNode.Type);
 
                 foreach (var child in Children)
                     list.Add(child.Value);
@@ -51,7 +51,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     {
                         var item = typeNode.ChildType == typeof (string)
                             ? string.Empty
-                            : typeNode.ChildConstructor.Invoke(null);
+                            : Activator.CreateInstance(typeNode.ChildType);
 
                         list.Add(item);
                     }

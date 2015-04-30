@@ -20,7 +20,6 @@ namespace BinarySerialization.Graph.TypeGraph
         private void Construct()
         {
             ChildType = GetChildType(Type);
-            ChildConstructor = ChildType.GetConstructor(new Type[0]);
         }
 
         private Type GetChildType(Type collectionType)

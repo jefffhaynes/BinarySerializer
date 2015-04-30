@@ -41,7 +41,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (subType.ConstructorParameterNames.Length == 0)
                 {
-                    value = subType.Constructor.Invoke(null);
+                    // actually faster to use activator here than to call the stored constructor
+                    value = Activator.CreateInstance(subType.Type);
                 }
                 else
                 {

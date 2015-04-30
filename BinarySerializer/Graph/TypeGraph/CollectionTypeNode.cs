@@ -17,11 +17,7 @@ namespace BinarySerialization.Graph.TypeGraph
             Construct();
         }
 
-        public ConstructorInfo Constructor { get; private set; }
-
         public Type ChildType { get; set; }
-
-        public ConstructorInfo ChildConstructor { get; protected set; }
 
         public TypeNode Child
         {
@@ -34,8 +30,6 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void Construct()
         {
-            Constructor = Type.GetConstructor(new Type[0]);
-
             object terminationValue;
             TerminationChild = GetTerminationChild(out terminationValue);
             TerminationValue = terminationValue;
