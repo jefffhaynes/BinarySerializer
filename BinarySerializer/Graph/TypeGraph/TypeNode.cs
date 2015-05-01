@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using BinarySerialization.Graph.ValueGraph;
@@ -282,6 +283,28 @@ namespace BinarySerialization.Graph.TypeGraph
             }
 
             return level;
+        }
+
+        protected Func<object> CreateCompiledConstructor()
+        {
+            return CreateCompiledConstructor(Type);
+        }
+
+        protected static Func<object> CreateCompiledConstructor(Type type)
+        {
+            if (type == typeof (string))
+                return () => string.Empty;
+
+            var constructor = type.GetConstructor(new Type[0]);
+            return CreateCompiledConstructor(constructor);
+        }
+
+        protected static Func<object> CreateCompiledConstructor(ConstructorInfo constructor)
+        {
+            if (constructor == null)
+                return null;
+
+            return Expression.Lambda<Func<object>>(Expression.New(constructor)).Compile();
         }
 
         private int FindAncestorLevel(BindingInfo binding)

@@ -46,7 +46,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var typeNode = (ListTypeNode)TypeNode;
             var array = Array.CreateInstance(typeNode.ChildType, size);
-            return Activator.CreateInstance(TypeNode.Type, array);
+            return Activator.CreateInstance(typeNode.Type, array);
         }
 
         protected override void SetCollectionValue(object item, int index)

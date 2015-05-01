@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -41,8 +42,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (subType.ConstructorParameterNames.Length == 0)
                 {
-                    // actually faster to use activator here than to call the stored constructor
-                    value = Activator.CreateInstance(subType.Type);
+                    value = subType.CompiledConstructor();
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var subType = typeNode.GetSubType(valueType);
 
-                Children = new List<ValueNode>(subType.Children.Select(child => child.CreateSerializer(this)));
+                Children = subType.Children.Select(child => child.CreateSerializer(this)).ToList();
 
                 var serializableChildren = GetSerializableChildren();
 

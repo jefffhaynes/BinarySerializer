@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Reflection;
 using BinarySerialization.Graph.ValueGraph;
 
@@ -20,6 +21,7 @@ namespace BinarySerialization.Graph.TypeGraph
         private void Construct()
         {
             ChildType = Type.GetElementType();
+            CompiledChildConstructor = CreateCompiledConstructor(ChildType);
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)

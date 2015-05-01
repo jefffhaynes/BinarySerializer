@@ -17,6 +17,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public ConstructorInfo Constructor { get; private set; }
 
+        public Func<object> CompiledConstructor { get; private set; }
+
         public string[] ConstructorParameterNames { get; private set; }
 
         private IDictionary<Type, ObjectTypeNode> _subTypes;
@@ -71,6 +73,9 @@ namespace BinarySerialization.Graph.TypeGraph
                 Constructor = bestConstructor.Constructor;
 
                 ConstructorParameterNames = bestConstructor.ParameterMap.ToArray();
+
+                if (ConstructorParameterNames.Length == 0)
+                    CompiledConstructor = CreateCompiledConstructor(Constructor);
             }
 
             /* Add subtypes, if any */
