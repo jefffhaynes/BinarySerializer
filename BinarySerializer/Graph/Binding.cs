@@ -79,14 +79,9 @@ namespace BinarySerialization.Graph
 
             var source = GetSource(target);
 
-            var bindingSource = source as IBindingSource;
-
-            if(bindingSource == null)
-                throw new InvalidOperationException("Not a bindable source.");
-
             return ValueConverter == null
-                ? bindingSource.BoundValue
-                : Convert(bindingSource.BoundValue, target.CreateSerializationContext());
+                ? source.BoundValue
+                : Convert(source.BoundValue, target.CreateSerializationContext());
         }
 
         public ValueNode GetSource(ValueNode target)
