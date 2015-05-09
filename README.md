@@ -11,6 +11,7 @@ BinarySerializer is not a competitor to protobuf, MessagePack, or any other numb
 
 There is no completely reliable way to get member ordering from the CLR so as of BinarySerializer 3.0 <code>FieldOrder</code> attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following class will serialize in the order A, B, C.
 
+```c#
     public class MyBaseClass
     {
         public int A { get; set; }
@@ -24,16 +25,16 @@ There is no completely reliable way to get member ordering from the CLR so as of
         [FieldOrder(1)]
         public int C;
     }
-
+```
     ...
-
+```c#
     var stream = new MemoryStream();
     var serializer = new BinarySerializer();
     
     var myDerivedClass = new MyDerivedClass();
 
     serializer.Serialize(stream, myDerivedClass);
-
+```
     ...
 
 Note that we're using properties and fields interchangeably as they are treated equivalently by the serializer.
@@ -304,6 +305,37 @@ The Subtype attribute allows dynamic switching of subtypes based on a binding.
 </p>
 
 It is not necessary that FrameType be correct during serialization; it will be updated with the appropriate value based on the instantiated type.  During deserialization the FrameType field will be used to construct the correct type.
+
+The Subtype attribute can be used with the FieldLength attribute to write forward compatible processors.  Take the example of PNG, which uses "chunks" of data that may be able to be skipped even if they aren't understood.
+
+    public class ChunkContainer
+    {
+        [FieldOrder(0)]
+        [SerializeAs(Endianness = Endianness.Big)]
+        public int Length { get; set; }
+    
+        [FieldOrder(1)]
+        [FieldLength(4)]
+        public string ChunkType { get; set; }
+    
+        [FieldOrder(2)]
+        [FieldLength("Length")]
+        [Subtype("ChunkType", "IHDR", typeof(ImageHeaderChunk))]
+        [Subtype("ChunkType", "PLTE", typeof(PaletteChunk))]
+        [Subtype("ChunkType", "IDAT", typeof(ImageDataChunk))]
+        // etc
+        public Chunk Chunk { get; set; }
+    
+        [FieldOrder(3)]
+        [SerializeAs(Endianness = Endianness.Big)]
+        public int Crc { get; set; }
+    }
+
+    ...
+
+    List<ChunkContainer> Chunks { get; set; }
+
+Note the Chunk field is bound to both the Length field and the ChunkType field.  If the serializer can resolve a known chunk type, it will instantiate and deserialize it.  However, if it encounters an unknown value in the ChunkType field it can still skip past it using the Length binding.
 
 ### SerializeWhenAttribute ###
 
