@@ -5,7 +5,7 @@ A .NET declarative serialization framework for controlling formatting of data at
 
 ### What BinarySerializer is not ###
 
-BinarySerializer is not a competitor to protobuf, MessagePack, or any other number of fixed-format serializers.  While fast, BinarySerializer is slower than most of these specialized serializers as it is designed to be first and foremost flexible in terms of the underlying data format.  If you don't like the way BinaryFormatter is serializing your data, you're stuck with it.  With BinarySerializer you can define precisely how your data is formatted using types, bindings, converters, and code.
+BinarySerializer is not a competitor to protobuf, MessagePack, or any other number of fixed-format serializers.  While fast, BinarySerializer is slower than most of these specialized serializers as it is designed to be first and foremost flexible in terms of the underlying data format.  If you don't like the way protobuf is serializing your data, you're stuck with it.  With BinarySerializer you can define precisely how your data is formatted using types, bindings, converters, and code.
 
 ### Field Ordering ###
 
