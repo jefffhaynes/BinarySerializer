@@ -371,7 +371,7 @@ Note that the Chunk field is bound to both the Length field and the ChunkType fi
 
 ### SerializeWhenAttribute ###
 
-The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  Multiple SerializeWhen attributes will be or'd together.
+The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  If multiple SerializeWhen attributes are specified they will be or'd together.
 
 ```c#
 [SerializeWhen("Version", HardwareVersion.XBeeSeries1)]
