@@ -484,7 +484,7 @@ In some cases you may be serializing or deserializing large amounts of data, whi
 public Stream Data { get; set; }
 ```
 
-In this example, the Data property will be copied from the source stream during serialization.  On deserialization, the resulting object graph will contain a Streamlet object which references a section of the source stream and allows for deferred read access.  Note that this feature is only supported when the underlying source stream supports seeking.  When dealing with non-seekable streams (e.g. NetworkStream), it is better to deserialize the stream in frames or packets where possible rather than try to deserialize the entire stream (which in some cases may be open-ended) at once.
+In this example, the Data stream will be copied from the source stream during serialization.  However, on deserialization, the resulting object graph will contain a Streamlet object, which references a section of the source stream and allows for deferred read access.  Note that this feature is only supported when the underlying source stream supports seeking.  When dealing with non-seekable streams (e.g. NetworkStream), it is better to deserialize the stream in frames or packets where possible rather than try to deserialize the entire stream (which in some cases may be open-ended) at once.
 
 
 ### Nulls ###
