@@ -91,6 +91,9 @@ Any field or property with an Ignore attribute will not be included in serializa
 In general you shouldn't need this as most things tend to work out without it.  However, you can always override the default behavior by specifying SerializeAs.  This attribute can also be used to specify encodings and endianness if needed.
 
 ```c#
+[SerializeAs(SerializedType.Int1)]
+public int Value { get; set; }
+        
 [SerializeAs(Encoding = "windows-1256")]
 public string Name { get; set;  }
     
@@ -120,7 +123,9 @@ public class MyDerivedClass : MyBaseClass
 
 ### FieldLengthAttribute ###
 
-FieldLength can be used to either specify bound or constant field length.  Field lengths can apply to anything that is sizeable; strings, arrays, lists, streams, and even complex objects.
+FieldLength can be used to specify either a bound or a constant field length.  Field lengths can apply to anything that is sizeable including strings, arrays, lists, streams, and even objects.
+
+For constant length fields, the serialized field length will always result in the specified length, either by limiting the serialization operation or padding out the result with zeros.  For bound length fields, the source will be updated with the serialized length.  Typically source fields are value types such as integers but value converters may also be used to update other types.
 
 ```c#
 public class MyConstFieldClass
@@ -148,7 +153,7 @@ public class MyBoundFieldClass
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/LengthBinding.png" />
 </p>
 
-In some cases you may want to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the serialized length in bytes.
+In some cases you may want to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the serialized length in bytes.  To restrict the number of items in a collection use the FieldCount attribute.
 
 ```c#
 public class MyBoundCollectionClass
@@ -362,7 +367,7 @@ public class ChunkContainer
 List<ChunkContainer> Chunks { get; set; }
 ```
 
-Note the Chunk field is bound to both the Length field and the ChunkType field.  If the serializer can resolve a known chunk type, it will instantiate and deserialize it.  However, if it encounters an unknown value in the ChunkType field it can still skip past it using the Length binding.  Also note that the CRC is included for completeness but will not be updated by the framework during serialization nor checked during deserialization.
+Note that the Chunk field is bound to both the Length field and the ChunkType field.  If the serializer can resolve a known chunk type, it will instantiate and deserialize it.  However, if it encounters an unknown value in the ChunkType field it is still able to skip past it using the Length binding.  Also note that the CRC is included for completeness but will not be updated by the framework during serialization nor checked during deserialization.
 
 ### SerializeWhenAttribute ###
 

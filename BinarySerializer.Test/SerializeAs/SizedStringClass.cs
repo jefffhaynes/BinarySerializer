@@ -1,5 +1,4 @@
-﻿using BinarySerialization;
-
+﻿
 namespace BinarySerialization.Test.SerializeAs
 {
     public class SizedStringClass<TValue>

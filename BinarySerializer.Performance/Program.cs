@@ -23,8 +23,8 @@ namespace BinarySerialization.Performance
             };
 
             DoBS(beer, 100000);
-            DoBF(beer, 100000);
-            Console.ReadKey();
+            //DoBF(beer, 100000);
+            //Console.ReadKey();
         }
 
         private static void DoBS<T>(T obj, int iterations)
