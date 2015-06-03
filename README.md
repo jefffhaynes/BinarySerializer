@@ -30,9 +30,7 @@ public class MyDerivedClass : MyBaseClass
 ```c#
 var stream = new MemoryStream();
 var serializer = new BinarySerializer();
-    
 var myDerivedClass = new MyDerivedClass();
-
 serializer.Serialize(stream, myDerivedClass);
 ```
 
