@@ -356,13 +356,13 @@ public class ChunkContainer
     [SerializeAs(Endianness = Endianness.Big)]
     public int Crc { get; set; }
 }
+```
 
-...
-
+```c#
 List<ChunkContainer> Chunks { get; set; }
 ```
 
-Note the Chunk field is bound to both the Length field and the ChunkType field.  If the serializer can resolve a known chunk type, it will instantiate and deserialize it.  However, if it encounters an unknown value in the ChunkType field it can still skip past it using the Length binding.
+Note the Chunk field is bound to both the Length field and the ChunkType field.  If the serializer can resolve a known chunk type, it will instantiate and deserialize it.  However, if it encounters an unknown value in the ChunkType field it can still skip past it using the Length binding.  Also note that the CRC is included for completeness but will not be updated by the framework during serialization nor checked during deserialization.
 
 ### SerializeWhenAttribute ###
 
