@@ -97,6 +97,7 @@
     <Compile Include="Issues\Issue12\ParmChunk.cs" />
     <Compile Include="Issues\Issue12\RefeChunk.cs" />
     <Compile Include="Issues\Issue12\SnaxChunk.cs" />
+    <Compile Include="Issues\Issue18\ArrayIndexerClass.cs" />
     <Compile Include="Issues\Issue9\ElementClass.cs" />
     <Compile Include="Issues\Issue9\Entry.cs" />
     <Compile Include="Issues\Issue9\Issue9Tests.cs" />
@@ -222,6 +223,7 @@
       <Name>BinarySerializer</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

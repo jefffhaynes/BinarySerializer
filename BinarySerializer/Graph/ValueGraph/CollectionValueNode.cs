@@ -131,7 +131,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var lastItem = Children.LastOrDefault();
             if(lastItem == null)
-                throw new InvalidOperationException("Can't determine last item value because collection is empty.");
+                throw new InvalidOperationException("Unable to determine last item value because collection is empty.");
 
             var terminationItemChild = (ValueValueNode)lastItem.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
             return terminationItemChild.BoundValue;

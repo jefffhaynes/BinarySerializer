@@ -35,11 +35,6 @@ namespace BinarySerialization
         /// The parent object serialization context.
         /// </summary>
 		public BinarySerializationContext ParentContext { get; set; }
-		
-        /// <summary>
-        /// The previous item if the object being serialized is part of a collection or array.
-        /// </summary>
-		public object PreviousItem { get; set; }
 
         /// <summary>
         /// Depth of the object graph at this context.
