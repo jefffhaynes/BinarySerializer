@@ -217,7 +217,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return streamLimiter.RelativePosition;
         }
 
-        protected virtual long MeasureItemOverride()
+        protected virtual object MeasureItemOverride()
         {
             throw new InvalidOperationException("Not a collection field.");
         }

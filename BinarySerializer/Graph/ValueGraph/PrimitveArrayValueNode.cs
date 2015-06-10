@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -9,15 +10,16 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void PrimitiveCollectionSerializeOverride(StreamLimiter stream, int? itemLength, int? itemCount)
+        protected override void PrimitiveCollectionSerializeOverride(StreamLimiter stream, IEnumerable<int> itemLengths,
+            int? itemCount)
         {
-            var typeNode = (ArrayTypeNode)TypeNode;
+            var typeNode = (ArrayTypeNode) TypeNode;
             var childSerializer = (ValueValueNode) typeNode.Child.CreateSerializer(this);
 
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
-            var array = Value as Array;
+            var array = BoundValue as Array;
 
             if (array == null)
                 return;
@@ -26,17 +28,21 @@ namespace BinarySerialization.Graph.ValueGraph
             if (itemCount != null && array.Length != itemCount)
             {
                 var tempArray = array;
-                array = (Array)CreateCollection(itemCount.Value);
+                array = (Array) CreateCollection(itemCount.Value);
                 Array.Copy(tempArray, array, Math.Min(tempArray.Length, array.Length));
             }
 
-            for (int i = 0; i < array.Length; i++)
+            using (var itemLengthEnumerator = itemLengths.GetEnumerator())
             {
-                if (stream.IsAtLimit)
-                    break;
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if (stream.IsAtLimit)
+                        break;
 
-                var value = array.GetValue(i);
-                childSerializer.Serialize(writer, value, childSerializedType, itemLength);
+                    var value = array.GetValue(i);
+                    itemLengthEnumerator.MoveNext();
+                    childSerializer.Serialize(writer, value, childSerializedType, itemLengthEnumerator.Current);
+                }
             }
         }
 
@@ -48,13 +54,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override void SetCollectionValue(object item, int index)
         {
-            var array = (Array)Value;
+            var array = (Array)BoundValue;
             array.SetValue(item, index);
         }
 
         protected override long CountOverride()
         {
-            var array = (Array)Value;
+            var array = (Array)BoundValue;
 
             if (array == null)
                 return 0;

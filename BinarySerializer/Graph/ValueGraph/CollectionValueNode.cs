@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -16,7 +17,15 @@ namespace BinarySerialization.Graph.ValueGraph
 
             int? itemLength = null;
             if (TypeNode.ItemLengthBinding != null && TypeNode.ItemLengthBinding.IsConst)
+            {
+                var constValue = TypeNode.ItemLengthBinding.ConstValue;
+
+                var constEnumerableValue = constValue as IEnumerable;
+                if(constEnumerableValue != null)
+                    throw new NotImplementedException();
+
                 itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.ConstValue);
+            }
 
             foreach (var child in serializableChildren)
             {
@@ -100,7 +109,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return Children.Count();
         }
 
-        protected override long MeasureItemOverride()
+        protected override object MeasureItemOverride()
         {
             var nullStream = new NullStream();
             var streamLimiter = new StreamLimiter(nullStream);
@@ -119,6 +128,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
 
+            // If items vary in length then we need to return an IEnumerable, otherwise a scalar.
             if (childLengthGroups.Count > 1)
                 throw new InvalidOperationException("Unable to update binding source because not all items have equal lengths.");
 
