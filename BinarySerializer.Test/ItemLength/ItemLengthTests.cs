@@ -19,17 +19,22 @@ namespace BinarySerialization.Test.ItemLength
         [TestMethod]
         public void ItemBoundLengthTest()
         {
-            var expected = new ItemBoundLengthClass { List = new List<string>(new[] { "abc", "def", "ghi" }) };
-            var actual = Roundtrip(expected, 4 + expected.List.Count * 3);
-            Assert.IsTrue(expected.List.SequenceEqual(actual.List));
+            var expected = new ItemBoundLengthClass { Items = new List<string>(new[] { "abc", "def", "ghi" }) };
+
+            var itemLength = expected.Items[0].Length;
+            var expectedLength = sizeof (int) + itemLength*expected.Items.Count;
+            var actual = Roundtrip(expected, expectedLength);
+
+            Assert.AreEqual(itemLength, actual.ItemLength);
+            Assert.IsTrue(expected.Items.SequenceEqual(actual.Items));
         }
 
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void ItemBoundMismatchLengthTest()
+        public void ItemBoundMismatchLengthTest_ShouldThrowInvalidOperation()
         {
-            var expected = new ItemBoundLengthClass { List = new List<string>(new[] { "abc", "defghi"}) };
+            var expected = new ItemBoundLengthClass { Items = new List<string>(new[] { "abc", "defghi"}) };
             Roundtrip(expected);
         }
 
