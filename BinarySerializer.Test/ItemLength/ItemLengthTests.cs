@@ -68,5 +68,15 @@ namespace BinarySerialization.Test.ItemLength
 
             Assert.AreEqual(expected.InnerClasses[0].Value.Substring(0, 2), actual.InnerClasses[0].Value);
         }
+
+        [TestMethod]
+        public void JaggedArrayTest()
+        {
+            var expected = new JaggedArrayClass {Names = new[] {"Alice", "Bob", "Charlie"}};
+            var actual = Roundtrip(expected);
+
+            Assert.IsTrue(expected.NameLengths.SequenceEqual(actual.NameLengths));
+            Assert.IsTrue(expected.Names.SequenceEqual(actual.Names));
+        }
     }
 }
