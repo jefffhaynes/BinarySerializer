@@ -82,9 +82,31 @@ namespace BinarySerialization.Test.ItemLength
         [TestMethod]
         public void JaggedArrayTest()
         {
-            var expected = new JaggedClass {NameArray = new[] {"Alice", "Bob", "Charlie"}};
+            var expected = new JaggedArrayClass {NameArray = new[] {"Alice", "Bob", "Charlie"}};
+            
+            var actual = Roundtrip(expected);
+
+            var nameLengths = expected.NameArray.Select(name => name.Length);
+            Assert.IsTrue(nameLengths.SequenceEqual(actual.NameLengths));
+            Assert.IsTrue(expected.NameArray.SequenceEqual(actual.NameArray));
+        }
+
+        [TestMethod]
+        public void JaggedListTest()
+        {
+            var expected = new JaggedListClass { NameList = new[] { "Alice", "Bob", "Charlie" }.ToList() };
+            var actual = Roundtrip(expected);
+
+            var nameLengths = expected.NameList.Select(name => name.Length);
+            Assert.IsTrue(nameLengths.SequenceEqual(actual.NameLengths));
+            Assert.IsTrue(expected.NameList.SequenceEqual(actual.NameList));
+        }
+
+        [TestMethod]
+        public void JaggedDoubleBoundTest()
+        {
+            var expected = new JaggedDoubleBoundClass() { NameArray = new[] { "Alice", "Bob", "Charlie" } };
             expected.NameList = expected.NameArray.ToList();
-            expected.NameList2 = expected.NameList.ToList();
 
             var actual = Roundtrip(expected);
 
@@ -92,7 +114,20 @@ namespace BinarySerialization.Test.ItemLength
             Assert.IsTrue(nameLengths.SequenceEqual(actual.NameLengths));
             Assert.IsTrue(expected.NameArray.SequenceEqual(actual.NameArray));
             Assert.IsTrue(expected.NameList.SequenceEqual(actual.NameList));
-            Assert.IsTrue(expected.NameList2.SequenceEqual(actual.NameList2));
+        }
+
+        [TestMethod]
+        public void JaggedByteArrayTest()
+        {
+            var names = new[] {"Alice", "Bob", "Charlie"};
+            var expected = new JaggedByteArrayClass()
+            {
+                NameData = names.Select(name => System.Text.Encoding.ASCII.GetBytes(name)).ToArray()
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.IsTrue(expected.NameData.SequenceEqual(actual.NameData));
         }
     }
 }
