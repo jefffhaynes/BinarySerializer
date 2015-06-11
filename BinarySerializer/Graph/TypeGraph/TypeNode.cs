@@ -287,7 +287,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public static bool IsValueType(Type type)
         {
-            return type.IsPrimitive || type == typeof(string) || type == typeof(byte[]);
+           // return type.IsPrimitive || type == typeof(string) || type == typeof(byte[]);
+            return type.IsPrimitive || type == typeof(string);
         }
 
         protected Func<object> CreateCompiledConstructor()
