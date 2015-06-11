@@ -10,8 +10,6 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ValueValueNode : ValueNode
     {
-
-
         public ValueValueNode(Node parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
@@ -40,9 +38,21 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     // handle case where we might be binding to a list or array
                     var enumerableValue = value as IEnumerable;
-                    if (enumerableValue != null && !TypeNode.IsValueType(enumerableValue.GetType()))
+
+                    //if (enumerableValue != null && !TypeNode.IsValueType(enumerableValue.GetType()))
+                    if (enumerableValue != null)
                     {
-                        value = GetScalar(enumerableValue);
+                        // handle special cases
+                        if (TypeNode.Type == typeof (byte[]) || TypeNode.Type == typeof (string))
+                        {
+                            var data = enumerableValue.Cast<object>().Select(Convert.ToByte).ToArray();
+
+                            if (TypeNode.Type == typeof (byte[]))
+                                value = data;
+                            else if (TypeNode.Type == typeof (string))
+                                value = Encoding.GetString(data, 0, data.Length);
+                        }
+                        else value = GetScalar(enumerableValue);
                     }
                 }
                 else value = Value;
@@ -61,7 +71,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
 
             if (childLengthGroups.Count > 1)
-                throw new InvalidOperationException("Unable to update scalar binding source because not all items have equal lengths.");
+                throw new InvalidOperationException("Unable to update scalar binding source because not all enumerable items have equal lengths.");
 
             var childLengthGroup = childLengthGroups.Single();
 
@@ -212,8 +222,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             int? effectiveLength = null;
             
-            var typeParent = TypeNode.Parent as TypeNode;
-
             if (length != null)
                 effectiveLength = length.Value;
             else if (TypeNode.FieldLengthBinding != null)
@@ -221,11 +229,6 @@ namespace BinarySerialization.Graph.ValueGraph
                 object lengthValue = TypeNode.FieldLengthBinding.GetValue(this);
                 effectiveLength = Convert.ToInt32(lengthValue);
             }
-            //else if (typeParent != null && typeParent.ItemLengthBinding != null)
-            //{
-            //    object lengthValue = typeParent.ItemLengthBinding.GetValue((ValueNode) Parent);
-            //    effectiveLength = Convert.ToInt32(lengthValue);
-            //}
             else if (TypeNode.FieldCountBinding != null)
             {
                 object countValue = TypeNode.FieldCountBinding.GetValue(this);
@@ -307,6 +310,20 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             return value;
+        }
+
+        protected override long CountOverride()
+        {
+            // handle special case of byte[]
+            var boundValue = BoundValue as byte[];
+            return boundValue != null ? boundValue.Length : base.CountOverride();
+        }
+
+        protected override long MeasureOverride()
+        {
+            // handle special case of byte[]
+            var boundValue = BoundValue as byte[];
+            return boundValue != null ? boundValue.Length : base.MeasureOverride();
         }
 
         private object ConvertToFieldType(object value)

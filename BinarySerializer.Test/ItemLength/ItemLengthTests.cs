@@ -127,7 +127,8 @@ namespace BinarySerialization.Test.ItemLength
 
             var actual = Roundtrip(expected);
 
-            Assert.IsTrue(expected.NameData.SequenceEqual(actual.NameData));
+            var actualNames = actual.NameData.Select(nameData => System.Text.Encoding.ASCII.GetString(nameData));
+            Assert.IsTrue(names.SequenceEqual(actualNames));
         }
     }
 }
