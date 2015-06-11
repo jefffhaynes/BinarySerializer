@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -55,52 +56,79 @@ namespace BinarySerialization.Graph.ValueGraph
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild == null ? null : typeNode.TerminationChild.CreateSerializer(this);
 
-            int? itemLength = null;
+            IEnumerable<int> itemLengths = null;
             if (TypeNode.ItemLengthBinding != null)
-                itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
-
-            for (int i = 0; i < count; i++)
             {
-                if (ShouldTerminate(stream))
-                    break;
+                var itemLengthValue = TypeNode.ItemLengthBinding.GetValue(this);
 
-                /* Check termination case */
-                if (terminationChild != null)
+                var enumerableItemLengthValue = itemLengthValue as IEnumerable;
+
+                itemLengths = enumerableItemLengthValue != null ? 
+                    enumerableItemLengthValue.Cast<object>().Select(Convert.ToInt32) :
+                    GetInfiniteSequence(Convert.ToInt32(itemLengthValue));
+            }
+                      
+            IEnumerator<int> itemLengthEnumerator = null;
+
+            try
+            {
+                if (itemLengths != null)
+                    itemLengthEnumerator = itemLengths.GetEnumerator();
+
+                for (int i = 0; i < count; i++)
                 {
-                    using (var streamResetter = new StreamResetter(stream))
-                    {
-                        terminationChild.Deserialize(stream, eventShuttle);
+                    if (ShouldTerminate(stream))
+                        break;
 
-                        if (terminationChild.Value.Equals(terminationValue))
+                    /* Check termination case */
+                    if (terminationChild != null)
+                    {
+                        using (var streamResetter = new StreamResetter(stream))
                         {
-                            streamResetter.CancelReset();
+                            terminationChild.Deserialize(stream, eventShuttle);
+
+                            if (terminationChild.Value.Equals(terminationValue))
+                            {
+                                streamResetter.CancelReset();
+                                break;
+                            }
+                        }
+                    }
+
+                    var child = typeNode.Child.CreateSerializer(this);
+
+                    if (itemLengthEnumerator != null)
+                        itemLengthEnumerator.MoveNext();
+
+                    var childStream = itemLengthEnumerator == null
+                        ? stream
+                        : new StreamLimiter(stream, itemLengthEnumerator.Current);
+
+                    child.Deserialize(childStream, eventShuttle);
+
+                    /* Check child termination case */
+                    if (TypeNode.ItemSerializeUntilBinding != null)
+                    {
+                        var itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
+                        var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
+
+                        if (itemTerminationChild.Value.Equals(itemTerminationValue))
+                        {
+                            if (!TypeNode.ItemSerializeUntilAttribute.ExcludeLastItem)
+                            {
+                                Children.Add(child);
+                            }
                             break;
                         }
                     }
+
+                    Children.Add(child);
                 }
-
-                var child = typeNode.Child.CreateSerializer(this);
-
-                var childStream = itemLength == null ? stream : new StreamLimiter(stream, itemLength.Value);
-                child.Deserialize(childStream, eventShuttle);
-
-                /* Check child termination case */
-                if (TypeNode.ItemSerializeUntilBinding != null)
-                {
-                    var itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
-                    var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
-
-                    if (itemTerminationChild.Value.Equals(itemTerminationValue))
-                    {
-                        if (!TypeNode.ItemSerializeUntilAttribute.ExcludeLastItem)
-                        {
-                            Children.Add(child);
-                        }
-                        break;
-                    }
-                }
-
-                Children.Add(child);
+            }
+            finally
+            {
+                if (itemLengthEnumerator != null)
+                    itemLengthEnumerator.Dispose();
             }
         }
 
@@ -109,32 +137,19 @@ namespace BinarySerialization.Graph.ValueGraph
             return Children.Count();
         }
 
-        protected override object MeasureItemOverride()
+        protected override IEnumerable<long> MeasureItemsOverride()
         {
             var nullStream = new NullStream();
             var streamLimiter = new StreamLimiter(nullStream);
 
             var serializableChildren = GetSerializableChildren();
 
-            var childLengths = serializableChildren.Select(child =>
+            return serializableChildren.Select(child =>
             {
                 streamLimiter.RelativePosition = 0;
                 child.Serialize(streamLimiter, null);
                 return streamLimiter.RelativePosition;
-            }).ToList();
-
-            if (childLengths.Count == 0)
-                return 0;
-
-            var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
-
-            // If items vary in length then we need to return an IEnumerable, otherwise a scalar.
-            if (childLengthGroups.Count > 1)
-                throw new InvalidOperationException("Unable to update binding source because not all items have equal lengths.");
-
-            var childLengthGroup = childLengthGroups.Single();
-
-            return childLengthGroup.Key;
+            });
         }
 
         protected override object GetLastItemValueOverride()

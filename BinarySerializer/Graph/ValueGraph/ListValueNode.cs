@@ -70,10 +70,5 @@ namespace BinarySerialization.Graph.ValueGraph
                 _cachedValue = value;
             }
         }
-
-        public override object BoundValue
-        {
-            get { throw new NotImplementedException(); }
-        }
     }
 }

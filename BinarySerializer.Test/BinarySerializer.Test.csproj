@@ -101,10 +101,11 @@
     <Compile Include="Issues\Issue9\ElementClass.cs" />
     <Compile Include="Issues\Issue9\Entry.cs" />
     <Compile Include="Issues\Issue9\Issue9Tests.cs" />
+    <Compile Include="ItemLength\ArrayItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemConstLengthClass.cs" />
     <Compile Include="ItemLength\ItemLengthListOfByteArrayClass.cs" />
-    <Compile Include="ItemLength\JaggedArrayClass.cs" />
+    <Compile Include="ItemLength\JaggedClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassInnerClass.cs" />
     <Compile Include="Length\BoundItemClass.cs" />
