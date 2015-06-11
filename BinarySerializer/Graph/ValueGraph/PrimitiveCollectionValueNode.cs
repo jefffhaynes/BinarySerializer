@@ -14,10 +14,42 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value { get; set; }
 
-
         public override object BoundValue
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                object value;
+
+                if (TargetBindings.Count > 0)
+                {
+                    value = TargetBindings[0]();
+
+                    var enumerableValue = value as IEnumerable;
+
+                    if (enumerableValue == null)
+                        throw new InvalidOperationException("Complex types cannot be binding sources for scalar values.");
+
+                    if (TargetBindings.Count != 1)
+                    {
+                        var targetValues = TargetBindings.Select(binding => binding() as IEnumerable).ToList();
+
+                        if (targetValues.Any(o => o == null))
+                            throw new InvalidOperationException("Complex types cannot be binding sources for scalar values.");
+
+                        if (targetValues.Select(targetEnumerable => targetEnumerable.Cast<object>())
+                                .Any(targetEnumerable => !targetEnumerable.SequenceEqual(enumerableValue.Cast<object>())))
+                        {
+                            throw new BindingException(
+                                "Multiple bindings to a single source must have equivalent target values.");
+                        }
+                    }
+
+                    value = CreateCollection(enumerableValue);
+                }
+                else value = Value;
+
+                return value;
+            }
         }
 
         protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
@@ -35,7 +67,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 else
                 {
                     var itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.ConstValue);
-                    itemLengths = DefaultItemLengthSource(itemLength);
+                    itemLengths = GetInfiniteSequence(itemLength);
                 }
             }
 
@@ -118,18 +150,14 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected abstract object CreateCollection(int size);
 
+        protected abstract object CreateCollection(IEnumerable enumerable);
+
         protected abstract void SetCollectionValue(object item, int index);
 
 
         protected override object GetLastItemValueOverride()
         {
             throw new InvalidOperationException("Not supported on primitive collections.  Use SerializeUntil attribute.");
-        }
-
-        private static IEnumerable<int> DefaultItemLengthSource(int length)
-        {
-            while (true)
-                yield return length;
         }
     }
 }

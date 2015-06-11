@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -10,7 +12,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void PrimitiveCollectionSerializeOverride(StreamLimiter stream, int? itemLength, int? itemCount)
+        protected override void PrimitiveCollectionSerializeOverride(StreamLimiter stream, IEnumerable<int> itemLengths, int? itemCount)
         {
             var typeNode = (ListTypeNode)TypeNode;
             var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
@@ -33,12 +35,30 @@ namespace BinarySerialization.Graph.ValueGraph
                     list[i] = tempList[i];
             }
 
-            foreach (var value in list)
-            {
-                if (stream.IsAtLimit)
-                    break;
+            IEnumerator<int> itemLengthEnumerator = null;
 
-                childSerializer.Serialize(writer, value, childSerializedType, itemLength);
+            try
+            {
+                if (itemLengths != null)
+                    itemLengthEnumerator = itemLengths.GetEnumerator();
+
+                foreach (var value in list)
+                {
+                    if (stream.IsAtLimit)
+                        break;
+
+                    if (itemLengthEnumerator != null)
+                        itemLengthEnumerator.MoveNext();
+
+                    childSerializer.Serialize(writer, value, childSerializedType,
+                        itemLengthEnumerator != null ? itemLengthEnumerator.Current : (int?)null);
+                }
+
+            }
+            finally
+            {
+                if (itemLengthEnumerator != null)
+                    itemLengthEnumerator.Dispose();
             }
         }
 
@@ -47,6 +67,12 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeNode = (ListTypeNode)TypeNode;
             var array = Array.CreateInstance(typeNode.ChildType, size);
             return Activator.CreateInstance(typeNode.Type, array);
+        }
+
+        protected override object CreateCollection(IEnumerable enumerable)
+        {
+            var typeNode = (ArrayTypeNode)TypeNode;
+            return enumerable.Cast<object>().Select(item => ConvertToType(item, typeNode.ChildType)).ToList();
         }
 
         protected override void SetCollectionValue(object item, int index)

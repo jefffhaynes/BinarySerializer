@@ -71,7 +71,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (effectiveType.IsEnum)
                 return typeof(EnumTypeNode);
-            if (effectiveType.IsPrimitive || effectiveType == typeof(string) || effectiveType == typeof(byte[]))
+
+            if (IsValueType(effectiveType))
                 return typeof (ValueTypeNode);
 
             if (type.IsArray)
@@ -104,6 +105,5 @@ namespace BinarySerialization.Graph.TypeGraph
 
             throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
         }
-
     }
 }

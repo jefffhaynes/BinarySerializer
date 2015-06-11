@@ -74,7 +74,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 ValueGetter = fieldInfo.GetValue;
                 ValueSetter = fieldInfo.SetValue;
             }
-            else throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
+            else throw new NotSupportedException(String.Format("{0} not supported", memberInfo.GetType().Name));
 
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
@@ -96,7 +96,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 _serializedType = serializeAsAttribute.SerializedType;
                 Endianness = serializeAsAttribute.Endianness;
 
-                if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
+                if (!String.IsNullOrEmpty(serializeAsAttribute.Encoding))
                     Encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
             }
 
@@ -158,7 +158,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     SubtypeAttributes.FirstOrDefault(attribute => !Type.IsAssignableFrom(attribute.Subtype));
 
                 if (invalidSubtype != null)
-                    throw new InvalidOperationException(string.Format("{0} is not a subtype of {1}",
+                    throw new InvalidOperationException(String.Format("{0} is not a subtype of {1}",
                         invalidSubtype.Subtype, Type));
             }
 
@@ -254,9 +254,9 @@ namespace BinarySerialization.Graph.TypeGraph
             catch (Exception e)
             {
                 var reference = Name == null
-                    ? string.Format("type '{0}'", Type)
-                    : string.Format("member '{0}'", Name);
-                var message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
+                    ? String.Format("type '{0}'", Type)
+                    : String.Format("member '{0}'", Name);
+                var message = String.Format("Error serializing {0}.  See inner exception for detail.", reference);
                 throw new InvalidOperationException(message, e);
             }
         }
@@ -285,6 +285,11 @@ namespace BinarySerialization.Graph.TypeGraph
             return level;
         }
 
+        public static bool IsValueType(Type type)
+        {
+            return type.IsPrimitive || type == typeof(string) || type == typeof(byte[]);
+        }
+
         protected Func<object> CreateCompiledConstructor()
         {
             return CreateCompiledConstructor(Type);
@@ -293,7 +298,7 @@ namespace BinarySerialization.Graph.TypeGraph
         protected static Func<object> CreateCompiledConstructor(Type type)
         {
             if (type == typeof (string))
-                return () => string.Empty;
+                return () => String.Empty;
 
             var constructor = type.GetConstructor(new Type[0]);
             return CreateCompiledConstructor(constructor);

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -9,6 +11,7 @@ namespace BinarySerialization.Graph.ValueGraph
         public PrimitveArrayValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
+
 
         protected override void PrimitiveCollectionSerializeOverride(StreamLimiter stream, IEnumerable<int> itemLengths,
             int? itemCount)
@@ -32,17 +35,32 @@ namespace BinarySerialization.Graph.ValueGraph
                 Array.Copy(tempArray, array, Math.Min(tempArray.Length, array.Length));
             }
 
-            using (var itemLengthEnumerator = itemLengths.GetEnumerator())
-            {
-                for (int i = 0; i < array.Length; i++)
-                {
-                    if (stream.IsAtLimit)
-                        break;
+            IEnumerator<int> itemLengthEnumerator = null;
 
-                    var value = array.GetValue(i);
-                    itemLengthEnumerator.MoveNext();
-                    childSerializer.Serialize(writer, value, childSerializedType, itemLengthEnumerator.Current);
-                }
+            try
+            {
+                if (itemLengths != null)
+                    itemLengthEnumerator = itemLengths.GetEnumerator();
+                
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        if (stream.IsAtLimit)
+                            break;
+
+                        var value = array.GetValue(i);
+
+                        if (itemLengthEnumerator != null)
+                            itemLengthEnumerator.MoveNext();
+
+                        childSerializer.Serialize(writer, value, childSerializedType,
+                            itemLengthEnumerator != null ? itemLengthEnumerator.Current : (int?) null);
+                    }
+                
+            }
+            finally
+            {
+                if(itemLengthEnumerator != null)
+                    itemLengthEnumerator.Dispose();
             }
         }
 
@@ -50,6 +68,12 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var typeNode = (ArrayTypeNode)TypeNode;
             return Array.CreateInstance(typeNode.ChildType, size);
+        }
+
+        protected override object CreateCollection(IEnumerable enumerable)
+        {
+            var typeNode = (ArrayTypeNode)TypeNode;
+            return enumerable.Cast<object>().Select(item => ConvertToType(item, typeNode.ChildType)).ToArray();
         }
 
         protected override void SetCollectionValue(object item, int index)

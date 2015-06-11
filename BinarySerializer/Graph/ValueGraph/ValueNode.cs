@@ -11,6 +11,24 @@ namespace BinarySerialization.Graph.ValueGraph
     {
         private const char PathSeparator = '.';
 
+        protected static readonly Dictionary<Type, Func<object, object>> TypeConverters =
+            new Dictionary<Type, Func<object, object>>
+            {
+                {typeof (char), o => Convert.ToChar(o)},
+                {typeof (byte), o => Convert.ToByte(o)},
+                {typeof (sbyte), o => Convert.ToSByte(o)},
+                {typeof (bool), o => Convert.ToBoolean(o)},
+                {typeof (Int16), o => Convert.ToInt16(o)},
+                {typeof (Int32), o => Convert.ToInt32(o)},
+                {typeof (Int64), o => Convert.ToInt64(o)},
+                {typeof (UInt16), o => Convert.ToUInt16(o)},
+                {typeof (UInt32), o => Convert.ToUInt32(o)},
+                {typeof (UInt64), o => Convert.ToUInt64(o)},
+                {typeof (Single), o => Convert.ToSingle(o)},
+                {typeof (Double), o => Convert.ToDouble(o)},
+                {typeof (string), Convert.ToString}
+            };
+
         protected ValueNode(Node parent, string name, TypeNode typeNode) : base(parent)
         {
             Name = name;
@@ -61,7 +79,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (typeNode.ItemLengthBinding != null && typeNode.ItemLengthBinding.BindingMode == BindingMode.TwoWay)
             {
-                typeNode.ItemLengthBinding.Bind(this, () => MeasureItemOverride());
+                typeNode.ItemLengthBinding.Bind(this, MeasureItemsOverride);
             }
 
             if (typeNode.FieldCountBinding != null && typeNode.FieldCountBinding.BindingMode == BindingMode.TwoWay)
@@ -209,6 +227,33 @@ namespace BinarySerialization.Graph.ValueGraph
             return new BinarySerializationContext(parent.Value, parent.TypeNode.Type, parent.CreateSerializationContext());
         }
 
+        protected static object ConvertToType(object value, Type targetType)
+        {
+            if (value == null)
+                return null;
+
+            Type valueType = value.GetType();
+
+            if (valueType == targetType)
+                return value;
+
+            /* Special handling for strings */
+            if (valueType == typeof(string) && targetType.IsPrimitive)
+            {
+                if (string.IsNullOrWhiteSpace(value.ToString()))
+                    value = 0;
+            }
+
+            Func<object, object> converter;
+            if (TypeConverters.TryGetValue(targetType, out converter))
+                return converter(value);
+
+            if (targetType.IsEnum && value.GetType().IsPrimitive)
+                return Enum.ToObject(targetType, value);
+
+            return value;
+        }
+
         protected virtual long MeasureOverride()
         {
             var nullStream = new NullStream();
@@ -217,7 +262,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return streamLimiter.RelativePosition;
         }
 
-        protected virtual object MeasureItemOverride()
+        protected virtual IEnumerable<long> MeasureItemsOverride()
         {
             throw new InvalidOperationException("Not a collection field.");
         }
@@ -243,6 +288,12 @@ namespace BinarySerialization.Graph.ValueGraph
                 return true;
 
             return stream.CanSeek && stream.Position >= stream.Length;
+        }
+
+        protected static IEnumerable<int> GetInfiniteSequence(int value)
+        {
+            while (true)
+                yield return value;
         }
     }
 }
