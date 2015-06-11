@@ -130,5 +130,20 @@ namespace BinarySerialization.Test.ItemLength
             var actualNames = actual.NameData.Select(nameData => System.Text.Encoding.ASCII.GetString(nameData));
             Assert.IsTrue(names.SequenceEqual(actualNames));
         }
+
+        [TestMethod]
+        public void JaggedIntArrayTest()
+        {
+            var expected = new JaggedIntArrayClass()
+            {
+                Arrays = new[] {new[] {1}, new[] {2, 2}, new[] {3, 3, 3}}
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.IsTrue(expected.Arrays[0].SequenceEqual(actual.Arrays[0]));
+            Assert.IsTrue(expected.Arrays[1].SequenceEqual(actual.Arrays[1]));
+            Assert.IsTrue(expected.Arrays[2].SequenceEqual(actual.Arrays[2]));
+        }
     }
 }
