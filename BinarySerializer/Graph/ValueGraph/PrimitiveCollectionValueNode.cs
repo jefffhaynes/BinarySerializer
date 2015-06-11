@@ -54,28 +54,15 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
-            IEnumerable<int> itemLengths = null;
+            int? itemLength = null;
             if (TypeNode.ItemLengthBinding != null && TypeNode.ItemLengthBinding.IsConst)
-            {
-                var constValue = TypeNode.ItemLengthBinding.ConstValue;
-
-                var constEnumerable = constValue as IEnumerable;
-                if (constEnumerable != null)
-                {
-                    itemLengths = constEnumerable.Cast<object>().Select(Convert.ToInt32);
-                }
-                else
-                {
-                    var itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.ConstValue);
-                    itemLengths = GetInfiniteSequence(itemLength);
-                }
-            }
+                itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.ConstValue);
 
             int? itemCount = null;
             if (TypeNode.FieldCountBinding != null && TypeNode.FieldCountBinding.IsConst)
                 itemCount = Convert.ToInt32(TypeNode.FieldCountBinding.ConstValue);
 
-            PrimitiveCollectionSerializeOverride(stream, itemLengths, itemCount);
+            PrimitiveCollectionSerializeOverride(stream, itemLength, itemCount);
 
             var typeNode = (CollectionTypeNode)TypeNode;
 
@@ -146,7 +133,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 SetCollectionValue(collection[i], i);
         }
 
-        protected abstract void PrimitiveCollectionSerializeOverride(StreamLimiter stream, IEnumerable<int> itemLengths, int? itemCount);
+        protected abstract void PrimitiveCollectionSerializeOverride(StreamLimiter stream, int? length, int? itemCount);
 
         protected abstract object CreateCollection(int size);
 

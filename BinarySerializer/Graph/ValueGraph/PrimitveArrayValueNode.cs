@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -12,12 +11,10 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-
-        protected override void PrimitiveCollectionSerializeOverride(StreamLimiter stream, IEnumerable<int> itemLengths,
-            int? itemCount)
+        protected override void PrimitiveCollectionSerializeOverride(StreamLimiter stream, int? itemLength, int? itemCount)
         {
-            var typeNode = (ArrayTypeNode) TypeNode;
-            var childSerializer = (ValueValueNode) typeNode.Child.CreateSerializer(this);
+            var typeNode = (ArrayTypeNode)TypeNode;
+            var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
 
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
@@ -31,36 +28,17 @@ namespace BinarySerialization.Graph.ValueGraph
             if (itemCount != null && array.Length != itemCount)
             {
                 var tempArray = array;
-                array = (Array) CreateCollection(itemCount.Value);
+                array = (Array)CreateCollection(itemCount.Value);
                 Array.Copy(tempArray, array, Math.Min(tempArray.Length, array.Length));
             }
 
-            IEnumerator<int> itemLengthEnumerator = null;
-
-            try
+            for (int i = 0; i < array.Length; i++)
             {
-                if (itemLengths != null)
-                    itemLengthEnumerator = itemLengths.GetEnumerator();
-                
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        if (stream.IsAtLimit)
-                            break;
+                if (stream.IsAtLimit)
+                    break;
 
-                        var value = array.GetValue(i);
-
-                        if (itemLengthEnumerator != null)
-                            itemLengthEnumerator.MoveNext();
-
-                        childSerializer.Serialize(writer, value, childSerializedType,
-                            itemLengthEnumerator != null ? itemLengthEnumerator.Current : (int?) null);
-                    }
-                
-            }
-            finally
-            {
-                if(itemLengthEnumerator != null)
-                    itemLengthEnumerator.Dispose();
+                var value = array.GetValue(i);
+                childSerializer.Serialize(writer, value, childSerializedType, itemLength);
             }
         }
 

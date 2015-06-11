@@ -18,15 +18,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             int? itemLength = null;
             if (TypeNode.ItemLengthBinding != null && TypeNode.ItemLengthBinding.IsConst)
-            {
-                var constValue = TypeNode.ItemLengthBinding.ConstValue;
-
-                var constEnumerableValue = constValue as IEnumerable;
-                if(constEnumerableValue != null)
-                    throw new NotImplementedException();
-
                 itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.ConstValue);
-            }
 
             foreach (var child in serializableChildren)
             {
