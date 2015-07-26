@@ -9,7 +9,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level.</description>
     <releaseNotes>Dropped to .NET 4.0 for broader compatibility.  Added ability to bind to enumerable fields to allow for the serialization of jagged arrays.</releaseNotes>
-    <tags>Serialization</tags>
+    <tags>Serialization Serializer Binary Format Protocol</tags>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
   </metadata>
 </package>
