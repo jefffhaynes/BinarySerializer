@@ -8,7 +8,7 @@
     <projectUrl>https://github.com/jefffhaynes/BinarySerializer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level.</description>
-    <releaseNotes>Added ability to bind to enumerable fields to allow for the serialization of jagged arrays.</releaseNotes>
+    <releaseNotes>Dropped to .NET 4.0 for broader compatibility.  Added ability to bind to enumerable fields to allow for the serialization of jagged arrays.</releaseNotes>
     <tags>Serialization</tags>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
   </metadata>
