@@ -29,6 +29,16 @@ namespace BinarySerialization.Test.ItemLength
             Assert.IsTrue(expected.Items.SequenceEqual(actual.Items));
         }
 
+        [TestMethod]
+        public void ArrayItemBoundLengthTest()
+        {
+            var expected = new ArrayItemBoundLengthClass {Items = new[] {"abc", "def", "ghi"}};
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Items.Length, actual.ItemLength);
+            Assert.AreEqual(expected.Items.Length, actual.Items.Length);
+        }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
@@ -67,6 +77,73 @@ namespace BinarySerialization.Test.ItemLength
             var actual = Roundtrip(expected, expectedData);
 
             Assert.AreEqual(expected.InnerClasses[0].Value.Substring(0, 2), actual.InnerClasses[0].Value);
+        }
+
+        [TestMethod]
+        public void JaggedArrayTest()
+        {
+            var expected = new JaggedArrayClass {NameArray = new[] {"Alice", "Bob", "Charlie"}};
+            
+            var actual = Roundtrip(expected);
+
+            var nameLengths = expected.NameArray.Select(name => name.Length);
+            Assert.IsTrue(nameLengths.SequenceEqual(actual.NameLengths));
+            Assert.IsTrue(expected.NameArray.SequenceEqual(actual.NameArray));
+        }
+
+        [TestMethod]
+        public void JaggedListTest()
+        {
+            var expected = new JaggedListClass { NameList = new[] { "Alice", "Bob", "Charlie" }.ToList() };
+            var actual = Roundtrip(expected);
+
+            var nameLengths = expected.NameList.Select(name => name.Length);
+            Assert.IsTrue(nameLengths.SequenceEqual(actual.NameLengths));
+            Assert.IsTrue(expected.NameList.SequenceEqual(actual.NameList));
+        }
+
+        [TestMethod]
+        public void JaggedDoubleBoundTest()
+        {
+            var expected = new JaggedDoubleBoundClass() { NameArray = new[] { "Alice", "Bob", "Charlie" } };
+            expected.NameList = expected.NameArray.ToList();
+
+            var actual = Roundtrip(expected);
+
+            var nameLengths = expected.NameArray.Select(name => name.Length);
+            Assert.IsTrue(nameLengths.SequenceEqual(actual.NameLengths));
+            Assert.IsTrue(expected.NameArray.SequenceEqual(actual.NameArray));
+            Assert.IsTrue(expected.NameList.SequenceEqual(actual.NameList));
+        }
+
+        [TestMethod]
+        public void JaggedByteArrayTest()
+        {
+            var names = new[] {"Alice", "Bob", "Charlie"};
+            var expected = new JaggedByteArrayClass()
+            {
+                NameData = names.Select(name => System.Text.Encoding.ASCII.GetBytes(name)).ToArray()
+            };
+
+            var actual = Roundtrip(expected);
+
+            var actualNames = actual.NameData.Select(nameData => System.Text.Encoding.ASCII.GetString(nameData));
+            Assert.IsTrue(names.SequenceEqual(actualNames));
+        }
+
+        [TestMethod]
+        public void JaggedIntArrayTest()
+        {
+            var expected = new JaggedIntArrayClass()
+            {
+                Arrays = new[] {new[] {1}, new[] {2, 2}, new[] {3, 3, 3}}
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.IsTrue(expected.Arrays[0].SequenceEqual(actual.Arrays[0]));
+            Assert.IsTrue(expected.Arrays[1].SequenceEqual(actual.Arrays[1]));
+            Assert.IsTrue(expected.Arrays[2].SequenceEqual(actual.Arrays[2]));
         }
     }
 }

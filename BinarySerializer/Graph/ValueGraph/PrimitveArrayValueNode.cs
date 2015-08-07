@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -12,12 +14,12 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override void PrimitiveCollectionSerializeOverride(StreamLimiter stream, int? itemLength, int? itemCount)
         {
             var typeNode = (ArrayTypeNode)TypeNode;
-            var childSerializer = (ValueValueNode) typeNode.Child.CreateSerializer(this);
+            var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
 
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
-            var array = Value as Array;
+            var array = BoundValue as Array;
 
             if (array == null)
                 return;
@@ -46,15 +48,21 @@ namespace BinarySerialization.Graph.ValueGraph
             return Array.CreateInstance(typeNode.ChildType, size);
         }
 
+        protected override object CreateCollection(IEnumerable enumerable)
+        {
+            var typeNode = (ArrayTypeNode)TypeNode;
+            return enumerable.Cast<object>().Select(item => ConvertToType(item, typeNode.ChildType)).ToArray();
+        }
+
         protected override void SetCollectionValue(object item, int index)
         {
-            var array = (Array)Value;
+            var array = (Array)BoundValue;
             array.SetValue(item, index);
         }
 
         protected override long CountOverride()
         {
-            var array = (Array)Value;
+            var array = (Array)BoundValue;
 
             if (array == null)
                 return 0;

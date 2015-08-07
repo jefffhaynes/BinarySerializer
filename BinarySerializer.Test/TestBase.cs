@@ -13,7 +13,14 @@ namespace BinarySerialization.Test
 
         static TestBase()
         {
-            Serializer.MemberDeserialized += (sender, args) => Console.WriteLine(args.MemberName + ": " + args.Value);
+            Serializer.MemberDeserialized += (sender, args) =>
+            {
+                var bytes = args.Value as byte[];
+                if (bytes != null)
+                    Console.WriteLine(args.MemberName + ": " + BitConverter.ToString(bytes));
+                else
+                    Console.WriteLine(args.MemberName + ": " + args.Value);
+            };
         }
 
         private T Roundtrip<T>(T o, out byte[] data)

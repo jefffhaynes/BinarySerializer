@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -12,6 +13,44 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
         public override object Value { get; set; }
+
+        public override object BoundValue
+        {
+            get
+            {
+                object value;
+
+                if (TargetBindings.Count > 0)
+                {
+                    value = TargetBindings[0]();
+
+                    var enumerableValue = value as IEnumerable;
+
+                    if (enumerableValue == null)
+                        throw new InvalidOperationException("Complex types cannot be binding sources for scalar values.");
+
+                    if (TargetBindings.Count != 1)
+                    {
+                        var targetValues = TargetBindings.Select(binding => binding() as IEnumerable).ToList();
+
+                        if (targetValues.Any(o => o == null))
+                            throw new InvalidOperationException("Complex types cannot be binding sources for scalar values.");
+
+                        if (targetValues.Select(targetEnumerable => targetEnumerable.Cast<object>())
+                                .Any(targetEnumerable => !targetEnumerable.SequenceEqual(enumerableValue.Cast<object>())))
+                        {
+                            throw new BindingException(
+                                "Multiple bindings to a single source must have equivalent target values.");
+                        }
+                    }
+
+                    value = CreateCollection(enumerableValue);
+                }
+                else value = Value;
+
+                return value;
+            }
+        }
 
         protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
@@ -97,6 +136,8 @@ namespace BinarySerialization.Graph.ValueGraph
         protected abstract void PrimitiveCollectionSerializeOverride(StreamLimiter stream, int? length, int? itemCount);
 
         protected abstract object CreateCollection(int size);
+
+        protected abstract object CreateCollection(IEnumerable enumerable);
 
         protected abstract void SetCollectionValue(object item, int index);
 

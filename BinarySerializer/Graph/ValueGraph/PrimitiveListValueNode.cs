@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -18,7 +19,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
-            var list = Value as IList;
+            var list = BoundValue as IList;
 
             if (list == null)
                 return;
@@ -27,7 +28,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (itemCount != null && list.Count != itemCount)
             {
                 var tempList = list;
-                list = (IList) CreateCollection(itemCount.Value);
+                list = (IList)CreateCollection(itemCount.Value);
 
                 for (int i = 0; i < Math.Min(tempList.Count, list.Count); i++)
                     list[i] = tempList[i];
@@ -47,6 +48,12 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeNode = (ListTypeNode)TypeNode;
             var array = Array.CreateInstance(typeNode.ChildType, size);
             return Activator.CreateInstance(typeNode.Type, array);
+        }
+
+        protected override object CreateCollection(IEnumerable enumerable)
+        {
+            var typeNode = (ArrayTypeNode)TypeNode;
+            return enumerable.Cast<object>().Select(item => ConvertToType(item, typeNode.ChildType)).ToList();
         }
 
         protected override void SetCollectionValue(object item, int index)

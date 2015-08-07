@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,24 +10,6 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ValueValueNode : ValueNode
     {
-        protected static readonly Dictionary<Type, Func<object, object>> TypeConverters =
-            new Dictionary<Type, Func<object, object>>
-            {
-                {typeof (char), o => Convert.ToChar(o)},
-                {typeof (byte), o => Convert.ToByte(o)},
-                {typeof (sbyte), o => Convert.ToSByte(o)},
-                {typeof (bool), o => Convert.ToBoolean(o)},
-                {typeof (Int16), o => Convert.ToInt16(o)},
-                {typeof (Int32), o => Convert.ToInt32(o)},
-                {typeof (Int64), o => Convert.ToInt64(o)},
-                {typeof (UInt16), o => Convert.ToUInt16(o)},
-                {typeof (UInt32), o => Convert.ToUInt32(o)},
-                {typeof (UInt64), o => Convert.ToUInt64(o)},
-                {typeof (Single), o => Convert.ToSingle(o)},
-                {typeof (Double), o => Convert.ToDouble(o)},
-                {typeof (string), Convert.ToString}
-            };
-
         public ValueValueNode(Node parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
@@ -52,11 +35,47 @@ namespace BinarySerialization.Graph.ValueGraph
                             throw new BindingException(
                                 "Multiple bindings to a single source must have equivalent target values.");
                     }
+
+                    // handle case where we might be binding to a list or array
+                    var enumerableValue = value as IEnumerable;
+
+                    //if (enumerableValue != null && !TypeNode.IsValueType(enumerableValue.GetType()))
+                    if (enumerableValue != null)
+                    {
+                        // handle special cases
+                        if (TypeNode.Type == typeof (byte[]) || TypeNode.Type == typeof (string))
+                        {
+                            var data = enumerableValue.Cast<object>().Select(Convert.ToByte).ToArray();
+
+                            if (TypeNode.Type == typeof (byte[]))
+                                value = data;
+                            else if (TypeNode.Type == typeof (string))
+                                value = Encoding.GetString(data, 0, data.Length);
+                        }
+                        else value = GetScalar(enumerableValue);
+                    }
                 }
                 else value = Value;
 
                 return ConvertToFieldType(value);
             }
+        }
+
+        private object GetScalar(IEnumerable enumerable)
+        {
+            var childLengths = enumerable.Cast<object>().Select(ConvertToFieldType).ToList();
+
+            if (childLengths.Count == 0)
+                return 0;
+
+            var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
+
+            if (childLengthGroups.Count > 1)
+                throw new InvalidOperationException("Unable to update scalar binding source because not all enumerable items have equal lengths.");
+
+            var childLengthGroup = childLengthGroups.Single();
+
+            return childLengthGroup.Key;
         }
 
         protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
@@ -203,18 +222,11 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             int? effectiveLength = null;
             
-            var typeParent = TypeNode.Parent as TypeNode;
-
             if (length != null)
                 effectiveLength = length.Value;
             else if (TypeNode.FieldLengthBinding != null)
             {
                 object lengthValue = TypeNode.FieldLengthBinding.GetValue(this);
-                effectiveLength = Convert.ToInt32(lengthValue);
-            }
-            else if (typeParent != null && typeParent.ItemLengthBinding != null)
-            {
-                object lengthValue = typeParent.ItemLengthBinding.GetValue((ValueNode) Parent);
                 effectiveLength = Convert.ToInt32(lengthValue);
             }
             else if (TypeNode.FieldCountBinding != null)
@@ -300,32 +312,23 @@ namespace BinarySerialization.Graph.ValueGraph
             return value;
         }
 
-        public object ConvertToFieldType(object value)
+        protected override long CountOverride()
         {
-            if (value == null)
-                return null;
+            // handle special case of byte[]
+            var boundValue = BoundValue as byte[];
+            return boundValue != null ? boundValue.Length : base.CountOverride();
+        }
 
-            Type valueType = value.GetType();
-            Type nodeType = TypeNode.Type;
+        protected override long MeasureOverride()
+        {
+            // handle special case of byte[]
+            var boundValue = BoundValue as byte[];
+            return boundValue != null ? boundValue.Length : base.MeasureOverride();
+        }
 
-            if (valueType == nodeType)
-                return value;
-
-            /* Special handling for strings */
-            if (valueType == typeof (string) && nodeType.IsPrimitive)
-            {
-                if (string.IsNullOrWhiteSpace(value.ToString()))
-                    value = 0;
-            }
-
-            Func<object, object> converter;
-            if (TypeConverters.TryGetValue(nodeType, out converter))
-                return converter(value);
-
-            if (nodeType.IsEnum && value.GetType().IsPrimitive)
-                return Enum.ToObject(nodeType, value);
-
-            return value;
+        private object ConvertToFieldType(object value)
+        {
+            return ConvertToType(value, TypeNode.Type);
         }
 
         private static IEnumerable<byte> ReadNullTerminatedString(BinaryReader reader, int maxLength)
@@ -342,7 +345,7 @@ namespace BinarySerialization.Graph.ValueGraph
         public override string ToString()
         {
             if (Name != null)
-                return Name + ": " + Value;
+                return string.Format("{0}: {1}", Name, Value);
 
             if (Value != null)
                 return Value.ToString();

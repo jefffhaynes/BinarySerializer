@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>4.2</version>
+    <version>4.3</version>
     <authors>Jeff Haynes</authors>
     <owners></owners>
     <projectUrl>https://github.com/jefffhaynes/BinarySerializer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level.</description>
-    <releaseNotes>Removed binding restriction for reference types.</releaseNotes>
-    <tags>Serialization</tags>
+    <releaseNotes>Dropped to .NET 4.0 for broader compatibility.  Added ability to bind to enumerable fields to allow for the serialization of jagged arrays.</releaseNotes>
+    <tags>Serialization Serializer Binary Format Protocol</tags>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
   </metadata>
 </package>
