@@ -25,5 +25,12 @@ namespace BinarySerialization.Test.Custom
 
             serializer.Serialize(stream, expected, "context");
         }
+
+        [TestMethod]
+        public void CustomSourceBindingTest()
+        {
+            var expected = new CustomSourceBinding {Name = "alice"};
+            Roundtrip(expected);
+        }
     }
 }
