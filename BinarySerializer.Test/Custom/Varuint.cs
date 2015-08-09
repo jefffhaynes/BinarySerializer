@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using BinarySerialization;
 
 namespace BinarySerialization.Test.Custom
 {
@@ -9,6 +8,7 @@ namespace BinarySerialization.Test.Custom
     /// </summary>
     public class Varuint : IBinarySerializable
     {
+        [Ignore]
         public uint Value { get; set; }
 
         public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)

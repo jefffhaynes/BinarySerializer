@@ -566,6 +566,7 @@ If all else fails, you can define a custom serialization object.
 /// </summary>
 public class Varuint : IBinarySerializable
 {
+    [Ignore]
     public uint Value { get; set; }
 
     public void Deserialize(Stream stream, Endianness endianness, BinarySerializationContext context)

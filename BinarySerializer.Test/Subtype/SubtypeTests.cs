@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Subtype
@@ -104,6 +103,14 @@ namespace BinarySerialization.Test.Subtype
         }
 
         [TestMethod]
+        public void SubtypeAsSourceTest()
+        {
+            var expected = new SubtypeAsSourceClass {Superclass = new SubclassA(), Name = "Alice"};
+            var actual = Roundtrip(expected);
+            Assert.AreEqual(expected.Name, actual.Name);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void IncompatibleBindingsTest()
         {
@@ -133,6 +140,13 @@ namespace BinarySerialization.Test.Subtype
         {
             var expected = new NonUniqueSubtypeValuesClass();
             Roundtrip(expected);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof (InvalidOperationException))]
+        public void ThrowOnAbstractTypeWithNoSubtypeTest()
+        {
+            Roundtrip(new ThrowOnAbstractTypeWithNoSubtypeClass{Superclass = new SubclassA()});
         }
     }
 }

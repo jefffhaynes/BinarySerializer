@@ -70,5 +70,20 @@ namespace BinarySerialization.Graph.ValueGraph
                 _cachedValue = value;
             }
         }
+
+        public override object BoundValue
+        {
+            get
+            {
+                var typeNode = (ListTypeNode) TypeNode;
+
+                var list = (IList) typeNode.CompiledConstructor();
+
+                foreach (var child in Children)
+                    list.Add(child.BoundValue);
+
+                return list;
+            }
+        }
     }
 }

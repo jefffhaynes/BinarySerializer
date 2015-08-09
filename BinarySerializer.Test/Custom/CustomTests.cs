@@ -29,8 +29,9 @@ namespace BinarySerialization.Test.Custom
         [TestMethod]
         public void CustomSourceBindingTest()
         {
-            var expected = new CustomSourceBinding {Name = "alice"};
-            Roundtrip(expected);
+            var expected = new CustomSourceBinding {NameLength = new Varuint(), Name = "Alice"};
+            var actual = Roundtrip(expected);
+            Assert.AreEqual(expected.Name, actual.Name);
         }
     }
 }

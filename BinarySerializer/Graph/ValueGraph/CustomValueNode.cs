@@ -3,40 +3,52 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal class CustomValueNode : ValueNode
+    internal class CustomValueNode : ObjectValueNode
     {
-        private IBinarySerializable _binarySerializable;
+        //private IBinarySerializable _binarySerializable;
 
         public CustomValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 
-        public override object Value
-        {
-            get { return _binarySerializable; }
+        //public override object Value
+        //{
+        //    get { return base.Value; }
 
-            set
-            {
-                var binarySerializable = value as IBinarySerializable;
+        //    set
+        //    {
+        //        var binarySerializable = value as IBinarySerializable;
 
-                if(binarySerializable == null)
-                    throw new InvalidOperationException("Must implement IBinarySerializable");
+        //        if(value != null && binarySerializable == null)
+        //            throw new InvalidOperationException("Must implement IBinarySerializable");
 
-                _binarySerializable = binarySerializable;
-            }
-        }
+        //        base.Value = binarySerializable;
+        //    }
+        //}
 
-        protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
-        {
-            var serializationContext = CreateSerializationContext();
-            _binarySerializable.Serialize(stream, Endianness, serializationContext);
-        }
-
-        public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
+        protected override void ObjectSerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {
             var serializationContext = CreateSerializationContext();
-            _binarySerializable = (IBinarySerializable)Activator.CreateInstance(TypeNode.Type);
-            _binarySerializable.Deserialize(stream, Endianness, serializationContext);
+
+            var value = BoundValue;
+
+            if (value == null)
+                return;
+
+            var binarySerializable = value as IBinarySerializable;
+
+            if (binarySerializable == null)
+                throw new InvalidOperationException("Must implement IBinarySerializable");
+
+            binarySerializable.Serialize(stream, Endianness, serializationContext);
+        }
+
+        protected override void ObjectDeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
+        {
+            var serializationContext = CreateSerializationContext();
+            var binarySerializable = (IBinarySerializable)Activator.CreateInstance(TypeNode.Type);
+            binarySerializable.Deserialize(stream, Endianness, serializationContext);
+            Value = binarySerializable;
         }
     }
 }

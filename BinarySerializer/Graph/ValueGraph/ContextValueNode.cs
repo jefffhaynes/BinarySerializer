@@ -45,6 +45,8 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
+        public override object BoundValue { get { return Child.BoundValue; } }
+
         public object Context
         {
             set

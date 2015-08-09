@@ -66,7 +66,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public abstract object Value { get; set; }
 
-        public virtual object BoundValue { get { return Value; } }
+        public virtual object BoundValue { get { return Value; }}
 
         public virtual void Bind()
         {
@@ -112,7 +112,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected IEnumerable<ValueNode> GetSerializableChildren()
         {
-            return Children.Where(child => child.TypeNode.IgnoreAttribute == null);
+            return Children.Where(child => !child.TypeNode.IsIgnored);
         }
 
         public void Serialize(StreamLimiter stream, EventShuttle eventShuttle)
@@ -294,6 +294,8 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             while (true)
                 yield return value;
+            // ReSharper disable FunctionNeverReturns
         }
+        // ReSharper restore FunctionNeverReturns
     }
 }

@@ -47,7 +47,7 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 var constructors = Type.GetConstructors(ConstructorBindingFlags);
 
-                var serializableChildren = Children.Where(child => child.IgnoreAttribute == null);
+                var serializableChildren = Children.Where(child => !child.IsIgnored);
 
                 var validConstructors =
                     constructors.Where(
@@ -138,7 +138,7 @@ namespace BinarySerialization.Graph.TypeGraph
             var children =
                 all.Select(memberInfo => GenerateChild(parentType, memberInfo)).OrderBy(child => child.Order).ToList();
 
-            var serializableChildren = children.Where(child => child.IgnoreAttribute == null).ToList();
+            var serializableChildren = children.Where(child => !child.IsIgnored).ToList();
 
             if (serializableChildren.Count > 1)
             {

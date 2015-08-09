@@ -83,7 +83,7 @@ namespace BinarySerialization.Graph.TypeGraph
             IgnoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
 
             /* Don't go any further if we're ignoring this. */
-            if (IgnoreAttribute != null)
+            if (IsIgnored)
                 return;
 
             var fieldOrderAttribute = attributes.OfType<FieldOrderAttribute>().SingleOrDefault();
@@ -214,6 +214,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; private set; }
         public Endianness? Endianness { get; private set; }
         public Encoding Encoding { get; private set; }
+
+        public bool IsIgnored { get { return IgnoreAttribute != null; } }
 
         public int? Order
         {

@@ -4,12 +4,8 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal class CustomTypeNode : TypeNode
+    internal class CustomTypeNode : ObjectTypeNode
     {
-        public CustomTypeNode(TypeNode parent) : base(parent)
-        {
-        }
-
         public CustomTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
         }
