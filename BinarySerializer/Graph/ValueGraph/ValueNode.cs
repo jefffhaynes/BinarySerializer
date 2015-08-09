@@ -18,14 +18,14 @@ namespace BinarySerialization.Graph.ValueGraph
                 {typeof (byte), o => Convert.ToByte(o)},
                 {typeof (sbyte), o => Convert.ToSByte(o)},
                 {typeof (bool), o => Convert.ToBoolean(o)},
-                {typeof (Int16), o => Convert.ToInt16(o)},
-                {typeof (Int32), o => Convert.ToInt32(o)},
-                {typeof (Int64), o => Convert.ToInt64(o)},
-                {typeof (UInt16), o => Convert.ToUInt16(o)},
-                {typeof (UInt32), o => Convert.ToUInt32(o)},
-                {typeof (UInt64), o => Convert.ToUInt64(o)},
-                {typeof (Single), o => Convert.ToSingle(o)},
-                {typeof (Double), o => Convert.ToDouble(o)},
+                {typeof (short), o => Convert.ToInt16(o)},
+                {typeof (int), o => Convert.ToInt32(o)},
+                {typeof (long), o => Convert.ToInt64(o)},
+                {typeof (ushort), o => Convert.ToUInt16(o)},
+                {typeof (uint), o => Convert.ToUInt32(o)},
+                {typeof (ulong), o => Convert.ToUInt64(o)},
+                {typeof (float), o => Convert.ToSingle(o)},
+                {typeof (double), o => Convert.ToDouble(o)},
                 {typeof (string), Convert.ToString}
             };
 
