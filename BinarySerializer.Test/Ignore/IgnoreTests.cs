@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Ignore
 {
@@ -13,9 +8,12 @@ namespace BinarySerialization.Test.Ignore
         [TestMethod]
         public void IgnoreObjectTest()
         {
-            var expected = new IgnoreObjectClass {IgnoreMe = "hello"};
-            var actual = Roundtrip(expected);
+            var expected = new IgnoreObjectClass {FirstField = 1, IgnoreMe = "hello", LastField = 2};
+            var actual = Roundtrip(expected, 8);
+
+            Assert.AreEqual(expected.FirstField, actual.FirstField);
             Assert.IsNull(actual.IgnoreMe);
+            Assert.AreEqual(expected.LastField, actual.LastField);
         }
     }
 }

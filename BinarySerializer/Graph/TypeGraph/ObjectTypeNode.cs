@@ -38,8 +38,8 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             if (_subTypes != null)
                 return;
-
-            Children = GenerateChildrenImpl(Type).ToList();
+       
+            Children = IsIgnored ? new List<TypeNode>() : GenerateChildrenImpl(Type).ToList();
 
             _subTypes = new Dictionary<Type, ObjectTypeNode>();
 
