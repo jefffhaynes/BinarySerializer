@@ -38,8 +38,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     // handle case where we might be binding to a list or array
                     var enumerableValue = value as IEnumerable;
-
-                    //if (enumerableValue != null && !TypeNode.IsValueType(enumerableValue.GetType()))
+                    
                     if (enumerableValue != null)
                     {
                         // handle special cases
@@ -111,7 +110,7 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 constLength = Convert.ToInt32(TypeNode.FieldLengthBinding.ConstValue);
             }
-            else if (typeParent != null && typeParent.ItemLengthBinding != null && typeParent.ItemLengthBinding.IsConst)
+            else if (typeParent?.ItemLengthBinding != null && typeParent.ItemLengthBinding.IsConst)
             {
                 constLength = Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue);
             }
@@ -316,14 +315,14 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             // handle special case of byte[]
             var boundValue = BoundValue as byte[];
-            return boundValue != null ? boundValue.Length : base.CountOverride();
+            return boundValue?.Length ?? base.CountOverride();
         }
 
         protected override long MeasureOverride()
         {
             // handle special case of byte[]
             var boundValue = BoundValue as byte[];
-            return boundValue != null ? boundValue.Length : base.MeasureOverride();
+            return boundValue?.Length ?? base.MeasureOverride();
         }
 
         private object ConvertToFieldType(object value)
@@ -345,12 +344,9 @@ namespace BinarySerialization.Graph.ValueGraph
         public override string ToString()
         {
             if (Name != null)
-                return string.Format("{0}: {1}", Name, Value);
+                return $"{Name}: {Value}";
 
-            if (Value != null)
-                return Value.ToString();
-
-            return base.ToString();
+            return Value?.ToString() ?? base.ToString();
         }
     }
 }

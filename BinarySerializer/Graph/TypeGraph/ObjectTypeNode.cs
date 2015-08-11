@@ -146,10 +146,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 if (unorderedChild != null)
                     throw new InvalidOperationException(
-                        string.Format(
-                            "'{0}' does not have a FieldOrder attribute.  " +
-                            "All serializable fields or properties in a class with more than one member must specify a FieldOrder attribute.",
-                            unorderedChild.Name));
+                        $"'{unorderedChild.Name}' does not have a FieldOrder attribute.  " +
+                        "All serializable fields or properties in a class with more than one member must specify a FieldOrder attribute.");
 
                 var orderGroups = serializableChildren.GroupBy(child => child.Order);
 

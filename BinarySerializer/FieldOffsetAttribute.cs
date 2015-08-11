@@ -5,7 +5,7 @@ namespace BinarySerialization
     /// <summary>
     /// Specifies an absolute offset of a member in the stream.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class FieldOffsetAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>

@@ -31,7 +31,7 @@ namespace BinarySerialization
     /// the serialization of collection is terminated explicity by something defined outside of the scope of an
     /// item in the collection.  See <see cref="SerializeUntilAttribute"/> for more information.
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class ItemSerializeUntilAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>

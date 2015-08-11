@@ -42,35 +42,23 @@ namespace BinarySerialization
         public override void Write(byte[] buffer, int offset, int count)
         {
             if(buffer == null)
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
 
             if(offset + count > buffer.Length)
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
 
             Position += offset + count;
 
             _length = Math.Max(_length, Position);
         }
 
-        public override bool CanRead
-        {
-            get { return false; }
-        }
+        public override bool CanRead => false;
 
-        public override bool CanSeek
-        {
-            get { return true; }
-        }
+        public override bool CanSeek => true;
 
-        public override bool CanWrite
-        {
-            get { return true; }
-        }
+        public override bool CanWrite => true;
 
-        public override long Length
-        {
-            get { return _length; }
-        }
+        public override long Length => _length;
 
         public override long Position { get; set; }
     }

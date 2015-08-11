@@ -5,7 +5,7 @@ namespace BinarySerialization
     /// <summary>
     /// Used to serialize and deserialize enumerations as string fields.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple=false)]
+    [AttributeUsage(AttributeTargets.Field)]
     public sealed class SerializeAsEnumAttribute : Attribute
     {        
         /// <summary>

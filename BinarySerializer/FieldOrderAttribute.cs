@@ -5,7 +5,7 @@ namespace BinarySerialization
     /// <summary>
     /// Provides the <see cref="BinarySerializer"/> with information used to serialize the decorated member.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class FieldOrderAttribute : Attribute
     {
         /// <summary>

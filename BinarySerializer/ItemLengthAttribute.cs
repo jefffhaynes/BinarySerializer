@@ -5,7 +5,7 @@ namespace BinarySerialization
     /// <summary>
     /// Used to specify the length of fixed-length collection items such as byte arrays and fixed-length strings.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class ItemLengthAttribute : FieldBindingBaseAttribute, ILengthAttribute, IConstAttribute
     {
         /// <summary>

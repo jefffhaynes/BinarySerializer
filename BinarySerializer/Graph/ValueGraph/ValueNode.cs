@@ -66,7 +66,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public abstract object Value { get; set; }
 
-        public virtual object BoundValue { get { return Value; }}
+        public virtual object BoundValue => Value;
 
         public virtual void Bind()
         {
@@ -144,9 +144,9 @@ namespace BinarySerialization.Graph.ValueGraph
             catch (Exception e)
             {
                 string reference = Name == null
-                    ? string.Format("type '{0}'", TypeNode.Type)
-                    : string.Format("member '{0}'", Name);
-                string message = string.Format("Error serializing {0}.  See inner exception for detail.", reference);
+                    ? $"type '{TypeNode.Type}'"
+                    : $"member '{Name}'";
+                string message = $"Error serializing {reference}.  See inner exception for detail.";
                 throw new InvalidOperationException(message, e);
             }
         }
@@ -178,9 +178,9 @@ namespace BinarySerialization.Graph.ValueGraph
             catch (EndOfStreamException e)
             {
                 string reference = Name == null
-                    ? string.Format("type '{0}'", TypeNode.Type)
-                    : string.Format("member '{0}'", Name);
-                string message = string.Format("Error deserializing '{0}'.  See inner exception for detail.", reference);
+                    ? $"type '{TypeNode.Type}'"
+                    : $"member '{Name}'";
+                string message = $"Error deserializing '{reference}'.  See inner exception for detail.";
                 throw new InvalidOperationException(message, e);
             }
             catch (IOException)
@@ -190,9 +190,9 @@ namespace BinarySerialization.Graph.ValueGraph
             catch (Exception e)
             {
                 string reference = Name == null
-                    ? string.Format("type '{0}'", TypeNode.Type)
-                    : string.Format("member '{0}'", Name);
-                string message = string.Format("Error deserializing '{0}'.  See inner exception for detail.", reference);
+                    ? $"type '{TypeNode.Type}'"
+                    : $"member '{Name}'";
+                string message = $"Error deserializing '{reference}'.  See inner exception for detail.";
                 throw new InvalidOperationException(message, e);
             }
         }
@@ -212,7 +212,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 child = child.Children.SingleOrDefault(c => c.Name == name);
 
                 if (child == null)
-                    throw new BindingException(string.Format("No field found at '{0}'.", path));
+                    throw new BindingException($"No field found at '{path}'.");
             }
 
             return child;

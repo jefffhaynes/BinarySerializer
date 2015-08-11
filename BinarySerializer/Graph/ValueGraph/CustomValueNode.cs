@@ -5,26 +5,9 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class CustomValueNode : ObjectValueNode
     {
-        //private IBinarySerializable _binarySerializable;
-
         public CustomValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
-
-        //public override object Value
-        //{
-        //    get { return base.Value; }
-
-        //    set
-        //    {
-        //        var binarySerializable = value as IBinarySerializable;
-
-        //        if(value != null && binarySerializable == null)
-        //            throw new InvalidOperationException("Must implement IBinarySerializable");
-
-        //        base.Value = binarySerializable;
-        //    }
-        //}
 
         protected override void ObjectSerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
         {

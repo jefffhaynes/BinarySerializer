@@ -101,8 +101,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (setter == null && !child.TypeNode.IsIgnored)
                     throw new InvalidOperationException("No public setter.");
 
-                if (setter != null)
-                    setter(value, childValueSelector(child));
+                setter?.Invoke(value, childValueSelector(child));
             }
 
             return value;
@@ -164,7 +163,7 @@ namespace BinarySerialization.Graph.ValueGraph
                         attribute =>
                             subTypeValue.Equals(Convert.ChangeType(attribute.Value, subTypeValue.GetType(), null)));
 
-                _valueType = matchingAttribute == null ? null : matchingAttribute.Subtype;
+                _valueType = matchingAttribute?.Subtype;
             }
 
             // skip over if null (this may happen if subtypes are unknown during deserialization)

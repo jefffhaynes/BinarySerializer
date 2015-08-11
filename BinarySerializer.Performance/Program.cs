@@ -23,7 +23,7 @@ namespace BinarySerialization.Performance
             };
 
             DoBS(beer, 100000);
-            //DoBF(beer, 100000);
+            DoBF(beer, 100000);
             //Console.ReadKey();
         }
 

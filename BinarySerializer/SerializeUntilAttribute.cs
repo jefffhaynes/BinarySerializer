@@ -46,7 +46,7 @@ namespace BinarySerialization
     /// }
     /// </code>
     /// </example>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class SerializeUntilAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>

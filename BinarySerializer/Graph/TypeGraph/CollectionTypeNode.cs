@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
@@ -22,10 +21,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public Type ChildType { get; set; }
 
-        public TypeNode Child
-        {
-            get { return _lazyChild.Value; }
-        }
+        public TypeNode Child => _lazyChild.Value;
 
         public Func<object> CompiledChildConstructor { get; protected set; }
 

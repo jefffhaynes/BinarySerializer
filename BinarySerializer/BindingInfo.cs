@@ -27,6 +27,7 @@ namespace BinarySerialization
             object converterParameter = null)
         {
             Path = path;
+            BindingMode = bindingMode;
             RelativeSourceMode = relativeSourceMode;
             ConverterType = converterType;
             ConverterParameter = converterParameter;
@@ -49,6 +50,9 @@ namespace BinarySerialization
         /// </summary>
         public string Path { get; set; }
 
+        /// <summary>
+        /// Direction of the binding.
+        /// </summary>
         public BindingMode BindingMode { get; set; }
 
         /// <summary>
@@ -97,13 +101,13 @@ namespace BinarySerialization
         {
             unchecked
             {
-                int hashCode = (Path != null ? Path.GetHashCode() : 0);
+                int hashCode = Path?.GetHashCode() ?? 0;
                 hashCode = (hashCode*397) ^ (int) BindingMode;
                 hashCode = (hashCode*397) ^ AncestorLevel;
-                hashCode = (hashCode*397) ^ (AncestorType != null ? AncestorType.GetHashCode() : 0);
-                hashCode = (hashCode*397) ^ (ConverterType != null ? ConverterType.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (AncestorType?.GetHashCode() ?? 0);
+                hashCode = (hashCode*397) ^ (ConverterType?.GetHashCode() ?? 0);
                 hashCode = (hashCode*397) ^ (int) RelativeSourceMode;
-                hashCode = (hashCode*397) ^ (ConverterParameter != null ? ConverterParameter.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (ConverterParameter?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }

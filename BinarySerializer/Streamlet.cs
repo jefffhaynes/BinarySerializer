@@ -27,19 +27,19 @@ namespace BinarySerialization
         public Streamlet(Stream source, long offset, long length)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
 
             if (offset < 0)
-                throw new ArgumentOutOfRangeException("offset", "The offset cannot be negative");
+                throw new ArgumentOutOfRangeException(nameof(offset), "The offset cannot be negative");
 
             if (length < 0)
-                throw new ArgumentOutOfRangeException("length", "The length cannot be negative");
+                throw new ArgumentOutOfRangeException(nameof(length), "The length cannot be negative");
 
             if (offset + length > source.Length)
-                throw new ArgumentOutOfRangeException("length", "The length cannot exceed the source stream");
+                throw new ArgumentOutOfRangeException(nameof(length), "The length cannot exceed the source stream");
 
             if (!source.CanSeek)
-                throw new ArgumentException("The source stream must support seeking", "source");
+                throw new ArgumentException("The source stream must support seeking", nameof(source));
 
             Source = source;
             Offset = offset;
@@ -68,39 +68,27 @@ namespace BinarySerialization
         /// <summary>
         ///     Gets a value indicating whether the source stream supports reading.
         /// </summary>
-        public override bool CanRead
-        {
-            get { return Source.CanRead; }
-        }
+        public override bool CanRead => Source.CanRead;
 
         //  Gets a value indicating whether the source stream supports seeking.
         /// <summary>
         /// </summary>
-        public override bool CanSeek
-        {
-            get { return Source.CanSeek; }
-        }
+        public override bool CanSeek => Source.CanSeek;
 
         /// <summary>
         ///     Gets a value indicating whether the current stream supports writing.  This always returns <c>false</c>.
         /// </summary>
-        public override bool CanWrite
-        {
-            get { return false; }
-        }
+        public override bool CanWrite => false;
 
         /// <summary>
         ///     Gets the length in bytes of the <see cref="Streamlet" />.
         /// </summary>
-        public override long Length
-        {
-            get { return _length; }
-        }
+        public override long Length => _length;
 
         /// <summary>
         ///     The underlying source <see cref="Stream" />.
         /// </summary>
-        public Stream Source { get; private set; }
+        public Stream Source { get; }
 
         /// <summary>
         ///     Gets or sets the position within the <see cref="Streamlet" />.

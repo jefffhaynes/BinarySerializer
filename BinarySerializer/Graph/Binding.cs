@@ -25,7 +25,7 @@ namespace BinarySerialization.Graph
 
                 if (ValueConverter == null)
                 {
-                    var message = string.Format("{0} does not implement IValueConverter.", attribute.ConverterType);
+                    var message = $"{attribute.ConverterType} does not implement IValueConverter.";
                     throw new InvalidOperationException(message);
                 }
 
@@ -37,7 +37,7 @@ namespace BinarySerialization.Graph
             Level = level;
         }
 
-        public bool IsConst { get; private set; }
+        public bool IsConst { get; }
 
         public object ConstValue
         {
@@ -50,16 +50,11 @@ namespace BinarySerialization.Graph
             }
         }
 
-        public string Path { get; private set; }
-
+        public string Path { get; }
         public BindingMode BindingMode { get; private set; }
-
-        public IValueConverter ValueConverter { get; private set; }
-
-        public object ConverterParameter { get; private set; }
-
-        public RelativeSourceMode RelativeSourceMode { get; private set; }
-
+        public IValueConverter ValueConverter { get; }
+        public object ConverterParameter { get; }
+        public RelativeSourceMode RelativeSourceMode { get; }
         public int Level { get; set; }
 
         public object GetValue(ValueNode target)
@@ -112,8 +107,8 @@ namespace BinarySerialization.Graph
 
         private Node FindAncestor(Node target)
         {
-            int level = 1;
-            Node parent = target.Parent;
+            var level = 1;
+            var parent = target.Parent;
             while (parent != null)
             {
                 if (level == Level)
@@ -138,7 +133,7 @@ namespace BinarySerialization.Graph
 
             var source = GetSource(target);
 
-            Func<object> finalCallback = ValueConverter == null
+            var finalCallback = ValueConverter == null
                 ? callback
                 : () => ConvertBack(callback(), target.CreateSerializationContext());
 

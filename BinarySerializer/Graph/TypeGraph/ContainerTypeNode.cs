@@ -31,7 +31,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
             catch (Exception exception)
             {
-                var message = string.Format("There was an error reflecting graphType '{0}'", type);
+                var message = $"There was an error reflecting type '{type}'";
                 throw new InvalidOperationException(message, exception);
             }
         }
@@ -50,7 +50,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
             catch (Exception exception)
             {
-                var message = string.Format("There was an error reflecting member '{0}'", memberInfo.Name);
+                var message = $"There was an error reflecting member '{memberInfo.Name}'";
                 throw new InvalidOperationException(message, exception);
             }
         }
@@ -103,7 +103,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 return fieldInfo.FieldType;
             }
 
-            throw new NotSupportedException(string.Format("{0} not supported", memberInfo.GetType().Name));
+            throw new NotSupportedException($"{memberInfo.GetType().Name} not supported");
         }
     }
 }

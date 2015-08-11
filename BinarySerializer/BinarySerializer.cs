@@ -113,7 +113,7 @@ namespace BinarySerialization
         public void Serialize(Stream stream, object value, object context = null)
         {
             if (stream == null)
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             if (value == null)
                 return;

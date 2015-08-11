@@ -51,9 +51,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     enumAttribute =>
                     {
                         var attribute = enumAttribute.Value;
-                        return attribute != null && attribute.Value != null
-                            ? attribute.Value
-                            : enumAttribute.Key.ToString();
+                        return attribute?.Value ?? enumAttribute.Key.ToString();
                     });
 
                 EnumInfo.ValueEnums = EnumInfo.EnumValues.ToDictionary(enumValue => enumValue.Value,

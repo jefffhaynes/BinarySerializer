@@ -30,7 +30,6 @@ namespace BinarySerialization.Graph.TypeGraph
                 {typeof (byte[]), SerializedType.ByteArray}
             };
 
-        private readonly int? _order;
         private readonly SerializedType? _serializedType;
 
         protected TypeNode(TypeNode parent)
@@ -64,7 +63,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 var setMethod = propertyInfo.GetSetMethod();
 
-                if(setMethod != null)
+                if (setMethod != null)
                     ValueSetter = MagicMethods.MagicAction(parentType, setMethod);
             }
             else if (fieldInfo != null)
@@ -74,7 +73,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 ValueGetter = fieldInfo.GetValue;
                 ValueSetter = fieldInfo.SetValue;
             }
-            else throw new NotSupportedException(String.Format("{0} not supported", memberInfo.GetType().Name));
+            else throw new NotSupportedException($"{memberInfo.GetType().Name} not supported");
 
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
@@ -88,7 +87,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             var fieldOrderAttribute = attributes.OfType<FieldOrderAttribute>().SingleOrDefault();
             if (fieldOrderAttribute != null)
-                _order = fieldOrderAttribute.Order;
+                Order = fieldOrderAttribute.Order;
 
             var serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
             if (serializeAsAttribute != null)
@@ -96,7 +95,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 _serializedType = serializeAsAttribute.SerializedType;
                 Endianness = serializeAsAttribute.Endianness;
 
-                if (!String.IsNullOrEmpty(serializeAsAttribute.Encoding))
+                if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
                     Encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
             }
 
@@ -158,8 +157,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     SubtypeAttributes.FirstOrDefault(attribute => !Type.IsAssignableFrom(attribute.Subtype));
 
                 if (invalidSubtype != null)
-                    throw new InvalidOperationException(String.Format("{0} is not a subtype of {1}",
-                        invalidSubtype.Subtype, Type));
+                    throw new InvalidOperationException($"{invalidSubtype.Subtype} is not a subtype of {Type}");
             }
 
 
@@ -185,42 +183,36 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-        public Type Type { get; private set; }
+        public Type Type { get; }
+        public Type NullableUnderlyingType { get; }
 
-        public Type NullableUnderlyingType { get; private set; }
-
-        public Type BaseSerializedType { get { return NullableUnderlyingType ?? Type; } }
+        public Type BaseSerializedType => NullableUnderlyingType ?? Type;
 
         public Action<object, object> ValueSetter { get; private set; }
-
         public Func<object, object> ValueGetter { get; private set; }
-
         public Binding FieldLengthBinding { get; private set; }
         public Binding ItemLengthBinding { get; private set; }
         public Binding FieldCountBinding { get; private set; }
         public Binding FieldOffsetBinding { get; private set; }
         public Binding SerializeUntilBinding { get; private set; }
         public Binding ItemSerializeUntilBinding { get; private set; }
-        public Binding SubtypeBinding { get; private set; }
+        public Binding SubtypeBinding { get; }
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; private set; }
-        public IgnoreAttribute IgnoreAttribute { get; private set; }
-        public FieldLengthAttribute FieldLengthAttribute { get; private set; }
-        public FieldCountAttribute FieldCountAttribute { get; private set; }
-        public FieldOffsetAttribute FieldOffsetAttribute { get; private set; }
-        public ItemLengthAttribute ItemLengthAttribute { get; private set; }
-        public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; private set; }
-        public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; private set; }
-        public SerializeUntilAttribute SerializeUntilAttribute { get; private set; }
-        public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; private set; }
+        public IgnoreAttribute IgnoreAttribute { get; }
+        public FieldLengthAttribute FieldLengthAttribute { get; }
+        public FieldCountAttribute FieldCountAttribute { get; }
+        public FieldOffsetAttribute FieldOffsetAttribute { get; }
+        public ItemLengthAttribute ItemLengthAttribute { get; }
+        public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; }
+        public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; }
+        public SerializeUntilAttribute SerializeUntilAttribute { get; }
+        public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; }
         public Endianness? Endianness { get; private set; }
         public Encoding Encoding { get; private set; }
 
-        public bool IsIgnored { get { return IgnoreAttribute != null; } }
+        public bool IsIgnored => IgnoreAttribute != null;
 
-        public int? Order
-        {
-            get { return _order; }
-        }
+        public int? Order { get; }
 
         public SerializedType GetSerializedType(Type referenceType = null)
         {
@@ -256,9 +248,9 @@ namespace BinarySerialization.Graph.TypeGraph
             catch (Exception e)
             {
                 var reference = Name == null
-                    ? String.Format("type '{0}'", Type)
-                    : String.Format("member '{0}'", Name);
-                var message = String.Format("Error serializing {0}.  See inner exception for detail.", reference);
+                    ? $"type '{Type}'"
+                    : $"member '{Name}'";
+                var message = $"Error serializing {reference}.  See inner exception for detail.";
                 throw new InvalidOperationException(message, e);
             }
         }
@@ -289,7 +281,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public static bool IsValueType(Type type)
         {
-            return type.IsPrimitive || type == typeof(string) || type == typeof(byte[]);
+            return type.IsPrimitive || type == typeof (string) || type == typeof (byte[]);
             //return type.IsPrimitive || type == typeof(string);
         }
 
@@ -301,7 +293,7 @@ namespace BinarySerialization.Graph.TypeGraph
         protected static Func<object> CreateCompiledConstructor(Type type)
         {
             if (type == typeof (string))
-                return () => String.Empty;
+                return () => string.Empty;
 
             var constructor = type.GetConstructor(new Type[0]);
             return CreateCompiledConstructor(constructor);

@@ -25,42 +25,32 @@ namespace BinarySerialization
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 
-        public bool HasSerializationSubscribers
-        {
-            get { return MemberSerializing != null || MemberSerialized != null; }
-        }
+        public bool HasSerializationSubscribers => MemberSerializing != null || MemberSerialized != null;
 
-        public bool HasDeserializationSubscribers
-        {
-            get { return MemberDeserializing != null || MemberDeserialized != null; }
-        }
+        public bool HasDeserializationSubscribers => MemberDeserializing != null || MemberDeserialized != null;
 
         public void OnMemberSerialized(ValueNode sender, string name, object value, BinarySerializationContext context, long offset)
         {
             var handle = MemberSerialized;
-            if(handle != null)
-                handle(sender, new MemberSerializedEventArgs(name, value, context, offset));
+            handle?.Invoke(sender, new MemberSerializedEventArgs(name, value, context, offset));
         }
 
         public void OnMemberDeserialized(ValueNode sender, string name, object value, BinarySerializationContext context, long offset)
         {
             var handle = MemberDeserialized;
-            if (handle != null)
-                handle(sender, new MemberSerializedEventArgs(name, value, context, offset));
+            handle?.Invoke(sender, new MemberSerializedEventArgs(name, value, context, offset));
         }
 
         public void OnMemberSerializing(ValueNode sender, string name, BinarySerializationContext context, long offset)
         {
             var handle = MemberSerializing;
-            if (handle != null)
-                handle(sender, new MemberSerializingEventArgs(name, context, offset));
+            handle?.Invoke(sender, new MemberSerializingEventArgs(name, context, offset));
         }
 
         public void OnMemberDeserializing(ValueNode sender, string name, BinarySerializationContext context, long offset)
         {
             var handle = MemberDeserializing;
-            if (handle != null)
-                handle(sender, new MemberSerializingEventArgs(name, context, offset));
+            handle?.Invoke(sender, new MemberSerializingEventArgs(name, context, offset));
         }
     }
 }

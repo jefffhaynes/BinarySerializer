@@ -9,7 +9,6 @@ namespace BinarySerialization
     {
         private readonly bool _canSeek;
         private readonly long _length;
-        private readonly long _maxLength;
         private readonly bool _unbounded;
 
         public StreamLimiter(Stream source) : this(source, long.MaxValue)
@@ -20,13 +19,13 @@ namespace BinarySerialization
         public StreamLimiter(Stream source, long maxLength)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
 
             if (maxLength < 0)
-                throw new ArgumentOutOfRangeException("maxLength", "Cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(maxLength), "Cannot be negative.");
 
             Source = source;
-            _maxLength = maxLength;
+            MaxLength = maxLength;
 
             /* Store for performance */
             _canSeek = source.CanSeek;
@@ -62,7 +61,7 @@ namespace BinarySerialization
         /// <summary>
         ///     The underlying source <see cref="Stream" />.
         /// </summary>
-        public Stream Source { get; private set; }
+        public Stream Source { get; }
 
         public bool IsAtLimit
         {
@@ -75,25 +74,13 @@ namespace BinarySerialization
             }
         }
 
-        public override bool CanRead
-        {
-            get { return Source.CanRead; }
-        }
+        public override bool CanRead => Source.CanRead;
 
-        public override bool CanSeek
-        {
-            get { return _canSeek; }
-        }
+        public override bool CanSeek => _canSeek;
 
-        public override bool CanWrite
-        {
-            get { return Source.CanWrite; }
-        }
+        public override bool CanWrite => Source.CanWrite;
 
-        public long MaxLength
-        {
-            get { return _maxLength; }
-        }
+        public long MaxLength { get; }
 
         public override long Length
         {
@@ -118,13 +105,7 @@ namespace BinarySerialization
             }
         }
 
-        public long AvailableForWriting
-        {
-            get
-            {
-                return MaxLength - Position;
-            }
-        }
+        public long AvailableForWriting => MaxLength - Position;
 
         public override long Position
         {

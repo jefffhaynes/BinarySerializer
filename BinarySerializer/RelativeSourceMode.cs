@@ -25,6 +25,9 @@ namespace BinarySerialization
         /// </summary>
 		FindAncestor,
 
+        /// <summary>
+        /// Refers to the object context specified during serialization or deserialization.
+        /// </summary>
         SerializationContext
 	}
 }
