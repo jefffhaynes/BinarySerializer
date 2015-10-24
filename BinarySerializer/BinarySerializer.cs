@@ -146,13 +146,13 @@ namespace BinarySerialization
         /// <summary>
         ///     Deserializes the specified stream into an object graph.
         /// </summary>
-        /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
+        /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(Stream stream, object context = null)
+        public object Deserialize(Stream stream, Type type, object context = null)
         {
-            RootTypeNode graph = GetGraph(typeof (T));
+            RootTypeNode graph = GetGraph(type);
 
             var serializer = (ContextValueNode)graph.CreateSerializer(null);
             serializer.EndiannessCallback = () => Endianness;
@@ -160,7 +160,31 @@ namespace BinarySerialization
             serializer.Context = context;
             serializer.Deserialize(new StreamLimiter(stream), _eventShuttle);
 
-            return (T)serializer.Value;
+            return serializer.Value;
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
+        /// <param name="data">The byte array from which to deserialize the object graph.</param>
+        /// <param name="type">The type of the root of the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public object Deserialize(byte[] data, Type type, object context = null)
+        {
+            return Deserialize(new MemoryStream(data), type, context);
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
+        /// <typeparam name="T">The type of the root of the object graph.</typeparam>
+        /// <param name="stream">The stream from which to deserialize the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public T Deserialize<T>(Stream stream, object context = null)
+        {
+            return (T) Deserialize(stream, typeof(T), context);
         }
 
         /// <summary>
