@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BinarySerializer.Test.Order
+namespace BinarySerialization.Test.Order
 {
     public class OrderBaseClass
     {

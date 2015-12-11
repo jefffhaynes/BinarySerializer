@@ -31,7 +31,7 @@ namespace BinarySerialization
     /// the serialization of collection is terminated explicity by something defined outside of the scope of an
     /// item in the collection.  See <see cref="SerializeUntilAttribute"/> for more information.
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class ItemSerializeUntilAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>
@@ -41,7 +41,7 @@ namespace BinarySerialization
         /// <param name="itemValuePath">The path to the member within the item to be used as a
         /// termination condition.</param>
         /// <param name="constValue">The value to use in the termination comparison.</param>
-        public ItemSerializeUntilAttribute(string itemValuePath, object constValue)
+        public ItemSerializeUntilAttribute(string itemValuePath, object constValue = null)
         {
             ItemValuePath = itemValuePath;
             ConstValue = constValue;

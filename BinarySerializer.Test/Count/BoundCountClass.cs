@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using BinarySerialization;
 
-namespace BinarySerializer.Test.Count
+namespace BinarySerialization.Test.Count
 {
     public class BoundCountClass
     {

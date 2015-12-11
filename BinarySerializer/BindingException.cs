@@ -7,17 +7,8 @@ namespace BinarySerialization
     /// </summary>
     public class BindingException : Exception
     {
-        internal BindingException()
-        {
-        }
-
         internal BindingException(string message)
             : base(message)
-        {
-        }
-
-        internal BindingException(string message, Exception inner)
-            : base(message, inner)
         {
         }
     }

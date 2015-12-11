@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace BinarySerializer.Test
+namespace BinarySerialization.Test
 {
     /// <summary>
     /// Makes underlying stream appear as non-seekable.
@@ -21,7 +21,6 @@ namespace BinarySerializer.Test
 
         public override void Flush()
         {
-            _stream.Flush();
         }
 
         public override long Seek(long offset, SeekOrigin origin)

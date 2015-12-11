@@ -1,4 +1,4 @@
-﻿namespace BinarySerializer.Test.Endianness
+﻿namespace BinarySerialization.Test.Endianness
 {
     public class EndiannessClass
     {

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using BinarySerialization;
 
-namespace BinarySerializer.Test.ItemLength
+namespace BinarySerialization.Test.ItemLength
 {
     public class ItemBoundLengthClass
     {
@@ -10,6 +9,6 @@ namespace BinarySerializer.Test.ItemLength
 
         [FieldOrder(1)]
         [ItemLength("ItemLength")]
-        public List<string> List { get; set; } 
+        public List<string> Items { get; set; } 
     }
 }

@@ -1,10 +1,10 @@
 ﻿using BinarySerialization;
 
-namespace BinarySerializer.Test.Context
+namespace BinarySerialization.Test.Context
 {
     public class ContextClass
     {
-        [SerializeWhen("SerializeCondtion", true, AncestorType = typeof(Context), Mode = RelativeSourceMode.FindAncestor)]
+        [SerializeWhen("SerializeCondtion", true, RelativeSourceMode = RelativeSourceMode.SerializationContext)]
         public int ContextConditionalField { get; set; }
     }
 }

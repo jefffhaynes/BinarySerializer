@@ -1,4 +1,4 @@
-﻿namespace BinarySerializer.Test.Context
+﻿namespace BinarySerialization.Test.Context
 {
     public class Context
     {

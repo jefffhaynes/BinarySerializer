@@ -1,98 +1,153 @@
 ﻿using System;
+using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph
 {
-    internal abstract class Binding
+    internal class Binding
     {
-        private readonly IValueConverter _valueConverter;
-        private readonly object _converterParameter;
-        private readonly Func<object> _targetEvaluator;
-        private readonly Node _targetNode;
-        private readonly BindingInfo _bindingInfo;
+        private readonly object _constValue;
 
-        protected Binding(Node targetNode, IBindableFieldAttribute attribute, Func<object> targetEvaluator = null)
+        public Binding(IBindableFieldAttribute attribute, int level)
         {
-            if (string.IsNullOrEmpty(attribute.Path))
-                return;
+            Path = attribute.Path;
+            BindingMode = attribute.BindingMode;
 
-            _targetNode = targetNode;
-            _bindingInfo = attribute.Binding;
+            var constAttribute = attribute as IConstAttribute;
+            if (constAttribute != null && Path == null)
+            {
+                IsConst = true;
+                _constValue = constAttribute.GetConstValue();
+            }
 
             if (attribute.ConverterType != null)
             {
-                var valueConverter = Activator.CreateInstance(attribute.ConverterType) as IValueConverter;
+                ValueConverter = Activator.CreateInstance(attribute.ConverterType) as IValueConverter;
 
-                if (valueConverter == null)
+                if (ValueConverter == null)
                 {
-                    var message = string.Format("{0} does not implement IValueConverter.", attribute.ConverterType);
+                    var message = $"{attribute.ConverterType} does not implement IValueConverter.";
                     throw new InvalidOperationException(message);
                 }
 
-                _valueConverter = valueConverter;
-                _converterParameter = attribute.ConverterParameter;
+                ConverterParameter = attribute.ConverterParameter;
             }
 
-            _targetEvaluator = targetEvaluator;
+            RelativeSourceMode = attribute.RelativeSourceMode;
+
+            Level = level;
         }
 
-        public Node GetSource()
+        public bool IsConst { get; }
+
+        public object ConstValue
         {
-            if (_bindingInfo == null)
-                return null;
-
-            return _targetNode.GetBindingSource(_bindingInfo);
-        }
-
-        public void Bind()
-        {
-            var source = GetSource();
-
-            if (source != null && _targetEvaluator != null)
+            get
             {
-                if (!source.Bindings.Contains(this))
-                    source.Bindings.Add(this);
+                if (!IsConst)
+                    throw new InvalidOperationException("Not const.");
+
+                return _constValue;
             }
         }
 
-        public void Unbind()
-        {
-            var source = GetSource();
+        public string Path { get; }
+        public BindingMode BindingMode { get; private set; }
+        public IValueConverter ValueConverter { get; }
+        public object ConverterParameter { get; }
+        public RelativeSourceMode RelativeSourceMode { get; }
+        public int Level { get; set; }
 
-            if (source != null)
+        public object GetValue(ValueNode target)
+        {
+            if (IsConst)
+                return _constValue;
+
+            var source = GetSource(target);
+
+            return ValueConverter == null ? source.Value : Convert(source.Value, target.CreateSerializationContext());
+        }
+
+        public object GetBoundValue(ValueNode target)
+        {
+            if (IsConst)
+                return _constValue;
+
+            var source = GetSource(target);
+
+            return ValueConverter == null
+                ? source.BoundValue
+                : Convert(source.BoundValue, target.CreateSerializationContext());
+        }
+
+        public ValueNode GetSource(ValueNode target)
+        {
+            var relativeSource = (ValueNode) GetRelativeSource(target);
+            return relativeSource.GetChild(Path);
+        }
+
+        private Node GetRelativeSource(Node target)
+        {
+            Node source = null;
+
+            switch (RelativeSourceMode)
             {
-                source.Bindings.Remove(this);
+                case RelativeSourceMode.Self:
+                    source = target.Parent;
+                    break;
+                case RelativeSourceMode.FindAncestor:
+                case RelativeSourceMode.SerializationContext:
+                    source = FindAncestor(target);
+                    break;
+                case RelativeSourceMode.PreviousData:
+                    throw new NotImplementedException();
             }
+
+            return source;
         }
 
-        protected object GetValue()
+        private Node FindAncestor(Node target)
         {
-            return Convert(GetSource().Value);
+            var level = 1;
+            var parent = target.Parent;
+            while (parent != null)
+            {
+                if (level == Level)
+                    return parent;
+
+                if (parent.Parent == null && RelativeSourceMode == RelativeSourceMode.SerializationContext)
+                    return parent;
+
+                parent = parent.Parent;
+
+                if (!(parent is ContextValueNode))
+                    level++;
+            }
+
+            return null;
         }
 
-        protected object GetBoundValue()
+        public void Bind(ValueNode target, Func<object> callback)
         {
-            return Convert(GetSource().BoundValue);
+            if (IsConst)
+                return;
+
+            var source = GetSource(target);
+
+            var finalCallback = ValueConverter == null
+                ? callback
+                : () => ConvertBack(callback(), target.CreateSerializationContext());
+
+            source.TargetBindings.Add(finalCallback);
         }
 
-        public object GetTargetValue()
+        private object Convert(object value, BinarySerializationContext context)
         {
-            return ConvertBack(_targetEvaluator());
+            return ValueConverter.Convert(value, ConverterParameter, context);
         }
 
-        public object Convert(object value)
+        private object ConvertBack(object value, BinarySerializationContext context)
         {
-            if (_valueConverter == null)
-                return value;
-
-            return _valueConverter.Convert(value, _converterParameter, _targetNode.CreateSerializationContext());
-        }
-
-        public object ConvertBack(object value)
-        {
-            if (_valueConverter == null)
-                return value;
-
-            return _valueConverter.ConvertBack(value, _converterParameter, _targetNode.CreateSerializationContext());
+            return ValueConverter.ConvertBack(value, ConverterParameter, context);
         }
     }
 }

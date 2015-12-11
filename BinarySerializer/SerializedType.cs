@@ -74,12 +74,12 @@
         SizedString,
 
         /// <summary>
-        /// A null (zero) terminated string.
+        /// An encoded string with a null (zero byte) termination.
         /// </summary>
         NullTerminatedString,
 
         /// <summary>
-        /// A string with a two-byte unsigned integer length prefix.
+        /// An encoded string prefixed with a LEB128-encoded length.  This is equivelent to how BinaryWriter encodes a string.
         /// </summary>
         LengthPrefixedString,
     }

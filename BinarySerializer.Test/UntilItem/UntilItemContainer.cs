@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using BinarySerialization;
 
-namespace BinarySerializer.Test.UntilItem
+namespace BinarySerialization.Test.UntilItem
 {
     public class UntilItemContainer
     {
@@ -17,6 +18,13 @@ namespace BinarySerializer.Test.UntilItem
         public List<UntilItemClass> ItemsLastItemExcluded { get; set; }
 
         [FieldOrder(3)]
+        public string SerializeUntilField { get; set; }
+
+        [FieldOrder(4)]
+        [ItemSerializeUntil("LastItem", Path = "SerializeUntilField")]
+        public List<UntilItemClass> BoundItems { get; set; }
+
+        [FieldOrder(5)]
         public uint StuffAfter { get; set; }
     }
 }

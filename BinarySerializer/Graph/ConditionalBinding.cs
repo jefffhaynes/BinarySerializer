@@ -1,24 +1,13 @@
-﻿using System;
-
-namespace BinarySerialization.Graph
+﻿namespace BinarySerialization.Graph
 {
     internal class ConditionalBinding : Binding
     {
-        private readonly object _conditionalValue;
-
-        public ConditionalBinding(Node node, SerializeWhenAttribute attribute, Func<object> targetEvaluator ) : base(node, attribute, targetEvaluator)
+        public ConditionalBinding(SerializeWhenAttribute attribute, int level)
+            : base(attribute, level)
         {
-            _conditionalValue = attribute.Value;
+            ConditionalValue = attribute.Value;
         }
 
-        public bool Value
-        {
-            get { return GetValue().Equals(_conditionalValue); }
-        }
-
-        public bool BoundValue
-        {
-            get { return GetBoundValue().Equals(_conditionalValue); }
-        }
+        public object ConditionalValue { get; private set; }
     }
 }

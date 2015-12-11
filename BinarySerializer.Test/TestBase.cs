@@ -2,17 +2,25 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test
+namespace BinarySerialization.Test
 {
     public abstract class TestBase
     {
-        private static readonly BinarySerialization.BinarySerializer Serializer = new BinarySerialization.BinarySerializer();
+        protected static readonly BinarySerializer Serializer = new BinarySerializer();
 
         protected static readonly string[] TestSequence = { "a", "b", "c" };
+        protected static readonly int[] PrimitiveTestSequence = { 1, 2, 3 };
 
         static TestBase()
         {
-            Serializer.MemberDeserialized += (sender, args) => Console.WriteLine(args.MemberName + ": " + args.Value);
+            Serializer.MemberDeserialized += (sender, args) =>
+            {
+                var bytes = args.Value as byte[];
+                if (bytes != null)
+                    Console.WriteLine(args.MemberName + ": " + BitConverter.ToString(bytes));
+                else
+                    Console.WriteLine(args.MemberName + ": " + args.Value);
+            };
         }
 
         private T Roundtrip<T>(T o, out byte[] data)
@@ -56,6 +64,14 @@ namespace BinarySerializer.Test
             }
 
             return result;
+        }
+
+        protected T Deserialize<T>(string filename)
+        {
+            using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+            {
+                return Serializer.Deserialize<T>(stream);
+            }
         }
     }
 }

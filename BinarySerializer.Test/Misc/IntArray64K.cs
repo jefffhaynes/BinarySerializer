@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 
-namespace BinarySerializer.Test.Misc
+namespace BinarySerialization.Test.Misc
 {
     public class IntArray64K
     {

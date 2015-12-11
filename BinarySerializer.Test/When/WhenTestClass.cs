@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 
-namespace BinarySerializer.Test.When
+namespace BinarySerialization.Test.When
 {
     public class WhenTestClass
     {

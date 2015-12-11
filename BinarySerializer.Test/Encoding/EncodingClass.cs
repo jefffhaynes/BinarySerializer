@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 
-namespace BinarySerializer.Test.Encoding
+namespace BinarySerialization.Test.Encoding
 {
     public class EncodingClass
     {

@@ -1,75 +1,127 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BinarySerialization
 {
     internal class StreamLimiter : Stream
     {
-        private long _maxLength;
-        private long _position;
+        private readonly bool _canSeek;
+        private readonly long _length;
+        private readonly bool _unbounded;
 
-        public StreamLimiter(Stream source, long maxLength = long.MaxValue)
+        public StreamLimiter(Stream source) : this(source, long.MaxValue)
+        {
+            _unbounded = true;
+        }
+
+        public StreamLimiter(Stream source, long maxLength)
         {
             if (source == null)
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
 
             if (maxLength < 0)
-                throw new ArgumentOutOfRangeException("maxLength", "Cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(maxLength), "Cannot be negative.");
 
             Source = source;
-            _maxLength = maxLength;
+            MaxLength = maxLength;
+
+            /* Store for performance */
+            _canSeek = source.CanSeek;
+
+            if(_canSeek)
+                _length = source.Length;
+        }
+
+        public long RelativePosition { get; set; }
+
+        public long GlobalRelativePosition
+        {
+            get
+            {
+                return Ancestors.Sum(limiter => limiter.RelativePosition);
+            }
+        }
+
+        private IEnumerable<StreamLimiter> Ancestors
+        {
+            get
+            {
+                var parent = this;
+
+                while (parent != null)
+                {
+                    yield return parent;
+                    parent = parent.Source as StreamLimiter;
+                }
+            }
         }
 
         /// <summary>
         ///     The underlying source <see cref="Stream" />.
         /// </summary>
-        public Stream Source { get; private set; }
+        public Stream Source { get; }
 
         public bool IsAtLimit
         {
-            get { return Position >= MaxLength; }
+            get
+            {
+                if (_unbounded)
+                    return false;
+
+                return Position >= MaxLength;
+            }
         }
 
-        public override bool CanRead
-        {
-            get { return Source.CanRead; }
-        }
+        public override bool CanRead => Source.CanRead;
 
-        public override bool CanSeek
-        {
-            get { return Source.CanSeek; }
-        }
+        public override bool CanSeek => _canSeek;
 
-        public override bool CanWrite
-        {
-            get { return false; }
-        }
+        public override bool CanWrite => Source.CanWrite;
 
-        public long MaxLength
-        {
-            get { return _maxLength; }
-        }
+        public long MaxLength { get; }
 
         public override long Length
         {
-            get { return Source.Length; }
+            get
+            {
+                /* If we can't seek, might as well go to the source */
+                if (!_canSeek)
+                    return Source.Length;
+
+                return _length;
+            }
         }
+
+        public long AvailableForReading
+        {
+            get
+            {
+                if (!_canSeek)
+                    return MaxLength - Position;
+
+                return Math.Min(MaxLength, Length) - Position;
+            }
+        }
+
+        public long AvailableForWriting => MaxLength - Position;
 
         public override long Position
         {
-            get { return _position; }
+            get { return RelativePosition; }
 
             set
             {
-                var delta = value - _position;
+                var delta = value - RelativePosition;
                 Source.Position += delta;
-                _position = value;
+                RelativePosition = value;
             }
         }
 
         public override void Flush()
         {
-            throw new NotImplementedException();
+            Source.Flush();
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -92,7 +144,7 @@ namespace BinarySerialization
 
         public override void SetLength(long value)
         {
-            _maxLength = value;
+            throw new NotSupportedException();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -106,14 +158,23 @@ namespace BinarySerialization
                 return 0;
 
             int read = Source.Read(buffer, offset, count);
-            _position += read;
+            RelativePosition += read;
 
             return read;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            throw new NotImplementedException();
+            if (count == 0)
+                return;
+
+            if (count > MaxLength - Position)
+            {
+                throw new InvalidOperationException("Unable to write beyond end of stream limit.");
+            }
+
+            Source.Write(buffer, offset, count);
+            RelativePosition += count;
         }
     }
 }

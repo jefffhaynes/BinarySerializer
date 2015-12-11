@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using BinarySerialization;
 
-namespace BinarySerializer.Test.Streams
+namespace BinarySerialization.Test.Streams
 {
     public class StreamClass
     {

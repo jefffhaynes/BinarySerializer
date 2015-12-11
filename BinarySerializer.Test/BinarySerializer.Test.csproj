@@ -6,7 +6,7 @@
     <ProjectGuid>{E6AC3910-60FE-4941-BF6B-FA8279927EC2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BinarySerializer.Test</RootNamespace>
+    <RootNamespace>BinarySerialization.Test</RootNamespace>
     <AssemblyName>BinarySerializer.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -67,16 +67,58 @@
     <Compile Include="Count\BoundCountClass.cs" />
     <Compile Include="Count\ConstCountClass.cs" />
     <Compile Include="Count\CountTests.cs" />
+    <Compile Include="Count\PrimitiveListBindingClass.cs" />
     <Compile Include="Count\PrimitiveArrayBindingClass.cs" />
+    <Compile Include="Custom\CustomSourceBinding.cs" />
+    <Compile Include="Custom\CustomTests.cs" />
+    <Compile Include="Custom\CustomWithContextClass.cs" />
+    <Compile Include="Custom\Varuint.cs" />
     <Compile Include="Encoding\EncodingClass.cs" />
     <Compile Include="Encoding\EncodingTests.cs" />
     <Compile Include="Endianness\EndiannessClass.cs" />
     <Compile Include="Endianness\EndiannessTests.cs" />
     <Compile Include="Enums\BaseTypeEnumAsStringClass.cs" />
     <Compile Include="Enums\EnumTests.cs" />
+    <Compile Include="Enums\NullableEnumClass.cs" />
+    <Compile Include="Events\EventTestClass.cs" />
+    <Compile Include="Events\EventTestInnerClass.cs" />
+    <Compile Include="Events\EventTests.cs" />
+    <Compile Include="Ignore\IgnoreObjectClass.cs" />
+    <Compile Include="Ignore\IgnoreTests.cs" />
+    <Compile Include="Issues\Issue12\BeerChunk.cs" />
+    <Compile Include="Issues\Issue12\BodyChunk.cs" />
+    <Compile Include="Issues\Issue12\CatChunk.cs" />
+    <Compile Include="Issues\Issue12\Chunk.cs" />
+    <Compile Include="Issues\Issue12\ChunkContainer.cs" />
+    <Compile Include="Issues\Issue12\DescChunk.cs" />
+    <Compile Include="Issues\Issue12\FormChunk.cs" />
+    <Compile Include="Issues\Issue12\IsEvenConverter.cs" />
+    <Compile Include="Issues\Issue12\Issue12Tests.cs" />
+    <Compile Include="Issues\Issue12\ListChunk.cs" />
+    <Compile Include="Issues\Issue12\ParmChunk.cs" />
+    <Compile Include="Issues\Issue12\RefeChunk.cs" />
+    <Compile Include="Issues\Issue12\SnaxChunk.cs" />
+    <Compile Include="Issues\Issue18\JaggedArrayClass.cs" />
+    <Compile Include="Issues\Issue9\ElementClass.cs" />
+    <Compile Include="Issues\Issue9\Entry.cs" />
+    <Compile Include="Issues\Issue9\Issue9Tests.cs" />
+    <Compile Include="ItemLength\ArrayItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemBoundLengthClass.cs" />
     <Compile Include="ItemLength\ItemConstLengthClass.cs" />
     <Compile Include="ItemLength\ItemLengthListOfByteArrayClass.cs" />
+    <Compile Include="ItemLength\JaggedArrayClass.cs" />
+    <Compile Include="ItemLength\JaggedByteArrayClass.cs" />
+    <Compile Include="ItemLength\JaggedDoubleBoundClass.cs" />
+    <Compile Include="ItemLength\JaggedIntArrayClass.cs" />
+    <Compile Include="ItemLength\JaggedListClass.cs" />
+    <Compile Include="ItemLength\LimitedItemLengthClassClass.cs" />
+    <Compile Include="ItemLength\LimitedItemLengthClassInnerClass.cs" />
+    <Compile Include="Length\BoundItemClass.cs" />
+    <Compile Include="Length\BoundItemContainerClass.cs" />
+    <Compile Include="Length\EmbeddedConstrainedCollectionClass.cs" />
+    <Compile Include="Length\EmbeddedConstrainedCollectionInnerClass.cs" />
+    <Compile Include="Length\PaddedLengthClassClass.cs" />
+    <Compile Include="Length\PaddedLengthClassInnerClass.cs" />
     <Compile Include="Misc\AbstractClass.cs" />
     <Compile Include="Misc\AbstractClassContainer.cs" />
     <Compile Include="Misc\AsbtractClassTests.cs" />
@@ -85,11 +127,44 @@
     <Compile Include="Misc\DictionaryTests.cs" />
     <Compile Include="Misc\EmptyClass.cs" />
     <Compile Include="Misc\EmptyClassTest.cs" />
+    <Compile Include="Misc\ImmutableClass.cs" />
+    <Compile Include="Misc\ImmutableClass2.cs" />
+    <Compile Include="Misc\ImmutableClass3.cs" />
+    <Compile Include="Misc\ImmutableClass4.cs" />
+    <Compile Include="Misc\ImmutableNoPublicConstructorClass.cs" />
+    <Compile Include="Misc\ImmutableTests.cs" />
     <Compile Include="Misc\IntArray64K.cs" />
     <Compile Include="Misc\IOExceptionTest.cs" />
     <Compile Include="Misc\LargeArrayTests.cs" />
+    <Compile Include="Misc\MismatchBindingClass.cs" />
+    <Compile Include="Misc\MismatchBindingTests.cs" />
+    <Compile Include="Misc\PrivateSetterClass.cs" />
     <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
     <Compile Include="Misc\NullTrailingMemberTests.cs" />
+    <Compile Include="Misc\ExtensionMethodTests.cs" />
+    <Compile Include="Misc\RecursiveGraphClass.cs" />
+    <Compile Include="Misc\RecursiveGraphTests.cs" />
+    <Compile Include="Order\MutlipleMembersDuplicateOrderClass.cs" />
+    <Compile Include="Primitives\ContainedStringClass.cs" />
+    <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingBaseClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingContainerClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingInnerClass.cs" />
+    <Compile Include="Subtype\IncompatibleBindingsClass.cs" />
+    <Compile Include="Subtype\InvalidSubtypeClass.cs" />
+    <Compile Include="Subtype\NonUniqueSubtypeValuesClass.cs" />
+    <Compile Include="Subtype\NonUniqueSubtypesClass.cs" />
+    <Compile Include="Subtype\RecoverableMissingSubtypeClass.cs" />
+    <Compile Include="Subtype\SubtypeAsSourceClass.cs" />
+    <Compile Include="Subtype\SuperclassContainerWithMissingSubclass.cs" />
+    <Compile Include="Subtype\SuperclassContainer.cs" />
+    <Compile Include="Subtype\ThrowOnAbstractTypeWithNoSubtypeClass.cs" />
+    <Compile Include="Unknown\BindingAcrossUnknownBoundaryChildClass.cs" />
+    <Compile Include="Unknown\BindingAcrossUnknownBoundaryClass.cs" />
+    <Compile Include="Unknown\InvalidUnknownTypeClass.cs" />
+    <Compile Include="Unknown\UnknownTypeClass.cs" />
+    <Compile Include="Unknown\UnknownTypeTests.cs" />
     <Compile Include="Misc\UnreadableStream.cs" />
     <Compile Include="NullArrayClass.cs" />
     <Compile Include="DoubleOutlierConverter.cs" />
@@ -118,7 +193,7 @@
     <Compile Include="Offset\BoundOffsetClass.cs" />
     <Compile Include="Offset\ConstOffsetClass.cs" />
     <Compile Include="Offset\OffsetTests.cs" />
-    <Compile Include="Order\MutlipleMembersInvalidOrderClass.cs" />
+    <Compile Include="Order\MutlipleMembersNoOrderClass.cs" />
     <Compile Include="Order\OrderBaseClass.cs" />
     <Compile Include="Order\OrderClass.cs" />
     <Compile Include="Order\OrderDerivedClass.cs" />
@@ -126,6 +201,8 @@
     <Compile Include="Order\SingleMemberOrderClass.cs" />
     <Compile Include="Primitives\PrimitiveTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializeAs\SerializeAsTest.cs" />
+    <Compile Include="SerializeAs\SizedStringClass.cs" />
     <Compile Include="StreamletTest.cs" />
     <Compile Include="Streams\StreamClass.cs" />
     <Compile Include="Streams\StreamTests.cs" />

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Length
+namespace BinarySerialization.Test.Length
 {
     [TestClass]
     public class LengthTests : TestBase
@@ -11,8 +10,15 @@ namespace BinarySerializer.Test.Length
         [TestMethod]
         public void ConstLengthTest()
         {
-            var actual = Roundtrip(new ConstLengthClass {Field = "FieldValue"});
+            var actual = Roundtrip(new ConstLengthClass {Field = "FieldValue"}, 3);
             Assert.AreEqual("Fie", actual.Field);
+        }
+
+        [TestMethod]
+        public void NullStringConstLengthTest()
+        {
+            var actual = Roundtrip(new ConstLengthClass(), 3);
+            Assert.AreEqual(string.Empty, actual.Field);
         }
 
         [TestMethod]
@@ -76,6 +82,7 @@ namespace BinarySerializer.Test.Length
                     Field = new ConstLengthClass { Field = "FieldValue" }
                 };
             var actual = Roundtrip(expected);
+            Assert.AreEqual(3, actual.Field.Field.Length);
             Assert.AreEqual(3, actual.FieldLengthField);
         }
 
@@ -96,6 +103,71 @@ namespace BinarySerializer.Test.Length
 
             var actual = Roundtrip(expected);
             Assert.AreEqual(2, actual.Field.Collection.Count);
+        }
+
+        [TestMethod]
+        public void PaddedLengthTest()
+        {
+            var expected = new PaddedLengthClassClass
+            {
+                InnerClass = new PaddedLengthClassInnerClass
+                {
+                    Value = "hello"
+                },
+
+                InnerClass2 = new PaddedLengthClassInnerClass
+                {
+                    Value = "world"
+                }
+            };
+
+            var actual = Roundtrip(expected, 40);
+
+            Assert.AreEqual(expected.InnerClass.Value, actual.InnerClass.Value);
+            Assert.AreEqual(expected.InnerClass.Value.Length, actual.InnerClass.ValueLength);
+            Assert.AreEqual(expected.InnerClass2.Value, actual.InnerClass2.Value);
+            Assert.AreEqual(expected.InnerClass2.Value.Length, actual.InnerClass2.ValueLength);
+        }
+
+        [TestMethod]
+        public void EmbeddedConstrainedCollectionTest()
+        {
+            var expected = new EmbeddedConstrainedCollectionClass
+            {
+                Inner = new EmbeddedConstrainedCollectionInnerClass
+                {
+                    Items = new List<string>
+                    {
+                        "we",
+                        "have",
+                        "nothing",
+                        "to",
+                        "fear"
+                    }
+                }
+            };
+
+            Roundtrip(expected, 10);
+        }
+
+        [TestMethod]
+        public void BoundItemTest()
+        {
+            var expected = new BoundItemContainerClass
+            {
+                Items = new List<BoundItemClass>
+                {
+                    new BoundItemClass {Name = "Alice"},
+                    new BoundItemClass {Name = "Frank"},
+                    new BoundItemClass {Name = "Steve"}
+                }
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Items[0].Name, actual.Items[0].Name);
+            Assert.AreEqual(expected.Items[1].Name, actual.Items[1].Name);
+            Assert.AreEqual(expected.Items[2].Name, actual.Items[2].Name);
         }
     }
 }

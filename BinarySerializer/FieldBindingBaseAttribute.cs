@@ -36,6 +36,12 @@ namespace BinarySerialization
             set { Binding.Path = value; }
         }
 
+        public BindingMode BindingMode
+        {
+            get { return Binding.BindingMode; }
+            set { Binding.BindingMode = value; }
+        }
+
         public int AncestorLevel
         {
             get { return Binding.AncestorLevel; }
@@ -48,10 +54,10 @@ namespace BinarySerialization
             set { Binding.AncestorType = value; }
         }
 
-        public RelativeSourceMode Mode
+        public RelativeSourceMode RelativeSourceMode
         {
-            get { return Binding.Mode; }
-            set { Binding.Mode = value; }
+            get { return Binding.RelativeSourceMode; }
+            set { Binding.RelativeSourceMode = value; }
         }
 
         public Type ConverterType

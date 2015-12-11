@@ -16,7 +16,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile37</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Profile328</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -41,38 +41,50 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingMode.cs" />
+    <Compile Include="Graph\Node.cs" />
+    <Compile Include="Graph\TypeGraph\ArrayTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\CollectionTypeNode.cs" />
+    <Compile Include="Graph\ConditionalBinding.cs" />
+    <Compile Include="Graph\TypeGraph\CustomTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\EnumTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\ListTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\StreamTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\UnknownTypeNode.cs" />
+    <Compile Include="Graph\ValueGraph\ArrayValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\CollectionValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\ContextValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\CustomValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\EnumValueNode.cs" />
+    <Compile Include="EventShuttle.cs" />
+    <Compile Include="Graph\ValueGraph\ListValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\PrimitiveCollectionValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\PrimitiveListValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\PrimitveArrayValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\StreamValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\UnknownValueNode.cs" />
+    <Compile Include="MagicMethods.cs" />
     <Compile Include="SerializeAsAttribute.cs" />
-    <Compile Include="Graph\ArrayNode.cs" />
     <Compile Include="BinarySerializer.cs" />
     <Compile Include="BindingException.cs" />
     <Compile Include="Bytes.cs" />
-    <Compile Include="Graph\CollectionNode.cs" />
-    <Compile Include="Graph\ConditionalBinding.cs" />
-    <Compile Include="Graph\ContainerNode.cs" />
     <Compile Include="Graph\Binding.cs" />
-    <Compile Include="Graph\CustomNode.cs" />
-    <Compile Include="Graph\EnumInfo.cs" />
-    <Compile Include="Graph\EnumNode.cs" />
+    <Compile Include="Graph\TypeGraph\ContainerTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\EnumInfo.cs" />
     <Compile Include="IConstAttribute.cs" />
     <Compile Include="ILengthAttribute.cs" />
-    <Compile Include="Graph\ObjectBinding.cs" />
-    <Compile Include="Graph\IntegerBinding.cs" />
-    <Compile Include="Graph\ListNode.cs" />
     <Compile Include="MemberSerializingEventArgs.cs" />
-    <Compile Include="Graph\Node.cs" />
+    <Compile Include="Graph\TypeGraph\TypeNode.cs" />
     <Compile Include="NullStream.cs" />
-    <Compile Include="Graph\ObjectNode.cs" />
-    <Compile Include="Graph\RootNode.cs" />
-    <Compile Include="StreamKeeper.cs" />
+    <Compile Include="Graph\TypeGraph\ObjectTypeNode.cs" />
+    <Compile Include="Graph\TypeGraph\RootTypeNode.cs" />
     <Compile Include="StreamLimiter.cs" />
-    <Compile Include="Graph\StreamNode.cs" />
     <Compile Include="StreamResetter.cs" />
     <Compile Include="SubtypeAttribute.cs" />
     <Compile Include="SerializeUntilAttribute.cs" />
     <Compile Include="ItemSerializeUntilAttribute.cs" />
     <Compile Include="IValueConverter.cs" />
     <Compile Include="BindingInfo.cs" />
-    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="SerializeWhenAttribute.cs" />
     <Compile Include="FieldLengthAttribute.cs" />
     <Compile Include="IBinarySerializable.cs" />
@@ -94,7 +106,10 @@
     <Compile Include="FieldBindingBaseAttribute.cs" />
     <Compile Include="IBindableFieldAttribute.cs" />
     <Compile Include="Streamlet.cs" />
-    <Compile Include="Graph\ValueNode.cs" />
+    <Compile Include="Graph\TypeGraph\ValueTypeNode.cs" />
+    <Compile Include="Graph\ValueGraph\ValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\ObjectValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\ValueValueNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget\BinarySerializer.dll.nuspec" />

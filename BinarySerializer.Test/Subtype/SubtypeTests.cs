@@ -1,8 +1,9 @@
 ﻿using System;
-using BinarySerialization;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Subtype
+namespace BinarySerialization.Test.Subtype
 {
     [TestClass]
     public class SubtypeTests : TestBase
@@ -20,29 +21,132 @@ namespace BinarySerializer.Test.Subtype
         [TestMethod]
         public void SubSubtypeTest()
         {
-            var expected = new SubtypeClass { Field = new SubSubclassC() };
+            var expected = new SubtypeClass
+            {
+                Field = new SubSubclassC(3)
+                {
+                    SomeSuperStuff = 1,
+                    SomethingForClassB = 2
+                }
+            };
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(SubclassType.C, actual.Subtype);
             Assert.IsInstanceOfType(actual.Field, typeof(SubSubclassC));
+            Assert.AreEqual(actual.Field.SomeSuperStuff, expected.Field.SomeSuperStuff);
+            Assert.AreEqual(((SubSubclassC)actual.Field).SomethingForClassB, ((SubSubclassC)expected.Field).SomethingForClassB);
+            Assert.AreEqual(((SubSubclassC)actual.Field).SomethingForClassC, ((SubSubclassC)expected.Field).SomethingForClassC);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(BindingException))]
-        public void MissingSubtypeTest()
+        public void RecoverableMissingSubtypeTest()
         {
-            var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
+            var expected = new RecoverableMissingSubtypeClass<SuperclassContainer>
+            {
+                Items = new List<SuperclassContainer>
+                {
+                    new SuperclassContainer {Value = new SubclassA()},
+                    new SuperclassContainer {Value = new SubclassB()},
+                    new SuperclassContainer {Value = new SubSubclassC(33)}
+                }
+            };
+
+            var stream = new MemoryStream();
+
+            Serializer.Serialize(stream, expected);
+
+            stream.Position = 0;
+
+            var actual =
+                Serializer.Deserialize<RecoverableMissingSubtypeClass<SuperclassContainerWithMissingSubclass>>(stream);
+
+            var actualItems = actual.Items;
+
+            Assert.AreEqual(typeof(SubclassA), actualItems[0].Value.GetType());
+            Assert.IsNull(actualItems[1].Value);
+            Assert.AreEqual(typeof(SubSubclassC), actualItems[2].Value.GetType());
+        }
+
+        //[TestMethod]
+        //[ExpectedException(typeof(BindingException))]
+        //public void MissingSubtypeTest()
+        //{
+        //    var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
+        //    Roundtrip(expected);
+        //}
+
+        //[TestMethod]
+        //public void BestFitSubtypeTest()
+        //{
+        //    var expected = new SubtypeClass { Field = new UnspecifiedSubclass() };
+        //    var actual = Roundtrip(expected);
+
+        //    Assert.AreEqual(SubclassType.B, actual.Subtype);
+        //    Assert.IsInstanceOfType(actual.Field, typeof(SubclassB));
+        //}
+
+        [TestMethod]
+        public void AncestorSubtypeBindingTest()
+        {
+            var expected = new AncestorSubtypeBindingContainerClass
+            {
+                AncestorSubtypeBindingClass =
+                    new AncestorSubtypeBindingClass
+                    {
+                        InnerClass = new AncestorSubtypeBindingInnerClass { Value = "hello" }
+                    }
+            };
+
+            var actual = Roundtrip(expected);
+            Assert.AreEqual(((AncestorSubtypeBindingClass) expected.AncestorSubtypeBindingClass).InnerClass.Value,
+                ((AncestorSubtypeBindingClass) actual.AncestorSubtypeBindingClass).InnerClass.Value);
+        }
+
+        [TestMethod]
+        public void SubtypeAsSourceTest()
+        {
+            var expected = new SubtypeAsSourceClass {Superclass = new SubclassA(), Name = "Alice"};
+            var actual = Roundtrip(expected);
+            Assert.AreEqual(expected.Name, actual.Name);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void IncompatibleBindingsTest()
+        {
+            var expected = new IncompatibleBindingsClass();
             Roundtrip(expected);
         }
 
         [TestMethod]
-        public void BestFitSubtypeTest()
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void InvalidSubtypeTest()
         {
-            var expected = new SubtypeClass { Field = new UnspecifiedSubclass() };
-            var actual = Roundtrip(expected);
+            var expected = new InvalidSubtypeClass();
+            Roundtrip(expected);
+        }
 
-            Assert.AreEqual(SubclassType.B, actual.Subtype);
-            Assert.IsInstanceOfType(actual.Field, typeof(SubclassB));
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void NonUniqueSubtypesTest()
+        {
+            var expected = new NonUniqueSubtypesClass();
+            Roundtrip(expected);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void NonUniqueSubtypeValuesTest()
+        {
+            var expected = new NonUniqueSubtypeValuesClass();
+            Roundtrip(expected);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof (InvalidOperationException))]
+        public void ThrowOnAbstractTypeWithNoSubtypeTest()
+        {
+            Roundtrip(new ThrowOnAbstractTypeWithNoSubtypeClass{Superclass = new SubclassA()});
         }
     }
 }

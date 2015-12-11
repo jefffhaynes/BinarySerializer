@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO.Ports;
 
-namespace BinarySerializer.Test.Misc
+namespace BinarySerialization.Test.Misc
 {
     public class DictionaryMemberClass
     {

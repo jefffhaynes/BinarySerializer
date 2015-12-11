@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Enums
+namespace BinarySerialization.Test.Enums
 {
     [TestClass]
     public class EnumTests : TestBase
@@ -42,6 +37,15 @@ namespace BinarySerializer.Test.Enums
         {
             var expected = new NamedEnumClass { Field = NamedEnumValues.C };
             var actual = Roundtrip(expected, System.Text.Encoding.UTF8.GetBytes("C"));
+
+            Assert.AreEqual(expected.Field, actual.Field);
+        }
+
+        [TestMethod]
+        public void NullableEnumTest()
+        {
+            var expected = new NullableEnumClass {Field = BaseTypeEnumValues.B};
+            var actual = Roundtrip(expected);
 
             Assert.AreEqual(expected.Field, actual.Field);
         }

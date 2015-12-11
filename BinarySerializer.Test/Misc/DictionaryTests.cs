@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Misc
+namespace BinarySerialization.Test.Misc
 {
     [TestClass]
     public class DictionaryTests : TestBase

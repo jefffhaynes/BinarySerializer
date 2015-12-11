@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Misc
+namespace BinarySerialization.Test.Misc
 {
     [TestClass]
     public class LargeArrayTests
@@ -9,14 +9,14 @@ namespace BinarySerializer.Test.Misc
         [TestMethod]
         public void LargeArrayTest()
         {
-            var ser = new BinarySerialization.BinarySerializer();
+            var ser = new BinarySerializer();
             var data = new byte[65536 * sizeof(int) * 2];
 
-            var des0 = ser.Deserialize<IntArray64K>(data);
+            ser.Deserialize<IntArray64K>(data);
 
             using (var ms = new MemoryStream(data))
             {
-                var des = ser.Deserialize<IntArray64K>(ms);
+                ser.Deserialize<IntArray64K>(ms);
             }
         }
     }

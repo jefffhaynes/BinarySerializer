@@ -7,7 +7,7 @@
     <ProjectGuid>{FBCBC34A-AB8C-4603-BD4A-D6B1B387AA46}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BinarySerializer.Performance</RootNamespace>
+    <RootNamespace>BinarySerialization.Performance</RootNamespace>
     <AssemblyName>BinarySerializer.Performance</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicClass.cs" />
+    <Compile Include="Beer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

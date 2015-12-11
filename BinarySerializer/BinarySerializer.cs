@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using BinarySerialization.Graph;
+using System.Text;
+using BinarySerialization.Graph.TypeGraph;
+using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization
 {
@@ -22,72 +24,84 @@ namespace BinarySerialization
     /// </summary>
     public class BinarySerializer
     {
-        private readonly Dictionary<Type, RootNode> _graphCache = new Dictionary<Type, RootNode>();
-        private readonly object _graphCacheLock = new object();
-
         private const Endianness DefaultEndianness = Endianness.Little;
-        private Endianness _endianness;
+        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
+
+        private static readonly Dictionary<Type, RootTypeNode> GraphCache = new Dictionary<Type, RootTypeNode>();
+        private static readonly object GraphCacheLock = new object();
 
         /// <summary>
-        /// Constructs an instance of BinarySerializer.
+        /// Default constructor.
         /// </summary>
         public BinarySerializer()
         {
             Endianness = DefaultEndianness;
+            Encoding = DefaultEncoding;
         }
 
         /// <summary>
-        ///     The default <see cref="Endianness" /> to use during serialization or deserialization.
-        ///     This property can be updated dynamically during serialization or deserialization.
+        /// The default <see cref="Endianness" /> to use during serialization or deserialization.
+        /// This property can be updated during serialization or deserialization operations as needed.
         /// </summary>
-        public Endianness Endianness
-        {
-            get { return _endianness; }
+        public Endianness Endianness { get; set; }
 
-            set
-            {
-                foreach (RootNode graph in _graphCache.Values)
-                    graph.Endianness = value;
-
-                _endianness = value;
-            }
-        }
+        /// <summary>
+        /// The default Encoding to use during serialization or deserialization.
+        /// This property can be updated during serialization or deserialization operations as needed.
+        /// </summary>
+        public Encoding Encoding { get; set; }
 
         /// <summary>
         ///     Occurrs after a member has been serialized.
         /// </summary>
-        public event EventHandler<MemberSerializedEventArgs> MemberSerialized;
+        public event EventHandler<MemberSerializedEventArgs> MemberSerialized
+        {
+            add { _eventShuttle.MemberSerialized += value; }
+            remove { _eventShuttle.MemberSerialized -= value; }
+        }
 
         /// <summary>
         ///     Occurrs after a member has been deserialized.
         /// </summary>
-        public event EventHandler<MemberSerializedEventArgs> MemberDeserialized;
+        public event EventHandler<MemberSerializedEventArgs> MemberDeserialized
+        {
+            add { _eventShuttle.MemberDeserialized += value; }
+            remove { _eventShuttle.MemberDeserialized -= value; }
+        }
 
         /// <summary>
         ///     Occurrs before a member has been serialized.
         /// </summary>
-        public event EventHandler<MemberSerializingEventArgs> MemberSerializing;
+        public event EventHandler<MemberSerializingEventArgs> MemberSerializing
+        {
+            add { _eventShuttle.MemberSerializing += value; }
+            remove { _eventShuttle.MemberSerializing -= value; }
+        }
 
         /// <summary>
         ///     Occurrs before a member has been deserialized.
         /// </summary>
-        public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
-
-
-        private RootNode GetGraph(Type valueType)
+        public event EventHandler<MemberSerializingEventArgs> MemberDeserializing
         {
-            RootNode graph;
-            if (_graphCache.TryGetValue(valueType, out graph))
+            add { _eventShuttle.MemberDeserializing += value; }
+            remove { _eventShuttle.MemberDeserializing -= value; }
+        }
+        
+        private readonly EventShuttle _eventShuttle = new EventShuttle();
+
+        private RootTypeNode GetGraph(Type valueType)
+        {
+            lock (GraphCacheLock)
+            {
+                RootTypeNode graph;
+                if (GraphCache.TryGetValue(valueType, out graph))
+                    return graph;
+
+                graph = new RootTypeNode(valueType);
+                GraphCache.Add(valueType, graph);
+
                 return graph;
-
-            graph = new RootNode(valueType) {Endianness = Endianness};
-            graph.MemberSerializing += OnMemberSerializing;
-            graph.MemberSerialized += OnMemberSerialized;
-            graph.MemberDeserializing += OnMemberDeserializing;
-            graph.MemberDeserialized += OnMemberDeserialized;
-            _graphCache.Add(valueType, graph);
-
-            return graph;
+            }
         }
 
         /// <summary>
@@ -99,21 +113,21 @@ namespace BinarySerialization
         public void Serialize(Stream stream, object value, object context = null)
         {
             if (stream == null)
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
 
             if (value == null)
                 return;
 
-            lock (_graphCacheLock)
-            {
-                RootNode graph = GetGraph(value.GetType());
+            RootTypeNode graph = GetGraph(value.GetType());
 
-                graph.SerializationContext = context;
-                graph.Value = value;
-                graph.Bind();
+            var serializer = (ContextValueNode)graph.CreateSerializer(null);
+            serializer.EndiannessCallback = () => Endianness;
+            serializer.EncodingCallback = () => Encoding;
+            serializer.Value = value;
+            serializer.Context = context;
+            serializer.Bind();
 
-                graph.Serialize(stream);
-            }
+            serializer.Serialize(new StreamLimiter(stream), _eventShuttle);
         }
 
         /// <summary>
@@ -132,21 +146,45 @@ namespace BinarySerialization
         /// <summary>
         ///     Deserializes the specified stream into an object graph.
         /// </summary>
+        /// <param name="stream">The stream from which to deserialize the object graph.</param>
+        /// <param name="type">The type of the root of the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public object Deserialize(Stream stream, Type type, object context = null)
+        {
+            RootTypeNode graph = GetGraph(type);
+
+            var serializer = (ContextValueNode)graph.CreateSerializer(null);
+            serializer.EndiannessCallback = () => Endianness;
+            serializer.EncodingCallback = () => Encoding;
+            serializer.Context = context;
+            serializer.Deserialize(new StreamLimiter(stream), _eventShuttle);
+
+            return serializer.Value;
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
+        /// <param name="data">The byte array from which to deserialize the object graph.</param>
+        /// <param name="type">The type of the root of the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public object Deserialize(byte[] data, Type type, object context = null)
+        {
+            return Deserialize(new MemoryStream(data), type, context);
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
         /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
         public T Deserialize<T>(Stream stream, object context = null)
         {
-            lock (_graphCacheLock)
-            {
-                RootNode graph = GetGraph(typeof (T));
-                graph.SerializationContext = context;
-
-                graph.Deserialize(new StreamLimiter(stream));
-
-                return (T) graph.Value;
-            }
+            return (T) Deserialize(stream, typeof(T), context);
         }
 
         /// <summary>
@@ -159,35 +197,6 @@ namespace BinarySerialization
         public T Deserialize<T>(byte[] data, object context = null)
         {
             return Deserialize<T>(new MemoryStream(data), context);
-        }
-
-
-        private void OnMemberSerialized(object sender, MemberSerializedEventArgs e)
-        {
-            EventHandler<MemberSerializedEventArgs> handler = MemberSerialized;
-            if (handler != null)
-                handler(sender, e);
-        }
-
-        private void OnMemberDeserialized(object sender, MemberSerializedEventArgs e)
-        {
-            EventHandler<MemberSerializedEventArgs> handler = MemberDeserialized;
-            if (handler != null)
-                handler(sender, e);
-        }
-
-        private void OnMemberSerializing(object sender, MemberSerializingEventArgs e)
-        {
-            EventHandler<MemberSerializingEventArgs> handler = MemberSerializing;
-            if (handler != null)
-                handler(sender, e);
-        }
-
-        private void OnMemberDeserializing(object sender, MemberSerializingEventArgs e)
-        {
-            EventHandler<MemberSerializingEventArgs> handler = MemberDeserializing;
-            if (handler != null)
-                handler(sender, e);
         }
     }
 }

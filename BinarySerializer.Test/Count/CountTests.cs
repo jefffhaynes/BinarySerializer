@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Count
+namespace BinarySerialization.Test.Count
 {
     [TestClass]
     public class CountTests : TestBase
@@ -11,8 +10,28 @@ namespace BinarySerializer.Test.Count
         [TestMethod]
         public void ConstCountTest()
         {
-            var actual = Roundtrip(new ConstCountClass { Field = new List<string>(TestSequence) });
+            var actual = Roundtrip(new ConstCountClass<string>
+            {
+                Field = new List<string>(TestSequence),
+                Field2 = TestSequence.ToArray()
+            });
+
             Assert.AreEqual(3, actual.Field.Count);
+            Assert.AreEqual(3, actual.Field2.Length);
+        }
+
+        [TestMethod]
+        public void PrimitiveConstCountTest()
+        {
+            var actual = Roundtrip(new ConstCountClass<int>
+            {
+                Field = new List<int>(PrimitiveTestSequence),
+                Field2 = PrimitiveTestSequence.ToArray()
+            
+            });
+
+            Assert.AreEqual(3, actual.Field.Count);
+            Assert.AreEqual(3, actual.Field2.Length);
         }
 
         [TestMethod]
@@ -32,8 +51,28 @@ namespace BinarySerializer.Test.Count
         [TestMethod]
         public void ConstCountMismatchTest()
         {
-            var actual = Roundtrip(new ConstCountClass { Field = new List<string>(TestSequence.Take(2)) });
-            Assert.AreEqual(2, actual.Field.Count);
+            var actual = Roundtrip(new ConstCountClass<string> { Field = new List<string>(TestSequence.Take(2)) });
+            Assert.AreEqual(3, actual.Field.Count);
+        }
+
+        [TestMethod]
+        public void PrimtiveConstCountMismatchTest()
+        {
+            var actual = Roundtrip(new ConstCountClass<int>
+            {
+                Field = new List<int>(PrimitiveTestSequence.Take(2)),
+                Field2 = PrimitiveTestSequence.Take(2).ToArray()
+            });
+            Assert.AreEqual(3, actual.Field.Count);
+        }
+
+        [TestMethod]
+        public void PrimitiveListBindingTest()
+        {
+            var expected = new PrimitiveListBindingClass { Ints = new List<int> { 1, 2, 3 } };
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Ints.Count, actual.ItemCount);
         }
 
         [TestMethod]
@@ -43,6 +82,24 @@ namespace BinarySerializer.Test.Count
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(expected.Ints.Length, actual.ItemCount);
+        }
+
+        [TestMethod]
+        public void NullListBindingTest()
+        {
+            var expected = new PrimitiveListBindingClass();
+            var actual = Roundtrip(expected);
+
+            Assert.IsNull(actual.Ints);
+        }
+
+        [TestMethod]
+        public void NullArrayBindingTest()
+        {
+            var expected = new PrimitiveArrayBindingClass();
+            var actual = Roundtrip(expected);
+
+            Assert.IsNull(actual.Ints);
         }
     }
 }

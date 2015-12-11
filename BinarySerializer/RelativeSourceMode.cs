@@ -23,7 +23,12 @@ namespace BinarySerialization
         /// This is the mode you use if you want to specify <see cref="FieldBindingBaseAttribute.AncestorType"/> 
         /// and/or <see cref="FieldBindingBaseAttribute.AncestorLevel"/>.
         /// </summary>
-		FindAncestor
+		FindAncestor,
+
+        /// <summary>
+        /// Refers to the object context specified during serialization or deserialization.
+        /// </summary>
+        SerializationContext
 	}
 }
 

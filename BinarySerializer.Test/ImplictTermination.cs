@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BinarySerializer.Test
+namespace BinarySerialization.Test
 {
     public class ImplictTermination
     {

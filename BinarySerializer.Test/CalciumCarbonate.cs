@@ -1,4 +1,4 @@
-﻿namespace BinarySerializer.Test
+﻿namespace BinarySerialization.Test
 {
     public class CalciumCarbonate : Chemical
     {

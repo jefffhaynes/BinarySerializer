@@ -2,15 +2,14 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>3.0.0-rc</version>
+    <version>4.4.1</version>
     <authors>Jeff Haynes</authors>
     <owners></owners>
     <projectUrl>https://github.com/jefffhaynes/BinarySerializer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level.</description>
-    <releaseNotes>Complete rewrite.  CONTAINS BREAKING CHANGES.</releaseNotes>
-    <copyright>Copyright 2015</copyright>
-    <tags>Serialization</tags>
+    <releaseNotes>Added Deserialize overloads for dynamic type deserialization.</releaseNotes>
+    <tags>Serialization Serializer Binary Format Protocol</tags>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
   </metadata>
 </package>

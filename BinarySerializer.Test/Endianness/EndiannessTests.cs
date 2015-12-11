@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Endianness
+namespace BinarySerialization.Test.Endianness
 {
     [TestClass]
     public class EndiannessTests

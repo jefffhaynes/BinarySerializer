@@ -1,4 +1,4 @@
-﻿namespace BinarySerializer.Test.Enums
+﻿namespace BinarySerialization.Test.Enums
 {
     public class IncompleteEnumClass
     {

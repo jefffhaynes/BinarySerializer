@@ -1,6 +1,6 @@
 ﻿using BinarySerialization;
 
-namespace BinarySerializer.Test
+namespace BinarySerialization.Test
 {
     public class Ingredients
     {
