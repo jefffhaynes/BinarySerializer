@@ -50,6 +50,8 @@ namespace BinarySerialization.Graph.TypeGraph
             if (memberInfo == null)
                 return;
 
+            MemberInfo = memberInfo;
+
             Name = memberInfo.Name;
 
             var propertyInfo = memberInfo as PropertyInfo;
@@ -183,6 +185,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
+        public MemberInfo MemberInfo { get; }
         public Type Type { get; }
         public Type NullableUnderlyingType { get; }
 

@@ -110,7 +110,10 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 /* If this is a type we've never seen before let's update our reference types. */
                 if (!_subTypes.ContainsKey(type))
-                    _subTypes.Add(type, new ObjectTypeNode((TypeNode)Parent, type));
+                {
+                    var parent = (TypeNode) Parent;
+                    _subTypes.Add(type, new ObjectTypeNode(parent, parent.Type, MemberInfo));
+                }
 
                 var subType = _subTypes[type];
                 subType.Construct();
