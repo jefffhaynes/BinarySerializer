@@ -43,5 +43,19 @@ namespace BinarySerialization.Test.Custom
             var actual = Roundtrip(expected, nameLength + 2);
             Assert.AreEqual(expected.Name, actual.Name);
         }
+
+        [TestMethod]
+        public void CustomSubtypeTest()
+        {
+            var expected = new CustomSubtypeContainerClass
+            {
+                Inner = new CustomSubtypeCustomClass
+                {
+                    Value = 33
+                }
+            };
+
+            var actual = Roundtrip(expected, 2);
+        }
     }
 }

@@ -70,6 +70,9 @@
     <Compile Include="Count\PrimitiveListBindingClass.cs" />
     <Compile Include="Count\PrimitiveArrayBindingClass.cs" />
     <Compile Include="Custom\CustomSourceBinding.cs" />
+    <Compile Include="Custom\CustomSubtypeBaseClass.cs" />
+    <Compile Include="Custom\CustomSubtypeContainerClass.cs" />
+    <Compile Include="Custom\CustomSubtypeCustomClass.cs" />
     <Compile Include="Custom\CustomTests.cs" />
     <Compile Include="Custom\CustomWithContextClass.cs" />
     <Compile Include="Custom\Varuint.cs" />

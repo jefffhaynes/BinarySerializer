@@ -109,8 +109,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     return this;
 
                 /* If this is a type we've never seen before let's update our reference types. */
-                if (!_subTypes.ContainsKey(type))
-                    _subTypes.Add(type, new ObjectTypeNode((TypeNode)Parent, type));
+                GenerateSubtype(type);
 
                 var subType = _subTypes[type];
                 subType.Construct();
@@ -124,7 +123,10 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 if (!_subTypes.ContainsKey(type))
                 {
-                    _subTypes.Add(type, new ObjectTypeNode((TypeNode)Parent, type));
+                    _subTypes.Add(type,
+                        typeof(IBinarySerializable).IsAssignableFrom(type)
+                            ? new CustomTypeNode((TypeNode)Parent, type)
+                            : new ObjectTypeNode((TypeNode)Parent, type));
                 }
             }
         }
