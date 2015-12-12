@@ -113,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget\BinarySerializer.dll.nuspec" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget\nuget.exe" />
