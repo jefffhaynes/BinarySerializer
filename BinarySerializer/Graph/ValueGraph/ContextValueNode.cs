@@ -45,7 +45,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override object BoundValue { get { return Child.BoundValue; } }
+        public override object BoundValue => Child.BoundValue;
 
         public object Context
         {
@@ -63,15 +63,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override Endianness Endianness
-        {
-            get { return EndiannessCallback(); }
-        }
+        public override Endianness Endianness => EndiannessCallback();
 
-        public override Encoding Encoding
-        {
-            get { return EncodingCallback(); }
-        }
+        public override Encoding Encoding => EncodingCallback();
 
         public Func<Endianness> EndiannessCallback { get; set; }
 

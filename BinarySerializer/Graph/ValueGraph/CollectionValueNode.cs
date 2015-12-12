@@ -46,7 +46,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var count = TypeNode.FieldCountBinding != null ? Convert.ToInt32(TypeNode.FieldCountBinding.GetValue(this)) : int.MaxValue;
 
             var terminationValue = typeNode.TerminationValue;
-            var terminationChild = typeNode.TerminationChild == null ? null : typeNode.TerminationChild.CreateSerializer(this);
+            var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
 
             IEnumerable<int> itemLengths = null;
             if (TypeNode.ItemLengthBinding != null)
@@ -55,9 +55,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var enumerableItemLengthValue = itemLengthValue as IEnumerable;
 
-                itemLengths = enumerableItemLengthValue != null ? 
-                    enumerableItemLengthValue.Cast<object>().Select(Convert.ToInt32) :
-                    GetInfiniteSequence(Convert.ToInt32(itemLengthValue));
+                itemLengths = enumerableItemLengthValue?.Cast<object>().Select(Convert.ToInt32) ??
+                              GetInfiniteSequence(Convert.ToInt32(itemLengthValue));
             }
                       
             IEnumerator<int> itemLengthEnumerator = null;
@@ -89,8 +88,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     var child = typeNode.Child.CreateSerializer(this);
 
-                    if (itemLengthEnumerator != null)
-                        itemLengthEnumerator.MoveNext();
+                    itemLengthEnumerator?.MoveNext();
 
                     var childStream = itemLengthEnumerator == null
                         ? stream
@@ -119,8 +117,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             finally
             {
-                if (itemLengthEnumerator != null)
-                    itemLengthEnumerator.Dispose();
+                itemLengthEnumerator?.Dispose();
             }
         }
 
