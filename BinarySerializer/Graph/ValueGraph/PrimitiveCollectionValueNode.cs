@@ -96,7 +96,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
 
             var terminationValue = typeNode.TerminationValue;
-            var terminationChild = typeNode.TerminationChild == null ? null : typeNode.TerminationChild.CreateSerializer(this);
+            var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
 
             int itemCount = 0;
             for (int i = 0; i < count; i++)

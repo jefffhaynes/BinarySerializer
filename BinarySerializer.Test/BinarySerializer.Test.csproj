@@ -102,6 +102,8 @@
     <Compile Include="Issues\Issue12\RefeChunk.cs" />
     <Compile Include="Issues\Issue12\SnaxChunk.cs" />
     <Compile Include="Issues\Issue18\JaggedArrayClass.cs" />
+    <Compile Include="Issues\Issue21\FailingClass.cs" />
+    <Compile Include="Issues\Issue21\Issue21Tests.cs" />
     <Compile Include="Issues\Issue9\ElementClass.cs" />
     <Compile Include="Issues\Issue9\Entry.cs" />
     <Compile Include="Issues\Issue9\Issue9Tests.cs" />
