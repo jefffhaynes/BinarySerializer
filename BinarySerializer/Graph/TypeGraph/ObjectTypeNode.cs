@@ -123,10 +123,12 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 if (!_subTypes.ContainsKey(type))
                 {
+                    var parent = (TypeNode)Parent;
+
                     _subTypes.Add(type,
                         typeof(IBinarySerializable).IsAssignableFrom(type)
-                            ? new CustomTypeNode((TypeNode)Parent, type, MemberInfo)
-                            : new ObjectTypeNode((TypeNode)Parent, type, MemberInfo));
+                            ? new CustomTypeNode((TypeNode)Parent, parent.Type, MemberInfo)
+                            : new ObjectTypeNode((TypeNode)Parent, parent.Type, MemberInfo));
                 }
             }
         }
