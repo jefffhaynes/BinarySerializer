@@ -14,6 +14,11 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
+        public CustomTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType) : base(parent, parentType, memberInfo, subType)
+        {
+        }
+
+
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new CustomValueNode(parent, Name, this);

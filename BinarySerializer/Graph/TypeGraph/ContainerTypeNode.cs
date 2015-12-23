@@ -14,8 +14,8 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        protected ContainerTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) 
-            : base(parent, parentType, memberInfo)
+        protected ContainerTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType = null) 
+            : base(parent, parentType, memberInfo, subType)
         {
         }
 

@@ -27,8 +27,13 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        public ObjectTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
-            : base(parent, parentType, memberInfo)
+        public ObjectTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : 
+            this(parent, parentType, memberInfo, null)
+        {
+            
+        }
+        public ObjectTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType)
+            : base(parent, parentType, memberInfo, subType)
         {
         }
 
@@ -119,16 +124,19 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void GenerateSubtype(Type type)
         {
+            if (_subTypes.ContainsKey(type))
+                return;
+
             lock (_subTypesLock)
             {
                 if (!_subTypes.ContainsKey(type))
                 {
                     var parent = (TypeNode)Parent;
+                    var typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
+                        ? new CustomTypeNode((TypeNode) Parent, parent.Type, MemberInfo, type)
+                        : new ObjectTypeNode((TypeNode) Parent, parent.Type, MemberInfo, type);
 
-                    _subTypes.Add(type,
-                        typeof(IBinarySerializable).IsAssignableFrom(type)
-                            ? new CustomTypeNode((TypeNode)Parent, parent.Type, MemberInfo)
-                            : new ObjectTypeNode((TypeNode)Parent, parent.Type, MemberInfo));
+                    _subTypes.Add(type, typeNode);
                 }
             }
         }

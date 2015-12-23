@@ -130,7 +130,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var serializableChildren = GetSerializableChildren();
 
             var serializationContextLazy = new Lazy<BinarySerializationContext>(CreateSerializationContext);
-
+            
             foreach (var child in serializableChildren)
             {
                 if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)

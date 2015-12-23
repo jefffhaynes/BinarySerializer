@@ -44,7 +44,7 @@ namespace BinarySerialization.Graph.TypeGraph
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
         }
 
-        protected TypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
+        protected TypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType = null)
             : this(parent)
         {
             if (memberInfo == null)
@@ -59,7 +59,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (propertyInfo != null)
             {
-                Type = propertyInfo.PropertyType;
+                Type = subType ?? propertyInfo.PropertyType;
 
                 ValueGetter = MagicMethods.MagicFunc(parentType, propertyInfo.GetGetMethod());
 
@@ -70,7 +70,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
             else if (fieldInfo != null)
             {
-                Type = fieldInfo.FieldType;
+                Type = subType ?? fieldInfo.FieldType;
 
                 ValueGetter = fieldInfo.GetValue;
                 ValueSetter = fieldInfo.SetValue;
@@ -129,39 +129,43 @@ namespace BinarySerialization.Graph.TypeGraph
                         attribute => new ConditionalBinding(attribute, GetBindingLevel(attribute.Binding))).ToList());
             }
 
-            var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
-            SubtypeAttributes = new ReadOnlyCollection<SubtypeAttribute>(subtypeAttributes);
-
-            if (SubtypeAttributes.Count > 0)
+            // don't inherit subtypes if this is itself a subtype
+            if (subType == null)
             {
-                var bindingGroups =
-                    SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
+                var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
 
-                if (bindingGroups.Count() > 1)
-                    throw new BindingException("Subtypes must all use the same binding configuration.");
+                SubtypeAttributes = new ReadOnlyCollection<SubtypeAttribute>(subtypeAttributes);
 
-                var firstBinding = SubtypeAttributes[0];
-                SubtypeBinding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
-
-                var valueGroups = SubtypeAttributes.GroupBy(attribute => attribute.Value);
-                if (valueGroups.Count() < SubtypeAttributes.Count)
-                    throw new InvalidOperationException("Subtype values must be unique.");
-
-                if (SubtypeBinding.BindingMode == BindingMode.TwoWay)
+                if (SubtypeAttributes.Count > 0)
                 {
-                    var subTypeGroups = SubtypeAttributes.GroupBy(attribute => attribute.Subtype);
-                    if (subTypeGroups.Count() < SubtypeAttributes.Count)
-                        throw new InvalidOperationException(
-                            "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
+                    var bindingGroups =
+                        SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
+
+                    if (bindingGroups.Count() > 1)
+                        throw new BindingException("Subtypes must all use the same binding configuration.");
+
+                    var firstBinding = SubtypeAttributes[0];
+                    SubtypeBinding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
+
+                    var valueGroups = SubtypeAttributes.GroupBy(attribute => attribute.Value);
+                    if (valueGroups.Count() < SubtypeAttributes.Count)
+                        throw new InvalidOperationException("Subtype values must be unique.");
+
+                    if (SubtypeBinding.BindingMode == BindingMode.TwoWay)
+                    {
+                        var subTypeGroups = SubtypeAttributes.GroupBy(attribute => attribute.Subtype);
+                        if (subTypeGroups.Count() < SubtypeAttributes.Count)
+                            throw new InvalidOperationException(
+                                "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
+                    }
+
+                    var invalidSubtype =
+                        SubtypeAttributes.FirstOrDefault(attribute => !Type.IsAssignableFrom(attribute.Subtype));
+
+                    if (invalidSubtype != null)
+                        throw new InvalidOperationException($"{invalidSubtype.Subtype} is not a subtype of {Type}");
                 }
-
-                var invalidSubtype =
-                    SubtypeAttributes.FirstOrDefault(attribute => !Type.IsAssignableFrom(attribute.Subtype));
-
-                if (invalidSubtype != null)
-                    throw new InvalidOperationException($"{invalidSubtype.Subtype} is not a subtype of {Type}");
             }
-
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             if (SerializeUntilAttribute != null)
