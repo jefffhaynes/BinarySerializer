@@ -125,8 +125,8 @@ namespace BinarySerialization.Graph.TypeGraph
                 {
                     _subTypes.Add(type,
                         typeof(IBinarySerializable).IsAssignableFrom(type)
-                            ? new CustomTypeNode((TypeNode)Parent, type)
-                            : new ObjectTypeNode((TypeNode)Parent, type));
+                            ? new CustomTypeNode((TypeNode)Parent, type, MemberInfo)
+                            : new ObjectTypeNode((TypeNode)Parent, type, MemberInfo));
                 }
             }
         }
