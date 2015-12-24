@@ -2,13 +2,13 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>4.4.4</version>
+    <version>4.5</version>
     <authors>Jeff Haynes</authors>
     <owners></owners>
     <projectUrl>https://github.com/jefffhaynes/BinarySerializer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level.</description>
-    <releaseNotes>Fixed issue with attribute inheritance to nested objects.</releaseNotes>
+    <releaseNotes>Added support for subtypes that implement IBinarySerializable.  Bug fixes.</releaseNotes>
     <tags>Serialization Serializer Binary Format Protocol</tags>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
   </metadata>
