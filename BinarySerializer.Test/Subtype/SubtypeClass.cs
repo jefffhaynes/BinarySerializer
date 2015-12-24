@@ -1,5 +1,3 @@
-using BinarySerialization;
-
 namespace BinarySerialization.Test.Subtype
 {
     public class SubtypeClass
