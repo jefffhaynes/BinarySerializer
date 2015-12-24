@@ -103,7 +103,7 @@ public uint SectorCountBig { get; set; }
 
 ### FieldOrderAttribute ###
 
-This attribute is required on any field/property in a class with more than one field or property.  Only relative value matters.  Base values are serialized before dervied values.
+This attribute is required on any field/property in a class with more than one field or property.  Only relative value matters.  Base values are serialized before derived values.
 
 ```c#
 public class MyBaseClass
@@ -123,7 +123,7 @@ public class MyDerivedClass : MyBaseClass
 
 ### FieldLengthAttribute ###
 
-FieldLength can be used to specify either a bound or a constant field length.  Field lengths can apply to anything that is sizeable including strings, arrays, lists, streams, and even objects.
+FieldLength can be used to specify either a bound or a constant field length.  Field lengths can apply to anything that is sizable including strings, arrays, lists, streams, and even objects.
 
 For constant length fields, the serialized field length will always result in the specified length, either by limiting the serialization operation or padding out the result with zeros.  For bound length fields, the source will be updated with the serialized length.  Typically source fields are value types such as integers but value converters may also be used to update other types.
 
@@ -190,7 +190,7 @@ public class Office
 }
 ```
 
-Note that if the field length is constant, Person will *always* be 24 bytes long and will be padded out if the actual Person length is less than 24 (e.g. Bob Smith).  However, if the length is bound then the actual length of Person will take precendence and PersonLength will be updated accordingly during serialization.
+Note that if the field length is constant, Person will *always* be 24 bytes long and will be padded out if the actual Person length is less than 24 (e.g. Bob Smith).  However, if the length is bound then the actual length of Person will take precedence and PersonLength will be updated accordingly during serialization.
 
 ```c#
 public class Office
@@ -479,7 +479,7 @@ You could also specify this to be a fixed-sized string, etc.
 
 ### Streams ###
 
-In some cases you may be serializing or deserializing large amounts of data, which is logically broken into blocks or volumes.  In these cases it may be adventageous to defer handling of those sections, rather than dealing with large in-memory buffers.
+In some cases you may be serializing or deserializing large amounts of data, which is logically broken into blocks or volumes.  In these cases it may be advantageous to defer handling of those sections, rather than dealing with large in-memory buffers.
 
 ```c#
 [FieldOrder(22)]
@@ -530,7 +530,7 @@ public class Person
 
 #### Value Converter ####
 
-Sometimes binding directly to a source is insuffient and in those cases your best option is to define a value converter, which can be specified as part of the binding.
+Sometimes binding directly to a source is insufficient and in those cases your best option is to define a value converter, which can be specified as part of the binding.
 
 ```c#
 class SectorByteConverter : IValueConverter
@@ -608,6 +608,7 @@ public class Varuint : IBinarySerializable
     }
 }
 ```
+Note that when using custom serialization the object can still be used as a source for binding.  In the above example you could bind to "Value" from elsewhere in your object hierarchy.
 
 ### Encoding ###
 
@@ -620,13 +621,13 @@ public string Name { get; set;  }
 
 ### Endianness ###
 
-Maybe a quiant topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or on a field-by-field basis.  If you're working in a system that deals entirely in big endian, you can simply do:
+Maybe a quaint topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or on a field-by-field basis.  If you're working in a system that deals entirely in big endian, you can simply do:
 
 ```c#
 serializer.Endianness = Endianness.Big;
 ```
  
-In other cases you may actually have a mix of big and little endian and again you can use the <code>SerializeAsAttribute</code> to specify endianness.  As with encoding, endianness is inherited through the graph heirarchy unless overridden by a child field.
+In other cases you may actually have a mix of big and little endian and again you can use the <code>SerializeAsAttribute</code> to specify endianness.  As with encoding, endianness is inherited through the graph hierarchy unless overridden by a child field.
 
 ```c#
 [SerializeAs(Endianness = Endianness.Big)]
