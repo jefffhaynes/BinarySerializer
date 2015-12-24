@@ -137,7 +137,7 @@ namespace BinarySerialization.Graph
                 ? callback
                 : () => ConvertBack(callback(), target.CreateSerializationContext());
 
-            source.TargetBindings.Add(finalCallback);
+            source.Bindings.Add(finalCallback);
         }
 
         private object Convert(object value, BinarySerializationContext context)

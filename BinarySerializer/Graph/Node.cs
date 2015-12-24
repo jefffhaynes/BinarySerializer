@@ -8,14 +8,14 @@ namespace BinarySerialization.Graph
         protected Node(Node parent)
         {
             Parent = parent;
-            TargetBindings = new List<Func<object>>();
+            Bindings = new List<Func<object>>();
         }
 
         public Node Parent { get; private set; }
 
         public string Name { get; set; }
 
-        public List<Func<object>> TargetBindings { get; set; }
+        public List<Func<object>> Bindings { get; set; }
 
         public override string ToString()
         {

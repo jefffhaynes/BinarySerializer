@@ -23,13 +23,13 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 object value;
 
-                if (TargetBindings.Count > 0)
+                if (Bindings.Count > 0)
                 {
-                    value = TargetBindings[0]();
+                    value = Bindings[0]();
 
-                    if (TargetBindings.Count != 1)
+                    if (Bindings.Count != 1)
                     {
-                        object[] targetValues = TargetBindings.Select(binding => binding()).ToArray();
+                        object[] targetValues = Bindings.Select(binding => binding()).ToArray();
 
                         if (targetValues.Any(v => !value.Equals(v)))
                             throw new BindingException(
