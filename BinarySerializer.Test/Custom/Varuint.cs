@@ -27,7 +27,7 @@ namespace BinarySerialization.Test.Custom
 
                 var lower7Bits = (byte)b;
                 more = (lower7Bits & 128) != 0;
-                Value |= (uint)((lower7Bits & 0x7f) << shift);
+                Value |= (uint)((lower7Bits & 127) << shift);
                 shift += 7;
             }
         }
@@ -37,7 +37,7 @@ namespace BinarySerialization.Test.Custom
             var value = Value;
             do
             {
-                var lower7Bits = (byte) (value & 0x7f);
+                var lower7Bits = (byte) (value & 127);
                 value >>= 7;
                 if (value > 0)
                     lower7Bits |= 128;
