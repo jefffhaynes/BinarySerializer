@@ -571,15 +571,13 @@ public class Varuint : IBinarySerializable
 
     public void Deserialize(Stream stream, Endianness endianness, BinarySerializationContext context)
     {
-        var reader = new BinaryReader(stream);
-
         bool more = true;
         int shift = 0;
         Value = 0;
 
         while (more)
         {
-            int b = reader.ReadByte();
+            int b = stream.ReadByte();
 
             if (b == -1)
                 throw new InvalidOperationException("Reached end of stream before end of varuint.");
@@ -594,8 +592,6 @@ public class Varuint : IBinarySerializable
 
     public void Serialize(Stream stream, Endianness endianness, BinarySerializationContext context)
     {
-        var writer = new BinaryWriter(stream);
-
         var value = Value;
         do
         {
@@ -603,7 +599,7 @@ public class Varuint : IBinarySerializable
             value >>= 7;
             if (value > 0)
                 lower7Bits |= 128;
-            writer.Write(lower7Bits);
+            stream.WriteByte(lower7Bits);
         } while (value > 0);
     }
 }
