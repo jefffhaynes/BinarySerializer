@@ -28,7 +28,7 @@ namespace BinarySerialization
     /// <remarks>
     /// It should be noted that this attributes differs from the <see cref="SerializeUntilAttribute"/> class in
     /// a subtle but significant way.  The <see cref="SerializeUntilAttribute"/> should be used in cases where
-    /// the serialization of collection is terminated explicity by something defined outside of the scope of an
+    /// the serialization of collection is terminated explicitly by something defined outside of the scope of an
     /// item in the collection.  See <see cref="SerializeUntilAttribute"/> for more information.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]

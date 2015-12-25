@@ -141,7 +141,7 @@ namespace BinarySerialization
         /// <summary>
         ///     Sets the position within the current stream to the specified value.
         /// </summary>
-        /// <param name="offset">The new position within the stream. This is relative to the loc parameter, and can be positive or negative.</param>
+        /// <param name="offset">The new position within the stream. This is relative to the origin parameter, and can be positive or negative.</param>
         /// <param name="origin">A value of type SeekOrigin, which acts as the seek reference point.</param>
         /// <returns>The new position within the stream, calculated by combining the initial reference point and the offset.</returns>
         public override long Seek(long offset, SeekOrigin origin)

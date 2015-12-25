@@ -76,7 +76,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 }
                 else if (serializedType == SerializedType.SizedString)
                 {
-                    /* If fixed size is specified, get max length in order to accomodate all values */
+                    /* If fixed size is specified, get max length in order to accommodate all values */
                     EnumInfo.EnumValueLength = lengthGroups[0].Max(lengthGroup => lengthGroup.Length);
                 }
             }

@@ -30,6 +30,9 @@ namespace BinarySerialization
         /// </summary>
         public BinarySerializationContext Context { get; private set; }
 
+        /// <summary>
+        /// The global location in the stream relative to the initial operation.
+        /// </summary>
         public long Offset { get; private set; }
     }
 }

@@ -3,7 +3,7 @@ using System;
 namespace BinarySerialization
 {
     /// <summary>
-    /// Used to represent context for the current serializtion operation, such as the serialization ancestory.
+    /// Used to represent context for the current serialization operation, such as the serialization ancestry.
     /// <seealso cref="IBinarySerializable"/>
     /// </summary>
 	public class BinarySerializationContext

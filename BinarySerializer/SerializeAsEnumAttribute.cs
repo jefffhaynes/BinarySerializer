@@ -44,7 +44,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// The litteral string to use during serialization.
+        /// The literal string to use during serialization.
         /// </summary>
         public string Value { get; set; }
     }

@@ -6,22 +6,22 @@ namespace BinarySerialization
     internal class EventShuttle
     {
         /// <summary>
-        ///     Occurrs after a member has been serialized.
+        ///     Occurs after a member has been serialized.
         /// </summary>
         public event EventHandler<MemberSerializedEventArgs> MemberSerialized;
 
         /// <summary>
-        ///     Occurrs after a member has been deserialized.
+        ///     Occurs after a member has been deserialized.
         /// </summary>
         public event EventHandler<MemberSerializedEventArgs> MemberDeserialized;
 
         /// <summary>
-        ///     Occurrs before a member has been serialized.
+        ///     Occurs before a member has been serialized.
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberSerializing;
 
         /// <summary>
-        ///     Occurrs before a member has been deserialized.
+        ///     Occurs before a member has been deserialized.
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 

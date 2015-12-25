@@ -79,7 +79,7 @@
         NullTerminatedString,
 
         /// <summary>
-        /// An encoded string prefixed with a LEB128-encoded length.  This is equivelent to how BinaryWriter encodes a string.
+        /// An encoded string prefixed with a LEB128-encoded length.  This is equivalent to how BinaryWriter encodes a string.
         /// </summary>
         LengthPrefixedString,
     }
