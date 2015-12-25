@@ -51,11 +51,11 @@ namespace BinarySerialization.Test.Custom
             {
                 Inner = new CustomSubtypeCustomClass
                 {
-                    Value = 33
+                    Value = 2097151
                 }
             };
 
-            var actual = Roundtrip(expected, 2);
+            var actual = Roundtrip(expected, 4);
 
             var innerExpected = (CustomSubtypeCustomClass)expected.Inner;
             var innerActual = (CustomSubtypeCustomClass) actual.Inner;

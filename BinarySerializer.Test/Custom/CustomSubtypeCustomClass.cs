@@ -5,16 +5,19 @@ namespace BinarySerialization.Test.Custom
     public class CustomSubtypeCustomClass : CustomSubtypeBaseClass, IBinarySerializable
     {
         [Ignore]
-        public byte Value { get; set; }
+        public uint Value { get; set; }
 
         public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)
         {
-            stream.WriteByte(Value);
+            var varuint = new Varuint {Value = Value};
+            varuint.Serialize(stream, endianness, serializationContext);
         }
 
         public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)
         {
-            Value = (byte)stream.ReadByte();
+            var varuint = new Varuint { Value = Value };
+            varuint.Deserialize(stream, endianness, serializationContext);
+            Value = varuint.Value;
         }
     }
 }
