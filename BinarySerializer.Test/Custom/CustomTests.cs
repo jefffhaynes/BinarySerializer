@@ -56,6 +56,11 @@ namespace BinarySerialization.Test.Custom
             };
 
             var actual = Roundtrip(expected, 2);
+
+            var innerExpected = (CustomSubtypeCustomClass)expected.Inner;
+            var innerActual = (CustomSubtypeCustomClass) actual.Inner;
+
+            Assert.AreEqual(innerExpected.Value, innerActual.Value);
         }
     }
 }

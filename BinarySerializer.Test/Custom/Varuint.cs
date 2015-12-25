@@ -13,8 +13,6 @@ namespace BinarySerialization.Test.Custom
 
         public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
         {
-            var reader = new BinaryReader(stream);
-
             bool more = true;
             int shift = 0;
 
@@ -22,7 +20,7 @@ namespace BinarySerialization.Test.Custom
 
             while (more)
             {
-                int b = reader.ReadByte();
+                int b = stream.ReadByte();
 
                 if (b == -1)
                     throw new InvalidOperationException("Reached end of stream before end of varuint.");
@@ -36,8 +34,6 @@ namespace BinarySerialization.Test.Custom
 
         public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
         {
-            var writer = new BinaryWriter(stream);
-
             var value = Value;
             do
             {
@@ -45,7 +41,7 @@ namespace BinarySerialization.Test.Custom
                 value >>= 7;
                 if (value > 0)
                     lower7Bits |= 128;
-                writer.Write(lower7Bits);
+                stream.WriteByte(lower7Bits);
             } while (value > 0);
         }
     }
