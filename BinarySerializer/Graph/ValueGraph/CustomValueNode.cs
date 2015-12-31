@@ -9,7 +9,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void ObjectSerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
+        protected override void ObjectSerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             var serializationContext = CreateSerializationContext();
 
@@ -26,7 +26,7 @@ namespace BinarySerialization.Graph.ValueGraph
             binarySerializable.Serialize(stream, Endianness, serializationContext);
         }
 
-        protected override void ObjectDeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
+        protected override void ObjectDeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             var serializationContext = CreateSerializationContext();
             var binarySerializable = (IBinarySerializable)Activator.CreateInstance(TypeNode.Type);

@@ -115,7 +115,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return Children.Where(child => !child.TypeNode.IsIgnored);
         }
 
-        public void Serialize(StreamLimiter stream, EventShuttle eventShuttle)
+        public void Serialize(LimitedStream stream, EventShuttle eventShuttle)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     return;
 
                 if (TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst)
-                    stream = new StreamLimiter(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue));
+                    stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue));
 
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
@@ -151,9 +151,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected abstract void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle);
+        protected abstract void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle);
 
-        public void Deserialize(StreamLimiter stream, EventShuttle eventShuttle)
+        public void Deserialize(LimitedStream stream, EventShuttle eventShuttle)
         {
             try
             {
@@ -163,7 +163,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     return;
 
                 if (TypeNode.FieldLengthBinding != null)
-                    stream = new StreamLimiter(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
+                    stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
 
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
@@ -197,7 +197,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public abstract void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle);
+        public abstract void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle);
 
         public ValueNode GetChild(string path)
         {
@@ -257,7 +257,7 @@ namespace BinarySerialization.Graph.ValueGraph
         protected virtual long MeasureOverride()
         {
             var nullStream = new NullStream();
-            var streamLimiter = new StreamLimiter(nullStream);
+            var streamLimiter = new LimitedStream(nullStream);
             Serialize(streamLimiter, null);
             return streamLimiter.RelativePosition;
         }
@@ -282,7 +282,7 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new InvalidOperationException("Not a collection field.");
         }
 
-        protected static bool ShouldTerminate(StreamLimiter stream)
+        protected static bool ShouldTerminate(LimitedStream stream)
         {
             if (stream.IsAtLimit)
                 return true;

@@ -77,7 +77,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return childLengthGroup.Key;
         }
 
-        protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
+        protected override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }
@@ -121,7 +121,7 @@ namespace BinarySerialization.Graph.ValueGraph
             else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString || serializedType == SerializedType.NullTerminatedString)
             {
                 // try to get bounded length from limiter
-                var baseStream = (StreamLimiter) writer.BaseStream;
+                var baseStream = (LimitedStream) writer.BaseStream;
                 maxLength = baseStream.AvailableForWriting;
             }
 
@@ -205,13 +205,13 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
+        public override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             object value = Deserialize(stream, TypeNode.GetSerializedType());
             Value = ConvertToFieldType(value);
         }
 
-        public object Deserialize(StreamLimiter stream, SerializedType serializedType, int? length = null)
+        public object Deserialize(LimitedStream stream, SerializedType serializedType, int? length = null)
         {
             var reader = new EndianAwareBinaryReader(stream, Endianness);
             return Deserialize(reader, serializedType, length);
@@ -236,7 +236,7 @@ namespace BinarySerialization.Graph.ValueGraph
             else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString || serializedType == SerializedType.NullTerminatedString)
             {
                 // try to get bounded length from limiter
-                var baseStream = (StreamLimiter) reader.BaseStream;
+                var baseStream = (LimitedStream) reader.BaseStream;
 
                 checked
                 {

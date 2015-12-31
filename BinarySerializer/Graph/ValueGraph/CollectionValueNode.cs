@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void SerializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
+        protected override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             var serializableChildren = GetSerializableChildren();
 
@@ -25,7 +25,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (stream.IsAtLimit)
                     break;
 
-                var childStream = itemLength == null ? stream : new StreamLimiter(stream, itemLength.Value);
+                var childStream = itemLength == null ? stream : new LimitedStream(stream, itemLength.Value);
                 child.Serialize(childStream, eventShuttle);
             }
 
@@ -39,7 +39,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override void DeserializeOverride(StreamLimiter stream, EventShuttle eventShuttle)
+        public override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             var typeNode = (CollectionTypeNode)TypeNode;
 
@@ -92,7 +92,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     var childStream = itemLengthEnumerator == null
                         ? stream
-                        : new StreamLimiter(stream, itemLengthEnumerator.Current);
+                        : new LimitedStream(stream, itemLengthEnumerator.Current);
 
                     child.Deserialize(childStream, eventShuttle);
 
@@ -129,7 +129,7 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override IEnumerable<long> MeasureItemsOverride()
         {
             var nullStream = new NullStream();
-            var streamLimiter = new StreamLimiter(nullStream);
+            var streamLimiter = new LimitedStream(nullStream);
 
             var serializableChildren = GetSerializableChildren();
 

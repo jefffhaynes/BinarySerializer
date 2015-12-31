@@ -5,18 +5,18 @@ using System.Linq;
 
 namespace BinarySerialization
 {
-    internal class StreamLimiter : Stream
+    internal class LimitedStream : Stream
     {
         private readonly bool _canSeek;
         private readonly long _length;
         private readonly bool _unbounded;
 
-        public StreamLimiter(Stream source) : this(source, long.MaxValue)
+        public LimitedStream(Stream source) : this(source, long.MaxValue)
         {
             _unbounded = true;
         }
 
-        public StreamLimiter(Stream source, long maxLength)
+        public LimitedStream(Stream source, long maxLength)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -44,7 +44,7 @@ namespace BinarySerialization
             }
         }
 
-        private IEnumerable<StreamLimiter> Ancestors
+        private IEnumerable<LimitedStream> Ancestors
         {
             get
             {
@@ -53,7 +53,7 @@ namespace BinarySerialization
                 while (parent != null)
                 {
                     yield return parent;
-                    parent = parent.Source as StreamLimiter;
+                    parent = parent.Source as LimitedStream;
                 }
             }
         }
