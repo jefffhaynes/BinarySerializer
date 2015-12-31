@@ -54,7 +54,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             int? itemLength = null;
             if (TypeNode.ItemLengthBinding != null && TypeNode.ItemLengthBinding.IsConst)
@@ -77,7 +77,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             var items =
                 DeserializeCollection(stream, eventShuttle).ToList();

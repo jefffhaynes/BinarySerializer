@@ -43,13 +43,13 @@ namespace BinarySerialization.Graph.ValueGraph
         //    }
         //}
 
-        protected override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             foreach(var child in Children)
                 child.Serialize(stream, eventShuttle);
         }
 
-        public override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             throw new InvalidOperationException("Deserializing object fields not supported.");
         }

@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value { get; set; }
 
-        protected override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             var valueStream = (Stream)Value;
 
@@ -23,7 +23,7 @@ namespace BinarySerialization.Graph.ValueGraph
             valueStreamlet.CopyTo(stream);
         }
 
-        public override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             /* This is weird but we need to find the base stream so we can reference it directly */
             Stream baseStream = stream;

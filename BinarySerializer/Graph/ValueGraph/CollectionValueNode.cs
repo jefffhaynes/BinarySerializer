@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             var serializableChildren = GetSerializableChildren();
 
@@ -39,7 +39,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             var typeNode = (CollectionTypeNode)TypeNode;
 

@@ -112,7 +112,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return value;
         }
 
-        protected override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             ObjectSerializeOverride(stream, eventShuttle);
 
@@ -146,7 +146,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     // this is a little bit of a cheat, but another side-effect of this weird corner case
                     customValueNode.Value = _cachedValue;
-                    customValueNode.Serialize(stream, eventShuttle);
+                    customValueNode.SerializeOverride(stream, eventShuttle);
                     return;
                 }
             }
@@ -172,7 +172,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             // resolve value type for deserialization
             if (TypeNode.SubtypeBinding == null)
@@ -235,7 +235,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (subType is CustomTypeNode)
                 {
                     var customValueNode = subType.CreateSerializer((ValueNode)Parent);
-                    customValueNode.Deserialize(stream, eventShuttle);
+                    customValueNode.DeserializeOverride(stream, eventShuttle);
 
                     // this is a cheat, but another side-effect of this weird corner case
                     _cachedValue = customValueNode.Value;

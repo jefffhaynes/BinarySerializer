@@ -123,16 +123,25 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetBoundValue(this))))
                     return;
-
-                if (TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst)
-                    stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue));
-
+                
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
-                using (new StreamResetter(stream, fieldOffsetBinding != null))
+                if (fieldOffsetBinding != null)
                 {
-                    if (fieldOffsetBinding != null)
+                    using (new StreamResetter(stream))
+                    {
                         stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
+
+                        if (TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst)
+                            stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue));
+
+                        SerializeOverride(stream, eventShuttle);
+                    }
+                }
+                else
+                {
+                    if (TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst)
+                        stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue));
 
                     SerializeOverride(stream, eventShuttle);
                 }
@@ -151,7 +160,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected abstract void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle);
+        // this is internal only because of the weird custom subtype case.  If we can figure out a better
+        // way to handle that case, this can be protected.
+        internal abstract void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle);
 
         public void Deserialize(LimitedStream stream, EventShuttle eventShuttle)
         {
@@ -162,15 +173,25 @@ namespace BinarySerialization.Graph.ValueGraph
                     !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetValue(this))))
                     return;
 
-                if (TypeNode.FieldLengthBinding != null)
-                    stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
 
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
-                using (new StreamResetter(stream, fieldOffsetBinding != null))
+                if (fieldOffsetBinding != null)
                 {
-                    if (fieldOffsetBinding != null)
+                    using (new StreamResetter(stream))
+                    {
                         stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
+
+                        if (TypeNode.FieldLengthBinding != null)
+                            stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
+
+                        DeserializeOverride(stream, eventShuttle);
+                    }
+                }
+                else
+                {
+                    if (TypeNode.FieldLengthBinding != null)
+                        stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
 
                     DeserializeOverride(stream, eventShuttle);
                 }
@@ -197,7 +218,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public abstract void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle);
+        internal abstract void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle);
 
         public ValueNode GetChild(string path)
         {

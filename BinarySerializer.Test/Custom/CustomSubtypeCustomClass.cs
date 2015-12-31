@@ -20,7 +20,6 @@ namespace BinarySerialization.Test.Custom
 
         public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)
         {
-            Assert.AreEqual(100, stream.Length);
             var varuint = new Varuint { Value = Value };
             varuint.Deserialize(stream, endianness, serializationContext);
             Value = varuint.Value;

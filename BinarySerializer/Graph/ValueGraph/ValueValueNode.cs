@@ -77,7 +77,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return childLengthGroup.Key;
         }
 
-        protected override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }
@@ -205,7 +205,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
         {
             object value = Deserialize(stream, TypeNode.GetSerializedType());
             Value = ConvertToFieldType(value);
