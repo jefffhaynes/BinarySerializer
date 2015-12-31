@@ -126,22 +126,26 @@ namespace BinarySerialization.Graph.ValueGraph
                 
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
+                long? maxLength = TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst
+                    ? (long?) Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue)
+                    : null;
+
                 if (fieldOffsetBinding != null)
                 {
                     using (new StreamResetter(stream))
                     {
                         stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
 
-                        if (TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst)
-                            stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue));
+                        if (maxLength != null)
+                            stream = new LimitedStream(stream, maxLength.Value);
 
                         SerializeOverride(stream, eventShuttle);
                     }
                 }
                 else
                 {
-                    if (TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst)
-                        stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue));
+                    if (maxLength != null)
+                        stream = new LimitedStream(stream, maxLength.Value);
 
                     SerializeOverride(stream, eventShuttle);
                 }
@@ -172,9 +176,12 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetValue(this))))
                     return;
-
-
+                
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+
+                long? maxLength = TypeNode.FieldLengthBinding != null
+                    ? (long?)Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this))
+                    : null;
 
                 if (fieldOffsetBinding != null)
                 {
@@ -182,16 +189,16 @@ namespace BinarySerialization.Graph.ValueGraph
                     {
                         stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
 
-                        if (TypeNode.FieldLengthBinding != null)
-                            stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
+                        if (maxLength != null)
+                            stream = new LimitedStream(stream, maxLength.Value);
 
                         DeserializeOverride(stream, eventShuttle);
                     }
                 }
                 else
                 {
-                    if (TypeNode.FieldLengthBinding != null)
-                        stream = new LimitedStream(stream, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)));
+                    if (maxLength != null)
+                        stream = new LimitedStream(stream, maxLength.Value);
 
                     DeserializeOverride(stream, eventShuttle);
                 }
