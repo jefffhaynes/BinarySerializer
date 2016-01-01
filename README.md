@@ -62,7 +62,7 @@ var person = new Person { Name = "Alice" };
 
 Note that it is not necessary that NameLength contains the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
 
-Length can also be specified at an object level.  This can come in useful in cases where a block or blob of data is always a fixed length but has variable length contents.  If a constant length is specified, then during serialization the object will be padded out to the specified length.  If the length is bound, the source field will be updated during serialization with the computed object size.
+Length can also be specified at an object level.  See the LengthAttribute section for more examples.
 
 ### Default Behavior ###
 
@@ -105,7 +105,7 @@ public uint SectorCountBig { get; set; }
 
 ### FieldOrderAttribute ###
 
-This attribute is required on any field or property in a class with more than one field or property.  Only the relative order value matters; for example, field ordering can be zero-based, one-based, prime numbers only, etc.  In the case of a class inheriting from a base, base fields are serialized before derived values irrespective of field order numbers.  In the following example the field A will be serialized first, followed by B and C.  Note that the base class does not need to specify field ordering as there is only one field.
+This attribute is required on any field or property in a class with more than one field or property.  Only the relative order value matters; for example, field ordering can be zero-based, one-based, prime numbers only, etc.  In the case of a class inheriting from a base, base fields are serialized before derived values irrespective of field order numbers.  In the following example the field A will be serialized first, followed by B and then C.  Note that the base class does not need to specify field ordering as there is only one field.
 
 ```c#
 public class MyBaseClass
