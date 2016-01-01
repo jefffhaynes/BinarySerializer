@@ -62,6 +62,8 @@ var person = new Person { Name = "Alice" };
 
 Note that it is not necessary that NameLength contains the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
 
+Length can also be specified at an object level.  This can come in useful in cases where a block or blob of data is always a fixed length but has variable length contents.  If a constant length is specified, then during serialization the object will be padded out to the specified length.  If the length is bound, the source field will be updated during serialization with the computed object size.
+
 ### Default Behavior ###
 
 Although most behavior can be overridden, in many cases the serializer will attempt to guess the intended behavior based on class design.  For example, in the following class a null-terminated string will be used during serialization as deserialization would otherwise be impossible as defined.
@@ -71,8 +73,6 @@ public class Person2
 {
     [FieldOrder(0)]
     public string Name { get; set; }
-
-    [FieldOrder(1)]
     public int Age { get; set; }
 }
 ```
@@ -605,6 +605,8 @@ public class Varuint : IBinarySerializable
 }
 ```
 Note that when using custom serialization the object can still be used as a source for binding.  In the above example you could bind to "Value" from elsewhere in your object hierarchy.
+
+Also note that in the case that FieldLength is specified for the custom object, the stream passed in during serialization will be limited to that length.  This can help if you want to copy the entirety or balance of the object stream into a member field.  In essence, the custom object is unable to stray from the bounds set for it by the serialization object hierarchy.
 
 ### Encoding ###
 
