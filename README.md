@@ -130,7 +130,7 @@ FieldLength can be used to specify either a bound or a constant field length.  F
 For constant length fields, the serialized field length will always result in the specified length, either by limiting the serialization operation or padding out the result with zeros.  For bound length fields, the source will be updated with the serialized length.  Typically source fields are value types such as integers but value converters may also be used to update other types.
 
 ```c#
-public class MyConstFieldClass
+public class Person
 {
     [FieldLength(32)]
     public string Name { get; set; }
@@ -140,7 +140,7 @@ public class MyConstFieldClass
 Alternatively, the length of the Name field could be bound to a NameLength field:
 
 ```c#
-public class MyBoundFieldClass
+public class Person
 {
     [FieldOrder(0)]
     public byte NameLength { get; set; }
@@ -158,13 +158,13 @@ public class MyBoundFieldClass
 In some cases you may want to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the serialized length in bytes.  To restrict the number of items in a collection use the FieldCount attribute.
 
 ```c#
-public class MyBoundCollectionClass
+public class Directory
 {
     [FieldOrder(0)]
-    public byte NameLength { get; set; }
+    public byte NamesLength { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("NameLength")]
+    [FieldLength("NamesLength")]
     public List<string> Names { get; set; }
 }
 ```
@@ -185,7 +185,7 @@ public class Person
     public string LastName { get; set; }
 }
 
-public class Office
+public class PersonContainer
 {
     [FieldLength(24)]
     public Person Person { get; set; }
@@ -195,7 +195,7 @@ public class Office
 Note that if the field length is constant, Person will *always* be 24 bytes long and will be padded out if the actual Person length is less than 24 (e.g. Bob Smith).  However, if the length is bound then the actual length of Person will take precedence and PersonLength will be updated accordingly during serialization.
 
 ```c#
-public class Office
+public class PersonContainer
 {
     [FieldOrder(0)]
     public int PersonLength { get; set; } // set to the length of Person during serialization.
