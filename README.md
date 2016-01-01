@@ -68,6 +68,8 @@ Length can also be specified at an object level.  This can come in useful in cas
 
 Although most behavior can be overridden, in many cases the serializer will attempt to guess the intended behavior based on class design.  For example, in the following class a null-terminated string will be used during serialization as deserialization would otherwise be impossible as defined.
 
+See below for the various ways default behavior can be overridden.
+
 ```c#
 public class Person2
 {
