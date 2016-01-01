@@ -105,7 +105,7 @@ public uint SectorCountBig { get; set; }
 
 ### FieldOrderAttribute ###
 
-This attribute is required on any field or property in a class with more than one field or property.  Only the relative order value matters; for example, field ordering can be zero-based, one-based, prime numbers only, etc.  In the case of a class inheriting from a base, base fields are serialized before derived values irrespective of field order numbers.
+This attribute is required on any field or property in a class with more than one field or property.  Only the relative order value matters; for example, field ordering can be zero-based, one-based, prime numbers only, etc.  In the case of a class inheriting from a base, base fields are serialized before derived values irrespective of field order numbers.  In the following example the field A will be serialized first, followed by B and C.  Note that the base class does not need to specify field ordering as there is only one field.
 
 ```c#
 public class MyBaseClass
