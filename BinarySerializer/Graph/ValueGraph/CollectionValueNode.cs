@@ -123,7 +123,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override long CountOverride()
         {
-            return Children.Count();
+            return Children.Count;
         }
 
         protected override IEnumerable<long> MeasureItemsOverride()
