@@ -276,7 +276,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (TypeConverters.TryGetValue(targetType, out converter))
                 return converter(value);
 
-            if (targetType.IsEnum && value.GetType().IsPrimitive)
+            if (targetType.IsEnum && valueType.IsPrimitive)
                 return Enum.ToObject(targetType, value);
 
             return value;
