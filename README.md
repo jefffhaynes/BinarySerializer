@@ -69,10 +69,12 @@ Length can also be specified at an object level.  See the FieldLengthAttribute s
 Although most behavior can be overridden, in many cases the serializer will attempt to guess the intended behavior based on class design.  For example, in the following class a null-terminated string will be used during serialization as deserialization would otherwise be impossible as defined.
 
 ```c#
-public class Person2
+public class Person
 {
     [FieldOrder(0)]
     public string Name { get; set; }
+
+	[FieldOrder(1)]
     public int Age { get; set; }
 }
 ```
