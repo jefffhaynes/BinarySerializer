@@ -20,13 +20,21 @@ namespace BinarySerialization.Graph.TypeGraph
         private void Construct()
         {
             ChildType = Type.GetElementType();
+#if WINDOWS_UWP
+            ChildTypeInfo = ChildType.GetTypeInfo();
+#endif
             CompiledChildConstructor = CreateCompiledConstructor(ChildType);
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
+#if WINDOWS_UWP
+            if (ChildTypeInfo.IsPrimitive)
+#else
             if (ChildType.IsPrimitive)
+#endif
                 return new PrimitveArrayValueNode(parent, Name, this);
+
             return new ArrayValueNode(parent, Name, this);
         }
     }

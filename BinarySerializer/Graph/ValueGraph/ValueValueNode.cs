@@ -327,7 +327,11 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private object ConvertToFieldType(object value)
         {
+#if WINDOWS_UWP
+            return ConvertToType(value, TypeNode.Type, TypeNode.TypeInfo);
+#else
             return ConvertToType(value, TypeNode.Type);
+#endif
         }
 
         private static IEnumerable<byte> ReadNullTerminatedString(BinaryReader reader, int maxLength)

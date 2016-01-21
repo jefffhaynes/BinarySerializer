@@ -3,12 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
+#if WINDOWS_UWP
+using System.Reflection;
+#endif
+
 namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ObjectValueNode : ValueNode
     {
         private object _cachedValue;
         private Type _valueType;
+
+#if WINDOWS_UWP
+        private TypeInfo _valueTypeInfo;
+#endif
 
         public ObjectValueNode(Node parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
@@ -53,6 +61,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 _valueType = value.GetType();
 
+#if WINDOWS_UWP
+                _valueTypeInfo = _valueType.GetTypeInfo();
+#endif
+
                 // cache the value for creating serialization contexts quickly
                 _cachedValue = value;
             }
@@ -63,7 +75,11 @@ namespace BinarySerialization.Graph.ValueGraph
             if (_valueType == null)
                 return null;
 
+#if WINDOWS_UWP
+            if(_valueTypeInfo.IsAbstract)
+#else
             if (_valueType.IsAbstract)
+#endif
                 return null;
 
             var objectTypeNode = (ObjectTypeNode)TypeNode;
@@ -180,8 +196,16 @@ namespace BinarySerialization.Graph.ValueGraph
                 // trivial case with no subtypes
                 _valueType = TypeNode.Type;
 
-                if(_valueType.IsAbstract)
+#if WINDOWS_UWP
+                _valueTypeInfo = _valueType.GetTypeInfo();
+
+                if (_valueTypeInfo.IsAbstract)
+#else
+
+                if (_valueType.IsAbstract)
+#endif
                     throw new InvalidOperationException("Abstract types must have at least one subtype binding to be deserialized.");
+
             }
             else
             {

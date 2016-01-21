@@ -19,7 +19,11 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public Func<object> CompiledConstructor { get; private set; } 
 
-        public Type ChildType { get; set; }
+        public Type ChildType { get; protected set; }
+
+#if WINDOWS_UWP
+        public TypeInfo ChildTypeInfo { get; protected set; }
+#endif
 
         public TypeNode Child => _lazyChild.Value;
 

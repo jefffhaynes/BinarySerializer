@@ -20,6 +20,9 @@ namespace BinarySerialization.Graph.TypeGraph
         private void Construct()
         {
             ChildType = GetChildType(Type);
+#if WINDOWS_UWP
+            ChildTypeInfo = ChildType.GetTypeInfo();
+#endif
         }
 
         private Type GetChildType(Type collectionType)
@@ -29,8 +32,13 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
+#if WINDOWS_UWP
+            if(ChildTypeInfo.IsPrimitive)
+#else
             if(ChildType.IsPrimitive)
+#endif
                 return new PrimitiveListValueNode(parent, Name, this);
+            
             return new ListValueNode(parent, Name, this);
         }
     }

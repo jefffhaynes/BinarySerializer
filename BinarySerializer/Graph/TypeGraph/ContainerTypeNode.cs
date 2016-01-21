@@ -70,11 +70,22 @@ namespace BinarySerialization.Graph.TypeGraph
 
             var effectiveType = nullableType ?? type;
 
-            if (effectiveType.IsEnum)
+#if WINDOWS_UWP
+            var typeInfo = effectiveType.GetTypeInfo();
+#else
+            var typeInfo = effectiveType;
+#endif
+
+            if (typeInfo.IsEnum)
                 return typeof(EnumTypeNode);
 
-            if (IsValueType(effectiveType))
+#if WINDOWS_UWP
+            if (IsValueType(effectiveType, typeInfo))
                 return typeof (ValueTypeNode);
+#else
+            if (IsValueType(typeInfo))
+                return typeof (ValueTypeNode);
+#endif
 
             if (type.IsArray)
                 return typeof(ArrayTypeNode);

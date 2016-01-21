@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -255,7 +256,11 @@ namespace BinarySerialization.Graph.ValueGraph
             return new BinarySerializationContext(parent.Value, parent.TypeNode.Type, parent.CreateSerializationContext());
         }
 
+#if WINDOWS_UWP
+        protected static object ConvertToType(object value, Type targetType, TypeInfo targetTypeInfo)
+#else
         protected static object ConvertToType(object value, Type targetType)
+#endif
         {
             if (value == null)
                 return null;
@@ -266,19 +271,41 @@ namespace BinarySerialization.Graph.ValueGraph
                 return value;
 
             /* Special handling for strings */
-            if (valueType == typeof(string) && targetType.IsPrimitive)
+            if (valueType == typeof (string))
             {
-                if (string.IsNullOrWhiteSpace(value.ToString()))
-                    value = 0;
+#if WINDOWS_UWP
+                if(targetTypeInfo.IsPrimitive)
+#else
+                if (targetType.IsPrimitive)
+#endif
+                {
+                    if (string.IsNullOrWhiteSpace(value.ToString()))
+                        value = 0;
+
+                }
             }
 
             Func<object, object> converter;
             if (TypeConverters.TryGetValue(targetType, out converter))
                 return converter(value);
 
-            if (targetType.IsEnum && valueType.IsPrimitive)
-                return Enum.ToObject(targetType, value);
 
+#if WINDOWS_UWP
+            if (targetTypeInfo.IsEnum)
+            {
+                var valueTypeInfo = valueType.GetTypeInfo();
+                if(valueTypeInfo.IsPrimitive)
+                    return Enum.ToObject(targetType, value);
+            }
+
+#else
+            if (targetType.IsEnum)
+            {
+                if (valueType.IsPrimitive)      
+                    return Enum.ToObject(targetType, value);
+            }
+#endif
+            
             return value;
         }
 

@@ -42,6 +42,10 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             Type = type;
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
+
+#if WINDOWS_UWP
+            TypeInfo = Type.GetTypeInfo();
+#endif
         }
 
         protected TypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType = null)
@@ -76,6 +80,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 ValueSetter = fieldInfo.SetValue;
             }
             else throw new NotSupportedException($"{memberInfo.GetType().Name} not supported");
+
+#if WINDOWS_UWP
+            TypeInfo = Type.GetTypeInfo();
+#endif
 
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
@@ -191,6 +199,22 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public MemberInfo MemberInfo { get; }
         public Type Type { get; }
+
+#if WINDOWS_UWP
+        public TypeInfo TypeInfo { get; }
+#endif
+
+
+#if WINDOWS_UWP
+        public bool IsAbstract => TypeInfo.IsAbstract;
+        public bool IsPrimitive => TypeInfo.IsPrimitive;
+        public bool IsEnum => TypeInfo.IsEnum;
+#else
+        public bool IsAbstract => Type.IsAbstract;
+        public bool IsPrimitive => Type.IsPrimitive;
+        public bool IsEnum => Type.IsEnum;
+#endif
+
         public Type NullableUnderlyingType { get; }
 
         public Type BaseSerializedType => NullableUnderlyingType ?? Type;
@@ -286,11 +310,19 @@ namespace BinarySerialization.Graph.TypeGraph
             return level;
         }
 
+
+
+#if WINDOWS_UWP
+        public static bool IsValueType(Type type, TypeInfo typeInfo)
+        {
+            return typeInfo.IsPrimitive || type == typeof(string) || type == typeof(byte[]);
+        }
+#else
         public static bool IsValueType(Type type)
         {
             return type.IsPrimitive || type == typeof (string) || type == typeof (byte[]);
-            //return type.IsPrimitive || type == typeof(string);
         }
+#endif
 
         protected Func<object> CreateCompiledConstructor()
         {

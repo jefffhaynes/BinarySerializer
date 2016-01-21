@@ -30,8 +30,13 @@ namespace BinarySerialization
         private static Func<object, object> MagicFuncHelper<TTarget, TReturn>(MethodInfo method)
         {
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
+#if WINDOWS_UWP
+            Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)method.CreateDelegate
+                (typeof(Func<TTarget, TReturn>));
+#else
             Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)Delegate.CreateDelegate
                 (typeof(Func<TTarget, TReturn>), method);
+#endif
 
             // Now create a more weakly typed delegate which will call the strongly typed one
             Func<object, object> ret = target => func((TTarget)target);
@@ -60,8 +65,13 @@ namespace BinarySerialization
         private static Action<object, object> MagicActionHelper<TTarget, TValue>(MethodInfo method)
         {
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
+#if WINDOWS_UWP
+            Action<TTarget, TValue> action = (Action<TTarget, TValue>)method.CreateDelegate
+                (typeof(Action<TTarget, TValue>));
+#else
             Action<TTarget, TValue> action = (Action<TTarget, TValue>)Delegate.CreateDelegate
                 (typeof(Action<TTarget, TValue>), method);
+#endif
 
             // Now create a more weakly typed delegate which will call the strongly typed one
             Action<object, object> ret = (target, value) =>
