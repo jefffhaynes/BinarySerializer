@@ -37,5 +37,10 @@ namespace BinarySerialization
         /// Specifies the endianness to use when serializing the decorated member.
         /// </summary>
         public Endianness Endianness { get; set; }
+
+        /// <summary>
+        /// Used in the case of terminated strings to specify the terminating value.
+        /// </summary>
+        public char Terminator { get; set; }
     }
 }

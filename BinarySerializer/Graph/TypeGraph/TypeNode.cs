@@ -99,6 +99,11 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
                     Encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
+
+                // if obsolete null terminated type, set terminator to 'null'
+                Terminator = serializeAsAttribute.SerializedType == SerializedType.NullTerminatedString
+                    ? (char) 0
+                    : serializeAsAttribute.Terminator;
             }
 
             FieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
@@ -192,6 +197,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public MemberInfo MemberInfo { get; }
         public Type Type { get; }
         public Type NullableUnderlyingType { get; }
+        public char Terminator { get; }
 
         public Type BaseSerializedType => NullableUnderlyingType ?? Type;
 

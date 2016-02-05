@@ -163,8 +163,11 @@ namespace BinarySerialization.Graph.ValueGraph
                     writer.Write(data, 0, data.Length);
                     break;
                 }
+#pragma warning disable 612
                 case SerializedType.NullTerminatedString:
-                {
+#pragma warning restore 612
+                case SerializedType.TerminatedString:
+                    {
                     byte[] data = Encoding.GetBytes(value.ToString());
 
                     if (constLength != null)
@@ -174,7 +177,7 @@ namespace BinarySerialization.Graph.ValueGraph
                         Array.Resize(ref data, (int)maxLength.Value - 1);
 
                     writer.Write(data);
-                    writer.Write((byte) 0);
+                    writer.Write((byte)TypeNode.Terminator);
                     break;
                 }
                 case SerializedType.SizedString:
@@ -188,7 +191,6 @@ namespace BinarySerialization.Graph.ValueGraph
                         Array.Resize(ref data, (int)maxLength.Value);
 
                     writer.Write(data);
-
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
