@@ -2,13 +2,13 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>4.6</version>
+    <version>4.6.1</version>
     <authors>Jeff Haynes</authors>
     <owners></owners>
     <projectUrl>https://github.com/jefffhaynes/BinarySerializer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level.</description>
-    <releaseNotes>Fixed simultaneous handling of offset and length limiting for objects implementing IBinarySerializable.</releaseNotes>
+    <releaseNotes>Better handling of complex constructors.</releaseNotes>
     <tags>Serialization Serializer Binary Format Protocol</tags>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
   </metadata>
