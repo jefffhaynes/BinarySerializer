@@ -11,7 +11,7 @@ namespace BinarySerialization.Test.Subtype
         [TestMethod]
         public void SubtypeTest()
         {
-            var expected = new SubtypeClass {Field = new SubclassB{SomethingForClassB = 33}};
+            var expected = new SubtypeClass {Field = new SubclassB{SomethingForClassB = 33}, Field2 = new SubclassA()};
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(SubclassType.B, actual.Subtype);
@@ -27,7 +27,9 @@ namespace BinarySerialization.Test.Subtype
                 {
                     SomeSuperStuff = 1,
                     SomethingForClassB = 2
-                }
+                },
+
+                Field2 = new SubclassA()
             };
             var actual = Roundtrip(expected);
 

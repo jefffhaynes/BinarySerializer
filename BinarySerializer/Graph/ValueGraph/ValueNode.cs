@@ -93,7 +93,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     Type valueType = GetValueTypeOverride();
                     if (valueType == null)
-                        return null;
+                        throw new InvalidOperationException("Binding targets must not be null.");
 
                     var objectTypeNode = (ObjectTypeNode)typeNode;
 
