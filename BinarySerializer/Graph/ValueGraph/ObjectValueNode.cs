@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -251,10 +252,6 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
                     eventShuttle.OnMemberDeserializing(this, child.Name, serializationContextLazy.Value,
                         stream.GlobalRelativePosition);
-
-                // check if any termination conditions are met
-                if (ShouldTerminate(stream))
-                    break;
 
                 // deserialize child
                 child.Deserialize(stream, eventShuttle);

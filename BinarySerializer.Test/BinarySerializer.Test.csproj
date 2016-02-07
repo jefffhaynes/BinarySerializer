@@ -111,6 +111,8 @@
     <Compile Include="Issues\Issue25\Issue25Tests.cs" />
     <Compile Include="Issues\Issue25\LoadCarrierData.cs" />
     <Compile Include="Issues\Issue25\LoadCarrierType.cs" />
+    <Compile Include="Issues\Issue27\Issue27Tests.cs" />
+    <Compile Include="Issues\Issue27\LoadCarrierData.cs" />
     <Compile Include="Issues\Issue29\BaseCarrierData.cs" />
     <Compile Include="Issues\Issue29\Issue29Tests.cs" />
     <Compile Include="Issues\Issue29\LoadCarrierData.cs" />
