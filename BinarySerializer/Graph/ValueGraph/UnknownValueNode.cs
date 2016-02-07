@@ -22,6 +22,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var valueType = value.GetType();
 
+                if(valueType == typeof(object))
+                    throw new InvalidOperationException("Unable to serialize object.");
+
                 /* Create graph as if parent were creating it */
                 var unknownTypeGraph = new RootTypeNode((TypeNode)TypeNode.Parent, valueType);
                 var unknownSerializer = (ContextValueNode)unknownTypeGraph.CreateSerializer((ValueNode)Parent);
