@@ -178,7 +178,7 @@ public class PersonContainer
 }
 ```
 
-Note that if the field length is constant, Person will *always* be 24 bytes long and will be padded out if the actual Person length is less than 24 (e.g. Bob Smith).  However, if the length is bound then the actual length of Person will take precedence and PersonLength will be updated accordingly during serialization.
+Note that if the field length is constant Person will *always* be 24 bytes long and will be padded out if the serialized length of Person is less than 24.  However, if the length is bound to a field such as "PersonLength" then the actual length of Person will take precedence and PersonLength will be updated accordingly during serialization.
 
 ```c#
 public class PersonContainer
