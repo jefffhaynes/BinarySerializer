@@ -94,7 +94,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     Type valueType = GetValueTypeOverride();
                     if (valueType == null)
-                        return null;
+                        throw new InvalidOperationException("Binding targets must not be null.");
 
                     var objectTypeNode = (ObjectTypeNode)typeNode;
 
@@ -192,6 +192,14 @@ namespace BinarySerialization.Graph.ValueGraph
 
                         if (maxLength != null)
                             stream = new LimitedStream(stream, maxLength.Value);
+                        
+                        if (EndOfStream(stream))
+                        {
+                            if (TypeNode.Type.IsPrimitive)
+                                throw new EndOfStreamException();
+
+                            return;
+                        }
 
                         DeserializeOverride(stream, eventShuttle);
                     }
@@ -201,16 +209,16 @@ namespace BinarySerialization.Graph.ValueGraph
                     if (maxLength != null)
                         stream = new LimitedStream(stream, maxLength.Value);
 
+                    if (EndOfStream(stream))
+                    {
+                        if (TypeNode.Type.IsPrimitive)
+                            throw new EndOfStreamException();
+
+                        return;
+                    }
+
                     DeserializeOverride(stream, eventShuttle);
                 }
-            }
-            catch (EndOfStreamException e)
-            {
-                string reference = Name == null
-                    ? $"type '{TypeNode.Type}'"
-                    : $"member '{Name}'";
-                string message = $"Error deserializing '{reference}'.  See inner exception for detail.";
-                throw new InvalidOperationException(message, e);
             }
             catch (IOException)
             {
@@ -337,7 +345,7 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new InvalidOperationException("Not a collection field.");
         }
 
-        protected static bool ShouldTerminate(LimitedStream stream)
+        protected static bool EndOfStream(LimitedStream stream)
         {
             if (stream.IsAtLimit)
                 return true;

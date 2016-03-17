@@ -68,7 +68,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (ShouldTerminate(stream))
+                    if (EndOfStream(stream))
                         break;
 
                     /* Check termination case */

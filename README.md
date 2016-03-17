@@ -331,7 +331,7 @@ public class JaggedArrayClass
 }
 ```
 
-Note that the values and value lengths must coincide for this approach to work.
+Note that the ordering of the values and value lengths must coincide for this approach to work.
 
 ### FieldOffsetAttribute ###
 

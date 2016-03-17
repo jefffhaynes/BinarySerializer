@@ -35,7 +35,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             get
             {
-                return Child.Value;
+                return Child?.Value;
             }
 
             set

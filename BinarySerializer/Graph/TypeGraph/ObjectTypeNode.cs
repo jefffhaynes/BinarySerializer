@@ -54,30 +54,40 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 var serializableChildren = Children.Where(child => !child.IsIgnored);
 
+                // don't include constructors that we'll never be able to use because they require more parameters
+                // than for which we have field definitions.
                 var validConstructors =
                     constructors.Where(
                         constructor => constructor.GetParameters().Count() <= serializableChildren.Count());
 
-                var constructorParameterMap = validConstructors.Select(constructor => new
-                {
-                    Constructor = constructor,
-                    ParameterMap = constructor.GetParameters()
-                        .Join(serializableChildren,
-                            parameter => new {Name = parameter.Name.ToLower(), Type = parameter.ParameterType},
-                            child => new {Name = child.Name.ToLower(), child.Type},
-                            (parameter, child) => parameter.Name)
-                });
+                // build a map of all constructors, filling in nulls for parameters without
+                // corresponding fields, matched on name and type
+                var constructorParameterMap = validConstructors.ToDictionary(constructor => constructor,
+                    constructor =>
+                        constructor.GetParameters()
+                            .GroupJoin(serializableChildren,
+                                parameter => new {Name = parameter.Name.ToLower(), Type = parameter.ParameterType},
+                                child => new {Name = child.Name.ToLower(), child.Type},
+                                (parameter, children) => new {parameter, children})
+                            .SelectMany(result => result.children.DefaultIfEmpty())
+                    );
 
-                var bestConstructor =
-                    constructorParameterMap.OrderByDescending(constructor => constructor.ParameterMap.Count())
-                        .FirstOrDefault();
+                // eliminate any constructors that aren't complete in terms of required parameters
+                var completeConstructors =
+                    constructorParameterMap.Where(constructorPair => constructorPair.Value.All(child => child != null)).ToList();
 
-                if (bestConstructor == null)
+                // see if there are any constructors left that can be used at all
+                if (!completeConstructors.Any())
                     return;
+                
+                // choose best match in terms of greatest number of valid parameters
+                var bestConstructor =
+                    completeConstructors.OrderByDescending(constructorPair => constructorPair.Value.Count())
+                        .First();
+                
+                Constructor = bestConstructor.Key;
 
-                Constructor = bestConstructor.Constructor;
-
-                ConstructorParameterNames = bestConstructor.ParameterMap.ToArray();
+                ConstructorParameterNames = bestConstructor.Value.Select(child => child.Name).ToArray();
 
                 if (ConstructorParameterNames.Length == 0)
                     CompiledConstructor = CreateCompiledConstructor(Constructor);

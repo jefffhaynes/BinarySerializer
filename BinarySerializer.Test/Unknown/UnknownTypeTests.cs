@@ -1,19 +1,18 @@
-﻿using System.IO;
-using BinarySerialization;
-using BinarySerialization.Test.Misc;
+﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Unknown
 {
     [TestClass]
-    public class UnknownTypeTests
+    public class UnknownTypeTests : TestBase
     {
         [TestMethod]
         public void UnknownTypeSerializationTest()
         {
             var unknownTypeClass = new UnknownTypeClass {Field = "hello"};
 
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
 
             var stream = new MemoryStream();
             serializer.Serialize(stream, unknownTypeClass);
@@ -25,7 +24,7 @@ namespace BinarySerialization.Test.Unknown
         {
             var unknownTypeClass = new InvalidUnknownTypeClass { Field = "hello" };
 
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
 
             var stream = new MemoryStream();
             serializer.Serialize(stream, unknownTypeClass);
@@ -40,7 +39,7 @@ namespace BinarySerialization.Test.Unknown
                 Field = childClass
             };
 
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
 
             var stream = new MemoryStream();
             serializer.Serialize(stream, unknownTypeClass);
@@ -48,6 +47,14 @@ namespace BinarySerialization.Test.Unknown
             var data = stream.ToArray();
 
             Assert.AreEqual((byte)childClass.Subfield.Length, data[0]);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ObjectSerializationShouldThrow()
+        {
+            var unknownTypeClass = new UnknownTypeClass { Field = new object() };
+            Roundtrip(unknownTypeClass);
         }
     }
 }

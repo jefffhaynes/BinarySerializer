@@ -104,6 +104,28 @@
     <Compile Include="Issues\Issue18\JaggedArrayClass.cs" />
     <Compile Include="Issues\Issue21\FailingClass.cs" />
     <Compile Include="Issues\Issue21\Issue21Tests.cs" />
+    <Compile Include="Issues\Issue24\Bin1Data.cs" />
+    <Compile Include="Issues\Issue24\Issue24Tests.cs" />
+    <Compile Include="Issues\Issue24\LoadCarrierData.cs" />
+    <Compile Include="Issues\Issue24\LoadCarrierType.cs" />
+    <Compile Include="Issues\Issue25\Issue25Tests.cs" />
+    <Compile Include="Issues\Issue25\LoadCarrierData.cs" />
+    <Compile Include="Issues\Issue25\LoadCarrierType.cs" />
+    <Compile Include="Issues\Issue27\Issue27Tests.cs" />
+    <Compile Include="Issues\Issue27\LoadCarrierData.cs" />
+    <Compile Include="Issues\Issue29\BaseCarrierData.cs" />
+    <Compile Include="Issues\Issue29\Issue29Tests.cs" />
+    <Compile Include="Issues\Issue29\LoadCarrierData.cs" />
+    <Compile Include="Issues\Issue29\LoadCarrierType.cs" />
+    <Compile Include="Issues\Issue30\CommMessage.cs" />
+    <Compile Include="Issues\Issue30\Header.cs" />
+    <Compile Include="Issues\Issue30\IMessage.cs" />
+    <Compile Include="Issues\Issue30\IPayload.cs" />
+    <Compile Include="Issues\Issue30\Issue30Tests.cs" />
+    <Compile Include="Issues\Issue30\MessageSerializer.cs" />
+    <Compile Include="Issues\Issue30\MessageType.cs" />
+    <Compile Include="Issues\Issue30\PayloadA.cs" />
+    <Compile Include="Issues\Issue30\PayloadType.cs" />
     <Compile Include="Issues\Issue9\ElementClass.cs" />
     <Compile Include="Issues\Issue9\Entry.cs" />
     <Compile Include="Issues\Issue9\Issue9Tests.cs" />
@@ -237,7 +259,6 @@
       <Name>BinarySerializer</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
