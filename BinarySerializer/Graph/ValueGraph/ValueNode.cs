@@ -5,6 +5,10 @@ using System.Linq;
 using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
+#if WINDOWS_UWP
+using System.Reflection;
+#endif
+
 namespace BinarySerialization.Graph.ValueGraph
 {
     internal abstract class ValueNode : Node
