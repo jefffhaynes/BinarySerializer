@@ -195,7 +195,7 @@ namespace BinarySerialization.Graph.ValueGraph
                         
                         if (EndOfStream(stream))
                         {
-                            if (TypeNode.Type.IsPrimitive)
+                            if (TypeNode.IsPrimitive)
                                 throw new EndOfStreamException();
 
                             return;
@@ -211,7 +211,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     if (EndOfStream(stream))
                     {
-                        if (TypeNode.Type.IsPrimitive)
+                        if (TypeNode.IsPrimitive)
                             throw new EndOfStreamException();
 
                         return;
