@@ -37,6 +37,9 @@ namespace BinarySerialization
         /// </summary>
         public ulong ConstOffset { get; set; }
 
+        /// <summary>
+        /// Get constant value or null if not constant.
+        /// </summary>
         public object GetConstValue()
         {
             return ConstOffset;

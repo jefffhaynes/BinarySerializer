@@ -31,6 +31,9 @@ namespace BinarySerialization
         /// </summary>
         public ulong ConstLength { get; set; }
 
+        /// <summary>
+        /// Get constant value or null if not constant.
+        /// </summary>
         public object GetConstValue()
         {
             return ConstLength;

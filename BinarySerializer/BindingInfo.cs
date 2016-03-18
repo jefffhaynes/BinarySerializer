@@ -82,13 +82,25 @@ namespace BinarySerialization
         /// </summary>
         public object ConverterParameter { get; set; }
 
+        /// <summary>
+        /// Returns true if two bindings are equivalent.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         protected bool Equals(BindingInfo other)
         {
-            return string.Equals(Path, other.Path) && BindingMode == other.BindingMode && AncestorLevel == other.AncestorLevel &&
-                   AncestorType == other.AncestorType && ConverterType == other.ConverterType && RelativeSourceMode == other.RelativeSourceMode &&
+            return string.Equals(Path, other.Path) && BindingMode == other.BindingMode &&
+                   AncestorLevel == other.AncestorLevel &&
+                   AncestorType == other.AncestorType && ConverterType == other.ConverterType &&
+                   RelativeSourceMode == other.RelativeSourceMode &&
                    Equals(ConverterParameter, other.ConverterParameter);
         }
 
+        /// <summary>
+        /// Returns true if two bindings are equivalent.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -97,19 +109,12 @@ namespace BinarySerialization
             return Equals((BindingInfo) obj);
         }
 
+        /// <summary>
+        /// Get the hash value for this binding.
+        /// </summary>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = Path?.GetHashCode() ?? 0;
-                hashCode = (hashCode*397) ^ (int) BindingMode;
-                hashCode = (hashCode*397) ^ AncestorLevel;
-                hashCode = (hashCode*397) ^ (AncestorType?.GetHashCode() ?? 0);
-                hashCode = (hashCode*397) ^ (ConverterType?.GetHashCode() ?? 0);
-                hashCode = (hashCode*397) ^ (int) RelativeSourceMode;
-                hashCode = (hashCode*397) ^ (ConverterParameter?.GetHashCode() ?? 0);
-                return hashCode;
-            }
+            return 0;
         }
     }
 }

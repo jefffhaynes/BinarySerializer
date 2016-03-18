@@ -47,6 +47,9 @@ namespace BinarySerialization
             ConstValue = constValue;
         }
 
+        /// <summary>
+        /// Gets or sets the path to the binding source property inside the child item.
+        /// </summary>
         public string ItemValuePath { get; set; }
 		
         /// <summary>
@@ -60,6 +63,9 @@ namespace BinarySerialization
         /// </summary>
         public bool ExcludeLastItem { get; set; }
 
+        /// <summary>
+        /// Get constant value or null if not constant.
+        /// </summary>
         public object GetConstValue()
         {
             return ConstValue;

@@ -8,11 +8,6 @@ namespace BinarySerialization
 	internal interface IBindableFieldAttribute
     {
         /// <summary>
-        /// The field binding.
-        /// </summary>
-        BindingInfo Binding { get; set; }
-
-        /// <summary>
         /// Gets or sets the path to the binding source member.
         /// </summary>
 		string Path { get; set; }

@@ -63,6 +63,9 @@ namespace BinarySerialization
         /// </summary>
         public object ConstValue { get; set; }
 
+        /// <summary>
+        /// Get constant value or null if not constant.
+        /// </summary>
         public object GetConstValue()
         {
             return ConstValue;

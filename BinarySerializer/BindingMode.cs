@@ -1,5 +1,8 @@
 ﻿namespace BinarySerialization
 {
+    /// <summary>
+    /// The serialization binding mode.
+    /// </summary>
     public enum BindingMode
     {
         /// <summary>
