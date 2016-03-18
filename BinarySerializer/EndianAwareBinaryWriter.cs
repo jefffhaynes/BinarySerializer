@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.IO;
 
 namespace BinarySerialization
@@ -52,48 +51,80 @@ namespace BinarySerialization
         /// </summary>
         public Endianness Endianness { get; set; }
 
-        public override void Write(Int16 value)
+        /// <summary>
+        /// Writes a two-byte signed integer to the current stream and advances the stream position by two bytes.
+        /// </summary>
+        /// <param name="value"></param>
+        public override void Write(short value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        public override void Write(UInt16 value)
-        {
-            var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
-            base.Write(v);
-        }
-        
-        public override void Write(Int32 value)
-        {
-            var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
-            base.Write(v);
-        }
-
-        public override void Write(UInt32 value)
+        /// <summary>
+        /// Writes a two-byte unsigned integer to the current stream and advances the stream position by two bytes.
+        /// </summary>
+        /// <param name="value"></param>
+        public override void Write(ushort value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        public override void Write(Int64 value)
+        /// <summary>
+        /// Writes a four-byte signed integer to the current stream and advances the stream position by four bytes.
+        /// </summary>
+        /// <param name="value"></param>
+        public override void Write(int value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        public override void Write(UInt64 value)
+        /// <summary>
+        /// Writes a four-byte unsigned integer to the current stream and advances the stream position by four bytes.
+        /// </summary>
+        /// <param name="value"></param>
+        public override void Write(uint value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
+        /// <summary>
+        /// Writes an eight-byte signed integer to the current stream and advances the stream position by eight bytes.
+        /// </summary>
+        /// <param name="value"></param>
+        public override void Write(long value)
+        {
+            var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
+            base.Write(v);
+        }
+
+        /// <summary>
+        /// Writes an eight-byte unsigned integer to the current stream and advances the stream position by eight bytes.
+        /// </summary>
+        /// <param name="value"></param>
+        public override void Write(ulong value)
+        {
+            var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
+            base.Write(v);
+        }
+
+        /// <summary>
+        /// Writes a four-byte floating-point value to the current stream and advances the stream position by four bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public override void Write(float value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
+        /// <summary>
+        /// Writes an eight-byte floating-point value to the current stream and advances the stream position by eight bytes.
+        /// </summary>
+        /// <param name="value"></param>
         public override void Write(double value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
