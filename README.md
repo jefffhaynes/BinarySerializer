@@ -479,7 +479,7 @@ public class EnumClass
 Serializing this class would result in a single byte.  Alternatively, you may want the name of the enum to be serialized:
 
 ```c#
-public class MyEnumClass
+public class EnumClass
 {
     [SerializeAs(SerializedType.NullTerminatedString)]
     public Shape Shape { get; set; }
