@@ -53,9 +53,9 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeNode = (ArrayTypeNode)TypeNode;
             var items = enumerable.Cast<object>();
 #if WINDOWS_UWP
-            return items.Select(item => ConvertToType(item, typeNode.ChildType, typeNode.ChildTypeInfo)).ToList();
+            return items.Select(item => ConvertToType(item, typeNode.ChildType, typeNode.ChildTypeInfo)).ToArray();
 #else
-            return items.Select(item => ConvertToType(item, typeNode.ChildType)).ToList();
+            return items.Select(item => ConvertToType(item, typeNode.ChildType)).ToArray();
 #endif
         }
 
