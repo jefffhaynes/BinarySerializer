@@ -470,7 +470,7 @@ public enum Shape : byte
     Square = 0x1
 }
 
-public class MyEnumClass
+public class EnumClass
 {
     public Shape Shape { get; set; }
 }
