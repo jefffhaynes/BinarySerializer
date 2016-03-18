@@ -51,48 +51,72 @@ namespace BinarySerialization
         /// </summary>
         public Endianness Endianness { get; set; }
 
+        /// <summary>
+        /// Reads a two-byte signed integer from the current stream and advances the current position of the stream by two bytes.
+        /// </summary>
         public override short ReadInt16()
         {
             var value = base.ReadInt16();
             return Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
         }
 
+        /// <summary>
+        /// Reads a two-byte unsigned integer from the current stream and advances the current position of the stream by two bytes.
+        /// </summary>
         public override ushort ReadUInt16()
         {
             var value = base.ReadUInt16();
             return Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
         }
 
+        /// <summary>
+        /// Reads a four-byte signed integer from the current stream and advances the current position of the stream by four bytes.
+        /// </summary>
         public override int ReadInt32()
         {
             var value = base.ReadInt32();
             return Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
         }
 
+        /// <summary>
+        /// Reads a four-byte unsigned integer from the current stream and advances the current position of the stream by four bytes.
+        /// </summary>
         public override uint ReadUInt32()
         {
             var value = base.ReadUInt32();
             return Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
         }
 
+        /// <summary>
+        /// Reads an eight-byte signed integer from the current stream and advances the current position of the stream by eight bytes.
+        /// </summary>
         public override long ReadInt64()
         {
             var value = base.ReadInt64();
             return Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
         }
 
+        /// <summary>
+        /// Reads an eight-byte unsigned integer from the current stream and advances the current position of the stream by eight bytes.
+        /// </summary>
         public override ulong ReadUInt64()
         {
             var value = base.ReadUInt64();
             return Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
         }
 
+        /// <summary>
+        /// Reads a four-byte floating-point value from the current stream and advances the current position of the stream by four bytes.
+        /// </summary>
         public override float ReadSingle()
         {
             var value = base.ReadSingle();
             return Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
         }
 
+        /// <summary>
+        /// Reads an eight-byte floating-point value from the current stream and advances the current position of the stream by eight bytes.
+        /// </summary>
         public override double ReadDouble()
         {
             var value = base.ReadDouble();
