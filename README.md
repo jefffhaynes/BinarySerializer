@@ -456,7 +456,9 @@ Serialization and deserialization operations are broken into four phases.
 * Binding
 * Serialization/Deserialization
 
-The first and most expensive stage is cached in memory for every type that the serializer encounters.  As such, it is best practice to create the serializer once and keep it around for subsequent operations.  If you are creating a new serializer each time, you'll be paying the reflection cost every time.
+During the first and most expensive stage reflection information is cached in memory for every type that the serializer encounters.  Once a type is encountered it is stored statically across all instances.  This approach reduces complexity and improves performance when compared to disk caching; however, it should be noted that this behavior also increase the overall memory footprint.
+
+When serializing an object graph it is possible to defer type resolution by simply specifying object or an abstract type for which no corresponding SubtypeAttributes exist.  The serializer will defer reflection in these cases but will not store the results.  As such, it is best to avoid this approach and specify type information in a way that can be resolved prior to serialization, either explicitly or by using the SubtypeAttribute.  This approach is also desirable as it guarantees the serializer can deserialize serialized data.
 
 ### Enums ###
 Enums can be used to create expressive definitions.  Depending on what attributes are specified enums will be interpreted by the serializer as either the underlying value, the literal value of the enum, or a value specified with the SerializeAsEnum attribute.  In the following example, the field will be serialized as the underlying byte.
