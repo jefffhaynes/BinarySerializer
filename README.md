@@ -9,15 +9,15 @@ BinarySerializer is not a competitor to protobuf, MessagePack, or any other numb
 
 ### Field Ordering ###
 
-There is no completely reliable way to get member ordering from the CLR so as of BinarySerializer 3.0 <code>FieldOrder</code> attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following <code>MyDerivedClass</code> will serialize in the order A, B, C.
+There is no completely reliable way to get member ordering from the CLR so as of BinarySerializer 3.0 <code>FieldOrder</code> attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following <code>DerivedClass</code> will serialize in the order A, B, C.
 
 ```c#
-public class MyBaseClass
+public class BaseClass
 {
     public int A { get; set; }
 }
 
-public class MyDerivedClass : MyBaseClass
+public class DerivedClass : BaseClass
 {
     [FieldOrder(0)]
     public int B { get; set; }
@@ -30,8 +30,8 @@ public class MyDerivedClass : MyBaseClass
 ```c#
 var stream = new MemoryStream();
 var serializer = new BinarySerializer();
-var myDerivedClass = new MyDerivedClass();
-serializer.Serialize(stream, myDerivedClass);
+var derivedClass = new DerivedClass();
+serializer.Serialize(stream, derivedClass);
 ```
 
 Note that we're using properties and fields interchangeably as they are treated equivalently by the serializer.
@@ -64,27 +64,11 @@ Note that it is not necessary that NameLength contains the length of the Name fi
 
 Length can also be specified at an object level.  See the FieldLengthAttribute section for more examples.
 
-### Default Behavior ###
-
-Although most behavior can be overridden, in many cases the serializer will attempt to guess the intended behavior based on class design.  For example, in the following class a null-terminated string will be used during serialization as deserialization would otherwise be impossible as defined.
-
-```c#
-public class Person
-{
-    [FieldOrder(0)]
-    public string Name { get; set; }
-
-	[FieldOrder(1)]
-    public int Age { get; set; }
-}
-```
-
-See below for the various ways default behavior can be overridden.
 
 Attributes
 ----------
 
-There are a number of attributes that can be used to control how your fields are serialized.
+There are a number of attributes that can be used to control the serialization of fields.
 
 ### IgnoreAttribute ###
 
@@ -110,18 +94,18 @@ public uint SectorCountBig { get; set; }
 This attribute is required on any field or property in a class with more than one field or property.  Only the relative order value matters; for example, field ordering can be zero-based, one-based, prime numbers only, etc.  In the case of a class inheriting from a base, base fields are serialized before derived values irrespective of field order numbers.  In the following example the field A will be serialized first, followed by B and then C.  Note that the base class does not need to specify field ordering as there is only one field.
 
 ```c#
-public class MyBaseClass
+public class BaseClass
 {
     public int A { get; set; }
 }
 
-public class MyDerivedClass : MyBaseClass
+public class DerivedClass : BaseClass
 {
     [FieldOrder(0)]
     public int B { get; set; }
 
     [FieldOrder(1)]
-    public int C;
+    public int C { get; set; }
 }
 ```
 
@@ -194,7 +178,7 @@ public class PersonContainer
 }
 ```
 
-Note that if the field length is constant, Person will *always* be 24 bytes long and will be padded out if the actual Person length is less than 24 (e.g. Bob Smith).  However, if the length is bound then the actual length of Person will take precedence and PersonLength will be updated accordingly during serialization.
+Note that if the field length is constant Person will *always* be 24 bytes long and will be padded out if the serialized length of Person is less than 24.  However, if the length is bound to a field such as "PersonLength" then the actual length of Person will take precedence and PersonLength will be updated accordingly during serialization.
 
 ```c#
 public class PersonContainer
