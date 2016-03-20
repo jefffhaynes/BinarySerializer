@@ -20,7 +20,7 @@ namespace BinarySerialization.Graph.TypeGraph
         private void Construct()
         {
             ChildType = Type.GetElementType();
-#if WINDOWS_UWP
+#if DOTNET
             ChildTypeInfo = ChildType.GetTypeInfo();
 #endif
             CompiledChildConstructor = CreateCompiledConstructor(ChildType);
@@ -28,7 +28,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-#if WINDOWS_UWP
+#if DOTNET
             if (ChildTypeInfo.IsPrimitive)
 #else
             if (ChildType.IsPrimitive)

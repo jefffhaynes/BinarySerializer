@@ -30,7 +30,7 @@ namespace BinarySerialization
         private static Func<object, object> MagicFuncHelper<TTarget, TReturn>(MethodInfo method)
         {
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
-#if WINDOWS_UWP
+#if DOTNET
             Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)method.CreateDelegate
                 (typeof(Func<TTarget, TReturn>));
 #else
@@ -65,7 +65,7 @@ namespace BinarySerialization
         private static Action<object, object> MagicActionHelper<TTarget, TValue>(MethodInfo method)
         {
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
-#if WINDOWS_UWP
+#if DOTNET
             Action<TTarget, TValue> action = (Action<TTarget, TValue>)method.CreateDelegate
                 (typeof(Action<TTarget, TValue>));
 #else

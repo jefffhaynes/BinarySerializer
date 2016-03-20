@@ -132,12 +132,6 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BinarySerializer.Universal\BinarySerializer.Universal.csproj">
-      <Project>{df7c80df-e7ba-4c0f-8e83-4e706127d832}</Project>
-      <Name>BinarySerializer.Universal</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

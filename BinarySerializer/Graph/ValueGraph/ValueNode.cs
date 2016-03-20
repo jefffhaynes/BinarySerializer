@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
-#if WINDOWS_UWP
+#if DOTNET
 using System.Reflection;
 #endif
 
@@ -267,7 +267,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return new BinarySerializationContext(parent.Value, parent.TypeNode.Type, parent.CreateSerializationContext());
         }
 
-#if WINDOWS_UWP
+#if DOTNET
         protected static object ConvertToType(object value, Type targetType, TypeInfo targetTypeInfo)
 #else
         protected static object ConvertToType(object value, Type targetType)
@@ -284,7 +284,7 @@ namespace BinarySerialization.Graph.ValueGraph
             /* Special handling for strings */
             if (valueType == typeof (string))
             {
-#if WINDOWS_UWP
+#if DOTNET
                 if(targetTypeInfo.IsPrimitive)
 #else
                 if (targetType.IsPrimitive)
@@ -301,7 +301,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 return converter(value);
 
 
-#if WINDOWS_UWP
+#if DOTNET
             if (targetTypeInfo.IsEnum)
             {
                 var valueTypeInfo = valueType.GetTypeInfo();

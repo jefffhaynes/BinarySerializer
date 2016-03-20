@@ -327,7 +327,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private object ConvertToFieldType(object value)
         {
-#if WINDOWS_UWP
+#if DOTNET
             return ConvertToType(value, TypeNode.Type, TypeNode.TypeInfo);
 #else
             return ConvertToType(value, TypeNode.Type);

@@ -177,7 +177,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     throw new InvalidOperationException("All fields must have a unique order number.");
             }
 
-#if WINDOWS_UWP
+#if DOTNET
             var parentTypeInfo = parentType.GetTypeInfo();
             var parentBaseType = parentTypeInfo.BaseType;
 #else

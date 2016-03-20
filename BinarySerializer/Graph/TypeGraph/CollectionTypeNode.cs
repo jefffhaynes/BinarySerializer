@@ -21,7 +21,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public Type ChildType { get; protected set; }
 
-#if WINDOWS_UWP
+#if DOTNET
         public TypeInfo ChildTypeInfo { get; protected set; }
 #endif
 

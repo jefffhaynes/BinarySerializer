@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
-#if WINDOWS_UWP
+#if DOTNET
 using System.Reflection;
 #endif
 
@@ -15,7 +15,7 @@ namespace BinarySerialization.Graph.ValueGraph
         private object _cachedValue;
         private Type _valueType;
 
-#if WINDOWS_UWP
+#if DOTNET
         private TypeInfo _valueTypeInfo;
 #endif
 
@@ -62,7 +62,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 _valueType = value.GetType();
 
-#if WINDOWS_UWP
+#if DOTNET
                 _valueTypeInfo = _valueType.GetTypeInfo();
 #endif
 
@@ -76,7 +76,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (_valueType == null)
                 return null;
 
-#if WINDOWS_UWP
+#if DOTNET
             if(_valueTypeInfo.IsAbstract)
 #else
             if (_valueType.IsAbstract)
@@ -197,7 +197,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 // trivial case with no subtypes
                 _valueType = TypeNode.Type;
 
-#if WINDOWS_UWP
+#if DOTNET
                 _valueTypeInfo = _valueType.GetTypeInfo();
 
                 if (_valueTypeInfo.IsAbstract)

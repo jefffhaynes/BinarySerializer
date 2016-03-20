@@ -43,7 +43,7 @@ namespace BinarySerialization.Graph.TypeGraph
             Type = type;
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
-#if WINDOWS_UWP
+#if DOTNET
             TypeInfo = Type.GetTypeInfo();
 #endif
         }
@@ -200,12 +200,12 @@ namespace BinarySerialization.Graph.TypeGraph
         public MemberInfo MemberInfo { get; }
         public Type Type { get; }
 
-#if WINDOWS_UWP
+#if DOTNET
         public TypeInfo TypeInfo { get; }
 #endif
 
 
-#if WINDOWS_UWP
+#if DOTNET
         public bool IsAbstract => TypeInfo.IsAbstract;
         public bool IsPrimitive => TypeInfo.IsPrimitive;
         public bool IsEnum => TypeInfo.IsEnum;
@@ -312,7 +312,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
 
 
-#if WINDOWS_UWP
+#if DOTNET
         public static bool IsValueType(Type type, TypeInfo typeInfo)
         {
             return typeInfo.IsPrimitive || type == typeof(string) || type == typeof(byte[]);
