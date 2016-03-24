@@ -86,8 +86,11 @@ namespace BinarySerialization.Graph.ValueGraph
             var objectTypeNode = (ObjectTypeNode)TypeNode;
             var subType = objectTypeNode.GetSubType(_valueType);
 
+            if (subType.IsIgnored)
+                return null;
+
             if (subType.Constructor == null)
-                throw new InvalidOperationException("No public constructors.");
+                throw new InvalidOperationException($"No public constructors for '{subType.Name}'.");
 
             IEnumerable<ValueNode> nonparameterizedChildren = Children.ToList();
 

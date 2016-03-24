@@ -154,6 +154,10 @@ namespace BinarySerialization.Graph.ValueGraph
                     SerializeOverride(stream, eventShuttle);
                 }
             }
+            catch (IOException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 string reference = Name == null
@@ -218,6 +222,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     DeserializeOverride(stream, eventShuttle);
                 }
+            }
+            catch (IOException)
+            {
+                throw;
             }
             catch (Exception e)
             {

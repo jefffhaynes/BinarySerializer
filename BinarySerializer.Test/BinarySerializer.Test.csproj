@@ -86,7 +86,11 @@
     <Compile Include="Events\EventTestClass.cs" />
     <Compile Include="Events\EventTestInnerClass.cs" />
     <Compile Include="Events\EventTests.cs" />
+    <Compile Include="Ignore\IgnoreDerivedObjectClass.cs" />
     <Compile Include="Ignore\IgnoreObjectClass.cs" />
+    <Compile Include="Ignore\IgnoreSubclassBaseClass.cs" />
+    <Compile Include="Ignore\IgnoreSubclassClass.cs" />
+    <Compile Include="Ignore\IgnoreSubclassContainer.cs" />
     <Compile Include="Ignore\IgnoreTests.cs" />
     <Compile Include="Issues\Issue12\BeerChunk.cs" />
     <Compile Include="Issues\Issue12\BodyChunk.cs" />
