@@ -81,7 +81,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
             else throw new NotSupportedException($"{memberInfo.GetType().Name} not supported");
 
-#if WINDOWS_UWP
+#if DOTNET
             TypeInfo = Type.GetTypeInfo();
 #endif
 
