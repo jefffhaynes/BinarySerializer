@@ -40,9 +40,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BinarySerializer, Version=4.6.4.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="BinarySerializer, Version=4.6.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\artifacts\bin\BinarySerializer\Debug\net451\BinarySerializer.dll</HintPath>
+      <HintPath>..\artifacts\bin\BinarySerializer\$(Configuration)\net451\BinarySerializer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />

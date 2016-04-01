@@ -25,8 +25,14 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BinarySerializer", "BinarySerializer\BinarySerializer.xproj", "{C1E4C960-0B83-47A5-A385-D404D29739B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializer.UniversalApp", "BinarySerializer.UniversalApp\BinarySerializer.UniversalApp.csproj", "{9FF37B60-13B5-4C91-9D69-7487D9E84912}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1E4C960-0B83-47A5-A385-D404D29739B1} = {C1E4C960-0B83-47A5-A385-D404D29739B1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializer.Test", "BinarySerializer.Test\BinarySerializer.Test.csproj", "{E6AC3910-60FE-4941-BF6B-FA8279927EC2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1E4C960-0B83-47A5-A385-D404D29739B1} = {C1E4C960-0B83-47A5-A385-D404D29739B1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
