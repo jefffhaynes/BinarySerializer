@@ -1,6 +1,6 @@
 ﻿{
-  "version": "4.6.4",
-  "description": "BinarySerializer DNX Class Library",
+  "version": "5.0-beta",
+  "description": "A declarative serialization framework for controlling formatting of data at the byte level.",
   "authors": [ "Jeff Haynes" ],
   "tags": [ "Serialization Serializer Binary Format Protocol" ],
   "projectUrl": "https://github.com/jefffhaynes/BinarySerializer",
