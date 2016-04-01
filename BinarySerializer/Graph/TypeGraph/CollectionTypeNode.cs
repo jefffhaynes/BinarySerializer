@@ -5,7 +5,9 @@ namespace BinarySerialization.Graph.TypeGraph
 {
     internal abstract class CollectionTypeNode : ContainerTypeNode
     {
-        private Lazy<TypeNode> _lazyChild; 
+        private Lazy<TypeNode> _lazyChild;
+        private Type _childType;
+        private TypeInfo _childTypeInfo;
 
         protected CollectionTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
@@ -17,13 +19,19 @@ namespace BinarySerialization.Graph.TypeGraph
             Construct();
         }
 
-        public Func<object> CompiledConstructor { get; private set; } 
+        public Func<object> CompiledConstructor { get; private set; }
 
-        public Type ChildType { get; protected set; }
+        public Type ChildType
+        {
+            get { return _childType; }
+            protected set
+            {
+                _childType = value;
+                _childTypeInfo = value?.GetTypeInfo();
+            }
+        }
 
-#if DOTNET
-        public TypeInfo ChildTypeInfo { get; protected set; }
-#endif
+        public TypeInfo ChildTypeInfo => _childTypeInfo;
 
         public TypeNode Child => _lazyChild.Value;
 

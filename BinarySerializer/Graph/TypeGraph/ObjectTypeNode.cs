@@ -176,13 +176,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 if (orderGroups.Count() != serializableChildren.Count)
                     throw new InvalidOperationException("All fields must have a unique order number.");
             }
-
-#if DOTNET
+            
             var parentTypeInfo = parentType.GetTypeInfo();
             var parentBaseType = parentTypeInfo.BaseType;
-#else
-            var parentBaseType = parentType.BaseType;
-#endif
+
             if (parentBaseType != null)
             {
                 var baseChildren = GenerateChildrenImpl(parentBaseType);

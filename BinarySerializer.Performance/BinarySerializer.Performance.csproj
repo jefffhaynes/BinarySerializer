@@ -58,10 +58,6 @@
       <Project>{e6ac3910-60fe-4941-bf6b-fa8279927ec2}</Project>
       <Name>BinarySerializer.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BinarySerializer\BinarySerializer.csproj">
-      <Project>{dd5dac31-3ca0-4b79-8340-bdd68724a697}</Project>
-      <Name>BinarySerializer</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

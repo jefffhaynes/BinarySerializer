@@ -98,8 +98,6 @@ namespace BinarySerialization.Graph
                 case RelativeSourceMode.SerializationContext:
                     source = FindAncestor(target);
                     break;
-                case RelativeSourceMode.PreviousData:
-                    throw new NotImplementedException();
             }
 
             return source;

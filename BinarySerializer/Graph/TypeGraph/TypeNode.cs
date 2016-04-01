@@ -41,11 +41,8 @@ namespace BinarySerialization.Graph.TypeGraph
             : this(parent)
         {
             Type = type;
-            NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
-
-#if DOTNET
             TypeInfo = Type.GetTypeInfo();
-#endif
+            NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
         }
 
         protected TypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType = null)
@@ -80,10 +77,8 @@ namespace BinarySerialization.Graph.TypeGraph
                 ValueSetter = fieldInfo.SetValue;
             }
             else throw new NotSupportedException($"{memberInfo.GetType().Name} not supported");
-
-#if DOTNET
+            
             TypeInfo = Type.GetTypeInfo();
-#endif
 
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
@@ -200,20 +195,11 @@ namespace BinarySerialization.Graph.TypeGraph
         public MemberInfo MemberInfo { get; }
         public Type Type { get; }
 
-#if DOTNET
         public TypeInfo TypeInfo { get; }
-#endif
 
-
-#if DOTNET
         public bool IsAbstract => TypeInfo.IsAbstract;
         public bool IsPrimitive => TypeInfo.IsPrimitive;
         public bool IsEnum => TypeInfo.IsEnum;
-#else
-        public bool IsAbstract => Type.IsAbstract;
-        public bool IsPrimitive => Type.IsPrimitive;
-        public bool IsEnum => Type.IsEnum;
-#endif
 
         public Type NullableUnderlyingType { get; }
 
@@ -300,8 +286,6 @@ namespace BinarySerialization.Graph.TypeGraph
                 case RelativeSourceMode.FindAncestor:
                     level = FindAncestorLevel(binding);
                     break;
-                case RelativeSourceMode.PreviousData:
-                    throw new NotImplementedException();
                 case RelativeSourceMode.SerializationContext:
                     level = FindAncestorLevel(null);
                     break;
@@ -310,19 +294,10 @@ namespace BinarySerialization.Graph.TypeGraph
             return level;
         }
 
-
-
-#if DOTNET
         public static bool IsValueType(Type type, TypeInfo typeInfo)
         {
             return typeInfo.IsPrimitive || type == typeof(string) || type == typeof(byte[]);
         }
-#else
-        public static bool IsValueType(Type type)
-        {
-            return type.IsPrimitive || type == typeof (string) || type == typeof (byte[]);
-        }
-#endif
 
         protected Func<object> CreateCompiledConstructor()
         {

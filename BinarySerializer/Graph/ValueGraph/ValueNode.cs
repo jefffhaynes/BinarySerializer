@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using BinarySerialization.Graph.TypeGraph;
-
-#if DOTNET
-using System.Reflection;
-#endif
 
 namespace BinarySerialization.Graph.ValueGraph
 {
@@ -51,7 +48,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (TypeNode.Encoding != null)
                     return TypeNode.Encoding;
 
-                var parent = (ValueNode)Parent;
+                var parent = (ValueNode) Parent;
                 return parent.Encoding;
             }
         }
@@ -63,7 +60,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (TypeNode.Endianness != null && TypeNode.Endianness != Endianness.Inherit)
                     return TypeNode.Endianness.Value;
 
-                var parent = (ValueNode)Parent;
+                var parent = (ValueNode) Parent;
                 return parent.Endianness;
             }
         }
@@ -95,22 +92,23 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 typeNode.SubtypeBinding.Bind(this, () =>
                 {
-                    Type valueType = GetValueTypeOverride();
+                    var valueType = GetValueTypeOverride();
                     if (valueType == null)
                         throw new InvalidOperationException("Binding targets must not be null.");
 
-                    var objectTypeNode = (ObjectTypeNode)typeNode;
+                    var objectTypeNode = (ObjectTypeNode) typeNode;
 
                     return objectTypeNode.SubTypeKeys[valueType];
                 });
             }
 
-            if (typeNode.ItemSerializeUntilBinding != null && typeNode.ItemSerializeUntilBinding.BindingMode == BindingMode.TwoWay)
+            if (typeNode.ItemSerializeUntilBinding != null &&
+                typeNode.ItemSerializeUntilBinding.BindingMode == BindingMode.TwoWay)
             {
                 typeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
             }
 
-            foreach (ValueNode child in Children)
+            foreach (var child in Children)
                 child.Bind();
         }
 
@@ -127,10 +125,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetBoundValue(this))))
                     return;
-                
-                Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
-                long? maxLength = TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst
+                var fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+
+                var maxLength = TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst
                     ? (long?) Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue)
                     : null;
 
@@ -160,7 +158,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (Exception e)
             {
-                string reference = Name == null
+                var reference = Name == null
                     ? $"type '{TypeNode.Type}'"
                     : $"member '{Name}'";
                 string message = $"Error serializing {reference}.  See inner exception for detail.";
@@ -180,11 +178,11 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetValue(this))))
                     return;
-                
-                Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
-                long? maxLength = TypeNode.FieldLengthBinding != null
-                    ? (long?)Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this))
+                var fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+
+                var maxLength = TypeNode.FieldLengthBinding != null
+                    ? (long?) Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this))
                     : null;
 
                 if (fieldOffsetBinding != null)
@@ -195,7 +193,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                         if (maxLength != null)
                             stream = new LimitedStream(stream, maxLength.Value);
-                        
+
                         if (EndOfStream(stream))
                         {
                             if (TypeNode.IsPrimitive)
@@ -229,7 +227,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (Exception e)
             {
-                string reference = Name == null
+                var reference = Name == null
                     ? $"type '{TypeNode.Type}'"
                     : $"member '{Name}'";
                 string message = $"Error deserializing '{reference}'.  See inner exception for detail.";
@@ -241,13 +239,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public ValueNode GetChild(string path)
         {
-            string[] memberNames = path.Split(PathSeparator);
+            var memberNames = path.Split(PathSeparator);
 
             if (memberNames.Length == 0)
                 throw new BindingException("Path cannot be empty.");
 
-            ValueNode child = this;
-            foreach (string name in memberNames)
+            var child = this;
+            foreach (var name in memberNames)
             {
                 child = child.Children.SingleOrDefault(c => c.Name == name);
 
@@ -264,19 +262,16 @@ namespace BinarySerialization.Graph.ValueGraph
                 return null;
 
             var parent = (ValueNode) Parent;
-            return new BinarySerializationContext(parent.Value, parent.TypeNode.Type, parent.CreateSerializationContext());
+            return new BinarySerializationContext(parent.Value, parent.TypeNode.Type,
+                parent.CreateSerializationContext());
         }
 
-#if DOTNET
         protected static object ConvertToType(object value, Type targetType, TypeInfo targetTypeInfo)
-#else
-        protected static object ConvertToType(object value, Type targetType)
-#endif
         {
             if (value == null)
                 return null;
 
-            Type valueType = value.GetType();
+            var valueType = value.GetType();
 
             if (valueType == targetType)
                 return value;
@@ -284,15 +279,10 @@ namespace BinarySerialization.Graph.ValueGraph
             /* Special handling for strings */
             if (valueType == typeof (string))
             {
-#if DOTNET
-                if(targetTypeInfo.IsPrimitive)
-#else
-                if (targetType.IsPrimitive)
-#endif
+                if (targetTypeInfo.IsPrimitive)
                 {
                     if (string.IsNullOrWhiteSpace(value.ToString()))
                         value = 0;
-
                 }
             }
 
@@ -300,23 +290,13 @@ namespace BinarySerialization.Graph.ValueGraph
             if (TypeConverters.TryGetValue(targetType, out converter))
                 return converter(value);
 
-
-#if DOTNET
             if (targetTypeInfo.IsEnum)
             {
                 var valueTypeInfo = valueType.GetTypeInfo();
-                if(valueTypeInfo.IsPrimitive)
+                if (valueTypeInfo.IsPrimitive)
                     return Enum.ToObject(targetType, value);
             }
 
-#else
-            if (targetType.IsEnum)
-            {
-                if (valueType.IsPrimitive)      
-                    return Enum.ToObject(targetType, value);
-            }
-#endif
-            
             return value;
         }
 
@@ -362,6 +342,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 yield return value;
             // ReSharper disable FunctionNeverReturns
         }
+
         // ReSharper restore FunctionNeverReturns
     }
 }

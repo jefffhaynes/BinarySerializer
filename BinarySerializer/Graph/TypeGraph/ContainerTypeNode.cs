@@ -69,24 +69,13 @@ namespace BinarySerialization.Graph.TypeGraph
             var nullableType = Nullable.GetUnderlyingType(type);
 
             var effectiveType = nullableType ?? type;
-
-#if DOTNET
+            
             var typeInfo = effectiveType.GetTypeInfo();
-#else
-            var typeInfo = effectiveType;
-#endif
 
             if (typeInfo.IsEnum)
                 return typeof(EnumTypeNode);
-
-#if DOTNET
             if (IsValueType(effectiveType, typeInfo))
                 return typeof (ValueTypeNode);
-#else
-            if (IsValueType(typeInfo))
-                return typeof (ValueTypeNode);
-#endif
-
             if (type.IsArray)
                 return typeof(ArrayTypeNode);
             if (typeof(IList).IsAssignableFrom(type))

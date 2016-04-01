@@ -13,11 +13,6 @@ namespace BinarySerialization
 		Self,
 
         /// <summary>
-        /// Allows you to bind the previous data item in lists or arrays.
-        /// </summary>
-		PreviousData,
-
-        /// <summary>
         /// Refers to the ancestor in the parent chain of the data-bound member. 
         /// You can use this to bind to an ancestor of a specific type or its subclasses. 
         /// This is the mode you use if you want to specify <see cref="FieldBindingBaseAttribute.AncestorType"/> 

@@ -52,11 +52,8 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var typeNode = (ArrayTypeNode)TypeNode;
             var items = enumerable.Cast<object>();
-#if DOTNET
+
             return items.Select(item => ConvertToType(item, typeNode.ChildType, typeNode.ChildTypeInfo)).ToArray();
-#else
-            return items.Select(item => ConvertToType(item, typeNode.ChildType)).ToArray();
-#endif
         }
 
         protected override void SetCollectionValue(object item, int index)
