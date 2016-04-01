@@ -7,7 +7,7 @@
     <ProjectGuid>{9FF37B60-13B5-4C91-9D69-7487D9E84912}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BinarySerialization</RootNamespace>
+    <RootNamespace>BinarySerializer.UniversalApp</RootNamespace>
     <AssemblyName>BinarySerializer.UniversalApp</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
