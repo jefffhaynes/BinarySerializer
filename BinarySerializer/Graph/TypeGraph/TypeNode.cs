@@ -236,24 +236,26 @@ namespace BinarySerialization.Graph.TypeGraph
             if (referenceType == null)
                 referenceType = BaseSerializedType;
 
-            if (_serializedType != null && _serializedType.Value != SerializedType.Default)
-                return _serializedType.Value;
-
             SerializedType serializedType;
-            if (DefaultSerializedTypes.TryGetValue(referenceType, out serializedType))
+            if (_serializedType != null && _serializedType.Value != SerializedType.Default)
+                serializedType = _serializedType.Value;
+            else if (!DefaultSerializedTypes.TryGetValue(referenceType, out serializedType))
+                return SerializedType.Default;
+
+            // handle special cases within null terminated strings
+            if (serializedType == SerializedType.NullTerminatedString)
             {
-                /* Special cases */
-                if (serializedType == SerializedType.NullTerminatedString && FieldLengthAttribute != null)
+                // If null terminated string is specified but field length is present, override
+                if (FieldLengthAttribute != null)
                     serializedType = SerializedType.SizedString;
 
-                var parent = (TypeNode) Parent;
-                if (serializedType == SerializedType.NullTerminatedString && parent.ItemLengthAttribute != null)
+                // If null terminated string is specified but item field length is present, override
+                var parent = (TypeNode)Parent;
+                if (parent.ItemLengthAttribute != null)
                     serializedType = SerializedType.SizedString;
-
-                return serializedType;
             }
 
-            return SerializedType.Default;
+            return serializedType;
         }
 
         public ValueNode CreateSerializer(ValueNode parent)
