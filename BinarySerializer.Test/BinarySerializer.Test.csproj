@@ -126,6 +126,9 @@
     <Compile Include="Issues\Issue30\MessageType.cs" />
     <Compile Include="Issues\Issue30\PayloadA.cs" />
     <Compile Include="Issues\Issue30\PayloadType.cs" />
+    <Compile Include="Issues\Issue33_\Bin3Data.cs" />
+    <Compile Include="Issues\Issue33_\BinOccupancy.cs" />
+    <Compile Include="Issues\Issue33_\Issue33Tests.cs" />
     <Compile Include="Issues\Issue9\ElementClass.cs" />
     <Compile Include="Issues\Issue9\Entry.cs" />
     <Compile Include="Issues\Issue9\Issue9Tests.cs" />
