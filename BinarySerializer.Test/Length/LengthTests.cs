@@ -17,8 +17,9 @@ namespace BinarySerialization.Test.Length
         [TestMethod]
         public void NullStringConstLengthTest()
         {
-            var actual = Roundtrip(new ConstLengthClass(), 3);
+            var actual = Roundtrip(new ConstLengthClass(), 6);
             Assert.AreEqual(string.Empty, actual.Field);
+            Assert.AreEqual(System.Text.Encoding.ASCII.GetString(new byte[] {0,0,0}), actual.Field2);
         }
 
         [TestMethod]
