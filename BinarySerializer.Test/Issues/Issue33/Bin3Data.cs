@@ -25,5 +25,13 @@ namespace BinarySerialization.Test.Issues.Issue33
         [FieldOrder(2)]
         [SerializeAs(SerializedType = SerializedType.UInt1)]
         public BinOccupancy Occupancy { get; set; }
+
+        /// <summary>
+        /// Gets or sets Occupancy
+        /// </summary>
+        [FieldOrder(3)]
+        [FieldLength(6)]
+        [SerializeAs(SerializedType = SerializedType.NullTerminatedString)]
+        public BinOccupancy OccupancyString { get; set; }
     }
 }

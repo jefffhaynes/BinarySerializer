@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using BinarySerialization;
 
 namespace BinarySerialization.Test
 {

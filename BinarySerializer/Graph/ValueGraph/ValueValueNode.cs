@@ -118,7 +118,8 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 constLength = Convert.ToInt32(TypeNode.FieldCountBinding.ConstValue);
             }
-            else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString || serializedType == SerializedType.NullTerminatedString)
+
+            if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString || serializedType == SerializedType.NullTerminatedString)
             {
                 // try to get bounded length from limiter
                 var baseStream = (LimitedStream) writer.BaseStream;
@@ -295,7 +296,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     Debug.Assert(effectiveLength != null, "effectiveLength != null");
                     byte[] data = reader.ReadBytes(effectiveLength.Value);
-                    value = Encoding.GetString(data, 0, data.Length).TrimEnd('\0');
+                    var untrimmed = Encoding.GetString(data, 0, data.Length);
+                    var nullIndex = untrimmed.IndexOf((char) 0);
+                    value = nullIndex != -1 ? untrimmed.Substring(0, nullIndex) : untrimmed;
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
