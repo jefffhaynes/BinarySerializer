@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -69,6 +68,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var objectTypeNode = (ObjectTypeNode)TypeNode;
             var subType = objectTypeNode.GetSubType(_valueType);
+
+            if (subType.IsIgnored)
+                return null;
 
             if (subType.Constructor == null)
                 throw new InvalidOperationException("No public constructors.");

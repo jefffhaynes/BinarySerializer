@@ -58,7 +58,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 // than for which we have field definitions.
                 var validConstructors =
                     constructors.Where(
-                        constructor => constructor.GetParameters().Count() <= serializableChildren.Count());
+                        constructor => constructor.GetParameters().Length <= serializableChildren.Count());
 
                 // build a map of all constructors, filling in nulls for parameters without
                 // corresponding fields, matched on name and type
