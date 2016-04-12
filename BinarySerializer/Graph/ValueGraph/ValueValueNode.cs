@@ -297,8 +297,13 @@ namespace BinarySerialization.Graph.ValueGraph
                     Debug.Assert(effectiveLength != null, "effectiveLength != null");
                     byte[] data = reader.ReadBytes(effectiveLength.Value);
                     var untrimmed = Encoding.GetString(data, 0, data.Length);
-                    var nullIndex = untrimmed.IndexOf((char) 0);
-                    value = nullIndex != -1 ? untrimmed.Substring(0, nullIndex) : untrimmed;
+                    if (TypeNode.AreStringsNullTerminated)
+                    {
+                        var nullIndex = untrimmed.IndexOf((char) 0);
+                        value = nullIndex != -1 ? untrimmed.Substring(0, nullIndex) : untrimmed;
+                    }
+                    else value = untrimmed;
+
                     break;
                 }
                 case SerializedType.LengthPrefixedString:

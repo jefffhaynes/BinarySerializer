@@ -99,6 +99,9 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
                     Encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
+
+                if (_serializedType.Value == SerializedType.NullTerminatedString)
+                    AreStringsNullTerminated = true;
             }
 
             FieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
@@ -221,6 +224,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public int? Order { get; }
 
+        public bool AreStringsNullTerminated { get; private set; }
+
         public SerializedType GetSerializedType(Type referenceType = null)
         {
             if (referenceType == null)
@@ -291,7 +296,6 @@ namespace BinarySerialization.Graph.TypeGraph
         public static bool IsValueType(Type type)
         {
             return type.IsPrimitive || type == typeof (string) || type == typeof (byte[]);
-            //return type.IsPrimitive || type == typeof(string);
         }
 
         protected Func<object> CreateCompiledConstructor()
