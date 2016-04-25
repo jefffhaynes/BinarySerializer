@@ -10,7 +10,7 @@ namespace BinarySerialization.Test.Length
         [TestMethod]
         public void ConstLengthTest()
         {
-            var actual = Roundtrip(new ConstLengthClass {Field = "FieldValue"}, 3);
+            var actual = Roundtrip(new ConstLengthClass {Field = "FieldValue"}, 6);
             Assert.AreEqual("Fie", actual.Field);
         }
 
@@ -84,7 +84,7 @@ namespace BinarySerialization.Test.Length
                 };
             var actual = Roundtrip(expected);
             Assert.AreEqual(3, actual.Field.Field.Length);
-            Assert.AreEqual(3, actual.FieldLengthField);
+            Assert.AreEqual(6, actual.FieldLengthField);
         }
 
         [TestMethod]

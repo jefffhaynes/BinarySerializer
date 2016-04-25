@@ -110,6 +110,7 @@
     <Compile Include="Graph\ValueGraph\ValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ObjectValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ValueValueNode.cs" />
+    <Compile Include="TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget\BinarySerializer.dll.nuspec" />

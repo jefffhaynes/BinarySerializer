@@ -2,13 +2,13 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>4.7</version>
+    <version>4.7.1</version>
     <authors>Jeff Haynes</authors>
     <owners></owners>
     <projectUrl>https://github.com/jefffhaynes/BinarySerializer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level.</description>
-    <releaseNotes>Improved logic when resolving conflicting attributes involving null-terminated strings.</releaseNotes>
+    <releaseNotes>Better handling of conditional serialization.</releaseNotes>
     <tags>Serialization Serializer Binary Format Protocol</tags>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
   </metadata>

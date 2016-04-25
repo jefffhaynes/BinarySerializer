@@ -287,7 +287,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 case SerializedType.NullTerminatedString:
                 {
                     Debug.Assert(effectiveLength != null, "effectiveLength != null");
-                    byte[] data = ReadNullTerminatedString(reader, effectiveLength.Value).ToArray();
+                    byte[] data = ReadNullTerminated(reader, effectiveLength.Value).ToArray();
 
                     value = Encoding.GetString(data, 0, data.Length);
                     break;
@@ -335,10 +335,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private object ConvertToFieldType(object value)
         {
-            return ConvertToType(value, TypeNode.Type);
+            return value.ConvertTo(TypeNode.Type);
         }
 
-        private static IEnumerable<byte> ReadNullTerminatedString(BinaryReader reader, int maxLength)
+        private static IEnumerable<byte> ReadNullTerminated(BinaryReader reader, int maxLength)
         {
             var buffer = new MemoryStream();
 

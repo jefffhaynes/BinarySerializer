@@ -1,6 +1,4 @@
-﻿using BinarySerialization;
-
-namespace BinarySerialization.Test.When
+﻿namespace BinarySerialization.Test.When
 {
     public class WhenTestClass
     {
@@ -19,5 +17,21 @@ namespace BinarySerialization.Test.When
         [SerializeWhen("WhatToDo", "PickOne")]
         [SerializeWhen("WhatToDo", "PickTwo")]
         public int SerializeThisNoMatterWhat { get; set; }
+
+        [FieldOrder(4)]
+        public int WhatToDo2 { get; set; }
+
+        [FieldOrder(5)]
+        [SerializeWhen("WhatToDo2", (byte)1)]
+        public int SerializeThis2 { get; set; }
+
+        [FieldOrder(6)]
+        [SerializeWhen("WhatToDo2", (byte)2)]
+        public int DontSerializeThis2 { get; set; }
+
+        [FieldOrder(7)]
+        [SerializeWhen("WhatToDo2", (byte)1)]
+        [SerializeWhen("WhatToDo2", (byte)2)]
+        public int SerializeThisNoMatterWhat2 { get; set; }
     }
 }

@@ -129,6 +129,10 @@
     <Compile Include="Issues\Issue33\Bin3Data.cs" />
     <Compile Include="Issues\Issue33\BinOccupancy.cs" />
     <Compile Include="Issues\Issue33\Issue33Tests.cs" />
+    <Compile Include="Issues\Issue34\AdditionConverter.cs" />
+    <Compile Include="Issues\Issue34\InternalS7String.cs" />
+    <Compile Include="Issues\Issue34\Issue34Tests.cs" />
+    <Compile Include="Issues\Issue34\S7String.cs" />
     <Compile Include="Issues\Issue9\ElementClass.cs" />
     <Compile Include="Issues\Issue9\Entry.cs" />
     <Compile Include="Issues\Issue9\Issue9Tests.cs" />

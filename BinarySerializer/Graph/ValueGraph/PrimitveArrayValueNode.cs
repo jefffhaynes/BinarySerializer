@@ -51,7 +51,7 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override object CreateCollection(IEnumerable enumerable)
         {
             var typeNode = (ArrayTypeNode)TypeNode;
-            return enumerable.Cast<object>().Select(item => ConvertToType(item, typeNode.ChildType)).ToArray();
+            return enumerable.Cast<object>().Select(item => item.ConvertTo(typeNode.ChildType)).ToArray();
         }
 
         protected override void SetCollectionValue(object item, int index)

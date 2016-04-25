@@ -11,24 +11,6 @@ namespace BinarySerialization.Graph.ValueGraph
     {
         private const char PathSeparator = '.';
 
-        protected static readonly Dictionary<Type, Func<object, object>> TypeConverters =
-            new Dictionary<Type, Func<object, object>>
-            {
-                {typeof (char), o => Convert.ToChar(o)},
-                {typeof (byte), o => Convert.ToByte(o)},
-                {typeof (sbyte), o => Convert.ToSByte(o)},
-                {typeof (bool), o => Convert.ToBoolean(o)},
-                {typeof (short), o => Convert.ToInt16(o)},
-                {typeof (int), o => Convert.ToInt32(o)},
-                {typeof (long), o => Convert.ToInt64(o)},
-                {typeof (ushort), o => Convert.ToUInt16(o)},
-                {typeof (uint), o => Convert.ToUInt32(o)},
-                {typeof (ulong), o => Convert.ToUInt64(o)},
-                {typeof (float), o => Convert.ToSingle(o)},
-                {typeof (double), o => Convert.ToDouble(o)},
-                {typeof (string), Convert.ToString}
-            };
-
         protected ValueNode(Node parent, string name, TypeNode typeNode) : base(parent)
         {
             Name = name;
@@ -120,10 +102,11 @@ namespace BinarySerialization.Graph.ValueGraph
             try
             {
                 var serializeWhenBindings = TypeNode.SerializeWhenBindings;
-                if (serializeWhenBindings != null &&
-                    !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetBoundValue(this))))
-                    return;
                 
+                if (serializeWhenBindings != null &&
+                    !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
+                    return;
+
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
                 long? maxLength = TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst
@@ -174,7 +157,7 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 var serializeWhenBindings = TypeNode.SerializeWhenBindings;
                 if (serializeWhenBindings != null &&
-                    !serializeWhenBindings.Any(binding => binding.ConditionalValue.Equals(binding.GetValue(this))))
+                    !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
                     return;
                 
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
@@ -261,33 +244,6 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var parent = (ValueNode) Parent;
             return new BinarySerializationContext(parent.Value, parent.TypeNode.Type, parent.CreateSerializationContext());
-        }
-
-        protected static object ConvertToType(object value, Type targetType)
-        {
-            if (value == null)
-                return null;
-
-            Type valueType = value.GetType();
-
-            if (valueType == targetType)
-                return value;
-
-            /* Special handling for strings */
-            if (valueType == typeof(string) && targetType.IsPrimitive)
-            {
-                if (string.IsNullOrWhiteSpace(value.ToString()))
-                    value = 0;
-            }
-
-            Func<object, object> converter;
-            if (TypeConverters.TryGetValue(targetType, out converter))
-                return converter(value);
-
-            if (targetType.IsEnum && valueType.IsPrimitive)
-                return Enum.ToObject(targetType, value);
-
-            return value;
         }
 
         protected virtual long MeasureOverride()

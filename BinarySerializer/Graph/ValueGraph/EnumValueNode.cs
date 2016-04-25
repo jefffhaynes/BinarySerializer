@@ -29,10 +29,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 value = enumInfo.ValueEnums[(string)value];
             }
 
-            Func<object, object> converter;
-            var underlyingValue = TypeConverters.TryGetValue(enumInfo.UnderlyingType, out converter)
-                ? converter(value)
-                : value;
+            var underlyingValue = value.ConvertTo(enumInfo.UnderlyingType);
 
             Value = Enum.ToObject(TypeNode.BaseSerializedType, underlyingValue);
         }
