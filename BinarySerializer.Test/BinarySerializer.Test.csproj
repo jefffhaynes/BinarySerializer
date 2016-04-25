@@ -256,7 +256,11 @@
     <Compile Include="UntilItem\UntilItemTests.cs" />
     <Compile Include="Until\UntilTestClass.cs" />
     <Compile Include="Until\UntilTests.cs" />
-    <Compile Include="When\WhenTestClass.cs" />
+    <Compile Include="When\WhenEnum.cs" />
+    <Compile Include="When\WhenConverterTestClass.cs" />
+    <Compile Include="When\WhenEnumTestClass.cs" />
+    <Compile Include="When\WhenIntTestClass.cs" />
+    <Compile Include="When\WhenStringTestClass.cs" />
     <Compile Include="When\WhenTests.cs" />
     <Compile Include="Zinc.cs" />
   </ItemGroup>
