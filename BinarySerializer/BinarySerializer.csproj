@@ -42,6 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindingMode.cs" />
+    <Compile Include="Crc16.cs" />
+    <Compile Include="FieldCrc16Attribute.cs" />
+    <Compile Include="FieldValueAttribute.cs" />
+    <Compile Include="Graph\FieldValueAdapterStream.cs" />
+    <Compile Include="Graph\ValueBinding.cs" />
     <Compile Include="Graph\Node.cs" />
     <Compile Include="Graph\TypeGraph\ArrayTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\CollectionTypeNode.cs" />
@@ -110,6 +115,7 @@
     <Compile Include="Graph\ValueGraph\ValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ObjectValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ValueValueNode.cs" />
+    <Compile Include="TapStream.cs" />
     <Compile Include="TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

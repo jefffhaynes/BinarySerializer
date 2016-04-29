@@ -16,11 +16,14 @@ namespace BinarySerialization.Graph.ValueGraph
             Name = name;
             TypeNode = typeNode;
             Children = new List<ValueNode>();
+            Bindings = new List<Func<object>>();
         }
 
         public TypeNode TypeNode { get; set; }
 
         public List<ValueNode> Children { get; set; }
+
+        public List<Func<object>> Bindings { get; set; }
 
         public virtual Encoding Encoding
         {
@@ -88,6 +91,11 @@ namespace BinarySerialization.Graph.ValueGraph
                 typeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
             }
 
+            if (typeNode.FieldValueAttribute != null)
+            {
+                typeNode.FieldValueBinding.Bind(this, () => typeNode.FieldValueAttribute.ComputeFinalInternal());
+            }
+
             foreach (ValueNode child in Children)
                 child.Bind();
         }
@@ -119,18 +127,12 @@ namespace BinarySerialization.Graph.ValueGraph
                     {
                         stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
 
-                        if (maxLength != null)
-                            stream = new LimitedStream(stream, maxLength.Value);
-
-                        SerializeOverride(stream, eventShuttle);
+                        SerializeInternal(stream, eventShuttle, maxLength);
                     }
                 }
                 else
                 {
-                    if (maxLength != null)
-                        stream = new LimitedStream(stream, maxLength.Value);
-
-                    SerializeOverride(stream, eventShuttle);
+                    SerializeInternal(stream, eventShuttle, maxLength);
                 }
             }
             catch (IOException)
@@ -147,7 +149,26 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        // this is internal only because of the weird custom subtype case.  If we can figure out a better
+        private void SerializeInternal(LimitedStream stream, EventShuttle eventShuttle, long? maxLength)
+        {
+            if (maxLength != null)
+                stream = new LimitedStream(stream, maxLength.Value);
+
+            // if I need to store serialized data for later...
+            if (TypeNode.FieldValueAttribute != null)
+            {
+                TypeNode.FieldValueAttribute.ResetInternal(CreateSerializationContext());
+                var tap = new FieldValueAdapterStream(TypeNode.FieldValueAttribute);
+                stream = new TapStream(stream, tap);
+            } 
+
+            SerializeOverride(stream, eventShuttle);
+
+            if(TypeNode.FieldValueAttribute != null)
+                stream.Flush();
+        }
+
+        // this is internal only because of the weird custom subtype case.  If I can figure out a better
         // way to handle that case, this can be protected.
         internal abstract void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle);
 
@@ -172,34 +193,12 @@ namespace BinarySerialization.Graph.ValueGraph
                     {
                         stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
 
-                        if (maxLength != null)
-                            stream = new LimitedStream(stream, maxLength.Value);
-                        
-                        if (EndOfStream(stream))
-                        {
-                            if (TypeNode.Type.IsPrimitive)
-                                throw new EndOfStreamException();
-
-                            return;
-                        }
-
-                        DeserializeOverride(stream, eventShuttle);
+                        DeserializeInternal(stream, maxLength, eventShuttle);
                     }
                 }
                 else
                 {
-                    if (maxLength != null)
-                        stream = new LimitedStream(stream, maxLength.Value);
-
-                    if (EndOfStream(stream))
-                    {
-                        if (TypeNode.Type.IsPrimitive)
-                            throw new EndOfStreamException();
-
-                        return;
-                    }
-
-                    DeserializeOverride(stream, eventShuttle);
+                    DeserializeInternal(stream, maxLength, eventShuttle);
                 }
             }
             catch (IOException)
@@ -214,6 +213,19 @@ namespace BinarySerialization.Graph.ValueGraph
                 string message = $"Error deserializing '{reference}'.  See inner exception for detail.";
                 throw new InvalidOperationException(message, e);
             }
+        }
+
+        private void DeserializeInternal(LimitedStream stream, long? maxLength, EventShuttle eventShuttle)
+        {
+            if (maxLength != null)
+                stream = new LimitedStream(stream, maxLength.Value);
+
+            if (EndOfStream(stream))
+            {
+                if (TypeNode.Type.IsPrimitive)
+                    throw new EndOfStreamException();
+            }
+            else DeserializeOverride(stream, eventShuttle);
         }
 
         internal abstract void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle);

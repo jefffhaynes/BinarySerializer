@@ -131,7 +131,7 @@ namespace BinarySerialization.Graph
             if (IsConst)
                 return;
 
-            var source = GetSource(target);
+            ValueNode source = GetSource(target);
 
             var finalCallback = ValueConverter == null
                 ? callback

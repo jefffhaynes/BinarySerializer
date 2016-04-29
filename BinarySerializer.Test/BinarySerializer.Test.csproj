@@ -69,6 +69,7 @@
     <Compile Include="Count\CountTests.cs" />
     <Compile Include="Count\PrimitiveListBindingClass.cs" />
     <Compile Include="Count\PrimitiveArrayBindingClass.cs" />
+    <Compile Include="CrcTests.cs" />
     <Compile Include="Custom\CustomSourceBinding.cs" />
     <Compile Include="Custom\CustomSubtypeBaseClass.cs" />
     <Compile Include="Custom\CustomSubtypeContainerClass.cs" />
@@ -256,6 +257,9 @@
     <Compile Include="UntilItem\UntilItemTests.cs" />
     <Compile Include="Until\UntilTestClass.cs" />
     <Compile Include="Until\UntilTests.cs" />
+    <Compile Include="Value\ValueClass.cs" />
+    <Compile Include="Value\ValueInternalClass.cs" />
+    <Compile Include="Value\ValueTests.cs" />
     <Compile Include="When\WhenEnum.cs" />
     <Compile Include="When\WhenConverterTestClass.cs" />
     <Compile Include="When\WhenEnumTestClass.cs" />

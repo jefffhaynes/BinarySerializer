@@ -23,7 +23,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (Bindings.Count > 0)
                 {
-                    value = Bindings[0]();
+                    value = Bindings[0].Invoke();
 
                     var enumerableValue = value as IEnumerable;
 

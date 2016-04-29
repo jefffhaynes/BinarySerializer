@@ -113,13 +113,19 @@ namespace BinarySerialization.Graph.TypeGraph
             FieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
             if (FieldCountAttribute != null)
             {
-                FieldCountBinding = new Binding(FieldCountAttribute, FindAncestorLevel(FieldCountAttribute.Binding));
+                FieldCountBinding = new Binding(FieldCountAttribute, GetBindingLevel(FieldCountAttribute.Binding));
             }
 
             FieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
             if (FieldOffsetAttribute != null)
             {
                 FieldOffsetBinding = new Binding(FieldOffsetAttribute, GetBindingLevel(FieldOffsetAttribute.Binding));
+            }
+
+            FieldValueAttribute = attributes.OfType<FieldValueAttribute>().SingleOrDefault();
+            if (FieldValueAttribute != null)
+            {
+                FieldValueBinding = new ValueBinding(FieldValueAttribute, GetBindingLevel(FieldValueAttribute.Binding));
             }
 
             var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
@@ -198,20 +204,22 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public Type BaseSerializedType => NullableUnderlyingType ?? Type;
 
-        public Action<object, object> ValueSetter { get; private set; }
-        public Func<object, object> ValueGetter { get; private set; }
-        public Binding FieldLengthBinding { get; private set; }
-        public Binding ItemLengthBinding { get; private set; }
-        public Binding FieldCountBinding { get; private set; }
-        public Binding FieldOffsetBinding { get; private set; }
+        public Action<object, object> ValueSetter { get; }
+        public Func<object, object> ValueGetter { get; }
+        public Binding FieldLengthBinding { get; }
+        public Binding ItemLengthBinding { get; }
+        public Binding FieldCountBinding { get; }
+        public Binding FieldOffsetBinding { get; }
+        public Binding FieldValueBinding { get; }
         public Binding SerializeUntilBinding { get; private set; }
         public Binding ItemSerializeUntilBinding { get; private set; }
         public Binding SubtypeBinding { get; }
-        public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; private set; }
+        public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; }
         public IgnoreAttribute IgnoreAttribute { get; }
         public FieldLengthAttribute FieldLengthAttribute { get; }
         public FieldCountAttribute FieldCountAttribute { get; }
         public FieldOffsetAttribute FieldOffsetAttribute { get; }
+        public FieldValueAttribute FieldValueAttribute { get; }
         public ItemLengthAttribute ItemLengthAttribute { get; }
         public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; }
         public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; }
@@ -224,7 +232,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public int? Order { get; }
 
-        public bool AreStringsNullTerminated { get; private set; }
+        public bool AreStringsNullTerminated { get; }
 
         public SerializedType GetSerializedType(Type referenceType = null)
         {
