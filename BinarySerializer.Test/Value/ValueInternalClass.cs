@@ -3,7 +3,7 @@
     public class ValueInternalClass
     {
         [FieldOrder(0)]
-        [FieldLength(11)]
+        [SerializeAs(SerializedType.SizedString)]
         public string Value { get; set; }
     }
 }

@@ -43,7 +43,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var typeNode = (CollectionTypeNode)TypeNode;
 
-            var count = TypeNode.FieldCountBinding != null ? Convert.ToInt32(TypeNode.FieldCountBinding.GetValue(this)) : int.MaxValue;
+            var count = TypeNode.FieldCountBinding != null ? Convert.ToInt32(TypeNode.FieldCountBinding.GetValue(this)) : Int32.MaxValue;
 
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
@@ -55,8 +55,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var enumerableItemLengthValue = itemLengthValue as IEnumerable;
 
-                itemLengths = enumerableItemLengthValue?.Cast<object>().Select(Convert.ToInt32) ??
-                              GetInfiniteSequence(Convert.ToInt32(itemLengthValue));
+                itemLengths = enumerableItemLengthValue?.Cast<object>().Select(Convert.ToInt32) ?? GetInfiniteSequence(Convert.ToInt32(itemLengthValue));
             }
                       
             IEnumerator<int> itemLengthEnumerator = null;
@@ -150,5 +149,13 @@ namespace BinarySerialization.Graph.ValueGraph
             var terminationItemChild = (ValueValueNode)lastItem.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
             return terminationItemChild.BoundValue;
         }
+        
+        private static IEnumerable<int> GetInfiniteSequence(int value)
+        {
+            while (true)
+                yield return value;
+            // ReSharper disable FunctionNeverReturns
+        }
+        // ReSharper restore FunctionNeverReturns
     }
 }

@@ -293,13 +293,5 @@ namespace BinarySerialization.Graph.ValueGraph
 
             return stream.CanSeek && stream.Position >= stream.Length;
         }
-
-        protected static IEnumerable<int> GetInfiniteSequence(int value)
-        {
-            while (true)
-                yield return value;
-            // ReSharper disable FunctionNeverReturns
-        }
-        // ReSharper restore FunctionNeverReturns
     }
 }

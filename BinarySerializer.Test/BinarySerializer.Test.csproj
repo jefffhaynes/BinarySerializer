@@ -257,6 +257,7 @@
     <Compile Include="UntilItem\UntilItemTests.cs" />
     <Compile Include="Until\UntilTestClass.cs" />
     <Compile Include="Until\UntilTests.cs" />
+    <Compile Include="Value\StreamValueClass.cs" />
     <Compile Include="Value\ValueClass.cs" />
     <Compile Include="Value\ValueInternalClass.cs" />
     <Compile Include="Value\ValueTests.cs" />

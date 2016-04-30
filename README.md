@@ -445,6 +445,34 @@ public enum Waypoints
 }
 ```
 
+
+### FieldValueAttribute ###
+
+The FieldValue attribute is an abstract class that allows for the computation of complex fields based on either the value or serialized value of another field.  This can be used to create hashes, checksums, and other complex fields.
+
+
+### FieldCrc16Attribute ###
+
+The FieldCrc16 attribute is a built-in extension of the FieldValueAttribute that allows for the computation of a checksum.
+
+```c#
+public class Packet
+{
+    [FieldOrder(0)]
+    public int Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldLength("Length")]
+    [FieldCrc16("Crc")]
+    public byte[] Data { get; set; }
+
+    [FieldOrder(2)]
+    public ushort Crc { get; set; }
+}
+```
+
+Note that the attribute can also be used on complex types to calculate the checksum over a set of fields.
+
 -----------
 
 ### Performance ###
