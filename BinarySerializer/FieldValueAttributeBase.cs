@@ -2,6 +2,9 @@
 
 namespace BinarySerialization
 {
+    /// <summary>
+    /// Used as the abstract base for deriving field value attributes.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public abstract class FieldValueAttributeBase : FieldBindingBaseAttribute
     {
@@ -13,14 +16,31 @@ namespace BinarySerialization
         {
         }
 
+        /// <summary>
+        /// Override to indicate to the framework the expected input block size for this attribute.
+        /// </summary>
         public virtual int BlockSize => 4096;
 
+        /// <summary>
+        /// This is called by the framework to indicate a new operation.
+        /// </summary>
+        /// <param name="fieldValue"></param>
         protected virtual void Reset(object fieldValue)
         {
         }
 
+        /// <summary>
+        /// This is called one or more times by the framework to add data to the computation.
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
         protected abstract void Compute(byte[] buffer, int offset, int count);
-        
+
+        /// <summary>
+        /// This is called by the framework to retreive the final value from computation.
+        /// </summary>
+        /// <returns></returns>
         protected abstract object ComputeFinal();
 
         internal virtual void ResetInternal(object fieldValue)
