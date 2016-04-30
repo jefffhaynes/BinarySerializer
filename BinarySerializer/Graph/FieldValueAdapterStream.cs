@@ -5,11 +5,11 @@ namespace BinarySerialization.Graph
 {
     internal class FieldValueAdapterStream : Stream
     {
-        private readonly FieldValueAttribute _attribute;
+        private readonly FieldValueAttributeBase _attribute;
         private readonly byte[] _block;
         int _blockOffset;
 
-        public FieldValueAdapterStream(FieldValueAttribute attribute)
+        public FieldValueAdapterStream(FieldValueAttributeBase attribute)
         {
             _attribute = attribute;
             _block = new byte[attribute.BlockSize];

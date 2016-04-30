@@ -2,9 +2,9 @@
 {
     internal class ValueBinding : Binding
     {
-        private readonly FieldValueAttribute _attribute;
+        private readonly FieldValueAttributeBase _attribute;
 
-        public ValueBinding(FieldValueAttribute attribute, int level) : base(attribute, level)
+        public ValueBinding(FieldValueAttributeBase attribute, int level) : base(attribute, level)
         {
             _attribute = attribute;
         }

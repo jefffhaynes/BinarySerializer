@@ -42,9 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindingMode.cs" />
+    <Compile Include="Crc.cs" />
+    <Compile Include="Crc32.cs" />
     <Compile Include="Crc16.cs" />
+    <Compile Include="FieldCrc32Attribute.cs" />
     <Compile Include="FieldCrc16Attribute.cs" />
     <Compile Include="FieldValueAttribute.cs" />
+    <Compile Include="FieldValueAttributeBase.cs" />
     <Compile Include="Graph\FieldValueAdapterStream.cs" />
     <Compile Include="Graph\ValueBinding.cs" />
     <Compile Include="Graph\Node.cs" />

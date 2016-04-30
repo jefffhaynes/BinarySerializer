@@ -1,6 +1,6 @@
 ﻿namespace BinarySerialization.Test.Value
 {
-    public class ValueInternalClass
+    public class FieldCrcInternalClass
     {
         [FieldOrder(0)]
         [SerializeAs(SerializedType.SizedString)]

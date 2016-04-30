@@ -122,7 +122,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 FieldOffsetBinding = new Binding(FieldOffsetAttribute, GetBindingLevel(FieldOffsetAttribute.Binding));
             }
 
-            FieldValueAttribute = attributes.OfType<FieldValueAttribute>().SingleOrDefault();
+            FieldValueAttribute = attributes.OfType<FieldValueAttributeBase>().SingleOrDefault();
             if (FieldValueAttribute != null)
             {
                 FieldValueBinding = new ValueBinding(FieldValueAttribute, GetBindingLevel(FieldValueAttribute.Binding));
@@ -219,7 +219,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public FieldLengthAttribute FieldLengthAttribute { get; }
         public FieldCountAttribute FieldCountAttribute { get; }
         public FieldOffsetAttribute FieldOffsetAttribute { get; }
-        public FieldValueAttribute FieldValueAttribute { get; }
+        public FieldValueAttributeBase FieldValueAttribute { get; }
         public ItemLengthAttribute ItemLengthAttribute { get; }
         public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; }
         public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; }

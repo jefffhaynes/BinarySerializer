@@ -257,9 +257,14 @@
     <Compile Include="UntilItem\UntilItemTests.cs" />
     <Compile Include="Until\UntilTestClass.cs" />
     <Compile Include="Until\UntilTests.cs" />
+    <Compile Include="Value\BitMaskConverter.cs" />
+    <Compile Include="Value\FieldCrc32Class.cs" />
+    <Compile Include="Value\FieldValueClass.cs" />
     <Compile Include="Value\StreamValueClass.cs" />
-    <Compile Include="Value\ValueClass.cs" />
-    <Compile Include="Value\ValueInternalClass.cs" />
+    <Compile Include="Value\TcpHeader.cs" />
+    <Compile Include="Value\TcpHeaderFlags.cs" />
+    <Compile Include="Value\FieldCrc16Class.cs" />
+    <Compile Include="Value\FieldCrcInternalClass.cs" />
     <Compile Include="Value\ValueTests.cs" />
     <Compile Include="When\WhenEnum.cs" />
     <Compile Include="When\WhenConverterTestClass.cs" />

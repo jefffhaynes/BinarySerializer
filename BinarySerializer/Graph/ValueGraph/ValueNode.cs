@@ -157,7 +157,7 @@ namespace BinarySerialization.Graph.ValueGraph
             // if I need to store serialized data for later...
             if (TypeNode.FieldValueAttribute != null)
             {
-                TypeNode.FieldValueAttribute.ResetInternal(CreateSerializationContext());
+                TypeNode.FieldValueAttribute.ResetInternal(Value);
                 var tap = new FieldValueAdapterStream(TypeNode.FieldValueAttribute);
                 stream = new TapStream(stream, tap);
             } 

@@ -46,6 +46,9 @@ build/
 *.log
 *.scc
 
+*.VC.opendb
+*.VC.db
+
 # Visual C++ cache files
 ipch/
 *.aps

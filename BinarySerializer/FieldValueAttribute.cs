@@ -1,41 +1,25 @@
-﻿using System;
-
-namespace BinarySerialization
+﻿namespace BinarySerialization
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public abstract class FieldValueAttribute : FieldBindingBaseAttribute
+    public class FieldValueAttribute : FieldValueAttributeBase
     {
-        /// <summary>
-        ///     Initializes a new instance of the FieldValue class with a path pointing to a binding source member.
-        ///     <param name="valuePath">A path to the source member.</param>
-        /// </summary>
-        protected FieldValueAttribute(string valuePath) : base(valuePath)
+        private object _value;
+
+        public FieldValueAttribute(string valuePath) : base(valuePath)
         {
         }
 
-        public virtual int BlockSize => 4096;
+        protected override void Reset(object fieldValue)
+        {
+            _value = fieldValue;
+        }
 
-        protected virtual void Reset(object fieldValue)
+        protected override void Compute(byte[] buffer, int offset, int count)
         {
         }
 
-        protected abstract void Compute(byte[] buffer, int offset, int count);
-        
-        protected abstract object ComputeFinal();
-
-        internal virtual void ResetInternal(object fieldValue)
+        protected override object ComputeFinal()
         {
-            Reset(fieldValue);
-        }
-
-        internal void ComputeInternal(byte[] buffer, int offset, int count)
-        {
-            Compute(buffer, offset, count);
-        }
-
-        internal object ComputeFinalInternal()
-        {
-            return ComputeFinal();
+            return _value;
         }
     }
 }

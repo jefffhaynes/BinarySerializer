@@ -1,21 +1,31 @@
 ﻿namespace BinarySerialization
 {
-    public class FieldCrc16Attribute : FieldValueAttribute
+    public sealed class FieldCrc16Attribute : FieldValueAttributeBase
     {
         private const ushort DefaultPolynomial = 0x1021;
         private const ushort DefaultInitialValue = 0xffff;
-
-        private readonly ushort[] _table;
-        private Crc16 _crc;
+        
+        private readonly Crc16 _crc;
 
         public FieldCrc16Attribute(string valuePath) : base(valuePath)
         {
-            _crc = new Crc16(Polynomial, InitialValue);
+            _crc = new Crc16(Polynomial, InitialValue)
+            {
+                IsDataReflected = IsDataReflected,
+                IsRemainderReflected = IsRemainderReflected,
+                FinalXor = FinalXor
+            };
         }
 
         public ushort Polynomial { get; set; } = DefaultPolynomial;
 
         public ushort InitialValue { get; set; } = DefaultInitialValue;
+        
+        public bool IsDataReflected { get; set; } = false;
+
+        public bool IsRemainderReflected { get; set; } = false;
+
+        public ushort FinalXor { get; set; } = 0;
 
         protected override void Reset(object fieldValue)
         {

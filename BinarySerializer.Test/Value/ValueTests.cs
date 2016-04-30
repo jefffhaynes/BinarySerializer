@@ -8,11 +8,21 @@ namespace BinarySerialization.Test.Value
     public class ValueTests : TestBase
     {
         [TestMethod]
-        public void TestCrc16()
+        public void FieldValueTest()
         {
-            var expected = new ValueClass
+            var expected = new FieldValueClass {Value = 33};
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.AreEqual(actual.Value, actual.ValueCopy);
+        }
+
+        [TestMethod]
+        public void Crc16Test()
+        {
+            var expected = new FieldCrc16Class
             {
-                Internal = new ValueInternalClass
+                Internal = new FieldCrcInternalClass
                 {
                     Value = "hello world"
                 }
@@ -23,23 +33,22 @@ namespace BinarySerialization.Test.Value
         }
 
         [TestMethod]
-        public void TestCrc16Again()
+        public void Crc32Test()
         {
-            var expected = new ValueClass
+            var expected = new FieldCrc32Class
             {
-                Internal = new ValueInternalClass
+                Internal = new FieldCrcInternalClass
                 {
-                    Value = "hello world again"
+                    Value = "hello world"
                 }
             };
 
             var actual = Roundtrip(expected);
-            Assert.AreEqual(0x8733, actual.Crc);
+            Assert.AreEqual(0xfd11ac49, actual.Crc);
         }
 
-
         [TestMethod]
-        public void TestCrc16Stream()
+        public void Crc16StreamTest()
         {
             var expected = new StreamValueClass
             {
@@ -47,7 +56,7 @@ namespace BinarySerialization.Test.Value
             };
 
             var actual = Roundtrip(expected);
-            Assert.AreEqual(0xdb9, actual.Crc);
+            Assert.AreEqual(0xdef, actual.Crc);
         }
     }
 }
