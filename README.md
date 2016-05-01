@@ -83,7 +83,6 @@ Attributes
 * [SerializeUntil](#serializeuntilattribute)
 * [ItemLength](#itemlengthattribute)
 * [ItemSerializeUntil](#itemserializeuntilattribute)
-* [Advanced Topics](#performance)
 
 There are a number of attributes that can be used to control the serialization of fields.
 
