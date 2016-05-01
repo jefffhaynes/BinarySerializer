@@ -68,21 +68,21 @@ Length can also be specified at an object level.  See the FieldLengthAttribute s
 Attributes
 ----------
 
-* [Ignore](ignoreattribute)
-* [SerializeAs](#serializeasattribute)
+* [Ignore](#ignoreattribute)
 * [FieldOrder](#fieldorderattribute)
 * [FieldLength](#fieldlengthattribute)
 * [FieldCount](#fieldcountattribute)
-* [ItemLength](#itemlengthattribute)
-* [FieldOffset](#fieldoffsetattribute)
-* [Subtype](#subtypeattribute)
-* [SerializeWhen](#serializewhenattribute)
-* [SerializeUntil](#serializeuntilattribute)
-* [ItemSerializeUntil](#itemserializeuntilattribute)
-* [SerializeAsEnum](#serializeasenumattribute)
 * [FieldValue](#fieldvalueattribute)
 * [FieldCrc16Attribute](#fieldcrc16attribute)
 * [FieldCrc32Attribute](#fieldcrc32attribute)
+* [FieldOffset](#fieldoffsetattribute)
+* [Subtype](#subtypeattribute)
+* [SerializeAs](#serializeasattribute)
+* [SerializeAsEnum](#serializeasenumattribute)
+* [SerializeWhen](#serializewhenattribute)
+* [SerializeUntil](#serializeuntilattribute)
+* [ItemLength](#itemlengthattribute)
+* [ItemSerializeUntil](#itemserializeuntilattribute)
 
 
 There are a number of attributes that can be used to control the serialization of fields.
@@ -90,10 +90,6 @@ There are a number of attributes that can be used to control the serialization o
 ### IgnoreAttribute ###
 
 Any field or property with an Ignore attribute will not be included in serialization or deserialization.  These fields can still be used in bindings, however properties will be treated as flat fields.  If you need to do some calculation on a binding source your best option is to define a ValueConverter (see below).
-
-### SerializeAsAttribute ###
-
-In general you shouldn't need this as most things tend to work out without it.  However, you can always override the default behavior by specifying SerializeAs.  This attribute can also be used to specify encodings and endianness if needed.
 
 ```c#
 [SerializeAs(SerializedType.Int1)]
@@ -271,6 +267,157 @@ public class Directory
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/CountBinding.png" />
 </p>
 
+
+### FieldValueAttributeBase ###
+
+The FieldValueAttributeBase class is an abstract class that allows for the computation of complex fields based on either the value or serialized value of another field.  This can be used to create hashes, checksums, and other complex fields.  For information on custom FieldValue attributes, see [below](#extending-fieldvalue-attributes).
+
+### FieldValueAttribute ###
+
+This is the most trivial example of a FieldValue attribute and will simply copy the value of one field to another.
+
+### FieldCrc16Attribute ###
+
+The FieldCrc16 attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an unsigned 16-bit checksum.
+
+*Note that this attribute is only used during serialization.  The CRC is not checked during deserialization.*
+
+```c#
+public class Packet
+{
+    [FieldOrder(0)]
+    public int Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldLength("Length")]
+    [FieldCrc16("Crc")]
+    public byte[] Data { get; set; }
+
+    [FieldOrder(2)]
+    public ushort Crc { get; set; }
+}
+```
+
+Note that the attribute can also be used on complex types to calculate the checksum over a set of fields.  The attribute can be configured by specifing the various properties, including the polynomial, the initial value, as well as others.
+
+
+### FieldCrc32Attribute ###
+
+The FieldCrc32 is identical to the FieldCrc16 with the difference that it operates on an unsigned 32-bit field and with appropriate default algorithm values.
+
+
+### FieldOffsetAttribute ###
+
+The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases implicit offset (e.g. just define the structure) is preferable.  After moving to the offset the serializer will reset to the origin so subsequent fields must manage their own offsets.  This attribute is not supported when serializing to non-seekable streams.
+
+### SubtypeAttribute ###
+
+The Subtype attribute allows dynamic switching of subtypes based on a binding.
+
+```c#
+public class Packet
+{
+    [FieldOrder(0)]
+    public FrameType FrameType { get; set; }
+
+    [FieldOrder(1)]
+    [Subtype("FrameType", FrameType.Message, typeof(MessageFrame)]
+    [Subtype("FrameType", FrameType.Control, typeof(ControlFrame)]
+    [Subtype("FrameType", FrameType.Trigger, typeof(TriggerFrame)]
+    public Frame Frame { get; set; }
+}
+```
+
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/SubtypeBinding.png" />
+</p>
+
+It is not necessary that FrameType be correct during serialization; it will be updated with the appropriate value based on the instantiated type.  During deserialization the FrameType field will be used to construct the correct type.
+
+The Subtype attribute can be used with the FieldLength attribute to write forward compatible processors.  Take the example of PNG, which uses "chunks" of data that may be able to be skipped even if they aren't understood.
+
+```c#
+public class ChunkContainer
+{
+    [FieldOrder(0)]
+    [SerializeAs(Endianness = Endianness.Big)]
+    public int Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldLength(4)]
+    public string ChunkType { get; set; }
+
+    [FieldOrder(2)]
+    [FieldLength("Length")]
+    [Subtype("ChunkType", "IHDR", typeof(ImageHeaderChunk))]
+    [Subtype("ChunkType", "PLTE", typeof(PaletteChunk))]
+    [Subtype("ChunkType", "IDAT", typeof(ImageDataChunk))]
+    // etc
+    public Chunk Chunk { get; set; }
+
+    [FieldOrder(3)]
+    [SerializeAs(Endianness = Endianness.Big)]
+    public int Crc { get; set; }
+}
+```
+
+```c#
+List<ChunkContainer> Chunks { get; set; }
+```
+
+Note that the Chunk field is bound to both the Length field and the ChunkType field.  If the serializer can resolve a known chunk type, it will instantiate and deserialize it.  However, if it encounters an unknown value in the ChunkType field it is still able to skip past it using the Length binding.  Also note that the CRC is included for completeness but will not be updated by the framework during serialization nor checked during deserialization.
+
+
+### SerializeAsAttribute ###
+
+In general you shouldn't need this as most things tend to work out without it.  However, you can always override the default behavior by specifying SerializeAs.  This attribute can also be used to specify encodings and endianness if needed.
+
+### SerializeAsEnumAttribute ###
+
+The SerializeAsEnum attribute allows you specify an alternate value for an enum to be used during the operation.
+
+```c#
+public enum Waypoints
+{
+    [SerializeAsEnum("Alpha")]
+    A,
+    [SerializeAsEnum("Bravo")]
+    B,
+    [SerializeAsEnum("Charlie")]
+    C
+}
+```
+
+
+### SerializeWhenAttribute ###
+
+The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  If multiple SerializeWhen attributes are specified they will be or'd together.
+
+```c#
+[SerializeWhen("Version", HardwareVersion.XBeeSeries1)]
+[SerializeWhen("Version", HardwareVersion.XBeeProSeries1)]
+public ReceivedSignalStrengthIndicator RSSI { get; set; }
+```
+
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/WhenBinding.png" />
+</p>
+
+### SerializeUntilAttribute ###
+
+The SerializedUntil attribute can be used to terminate a collection once a specified value is encountered, essentially allowing for the creation of "null-terminated" lists or the like.  This attribute is not currently supported when deserializing from non-seekable streams.
+
+```c#
+[SerializeUntil((byte)0)]
+public List<DirectoryRecord> Records { get; set; }
+```
+
+<p align="center">
+  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/Until.png" />
+</p>
+
+Note that a significant disadvantage of this approach is that the DirectoryRecord object cannot start with a null!  In general, you should avoid this approach when defining formats.  However, in some cases you may not have a choice (this exact construct appears in the ISO 9660 specification).
+
 ### ItemLengthAttribute ###
 
 This attribute can be used to control the length of items in a collection.
@@ -334,96 +481,6 @@ public class JaggedArrayClass
 
 Note that the ordering of the values and value lengths must coincide for this approach to work.
 
-### FieldOffsetAttribute ###
-
-The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases implicit offset (e.g. just define the structure) is preferable.  After moving to the offset the serializer will reset to the origin so subsequent fields must manage their own offsets.  This attribute is not supported when serializing to non-seekable streams.
-
-### SubtypeAttribute ###
-
-The Subtype attribute allows dynamic switching of subtypes based on a binding.
-
-```c#
-public class Packet
-{
-    [FieldOrder(0)]
-    public FrameType FrameType { get; set; }
-
-    [FieldOrder(1)]
-    [Subtype("FrameType", FrameType.Message, typeof(MessageFrame)]
-    [Subtype("FrameType", FrameType.Control, typeof(ControlFrame)]
-    [Subtype("FrameType", FrameType.Trigger, typeof(TriggerFrame)]
-    public Frame Frame { get; set; }
-}
-```
-
-<p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/SubtypeBinding.png" />
-</p>
-
-It is not necessary that FrameType be correct during serialization; it will be updated with the appropriate value based on the instantiated type.  During deserialization the FrameType field will be used to construct the correct type.
-
-The Subtype attribute can be used with the FieldLength attribute to write forward compatible processors.  Take the example of PNG, which uses "chunks" of data that may be able to be skipped even if they aren't understood.
-
-```c#
-public class ChunkContainer
-{
-    [FieldOrder(0)]
-    [SerializeAs(Endianness = Endianness.Big)]
-    public int Length { get; set; }
-
-    [FieldOrder(1)]
-    [FieldLength(4)]
-    public string ChunkType { get; set; }
-
-    [FieldOrder(2)]
-    [FieldLength("Length")]
-    [Subtype("ChunkType", "IHDR", typeof(ImageHeaderChunk))]
-    [Subtype("ChunkType", "PLTE", typeof(PaletteChunk))]
-    [Subtype("ChunkType", "IDAT", typeof(ImageDataChunk))]
-    // etc
-    public Chunk Chunk { get; set; }
-
-    [FieldOrder(3)]
-    [SerializeAs(Endianness = Endianness.Big)]
-    public int Crc { get; set; }
-}
-```
-
-```c#
-List<ChunkContainer> Chunks { get; set; }
-```
-
-Note that the Chunk field is bound to both the Length field and the ChunkType field.  If the serializer can resolve a known chunk type, it will instantiate and deserialize it.  However, if it encounters an unknown value in the ChunkType field it is still able to skip past it using the Length binding.  Also note that the CRC is included for completeness but will not be updated by the framework during serialization nor checked during deserialization.
-
-### SerializeWhenAttribute ###
-
-The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  If multiple SerializeWhen attributes are specified they will be or'd together.
-
-```c#
-[SerializeWhen("Version", HardwareVersion.XBeeSeries1)]
-[SerializeWhen("Version", HardwareVersion.XBeeProSeries1)]
-public ReceivedSignalStrengthIndicator RSSI { get; set; }
-```
-
-<p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/WhenBinding.png" />
-</p>
-
-### SerializeUntilAttribute ###
-
-The SerializedUntil attribute can be used to terminate a collection once a specified value is encountered, essentially allowing for the creation of "null-terminated" lists or the like.  This attribute is not currently supported when deserializing from non-seekable streams.
-
-```c#
-[SerializeUntil((byte)0)]
-public List<DirectoryRecord> Records { get; set; }
-```
-
-<p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/Until.png" />
-</p>
-
-Note that a significant disadvantage of this approach is that the DirectoryRecord object cannot start with a null!  In general, you should avoid this approach when defining formats.  However, in some cases you may not have a choice (this exact construct appears in the ISO 9660 specification).
-
 ### ItemSerializeUntilAttribute ###
 
 The ItemSerializeUntil attribute can be used to terminate a collection when an item with a specified value is encountered.  This is similar to the SerializeUntil attribute, except the ItemSerializeUntil attribute will first attempt to deserialize a valid item and then check the equality, whereas SerializeUntil will first check the equality and then only deserialize the result if the collection has not terminated.
@@ -446,56 +503,6 @@ public class ToyChest
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/ItemUntil.png" />
 </p>
 
-### SerializeAsEnumAttribute ###
-
-The SerializeAsEnum attribute allows you specify an alternate value for an enum to be used during the operation.
-
-```c#
-public enum Waypoints
-{
-    [SerializeAsEnum("Alpha")]
-    A,
-    [SerializeAsEnum("Bravo")]
-    B,
-    [SerializeAsEnum("Charlie")]
-    C
-}
-```
-
-
-### FieldValueAttribute ###
-
-The FieldValue attribute is an abstract class that allows for the computation of complex fields based on either the value or serialized value of another field.  This can be used to create hashes, checksums, and other complex fields.  For information on custom FieldValue attributes, see [below](#extending-fieldvalue-attributes).
-
-
-### FieldCrc16Attribute ###
-
-The FieldCrc16 attribute is a built-in extension of the FieldValueAttribute that allows for the computation of an unsigned 16-bit checksum.
-
-*Note that this attribute is only used during serialization.  The CRC is not checked during deserialization.*
-
-```c#
-public class Packet
-{
-    [FieldOrder(0)]
-    public int Length { get; set; }
-
-    [FieldOrder(1)]
-    [FieldLength("Length")]
-    [FieldCrc16("Crc")]
-    public byte[] Data { get; set; }
-
-    [FieldOrder(2)]
-    public ushort Crc { get; set; }
-}
-```
-
-Note that the attribute can also be used on complex types to calculate the checksum over a set of fields.  The attribute can be configured by specifing the various properties, including the polynomial, the initial value, as well as others.
-
-
-### FieldCrc32Attribute ###
-
-The FieldCrc32 is identical to the FieldCrc16 with the difference that it operates on an unsigned 32-bit field and with appropriate default algorithm values.
 
 -----------
 
