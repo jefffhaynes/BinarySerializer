@@ -25,9 +25,7 @@ namespace BinarySerialization
         /// This is called by the framework to indicate a new operation.
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void Reset(BinarySerializationContext context)
-        {
-        }
+        protected abstract void Reset(BinarySerializationContext context);
 
         /// <summary>
         /// This is called one or more times by the framework to add data to the computation.

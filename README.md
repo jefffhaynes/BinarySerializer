@@ -448,12 +448,14 @@ public enum Waypoints
 
 ### FieldValueAttribute ###
 
-The FieldValue attribute is an abstract class that allows for the computation of complex fields based on either the value or serialized value of another field.  This can be used to create hashes, checksums, and other complex fields.
+The FieldValue attribute is an abstract class that allows for the computation of complex fields based on either the value or serialized value of another field.  This can be used to create hashes, checksums, and other complex fields.  For information on custom FieldValue attributes, see [below](#Extending FieldValue Attributes).
 
 
 ### FieldCrc16Attribute ###
 
-The FieldCrc16 attribute is a built-in extension of the FieldValueAttribute that allows for the computation of a checksum.
+The FieldCrc16 attribute is a built-in extension of the FieldValueAttribute that allows for the computation of an unsigned 16-bit checksum.
+
+*Note that this attribute is only used during serialization.  The CRC is not checked during deserialization.*
 
 ```c#
 public class Packet
@@ -471,7 +473,12 @@ public class Packet
 }
 ```
 
-Note that the attribute can also be used on complex types to calculate the checksum over a set of fields.
+Note that the attribute can also be used on complex types to calculate the checksum over a set of fields.  The attribute can be configured by specifing the various properties, including the polynomial, the initial value, as well as others.
+
+
+### FieldCrc32Attribute ###
+
+The FieldCrc32 is identical to the FieldCrc16 with the difference that it operates on an unsigned 32-bit field and with appropriate default algorithm values.
 
 -----------
 
@@ -729,6 +736,53 @@ private static void OnMemberDeserialized(object sender, MemberSerializedEventArg
     Console.CursorLeft = e.Context.Depth * 4;
     var value = e.Value ?? "null";
     Console.WriteLine("D-End: {0} ({1}) @ {2}", e.MemberName, value, e.Offset);
+}
+```
+
+### Extending FieldValue Attributes ###
+
+FieldValue attributes can be used to perform complex calculations based on field values.  The following is an example of a FieldValue attribute that performs a cryptographic hash.
+
+```c#
+public class FieldSha256Attribute : FieldValueAttributeBase
+{
+    private readonly SHA256Managed _sha = new SHA256Managed();
+
+    public override int BlockSize => _sha.InputBlockSize;
+
+    public FieldSha256Attribute(string valuePath) : base(valuePath)
+    {
+    }
+
+    protected override void Reset(BinarySerializationContext context)
+    {
+        _sha.Initialize();
+    }
+
+    protected override void Compute(byte[] buffer, int offset, int count)
+    {
+        _sha.TransformBlock(buffer, offset, count, buffer, offset);
+    }
+
+    protected override object ComputeFinal()
+    {
+        _sha.TransformFinalBlock(new byte[0], 0, 0);
+        return _sha.Hash;
+    }
+}
+
+public class FieldSha256Class
+{
+    [FieldOrder(0)]
+    public int Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldLength("Length")]
+    [FieldSha256("Hash")]
+    public string Value { get; set; }
+
+    [FieldOrder(2)]
+    public byte[] Hash { get; set; }
 }
 ```
 

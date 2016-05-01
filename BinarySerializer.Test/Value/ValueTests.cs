@@ -58,5 +58,16 @@ namespace BinarySerialization.Test.Value
             var actual = Roundtrip(expected);
             Assert.AreEqual(0xdef, actual.Crc);
         }
+
+        [TestMethod]
+        public void FieldValueExtensionTest()
+        {
+            var expected = new FieldSha256Class
+            {
+                Value = "hello world"
+            };
+
+            var actual = Roundtrip(expected);
+        }
     }
 }
