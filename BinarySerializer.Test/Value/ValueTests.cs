@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Value
@@ -68,6 +69,11 @@ namespace BinarySerialization.Test.Value
             };
 
             var actual = Roundtrip(expected);
+
+            var expectedHash =
+                (new SHA256Managed()).ComputeHash(new MemoryStream(System.Text.Encoding.ASCII.GetBytes(expected.Value)));
+
+            Assert.IsTrue(expectedHash.SequenceEqual(actual.Hash));
         }
     }
 }
