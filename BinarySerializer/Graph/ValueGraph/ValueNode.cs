@@ -157,7 +157,8 @@ namespace BinarySerialization.Graph.ValueGraph
             // if I need to store serialized data for later...
             if (TypeNode.FieldValueAttribute != null)
             {
-                TypeNode.FieldValueAttribute.ResetInternal(Value);
+                var context = CreateSerializationContext();
+                TypeNode.FieldValueAttribute.ResetInternal(context);
                 var tap = new FieldValueAdapterStream(TypeNode.FieldValueAttribute);
                 stream = new TapStream(stream, tap);
             } 
@@ -251,11 +252,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public virtual BinarySerializationContext CreateSerializationContext()
         {
-            if (Parent == null)
-                return null;
-
-            var parent = (ValueNode) Parent;
-            return new BinarySerializationContext(parent.Value, parent.TypeNode.Type, parent.CreateSerializationContext());
+            var parent = Parent as ValueNode;
+            return new BinarySerializationContext(Value, parent?.Value, parent?.TypeNode.Type, parent?.CreateSerializationContext());
         }
 
         protected virtual long MeasureOverride()

@@ -11,12 +11,18 @@ namespace BinarySerialization.Performance
 
         [NonSerialized] [FieldOrder(1)] public byte SortCount;
 
-        [FieldOrder(2)] [FieldCount("SortCount")] public List<SortContainer> Sort;
+        [FieldOrder(2)]
+        [FieldCount("SortCount")]
+        [FieldCrc16("Crc")]
+        public List<SortContainer> Sort;
 
         [FieldOrder(3)] public float Alcohol;
 
         [SerializeAs(SerializedType.LengthPrefixedString)]
         [FieldOrder(4)] public string Brewery;
+
+        [FieldOrder(5)]
+        public ushort Crc { get; set; }
     }
 
     [Serializable]

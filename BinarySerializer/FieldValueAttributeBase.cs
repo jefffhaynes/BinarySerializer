@@ -24,8 +24,8 @@ namespace BinarySerialization
         /// <summary>
         /// This is called by the framework to indicate a new operation.
         /// </summary>
-        /// <param name="fieldValue"></param>
-        protected virtual void Reset(object fieldValue)
+        /// <param name="context"></param>
+        protected virtual void Reset(BinarySerializationContext context)
         {
         }
 
@@ -43,9 +43,9 @@ namespace BinarySerialization
         /// <returns></returns>
         protected abstract object ComputeFinal();
 
-        internal virtual void ResetInternal(object fieldValue)
+        internal virtual void ResetInternal(BinarySerializationContext context)
         {
-            Reset(fieldValue);
+            Reset(context);
         }
 
         internal void ComputeInternal(byte[] buffer, int offset, int count)

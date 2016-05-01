@@ -11,30 +11,40 @@ namespace BinarySerialization
         /// <summary>
         /// Initializes a new instance of the BinarySerializationContext class with a parent, parentType, and parentContext.
         /// </summary>
-        /// <param name="parent">The parent of this object in the object graph.</param>
+        /// <param name="value">The value of the object being serialized.</param>
+        /// <param name="parentValue">The parent of this object in the object graph.</param>
         /// <param name="parentType">The type of the parent object.</param>
         /// <param name="parentContext">The parent object serialization context.</param>
-        internal BinarySerializationContext(object parent, Type parentType, BinarySerializationContext parentContext)
+        internal BinarySerializationContext(object value, object parentValue, Type parentType, BinarySerializationContext parentContext)
         {
-            Parent = parent;
+            Value = value;
+            ParentValue = parentValue;
             ParentType = parentType;
 			ParentContext = parentContext;
-		}
+
+            // Deprecated
+            Parent = parentValue;
+        }
 
         /// <summary>
-        /// The parent in the object graph of the object being serialized.
+        /// The value of the object being serialized.
         /// </summary>
-		public object Parent { get; set; }
+        public object Value { get; }
+
+        /// <summary>
+        /// The parent value in the object graph of the object being serialized.
+        /// </summary>
+        public object ParentValue { get; }
 
         /// <summary>
         /// The type of the parent.
         /// </summary>
-		public Type ParentType { get; set; }
+		public Type ParentType { get; }
 
         /// <summary>
         /// The parent object serialization context.
         /// </summary>
-		public BinarySerializationContext ParentContext { get; set; }
+		public BinarySerializationContext ParentContext { get; }
 
         /// <summary>
         /// Depth of the object graph at this context.
@@ -57,7 +67,7 @@ namespace BinarySerialization
         /// <returns></returns>
         public T FindAncestor<T>() where T : class
         {
-            var parent = Parent;
+            var parentValue = ParentValue;
             var parentType = ParentType;
             var parentContext = ParentContext;
 
@@ -66,13 +76,20 @@ namespace BinarySerialization
                 if (parentContext == null)
                     return null;
 
-                parent = parentContext.Parent;
+                parentValue = parentContext.ParentValue;
                 parentType = parentContext.ParentType;
                 parentContext = parentContext.ParentContext;
             }
 
-            return (T)parent;
+            return (T)parentValue;
         }
-	}
+
+        
+        /// <summary>
+        /// The parent value in the object graph of the object being serialized.
+        /// </summary>
+        [Obsolete("Use ParentValue")]
+        public object Parent { get; }
+    }
 }
 

@@ -52,8 +52,8 @@
         /// <summary>
         /// This is called by the framework to indicate a new operation.
         /// </summary>
-        /// <param name="fieldValue"></param>
-        protected override void Reset(object fieldValue)
+        /// <param name="context"></param>
+        protected override void Reset(BinarySerializationContext context)
         {
             _crc.Reset();
         }
