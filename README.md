@@ -84,7 +84,7 @@ Attributes
 * [ItemLength](#itemlengthattribute)
 * [ItemSerializeUntil](#itemserializeuntilattribute)
 * [Advanced Topics](#performance)
-  *[Enums](#enums)
+    *[Enums](#enums)
   *[Streams](#streams)
   *[Nulls](#nulls)
   *[Nullable Types](#nullabletypes)
