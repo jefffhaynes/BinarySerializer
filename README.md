@@ -69,6 +69,21 @@ Attributes
 ----------
 
 * [Ignore](ignoreattribute)
+* [SerializeAs](#serializeasattribute)
+* [FieldOrder](#fieldorderattribute)
+* [FieldLength](#fieldlengthattribute)
+* [FieldCount](#fieldcountattribute)
+* [ItemLength](#itemlengthattribute)
+* [FieldOffset](#fieldoffsetattribute)
+* [Subtype](#subtypeattribute)
+* [SerializeWhen](#serializewhenattribute)
+* [SerializeUntil](#serializeuntilattribute)
+* [ItemSerializeUntil](#itemserializeuntilattribute)
+* [SerializeAsEnum](#serializeasenumattribute)
+* [FieldValue](#fieldvalueattribute)
+* [FieldCrc16Attribute](#fieldcrc16attribute)
+* [FieldCrc32Attribute](#fieldcrc32attribute)
+
 
 There are a number of attributes that can be used to control the serialization of fields.
 
