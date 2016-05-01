@@ -448,7 +448,7 @@ public enum Waypoints
 
 ### FieldValueAttribute ###
 
-The FieldValue attribute is an abstract class that allows for the computation of complex fields based on either the value or serialized value of another field.  This can be used to create hashes, checksums, and other complex fields.  For information on custom FieldValue attributes, see [below](#Extending FieldValue Attributes).
+The FieldValue attribute is an abstract class that allows for the computation of complex fields based on either the value or serialized value of another field.  This can be used to create hashes, checksums, and other complex fields.  For information on custom FieldValue attributes, see [below](#Extending-FieldValue-Attributes).
 
 
 ### FieldCrc16Attribute ###
