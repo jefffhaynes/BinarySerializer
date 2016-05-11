@@ -127,7 +127,7 @@ namespace BinarySerialization
             serializer.Context = context;
             serializer.Bind();
 
-            serializer.Serialize(new LimitedStream(stream), _eventShuttle);
+            serializer.Serialize(new BoundedStream(stream), _eventShuttle);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace BinarySerialization
             serializer.EndiannessCallback = () => Endianness;
             serializer.EncodingCallback = () => Encoding;
             serializer.Context = context;
-            serializer.Deserialize(new LimitedStream(stream), _eventShuttle);
+            serializer.Deserialize(new BoundedStream(stream), _eventShuttle);
 
             return serializer.Value;
         }

@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value { get; set; }
 
-        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             var valueStream = (Stream)Value;
 
@@ -23,12 +23,12 @@ namespace BinarySerialization.Graph.ValueGraph
             valueStreamlet.CopyTo(stream);
         }
 
-        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             /* This is weird but we need to find the base stream so we can reference it directly */
             Stream baseStream = stream;
-            while (baseStream is LimitedStream)
-                baseStream = (baseStream as LimitedStream).Source;
+            while (baseStream is BoundedStream)
+                baseStream = (baseStream as BoundedStream).Source;
 
             var length = TypeNode.FieldLengthBinding == null
                 ? (long?)null

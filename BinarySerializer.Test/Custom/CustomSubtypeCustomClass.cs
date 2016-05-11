@@ -10,9 +10,9 @@ namespace BinarySerialization.Test.Custom
 
         public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)
         {
-            var limitedStream = (LimitedStream) stream;
-            Assert.AreEqual(0, limitedStream.Position);
-            Assert.AreEqual(100, limitedStream.MaxLength);
+            var boundedStream = (BoundedStream) stream;
+            Assert.AreEqual(0, boundedStream.Position);
+            Assert.AreEqual(100, boundedStream.MaxLength);
 
             var varuint = new Varuint {Value = Value};
             varuint.Serialize(stream, endianness, serializationContext);

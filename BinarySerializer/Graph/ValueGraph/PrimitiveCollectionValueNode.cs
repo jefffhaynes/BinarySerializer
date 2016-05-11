@@ -54,7 +54,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             int? itemLength = null;
             if (TypeNode.ItemLengthBinding != null && TypeNode.ItemLengthBinding.IsConst)
@@ -77,7 +77,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             var items =
                 DeserializeCollection(stream, eventShuttle).ToList();
@@ -92,7 +92,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 SetCollectionValue(items[i], i);
         }
 
-        private IEnumerable<object> DeserializeCollection(LimitedStream stream, EventShuttle eventShuttle)
+        private IEnumerable<object> DeserializeCollection(BoundedStream stream, EventShuttle eventShuttle)
         {
             var typeNode = (CollectionTypeNode) TypeNode;
 
@@ -137,7 +137,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected abstract void PrimitiveCollectionSerializeOverride(LimitedStream stream, int? length, int? itemCount);
+        protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, int? length, int? itemCount);
         protected abstract object CreateCollection(int size);
         protected abstract object CreateCollection(IEnumerable enumerable);
         protected abstract void SetCollectionValue(object item, int index);

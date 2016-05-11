@@ -3,7 +3,7 @@ using System.IO;
 
 namespace BinarySerialization
 {
-    internal class TapStream : LimitedStream
+    internal class TapStream : BoundedStream
     {
         private const string TappingErrorMessage = "Not supported while tapping.";
         

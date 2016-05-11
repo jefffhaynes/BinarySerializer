@@ -115,7 +115,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return value;
         }
 
-        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             ObjectSerializeOverride(stream, eventShuttle);
 
@@ -133,7 +133,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected virtual void ObjectSerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        protected virtual void ObjectSerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             // check to see if we are actually supposed to be a custom serialization.  This is a side-effect of
             // treating all object members as object nodes.  In the case of sub-types we could later discover we
@@ -175,7 +175,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             // resolve value type for deserialization
             if (TypeNode.SubtypeBinding == null)
@@ -225,7 +225,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected virtual void ObjectDeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        protected virtual void ObjectDeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             // check to see if we are actually supposed to be a custom deserialization.  This is a side-effect of
             // treating all object members as object nodes.  In the case of sub-types we could later discover we

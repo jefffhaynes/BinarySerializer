@@ -105,7 +105,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return Children.Where(child => !child.TypeNode.IsIgnored);
         }
 
-        public void Serialize(LimitedStream stream, EventShuttle eventShuttle)
+        public void Serialize(BoundedStream stream, EventShuttle eventShuttle)
         {
             try
             {
@@ -149,10 +149,10 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private void SerializeInternal(LimitedStream stream, EventShuttle eventShuttle, long? maxLength)
+        private void SerializeInternal(BoundedStream stream, EventShuttle eventShuttle, long? maxLength)
         {
             if (maxLength != null)
-                stream = new LimitedStream(stream, maxLength.Value);
+                stream = new BoundedStream(stream, maxLength.Value);
 
             // if I need to store serialized data for later...
             if (TypeNode.FieldValueAttribute != null)
@@ -171,9 +171,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
         // this is internal only because of the weird custom subtype case.  If I can figure out a better
         // way to handle that case, this can be protected.
-        internal abstract void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle);
+        internal abstract void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle);
 
-        public void Deserialize(LimitedStream stream, EventShuttle eventShuttle)
+        public void Deserialize(BoundedStream stream, EventShuttle eventShuttle)
         {
             try
             {
@@ -216,10 +216,10 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private void DeserializeInternal(LimitedStream stream, long? maxLength, EventShuttle eventShuttle)
+        private void DeserializeInternal(BoundedStream stream, long? maxLength, EventShuttle eventShuttle)
         {
             if (maxLength != null)
-                stream = new LimitedStream(stream, maxLength.Value);
+                stream = new BoundedStream(stream, maxLength.Value);
 
             if (EndOfStream(stream))
             {
@@ -229,7 +229,7 @@ namespace BinarySerialization.Graph.ValueGraph
             else DeserializeOverride(stream, eventShuttle);
         }
 
-        internal abstract void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle);
+        internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);
 
         public ValueNode GetChild(string path)
         {
@@ -259,9 +259,9 @@ namespace BinarySerialization.Graph.ValueGraph
         protected virtual long MeasureOverride()
         {
             var nullStream = new NullStream();
-            var streamLimiter = new LimitedStream(nullStream);
-            Serialize(streamLimiter, null);
-            return streamLimiter.RelativePosition;
+            var boundedStream = new BoundedStream(nullStream);
+            Serialize(boundedStream, null);
+            return boundedStream.RelativePosition;
         }
 
         protected virtual IEnumerable<long> MeasureItemsOverride()
@@ -284,7 +284,7 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new InvalidOperationException("Not a collection field.");
         }
 
-        protected static bool EndOfStream(LimitedStream stream)
+        protected static bool EndOfStream(BoundedStream stream)
         {
             if (stream.IsAtLimit)
                 return true;

@@ -11,7 +11,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void PrimitiveCollectionSerializeOverride(LimitedStream stream, int? itemLength, int? itemCount)
+        protected override void PrimitiveCollectionSerializeOverride(BoundedStream stream, int? itemLength, int? itemCount)
         {
             var typeNode = (ListTypeNode)TypeNode;
             var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);

@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             var serializableChildren = GetSerializableChildren();
 
@@ -25,7 +25,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (stream.IsAtLimit)
                     break;
 
-                var childStream = itemLength == null ? stream : new LimitedStream(stream, itemLength.Value);
+                var childStream = itemLength == null ? stream : new BoundedStream(stream, itemLength.Value);
                 child.Serialize(childStream, eventShuttle);
             }
 
@@ -39,7 +39,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             var typeNode = (CollectionTypeNode)TypeNode;
 
@@ -91,7 +91,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     var childStream = itemLengthEnumerator == null
                         ? stream
-                        : new LimitedStream(stream, itemLengthEnumerator.Current);
+                        : new BoundedStream(stream, itemLengthEnumerator.Current);
 
                     child.Deserialize(childStream, eventShuttle);
 
@@ -128,15 +128,15 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override IEnumerable<long> MeasureItemsOverride()
         {
             var nullStream = new NullStream();
-            var streamLimiter = new LimitedStream(nullStream);
+            var boundedStream = new BoundedStream(nullStream);
 
             var serializableChildren = GetSerializableChildren();
 
             return serializableChildren.Select(child =>
             {
-                streamLimiter.RelativePosition = 0;
-                child.Serialize(streamLimiter, null);
-                return streamLimiter.RelativePosition;
+                boundedStream.RelativePosition = 0;
+                child.Serialize(boundedStream, null);
+                return boundedStream.RelativePosition;
             });
         }
 

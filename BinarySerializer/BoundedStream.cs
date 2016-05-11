@@ -8,12 +8,12 @@ namespace BinarySerialization
     /// <summary>
     ///     Provides a bounded stream.
     /// </summary>
-    public class LimitedStream : Stream
+    public class BoundedStream : Stream
     {
         private readonly bool _canSeek;
         private readonly long _length;
 
-        internal LimitedStream(Stream source, long? maxLength = null)
+        internal BoundedStream(Stream source, long? maxLength = null)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -36,7 +36,7 @@ namespace BinarySerialization
         /// </summary>
         public long GlobalPosition
         {
-            get { return Ancestors.Sum(limiter => limiter.RelativePosition); }
+            get { return Ancestors.Sum(stream => stream.RelativePosition); }
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace BinarySerialization
         public override bool CanWrite => Source.CanWrite;
 
         /// <summary>
-        ///     Gets the maximum length of the stream in bytes if limited.  Returns null if stream is unlimited.
+        ///     Gets the maximum length of the stream in bytes if bounded.  Returns null if stream is unbounded.
         /// </summary>
         public long? MaxLength { get; }
 
@@ -221,7 +221,7 @@ namespace BinarySerialization
             }
         }
 
-        private IEnumerable<LimitedStream> Ancestors
+        private IEnumerable<BoundedStream> Ancestors
         {
             get
             {
@@ -230,7 +230,7 @@ namespace BinarySerialization
                 while (parent != null)
                 {
                     yield return parent;
-                    parent = parent.Source as LimitedStream;
+                    parent = parent.Source as BoundedStream;
                 }
             }
         }

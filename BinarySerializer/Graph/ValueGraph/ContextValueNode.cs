@@ -76,12 +76,12 @@ namespace BinarySerialization.Graph.ValueGraph
             Child.Bind();
         }
 
-        internal override void SerializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             Child.Serialize(stream, eventShuttle);
         }
 
-        internal override void DeserializeOverride(LimitedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             Child = ((RootTypeNode)TypeNode).Child.CreateSerializer(this);
             Child.Deserialize(stream, eventShuttle);
