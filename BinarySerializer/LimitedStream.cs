@@ -5,18 +5,15 @@ using System.Linq;
 
 namespace BinarySerialization
 {
-    internal class LimitedStream : Stream
+    /// <summary>
+    ///     Provides a bounded stream.
+    /// </summary>
+    public class LimitedStream : Stream
     {
         private readonly bool _canSeek;
         private readonly long _length;
-        private readonly bool _unbounded;
 
-        public LimitedStream(Stream source) : this(source, long.MaxValue)
-        {
-            _unbounded = true;
-        }
-
-        public LimitedStream(Stream source, long maxLength)
+        internal LimitedStream(Stream source, long? maxLength = null)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -30,32 +27,16 @@ namespace BinarySerialization
             /* Store for performance */
             _canSeek = source.CanSeek;
 
-            if(_canSeek)
+            if (_canSeek)
                 _length = source.Length;
         }
 
-        public long RelativePosition { get; set; }
-
-        public long GlobalRelativePosition
+        /// <summary>
+        ///     Gets the the current offset in the serialized graph.
+        /// </summary>
+        public long GlobalPosition
         {
-            get
-            {
-                return Ancestors.Sum(limiter => limiter.RelativePosition);
-            }
-        }
-
-        private IEnumerable<LimitedStream> Ancestors
-        {
-            get
-            {
-                var parent = this;
-
-                while (parent != null)
-                {
-                    yield return parent;
-                    parent = parent.Source as LimitedStream;
-                }
-            }
+            get { return Ancestors.Sum(limiter => limiter.RelativePosition); }
         }
 
         /// <summary>
@@ -63,50 +44,34 @@ namespace BinarySerialization
         /// </summary>
         public Stream Source { get; }
 
-        public bool IsAtLimit
-        {
-            get
-            {
-                if (_unbounded)
-                    return false;
-
-                return Position >= MaxLength;
-            }
-        }
-
+        /// <summary>
+        ///     Gets a value indicating whether the current stream supports reading.
+        /// </summary>
         public override bool CanRead => Source.CanRead;
 
+        /// <summary>
+        ///     Gets a value indicating whether the current stream supports seeking.
+        /// </summary>
         public override bool CanSeek => _canSeek;
 
+        /// <summary>
+        ///     Gets a value indicating whether the current stream supports writing.
+        /// </summary>
         public override bool CanWrite => Source.CanWrite;
 
-        public long MaxLength { get; }
+        /// <summary>
+        ///     Gets the maximum length of the stream in bytes if limited.  Returns null if stream is unlimited.
+        /// </summary>
+        public long? MaxLength { get; }
 
-        public override long Length
-        {
-            get
-            {
-                /* If we can't seek, might as well go to the source */
-                if (!_canSeek)
-                    return Source.Length;
+        /// <summary>
+        ///     Gets the length in bytes of the stream.
+        /// </summary>
+        public override long Length => !_canSeek ? Source.Length : _length;
 
-                return _length;
-            }
-        }
-
-        public long AvailableForReading
-        {
-            get
-            {
-                if (!_canSeek)
-                    return MaxLength - Position;
-
-                return Math.Min(MaxLength, Length) - Position;
-            }
-        }
-
-        public long AvailableForWriting => MaxLength - Position;
-
+        /// <summary>
+        ///     Gets or sets the position within the current stream.
+        /// </summary>
         public override long Position
         {
             get { return RelativePosition; }
@@ -119,11 +84,20 @@ namespace BinarySerialization
             }
         }
 
+        /// <summary>
+        ///     Clears all buffers for this stream and causes any buffered data to be written to the underlying device.
+        /// </summary>
         public override void Flush()
         {
             Source.Flush();
         }
 
+        /// <summary>
+        ///     Sets the position within the current stream.
+        /// </summary>
+        /// <param name="offset">A byte offset relative to the origin parameter.</param>
+        /// <param name="origin">A <see cref="SeekOrigin" /> object indicating the reference point used to obtain the new position.</param>
+        /// <returns></returns>
         public override long Seek(long offset, SeekOrigin origin)
         {
             switch (origin)
@@ -142,14 +116,39 @@ namespace BinarySerialization
             return Position;
         }
 
+        /// <summary>
+        ///     Gets the length in bytes of the stream.
+        /// </summary>
+        /// <param name="value">A long value representing the length of the stream in bytes.</param>
+        /// <exception cref="NotSupportedException">
+        ///     This method exists only to support inheritance from <see cref="Stream" />, and
+        ///     cannot be used.
+        /// </exception>
         public override void SetLength(long value)
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        ///     Reads a sequence of bytes from the current stream and advances the position within the stream by the number of
+        ///     bytes read.
+        /// </summary>
+        /// <param name="buffer">
+        ///     An array of bytes. When this method returns, the buffer contains the specified byte array with the
+        ///     values between offset and (offset + count - 1) replaced by the bytes read from the current source.
+        /// </param>
+        /// <param name="offset">
+        ///     The zero-based byte offset in buffer at which to begin storing the data read from the current
+        ///     stream.
+        /// </param>
+        /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
+        /// <returns>
+        ///     The total number of bytes read into the buffer. This can be less than the number of bytes requested if that
+        ///     many bytes are not currently available, or zero (0) if the end of the stream has been reached.
+        /// </returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (count > MaxLength - Position)
+            if (MaxLength != null && count > MaxLength - Position)
             {
                 count = Math.Max(0, (int) (MaxLength - Position));
             }
@@ -157,24 +156,83 @@ namespace BinarySerialization
             if (count == 0)
                 return 0;
 
-            int read = Source.Read(buffer, offset, count);
+            var read = Source.Read(buffer, offset, count);
             RelativePosition += read;
 
             return read;
         }
 
+        /// <summary>
+        ///     Writes a sequence of bytes to the current stream and advances the current position within this stream by the number
+        ///     of bytes written.
+        /// </summary>
+        /// <param name="buffer">An array of bytes. This method copies count bytes from buffer to the current stream.</param>
+        /// <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the current stream.</param>
+        /// <param name="count">The number of bytes to be written to the current stream.</param>
+        /// <exception cref="InvalidOperationException">count is greater than the stream length.</exception>
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (count == 0)
                 return;
 
-            if (count > MaxLength - Position)
+            if (MaxLength != null && count > MaxLength - Position)
             {
                 throw new InvalidOperationException("Unable to write beyond end of stream limit.");
             }
 
             Source.Write(buffer, offset, count);
             RelativePosition += count;
+        }
+        
+        internal long RelativePosition { get; set; }
+        
+        internal bool IsAtLimit
+        {
+            get
+            {
+                if (MaxLength == null)
+                    return false;
+
+                return Position >= MaxLength;
+            }
+        }
+        
+        internal long AvailableForReading
+        {
+            get
+            {
+                var maxLength = MaxLength ?? long.MaxValue;
+
+                if (!_canSeek)
+                    return maxLength - Position;
+
+                return Math.Min(maxLength, Length) - Position;
+            }
+        }
+
+        internal long AvailableForWriting
+        {
+            get
+            {
+                if (MaxLength == null)
+                    return long.MaxValue;
+
+                return MaxLength.Value - Position;
+            }
+        }
+
+        private IEnumerable<LimitedStream> Ancestors
+        {
+            get
+            {
+                var parent = this;
+
+                while (parent != null)
+                {
+                    yield return parent;
+                    parent = parent.Source as LimitedStream;
+                }
+            }
         }
     }
 }

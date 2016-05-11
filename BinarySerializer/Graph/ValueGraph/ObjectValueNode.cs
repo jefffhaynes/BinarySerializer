@@ -163,7 +163,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 // report on serialization start if subscribed
                 if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
                     eventShuttle.OnMemberSerializing(this, child.Name, serializationContextLazy.Value,
-                        stream.GlobalRelativePosition);
+                        stream.GlobalPosition);
 
                 // serialize child
                 child.Serialize(stream, eventShuttle);
@@ -171,7 +171,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 // report on serialization complete if subscribed
                 if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
                     eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContextLazy.Value,
-                        stream.GlobalRelativePosition);
+                        stream.GlobalPosition);
             }
         }
 
@@ -253,7 +253,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 // report on deserialization start if subscribed
                 if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
                     eventShuttle.OnMemberDeserializing(this, child.Name, serializationContextLazy.Value,
-                        stream.GlobalRelativePosition);
+                        stream.GlobalPosition);
 
                 // deserialize child
                 child.Deserialize(stream, eventShuttle);
@@ -261,7 +261,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 // report on deserialization complete if subscribed
                 if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
                     eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, serializationContextLazy.Value,
-                        stream.GlobalRelativePosition);
+                        stream.GlobalPosition);
             }
         }
 
