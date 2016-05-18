@@ -60,7 +60,7 @@ namespace BinarySerialization.Test
                 var actual = data[i];
 
                 Assert.AreEqual(expected, actual,
-                    string.Format("Value at position {0} does not match expected value.", i));
+                    $"Value at position {i} does not match expected value.");
             }
 
             return result;

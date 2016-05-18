@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BinarySerialization.Graph
+﻿namespace BinarySerialization.Graph
 {
     internal abstract class Node
     {
