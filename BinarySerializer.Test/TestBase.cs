@@ -73,5 +73,10 @@ namespace BinarySerialization.Test
                 return Serializer.Deserialize<T>(stream);
             }
         }
+
+        protected T Deserialize<T>(byte[] data)
+        {
+            return Serializer.Deserialize<T>(data);
+        }
     }
 }

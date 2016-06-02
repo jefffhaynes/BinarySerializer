@@ -57,7 +57,8 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override void SetCollectionValue(object item, int index)
         {
             var array = (Array)BoundValue;
-            array.SetValue(item, index);
+            var typeNode = (ArrayTypeNode)TypeNode;
+            array.SetValue(item.ConvertTo(typeNode.ChildType), index);
         }
 
         protected override long CountOverride()

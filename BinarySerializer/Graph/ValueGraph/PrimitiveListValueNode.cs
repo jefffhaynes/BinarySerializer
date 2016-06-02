@@ -52,14 +52,15 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override object CreateCollection(IEnumerable enumerable)
         {
-            var typeNode = (ArrayTypeNode)TypeNode;
+            var typeNode = (ListTypeNode)TypeNode;
             return enumerable.Cast<object>().Select(item => item.ConvertTo(typeNode.ChildType)).ToList();
         }
 
         protected override void SetCollectionValue(object item, int index)
         {
             var list = (IList) Value;
-            list[index] = item;
+            var typeNode = (ListTypeNode)TypeNode;
+            list[index] = item.ConvertTo(typeNode.ChildType);
         }
 
         protected override long CountOverride()

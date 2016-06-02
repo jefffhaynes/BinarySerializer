@@ -79,8 +79,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            var items =
-                DeserializeCollection(stream, eventShuttle).ToList();
+            var items = DeserializeCollection(stream, eventShuttle).ToList();
 
             var itemCount = items.Count;
 

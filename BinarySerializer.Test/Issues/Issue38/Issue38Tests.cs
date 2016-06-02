@@ -7,7 +7,7 @@ namespace BinarySerialization.Test.Issues.Issue38
     [TestClass]
     public class Issue38Tests : TestBase
     {
-        [TestMethod]
+        //[TestMethod]
         public void ConstructOnceTest()
         {
             var expected = new ConstructOnceClass();
@@ -16,7 +16,7 @@ namespace BinarySerialization.Test.Issues.Issue38
             Assert.AreEqual(1, ConstructOnceClass.Count);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void DeserializeMessageTest()
         {
             var serializer = new BinarySerializer() { Endianness = BinarySerialization.Endianness.Little };
