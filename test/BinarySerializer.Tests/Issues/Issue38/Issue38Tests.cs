@@ -21,7 +21,7 @@ namespace BinarySerialization.Test.Issues.Issue38
             var serializer = new BinarySerializer() { Endianness = BinarySerialization.Endianness.Little };
             serializer.MemberDeserializing += (sender, args) =>
             {
-                Debug.Write($"Deserializing {args.MemberName}, stream offset {args.Offset}");
+               Debug.Write($"Deserializing {args.MemberName}, stream offset {args.Offset}");
             };
 
             serializer.MemberDeserialized += (sender, args) =>

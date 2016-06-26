@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 		BinarySerializer.Docs\WhenBinding.png = BinarySerializer.Docs\WhenBinding.png
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializer.Tests", "BinarySerializer.Tests\BinarySerializer.Tests.csproj", "{0EC11A14-6779-4A42-8470-E9F65126B8ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializer.Tests", "test\BinarySerializer.Tests\BinarySerializer.Tests.csproj", "{0EC11A14-6779-4A42-8470-E9F65126B8ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
