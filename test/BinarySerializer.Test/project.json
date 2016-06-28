@@ -1,0 +1,39 @@
+//{
+//  "version": "1.0.0-*",
+//  "buildOptions": {
+//    "preserveCompilationContext": true
+//  },
+//  "dependencies": {
+//    "NETStandard.Library": "1.6.0",
+
+//  },
+
+//  "frameworks": {
+//    "netstandard1.5": {
+//      "imports": "dnxcore50"
+//    }
+//  }
+//}
+
+
+{
+    "version": "1.0.0-*",
+    "testRunner": "xunit",
+  "dependencies": {
+    "xunit": "2.2.0-beta2-build3300",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029",
+    "System.Security.Cryptography.Algorithms": "4.2.0",
+    "System.Security.Cryptography.Primitives": "4.0.0",
+    "BinarySerializer": "6.0.0-*"
+  },
+    "frameworks": {
+        "netcoreapp1.0": {
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "type": "platform",
+                    "version": "1.0.0"
+                }
+            }
+        }
+    }
+}
