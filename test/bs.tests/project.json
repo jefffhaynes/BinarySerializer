@@ -12,15 +12,15 @@
       "type": "platform"
     },
     "xunit": "2.1.0-rc2-*",
-		"BinarySerializer.Core": "6.6.6-*"
+		"BinarySerializer": "6.6.6-*"
   },
 
   "frameworks": {
     "netcoreapp1.0": {
       "imports": [
         "dotnet5.6",
-        "dnxcore50",
-        "portable-net45+win8"
+        "dnxcore50" //,
+       // "portable-net45+win8"
       ]
     }
   },
