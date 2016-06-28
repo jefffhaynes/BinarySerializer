@@ -12,7 +12,7 @@
       "type": "platform"
     },
     "xunit": "2.1.0-rc2-*",
-		"BinarySerializer": "6.6.6-*"
+		"BinarySerializer.Core": "6.6.6-*"
   },
 
   "frameworks": {
