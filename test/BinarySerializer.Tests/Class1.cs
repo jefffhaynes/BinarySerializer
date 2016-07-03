@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using BinarySerialization;
 
 namespace BinarySerialization.Tests
 {
@@ -10,6 +10,7 @@ namespace BinarySerialization.Tests
     {
         public Class1()
         {
+            BinarySerializer bs = new BinarySerializer(); 
         }
     }
 }
