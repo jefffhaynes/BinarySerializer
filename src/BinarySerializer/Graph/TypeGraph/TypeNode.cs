@@ -169,7 +169,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     }
 
                     var invalidSubtype =
-                        SubtypeAttributes.FirstOrDefault(attribute => !Type.IsAssignableFrom(attribute.Subtype));
+                        SubtypeAttributes.FirstOrDefault(attribute => !Type.GetTypeInfo().IsAssignableFrom(attribute.Subtype));
 
                     if (invalidSubtype != null)
                         throw new InvalidOperationException($"{invalidSubtype.Subtype} is not a subtype of {Type}");
@@ -322,7 +322,7 @@ namespace BinarySerialization.Graph.TypeGraph
             if (type == typeof (string))
                 return () => string.Empty;
 
-            var constructor = type.GetConstructor(new Type[0]);
+            var constructor = type.GetTypeInfo().GetConstructor(new Type[0]);
             return CreateCompiledConstructor(constructor);
         }
 

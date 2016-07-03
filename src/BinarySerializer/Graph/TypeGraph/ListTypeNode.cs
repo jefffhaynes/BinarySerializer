@@ -24,7 +24,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private Type GetChildType(Type collectionType)
         {
-            return collectionType.GetGenericArguments().Single();
+            return collectionType.GetTypeInfo().GetGenericArguments().Single();
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)

@@ -33,7 +33,7 @@ namespace BinarySerialization.Graph.TypeGraph
             /* Get enum attributes */
             var enumAttributes = values.ToDictionary(value => value, value =>
             {
-                var memberInfo = BaseSerializedType.GetMember(value.ToString()).Single();
+                var memberInfo = BaseSerializedType.GetTypeInfo().GetMember(value.ToString()).Single();
                 return (SerializeAsEnumAttribute) memberInfo.GetCustomAttributes(
                     typeof (SerializeAsEnumAttribute),
                     false).FirstOrDefault();

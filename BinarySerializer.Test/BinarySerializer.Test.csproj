@@ -282,12 +282,6 @@
     <Compile Include="When\WhenTests.cs" />
     <Compile Include="Zinc.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BinarySerializer\BinarySerializer.Portable.csproj">
-      <Project>{dd5dac31-3ca0-4b79-8340-bdd68724a697}</Project>
-      <Name>BinarySerializer.Portable</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

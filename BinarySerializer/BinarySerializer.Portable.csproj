@@ -41,92 +41,256 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BindingMode.cs" />
-    <Compile Include="Crc.cs" />
-    <Compile Include="Crc32.cs" />
-    <Compile Include="Crc16.cs" />
-    <Compile Include="FieldCrc32Attribute.cs" />
-    <Compile Include="FieldCrc16Attribute.cs" />
-    <Compile Include="FieldValueAttribute.cs" />
-    <Compile Include="FieldValueAttributeBase.cs" />
-    <Compile Include="Graph\FieldValueAdapterStream.cs" />
-    <Compile Include="Graph\ValueBinding.cs" />
-    <Compile Include="Graph\Node.cs" />
-    <Compile Include="Graph\TypeGraph\ArrayTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\CollectionTypeNode.cs" />
-    <Compile Include="Graph\ConditionalBinding.cs" />
-    <Compile Include="Graph\TypeGraph\CustomTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\EnumTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\ListTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\StreamTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\UnknownTypeNode.cs" />
-    <Compile Include="Graph\ValueGraph\ArrayValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\CollectionValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\ContextValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\CustomValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\EnumValueNode.cs" />
-    <Compile Include="EventShuttle.cs" />
-    <Compile Include="Graph\ValueGraph\ListValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\PrimitiveCollectionValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\PrimitiveListValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\PrimitveArrayValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\StreamValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\UnknownValueNode.cs" />
-    <Compile Include="MagicMethods.cs" />
-    <Compile Include="SerializeAsAttribute.cs" />
-    <Compile Include="BinarySerializer.cs" />
-    <Compile Include="BindingException.cs" />
-    <Compile Include="Bytes.cs" />
-    <Compile Include="Graph\Binding.cs" />
-    <Compile Include="Graph\TypeGraph\ContainerTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\EnumInfo.cs" />
-    <Compile Include="IConstAttribute.cs" />
-    <Compile Include="ILengthAttribute.cs" />
-    <Compile Include="MemberSerializingEventArgs.cs" />
-    <Compile Include="Graph\TypeGraph\TypeNode.cs" />
-    <Compile Include="NullStream.cs" />
-    <Compile Include="Graph\TypeGraph\ObjectTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\RootTypeNode.cs" />
-    <Compile Include="BoundedStream.cs" />
-    <Compile Include="StreamResetter.cs" />
-    <Compile Include="SubtypeAttribute.cs" />
-    <Compile Include="SerializeUntilAttribute.cs" />
-    <Compile Include="ItemSerializeUntilAttribute.cs" />
-    <Compile Include="IValueConverter.cs" />
-    <Compile Include="BindingInfo.cs" />
-    <Compile Include="SerializeWhenAttribute.cs" />
-    <Compile Include="FieldLengthAttribute.cs" />
-    <Compile Include="IBinarySerializable.cs" />
-    <Compile Include="FieldOffsetAttribute.cs" />
-    <Compile Include="IgnoreAttribute.cs" />
-    <Compile Include="SerializeAsEnumAttribute.cs" />
-    <Compile Include="ItemLengthAttribute.cs" />
-    <Compile Include="ReflectionExtensionMethods.cs" />
-    <Compile Include="FieldCountAttribute.cs" />
-    <Compile Include="EndianAwareBinaryReader.cs" />
-    <Compile Include="EndianAwareBinaryWriter.cs" />
-    <Compile Include="Endianness.cs" />
-    <Compile Include="MemberSerializedEventArgs.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FieldOrderAttribute.cs" />
-    <Compile Include="SerializedType.cs" />
-    <Compile Include="BinarySerializationContext.cs" />
-    <Compile Include="RelativeSourceMode.cs" />
-    <Compile Include="FieldBindingBaseAttribute.cs" />
-    <Compile Include="IBindableFieldAttribute.cs" />
-    <Compile Include="Streamlet.cs" />
-    <Compile Include="Graph\TypeGraph\ValueTypeNode.cs" />
-    <Compile Include="Graph\ValueGraph\ValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\ObjectValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\ValueValueNode.cs" />
-    <Compile Include="TapStream.cs" />
-    <Compile Include="TypeExtensions.cs" />
+    <Compile Include="..\src\BinarySerializer\BinarySerializationContext.cs">
+      <Link>BinarySerializationContext.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\BinarySerializer.cs">
+      <Link>BinarySerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\BindingException.cs">
+      <Link>BindingException.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\BindingInfo.cs">
+      <Link>BindingInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\BindingMode.cs">
+      <Link>BindingMode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\BoundedStream.cs">
+      <Link>BoundedStream.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Bytes.cs">
+      <Link>Bytes.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Crc.cs">
+      <Link>Crc.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Crc16.cs">
+      <Link>Crc16.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Crc32.cs">
+      <Link>Crc32.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\EndianAwareBinaryReader.cs">
+      <Link>EndianAwareBinaryReader.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\EndianAwareBinaryWriter.cs">
+      <Link>EndianAwareBinaryWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Endianness.cs">
+      <Link>Endianness.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\EventShuttle.cs">
+      <Link>EventShuttle.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\FieldBindingBaseAttribute.cs">
+      <Link>FieldBindingBaseAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\FieldCountAttribute.cs">
+      <Link>FieldCountAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\FieldCrc16Attribute.cs">
+      <Link>FieldCrc16Attribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\FieldCrc32Attribute.cs">
+      <Link>FieldCrc32Attribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\FieldLengthAttribute.cs">
+      <Link>FieldLengthAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\FieldOffsetAttribute.cs">
+      <Link>FieldOffsetAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\FieldOrderAttribute.cs">
+      <Link>FieldOrderAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\FieldValueAttribute.cs">
+      <Link>FieldValueAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\FieldValueAttributeBase.cs">
+      <Link>FieldValueAttributeBase.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\Binding.cs">
+      <Link>Graph\Binding.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ConditionalBinding.cs">
+      <Link>Graph\ConditionalBinding.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\FieldValueAdapterStream.cs">
+      <Link>Graph\FieldValueAdapterStream.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\Node.cs">
+      <Link>Graph\Node.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\ArrayTypeNode.cs">
+      <Link>Graph\TypeGraph\ArrayTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\CollectionTypeNode.cs">
+      <Link>Graph\TypeGraph\CollectionTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\ContainerTypeNode.cs">
+      <Link>Graph\TypeGraph\ContainerTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\CustomTypeNode.cs">
+      <Link>Graph\TypeGraph\CustomTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\EnumInfo.cs">
+      <Link>Graph\TypeGraph\EnumInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\EnumTypeNode.cs">
+      <Link>Graph\TypeGraph\EnumTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\ListTypeNode.cs">
+      <Link>Graph\TypeGraph\ListTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\ObjectTypeNode.cs">
+      <Link>Graph\TypeGraph\ObjectTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\RootTypeNode.cs">
+      <Link>Graph\TypeGraph\RootTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\StreamTypeNode.cs">
+      <Link>Graph\TypeGraph\StreamTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\TypeNode.cs">
+      <Link>Graph\TypeGraph\TypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\UnknownTypeNode.cs">
+      <Link>Graph\TypeGraph\UnknownTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\TypeGraph\ValueTypeNode.cs">
+      <Link>Graph\TypeGraph\ValueTypeNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueBinding.cs">
+      <Link>Graph\ValueBinding.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\ArrayValueNode.cs">
+      <Link>Graph\ValueGraph\ArrayValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\CollectionValueNode.cs">
+      <Link>Graph\ValueGraph\CollectionValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\ContextValueNode.cs">
+      <Link>Graph\ValueGraph\ContextValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\CustomValueNode.cs">
+      <Link>Graph\ValueGraph\CustomValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\EnumValueNode.cs">
+      <Link>Graph\ValueGraph\EnumValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\ListValueNode.cs">
+      <Link>Graph\ValueGraph\ListValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\ObjectValueNode.cs">
+      <Link>Graph\ValueGraph\ObjectValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\PrimitiveCollectionValueNode.cs">
+      <Link>Graph\ValueGraph\PrimitiveCollectionValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\PrimitiveListValueNode.cs">
+      <Link>Graph\ValueGraph\PrimitiveListValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\PrimitveArrayValueNode.cs">
+      <Link>Graph\ValueGraph\PrimitveArrayValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\StreamValueNode.cs">
+      <Link>Graph\ValueGraph\StreamValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\UnknownValueNode.cs">
+      <Link>Graph\ValueGraph\UnknownValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\ValueNode.cs">
+      <Link>Graph\ValueGraph\ValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Graph\ValueGraph\ValueValueNode.cs">
+      <Link>Graph\ValueGraph\ValueValueNode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\IBinarySerializable.cs">
+      <Link>IBinarySerializable.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\IBindableFieldAttribute.cs">
+      <Link>IBindableFieldAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\IConstAttribute.cs">
+      <Link>IConstAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\IgnoreAttribute.cs">
+      <Link>IgnoreAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\ILengthAttribute.cs">
+      <Link>ILengthAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\ItemLengthAttribute.cs">
+      <Link>ItemLengthAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\ItemSerializeUntilAttribute.cs">
+      <Link>ItemSerializeUntilAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\IValueConverter.cs">
+      <Link>IValueConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\MagicMethods.cs">
+      <Link>MagicMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\MemberSerializedEventArgs.cs">
+      <Link>MemberSerializedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\MemberSerializingEventArgs.cs">
+      <Link>MemberSerializingEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\NullStream.cs">
+      <Link>NullStream.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\ReflectionExtensionMethods.cs">
+      <Link>ReflectionExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\RelativeSourceMode.cs">
+      <Link>RelativeSourceMode.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\SerializeAsAttribute.cs">
+      <Link>SerializeAsAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\SerializeAsEnumAttribute.cs">
+      <Link>SerializeAsEnumAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\SerializedType.cs">
+      <Link>SerializedType.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\SerializeUntilAttribute.cs">
+      <Link>SerializeUntilAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\SerializeWhenAttribute.cs">
+      <Link>SerializeWhenAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\Streamlet.cs">
+      <Link>Streamlet.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\StreamResetter.cs">
+      <Link>StreamResetter.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\SubtypeAttribute.cs">
+      <Link>SubtypeAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\TapStream.cs">
+      <Link>TapStream.cs</Link>
+    </Compile>
+    <Compile Include="..\src\BinarySerializer\TypeExtensions.cs">
+      <Link>TypeExtensions.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="nuget\BinarySerializer.dll.nuspec" />
+    <None Include="..\src\BinarySerializer\nuget\BinarySerializer.dll.nuspec">
+      <Link>nuget\BinarySerializer.dll.nuspec</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="nuget\nuget.exe" />
+    <None Include="..\src\BinarySerializer\nuget\nuget.exe">
+      <Link>nuget\nuget.exe</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>

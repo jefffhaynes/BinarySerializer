@@ -54,7 +54,7 @@ namespace BinarySerialization.Graph.TypeGraph
             if (!Type.GetTypeInfo().IsAbstract)
 #endif
             {
-                var constructors = Type.GetConstructors(ConstructorBindingFlags);
+                var constructors = Type.GetTypeInfo().GetConstructors(ConstructorBindingFlags);
 
                 var serializableChildren = Children.Where(child => !child.IsIgnored);
 
@@ -146,7 +146,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 if (!_subTypes.ContainsKey(type))
                 {
                     var parent = (TypeNode)Parent;
-                    var typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
+                    var typeNode = typeof (IBinarySerializable).GetTypeInfo().IsAssignableFrom(type)
                         ? new CustomTypeNode((TypeNode) Parent, parent.Type, MemberInfo, type)
                         : new ObjectTypeNode((TypeNode) Parent, parent.Type, MemberInfo, type);
 
@@ -157,8 +157,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private IEnumerable<TypeNode> GenerateChildrenImpl(Type parentType)
         {
-            IEnumerable<MemberInfo> properties = parentType.GetProperties(MemberBindingFlags);
-            IEnumerable<MemberInfo> fields = parentType.GetFields(MemberBindingFlags);
+            IEnumerable<MemberInfo> properties = parentType.GetTypeInfo().GetProperties(MemberBindingFlags);
+            IEnumerable<MemberInfo> fields = parentType.GetTypeInfo().GetFields(MemberBindingFlags);
             var all = properties.Union(fields);
 
             var children =
@@ -181,20 +181,20 @@ namespace BinarySerialization.Graph.TypeGraph
                     throw new InvalidOperationException("All fields must have a unique order number.");
             }
 
-#if !PORTABLE328
+//#if !PORTABLE328
             if (parentType.GetTypeInfo().BaseType != null)
             {
                 var baseChildren = GenerateChildrenImpl(parentType.GetTypeInfo().BaseType);
                 return baseChildren.Concat(children);
             }
 
-#else
-               if (parentType.BaseType != null)
-            {
-                var baseChildren = GenerateChildrenImpl(parentType.BaseType);
-                return baseChildren.Concat(children);
-            }
-#endif
+//#else
+//               if (parentType.BaseType != null)
+//            {
+//                var baseChildren = GenerateChildrenImpl(parentType.BaseType);
+//                return baseChildren.Concat(children);
+//            }
+//#endif
             return children;
         }
     }

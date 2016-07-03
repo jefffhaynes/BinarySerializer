@@ -12,7 +12,7 @@ namespace BinarySerialization
         public static Func<object, object> MagicFunc(Type targetType, MethodInfo method)
         {
             // First fetch the generic form
-            MethodInfo genericHelper = typeof(MagicMethods).GetMethod("MagicFuncHelper",
+            MethodInfo genericHelper = typeof(MagicMethods).GetTypeInfo().GetMethod("MagicFuncHelper",
                 BindingFlags.Static | BindingFlags.NonPublic);
 
             // Now supply the type arguments
@@ -29,17 +29,17 @@ namespace BinarySerialization
         // ReSharper disable UnusedMember.Local
         private static Func<object, object> MagicFuncHelper<TTarget, TReturn>(MethodInfo method)
         {
-#if !PORTABLE328
+//#if !PORTABLE328
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
             Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)method.CreateDelegate
                 (typeof(Func<TTarget, TReturn>), method);
 
-#else
-            // Convert the slow MethodInfo into a fast, strongly typed, open delegate
-            Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)Delegate.CreateDelegate
-                (typeof(Func<TTarget, TReturn>), method);
+//#else
+//            // Convert the slow MethodInfo into a fast, strongly typed, open delegate
+//            Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)Delegate.CreateDelegate
+//                (typeof(Func<TTarget, TReturn>), method);
 
-#endif
+//#endif
 
             // Now create a more weakly typed delegate which will call the strongly typed one
             Func<object, object> ret = target => func((TTarget)target);
@@ -50,7 +50,7 @@ namespace BinarySerialization
         public static Action<object, object> MagicAction(Type targetType, MethodInfo method)
         {
             // First fetch the generic form
-            MethodInfo genericHelper = typeof(MagicMethods).GetMethod("MagicActionHelper",
+            MethodInfo genericHelper = typeof(MagicMethods).GetTypeInfo().GetMethod("MagicActionHelper",
                 BindingFlags.Static | BindingFlags.NonPublic);
 
             // Now supply the type arguments

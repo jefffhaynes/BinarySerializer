@@ -59,7 +59,7 @@ namespace BinarySerialization.Graph.TypeGraph
 // ReSharper disable UnusedParameter.Local
         private static void ThrowOnBadType(Type type)
         {
-            if (typeof(IDictionary).IsAssignableFrom(type))
+            if (typeof(IDictionary).GetTypeInfo().IsAssignableFrom(type))
                 throw new InvalidOperationException("Cannot serialize objects that implement IDictionary.");
         }
 // ReSharper restore UnusedParameter.Local
@@ -70,12 +70,12 @@ namespace BinarySerialization.Graph.TypeGraph
 
             var effectiveType = nullableType ?? type;
 
-#if !PORTABLE328
+//#if !PORTABLE328
 
             if (effectiveType.GetTypeInfo().IsEnum)
-#else
-             if (effectiveType.IsEnum)
-#endif
+//#else
+//             if (effectiveType.IsEnum)
+//#endif
                 return typeof(EnumTypeNode);
 
             if (IsValueType(effectiveType))
@@ -83,11 +83,11 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (type.IsArray)
                 return typeof(ArrayTypeNode);
-            if (typeof(IList).IsAssignableFrom(type))
+            if (typeof(IList).GetTypeInfo().IsAssignableFrom(type))
                 return typeof(ListTypeNode);
-            if (typeof(Stream).IsAssignableFrom(type))
+            if (typeof(Stream).GetTypeInfo().IsAssignableFrom(type))
                 return typeof(StreamTypeNode);
-            if (typeof(IBinarySerializable).IsAssignableFrom(type))
+            if (typeof(IBinarySerializable).GetTypeInfo().IsAssignableFrom(type))
                 return typeof(CustomTypeNode);
             if (type == typeof(object))
                 return typeof (UnknownTypeNode);
