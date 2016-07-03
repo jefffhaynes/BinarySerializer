@@ -2,15 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 using BinarySerialization;
 
 namespace BinarySerialization.Tests
 {
-    public class Class1
+    public class SampleTest
     {
-        public Class1()
+        [Fact]
+        public void PassingTest()
         {
-            BinarySerializer bs = new BinarySerializer(); 
+						BinarySerializer bs = new BinarySerializer();
+            Assert.Equal(4, Add(2, 2));
+        }
+
+        [Fact]
+        public void FailingTest()
+        {
+            Assert.Equal(5, Add(2, 2));
+        }
+
+        int Add(int x, int y)
+        {
+            return x + y;
         }
     }
 }
