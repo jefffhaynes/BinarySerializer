@@ -37,7 +37,6 @@ namespace BinarySerialization.Test.Order
         public void MultipleMembersDuplicateOrderAttributeShouldThrowTest()
         {
             var order = new MutlipleMembersDuplicateOrderClass();
-            Roundtrip(order);
             var exception = Record.Exception(() => Roundtrip(order));
             Assert.NotNull(exception);
             Assert.IsType<InvalidOperationException>(exception);

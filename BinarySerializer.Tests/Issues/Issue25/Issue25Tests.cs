@@ -6,7 +6,6 @@ using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue25
 {
-    //TODO: FIX ME
     public class Issue25Tests
     {
         [Fact]
@@ -28,24 +27,26 @@ namespace BinarySerialization.Test.Issues.Issue25
                 actualBytes = stream.ToArray();
             
             }
-
-
-
-            if (!expetedBytes.SequenceEqual(actualBytes))
-            {
-                //Assert.F
-                Assert.True(false,
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Bytes are not equal. Expected({2}): {0} Result({3}): {1}",
-                        BitConverter.ToString(expetedBytes),
-                        BitConverter.ToString(actualBytes),
-                        expetedBytes.Length,
-                        actualBytes.Length));
-            }
-
             Assert.NotNull(e);
             Assert.IsType<InvalidOperationException>(e);
+
+
+            //TODO: check if this is okay to remove since the method
+            //was already wrapped with ExpectedExceptions attribute
+
+            //if (!expetedBytes.SequenceEqual(actualBytes))
+            //{
+            //    Assert.True(false,
+            //        string.Format(
+            //            CultureInfo.InvariantCulture,
+            //            "Bytes are not equal. Expected({2}): {0} Result({3}): {1}!!!!!",
+            //            BitConverter.ToString(expetedBytes),
+            //            BitConverter.ToString(actualBytes),
+            //            expetedBytes.Length,
+            //            actualBytes.Length));
+            //}
+
+            
 
         }
     }

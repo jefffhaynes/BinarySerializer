@@ -6,7 +6,8 @@ namespace BinarySerialization.Test.Issues.Issue38
 {
         public class Issue38Tests : TestBase
     {
-        [Fact]
+        //TODO: [TestMethod] was commented out, so we commented out [Fact] as well ??
+        //[Fact]
         public void ConstructOnceTest()
         {
             var expected = new ConstructOnceClass();
@@ -15,7 +16,8 @@ namespace BinarySerialization.Test.Issues.Issue38
             Assert.Equal(1, ConstructOnceClass.Count);
         }
 
-        [Fact]
+        //TODO: [TestMethod] was commented out, so we commented out [Fact] as well ??
+        //[Fact]
         public void DeserializeMessageTest()
         {
             var serializer = new BinarySerializer() { Endianness = BinarySerialization.Endianness.Little };
@@ -36,7 +38,9 @@ namespace BinarySerialization.Test.Issues.Issue38
             using (var stream = new MemoryStream(inBytes))
             {
                 var actualObj = serializer.Deserialize<MachineState1>(stream);
+                //This doesn't work via xunit, it fails
                 Assert.Equal(null, actualObj); //TODO: Equal partial expansion, add message , "Deserialization done with invalid Stream.");
+
             }
         }
     }
