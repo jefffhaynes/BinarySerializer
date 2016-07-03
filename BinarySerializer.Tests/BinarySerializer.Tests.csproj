@@ -1,0 +1,343 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\xunit.runner.visualstudio.2.2.0-beta2-build1149\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.2.2.0-beta2-build1149\build\net20\xunit.runner.visualstudio.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2AAE4B01-61E1-43AB-AB2D-7E25D772E84C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BinarySerialization.Test</RootNamespace>
+    <AssemblyName>BinarySerializer.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.abstractions.2.0.1-rc2\lib\net35\xunit.abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.assert, Version=2.2.0.3300, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.assert.2.2.0-beta2-build3300\lib\netstandard1.0\xunit.assert.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.core, Version=2.2.0.3300, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.extensibility.core.2.2.0-beta2-build3300\lib\net45\xunit.core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.execution.desktop, Version=2.2.0.3300, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.extensibility.execution.2.2.0-beta2-build3300\lib\net45\xunit.execution.desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise />
+  </Choose>
+  <ItemGroup>
+    <Compile Include="BinarySerializerTests.cs" />
+    <Compile Include="CalciumCarbonate.cs" />
+    <Compile Include="Cereal.cs" />
+    <Compile Include="CerealShape.cs" />
+    <Compile Include="Context\Context.cs" />
+    <Compile Include="Context\ContextClass.cs" />
+    <Compile Include="Context\ContextTests.cs" />
+    <Compile Include="Converters\ConverterClass.cs" />
+    <Compile Include="Converters\ConverterTests.cs" />
+    <Compile Include="Converters\TwiceConverter.cs" />
+    <Compile Include="Count\BoundCountClass.cs" />
+    <Compile Include="Count\ConstCountClass.cs" />
+    <Compile Include="Count\CountTests.cs" />
+    <Compile Include="Count\PrimitiveListBindingClass.cs" />
+    <Compile Include="Count\PrimitiveArrayBindingClass.cs" />
+    <Compile Include="CrcTests.cs" />
+    <Compile Include="Custom\CustomSourceBinding.cs" />
+    <Compile Include="Custom\CustomSubtypeBaseClass.cs" />
+    <Compile Include="Custom\CustomSubtypeContainerClass.cs" />
+    <Compile Include="Custom\CustomSubtypeCustomClass.cs" />
+    <Compile Include="Custom\CustomTests.cs" />
+    <Compile Include="Custom\CustomWithContextClass.cs" />
+    <Compile Include="Custom\Varuint.cs" />
+    <Compile Include="Encoding\EncodingClass.cs" />
+    <Compile Include="Encoding\EncodingTests.cs" />
+    <Compile Include="Endianness\EndiannessClass.cs" />
+    <Compile Include="Endianness\EndiannessTests.cs" />
+    <Compile Include="Enums\BaseTypeEnumAsStringClass.cs" />
+    <Compile Include="Enums\EnumTests.cs" />
+    <Compile Include="Enums\NullableEnumClass.cs" />
+    <Compile Include="Events\EventTestClass.cs" />
+    <Compile Include="Events\EventTestInnerClass.cs" />
+    <Compile Include="Events\EventTests.cs" />
+    <Compile Include="Ignore\IgnoreObjectClass.cs" />
+    <Compile Include="Ignore\IgnoreTests.cs" />
+    <Compile Include="Issues\Issue12\BeerChunk.cs" />
+    <Compile Include="Issues\Issue12\BodyChunk.cs" />
+    <Compile Include="Issues\Issue12\CatChunk.cs" />
+    <Compile Include="Issues\Issue12\Chunk.cs" />
+    <Compile Include="Issues\Issue12\ChunkContainer.cs" />
+    <Compile Include="Issues\Issue12\DescChunk.cs" />
+    <Compile Include="Issues\Issue12\FormChunk.cs" />
+    <Compile Include="Issues\Issue12\IsEvenConverter.cs" />
+    <Compile Include="Issues\Issue12\Issue12Tests.cs" />
+    <Compile Include="Issues\Issue12\ListChunk.cs" />
+    <Compile Include="Issues\Issue12\ParmChunk.cs" />
+    <Compile Include="Issues\Issue12\RefeChunk.cs" />
+    <Compile Include="Issues\Issue12\SnaxChunk.cs" />
+    <Compile Include="Issues\Issue18\JaggedArrayClass.cs" />
+    <Compile Include="Issues\Issue21\FailingClass.cs" />
+    <Compile Include="Issues\Issue21\Issue21Tests.cs" />
+    <Compile Include="Issues\Issue24\Bin1Data.cs" />
+    <Compile Include="Issues\Issue24\Issue24Tests.cs" />
+    <Compile Include="Issues\Issue24\LoadCarrierData.cs" />
+    <Compile Include="Issues\Issue24\LoadCarrierType.cs" />
+    <Compile Include="Issues\Issue25\Issue25Tests.cs" />
+    <Compile Include="Issues\Issue25\LoadCarrierData.cs" />
+    <Compile Include="Issues\Issue25\LoadCarrierType.cs" />
+    <Compile Include="Issues\Issue27\Issue27Tests.cs" />
+    <Compile Include="Issues\Issue27\LoadCarrierData.cs" />
+    <Compile Include="Issues\Issue29\BaseCarrierData.cs" />
+    <Compile Include="Issues\Issue29\Issue29Tests.cs" />
+    <Compile Include="Issues\Issue29\LoadCarrierData.cs" />
+    <Compile Include="Issues\Issue29\LoadCarrierType.cs" />
+    <Compile Include="Issues\Issue30\CommMessage.cs" />
+    <Compile Include="Issues\Issue30\Header.cs" />
+    <Compile Include="Issues\Issue30\IMessage.cs" />
+    <Compile Include="Issues\Issue30\IPayload.cs" />
+    <Compile Include="Issues\Issue30\Issue30Tests.cs" />
+    <Compile Include="Issues\Issue30\MessageSerializer.cs" />
+    <Compile Include="Issues\Issue30\MessageType.cs" />
+    <Compile Include="Issues\Issue30\PayloadA.cs" />
+    <Compile Include="Issues\Issue30\PayloadType.cs" />
+    <Compile Include="Issues\Issue33\Bin3Data.cs" />
+    <Compile Include="Issues\Issue33\BinOccupancy.cs" />
+    <Compile Include="Issues\Issue33\Issue33Tests.cs" />
+    <Compile Include="Issues\Issue34\AdditionConverter.cs" />
+    <Compile Include="Issues\Issue34\InternalS7String.cs" />
+    <Compile Include="Issues\Issue34\Issue34Tests.cs" />
+    <Compile Include="Issues\Issue34\S7String.cs" />
+    <Compile Include="Issues\Issue38\ConstructOnceClass.cs" />
+    <Compile Include="Issues\Issue38\Issue38Tests.cs" />
+    <Compile Include="Issues\Issue38\MachineState1.cs" />
+    <Compile Include="Issues\Issue38\PositionData1.cs" />
+    <Compile Include="Issues\Issue39\InputsStateFrameData.cs" />
+    <Compile Include="Issues\Issue39\Issue39Tests.cs" />
+    <Compile Include="Issues\Issue9\ElementClass.cs" />
+    <Compile Include="Issues\Issue9\Entry.cs" />
+    <Compile Include="Issues\Issue9\Issue9Tests.cs" />
+    <Compile Include="ItemLength\ArrayItemBoundLengthClass.cs" />
+    <Compile Include="ItemLength\ItemBoundLengthClass.cs" />
+    <Compile Include="ItemLength\ItemConstLengthClass.cs" />
+    <Compile Include="ItemLength\ItemLengthListOfByteArrayClass.cs" />
+    <Compile Include="ItemLength\JaggedArrayClass.cs" />
+    <Compile Include="ItemLength\JaggedByteArrayClass.cs" />
+    <Compile Include="ItemLength\JaggedDoubleBoundClass.cs" />
+    <Compile Include="ItemLength\JaggedIntArrayClass.cs" />
+    <Compile Include="ItemLength\JaggedListClass.cs" />
+    <Compile Include="ItemLength\LimitedItemLengthClassClass.cs" />
+    <Compile Include="ItemLength\LimitedItemLengthClassInnerClass.cs" />
+    <Compile Include="Length\BoundItemClass.cs" />
+    <Compile Include="Length\BoundItemContainerClass.cs" />
+    <Compile Include="Length\EmbeddedConstrainedCollectionClass.cs" />
+    <Compile Include="Length\EmbeddedConstrainedCollectionInnerClass.cs" />
+    <Compile Include="Length\PaddedLengthClassClass.cs" />
+    <Compile Include="Length\PaddedLengthClassInnerClass.cs" />
+    <Compile Include="Misc\AbstractClass.cs" />
+    <Compile Include="Misc\AbstractClassContainer.cs" />
+    <Compile Include="Misc\AsbtractClassTests.cs" />
+    <Compile Include="Misc\CollectionMiscTests.cs" />
+    <Compile Include="Misc\DerivedClass.cs" />
+    <Compile Include="Misc\DictionaryTests.cs" />
+    <Compile Include="Misc\EmptyClass.cs" />
+    <Compile Include="Misc\EmptyClassTest.cs" />
+    <Compile Include="Misc\ImmutableClass.cs" />
+    <Compile Include="Misc\ImmutableClass2.cs" />
+    <Compile Include="Misc\ImmutableClass3.cs" />
+    <Compile Include="Misc\ImmutableClass4.cs" />
+    <Compile Include="Misc\ImmutableNoPublicConstructorClass.cs" />
+    <Compile Include="Misc\ImmutableTests.cs" />
+    <Compile Include="Misc\IntArray64K.cs" />
+    <Compile Include="Misc\IOExceptionTest.cs" />
+    <Compile Include="Misc\LargeArrayTests.cs" />
+    <Compile Include="Misc\MismatchBindingClass.cs" />
+    <Compile Include="Misc\MismatchBindingTests.cs" />
+    <Compile Include="Misc\PrivateSetterClass.cs" />
+    <Compile Include="Misc\NullTrailingMemberClassBase.cs" />
+    <Compile Include="Misc\NullTrailingMemberTests.cs" />
+    <Compile Include="Misc\ExtensionMethodTests.cs" />
+    <Compile Include="Misc\RecursiveGraphClass.cs" />
+    <Compile Include="Misc\RecursiveGraphTests.cs" />
+    <Compile Include="Order\MutlipleMembersDuplicateOrderClass.cs" />
+    <Compile Include="Primitives\ContainedStringClass.cs" />
+    <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingBaseClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingContainerClass.cs" />
+    <Compile Include="Subtype\AncestorSubtypeBindingInnerClass.cs" />
+    <Compile Include="Subtype\IncompatibleBindingsClass.cs" />
+    <Compile Include="Subtype\InvalidSubtypeClass.cs" />
+    <Compile Include="Subtype\NonUniqueSubtypeValuesClass.cs" />
+    <Compile Include="Subtype\NonUniqueSubtypesClass.cs" />
+    <Compile Include="Subtype\RecoverableMissingSubtypeClass.cs" />
+    <Compile Include="Subtype\SubtypeAsSourceClass.cs" />
+    <Compile Include="Subtype\SuperclassContainerWithMissingSubclass.cs" />
+    <Compile Include="Subtype\SuperclassContainer.cs" />
+    <Compile Include="Subtype\ThrowOnAbstractTypeWithNoSubtypeClass.cs" />
+    <Compile Include="Unknown\BindingAcrossUnknownBoundaryChildClass.cs" />
+    <Compile Include="Unknown\BindingAcrossUnknownBoundaryClass.cs" />
+    <Compile Include="Unknown\InvalidUnknownTypeClass.cs" />
+    <Compile Include="Unknown\UnknownTypeClass.cs" />
+    <Compile Include="Unknown\UnknownTypeTests.cs" />
+    <Compile Include="Misc\UnreadableStream.cs" />
+    <Compile Include="NullArrayClass.cs" />
+    <Compile Include="DoubleOutlierConverter.cs" />
+    <Compile Include="Enums\BaseTypeEnumClass.cs" />
+    <Compile Include="Enums\BaseTypeEnumValues.cs" />
+    <Compile Include="Enums\IncompleteEnumClass.cs" />
+    <Compile Include="Enums\IncompleteEnumValues.cs" />
+    <Compile Include="Enums\NamedEnumClass.cs" />
+    <Compile Include="Enums\NamedEnumValues.cs" />
+    <Compile Include="Enums\PartiallyNamedEnumValues.cs" />
+    <Compile Include="ImplictTermination.cs" />
+    <Compile Include="Ingredients.cs" />
+    <Compile Include="Iron.cs" />
+    <Compile Include="Chemical.cs" />
+    <Compile Include="ItemLength\ItemLengthTests.cs" />
+    <Compile Include="Length\BoundLengthClass.cs" />
+    <Compile Include="Length\ConstCollectionLengthClass.cs" />
+    <Compile Include="Length\ConstLengthClass.cs" />
+    <Compile Include="Length\ContainedCollection.cs" />
+    <Compile Include="Length\LengthTests.cs" />
+    <Compile Include="Misc\DictionaryMemberClass.cs" />
+    <Compile Include="Misc\NullTrailingMemberClass.cs" />
+    <Compile Include="Misc\NullTrailingMemberClassContainer.cs" />
+    <Compile Include="NonSeekableStream.cs" />
+    <Compile Include="NutritionalInformation.cs" />
+    <Compile Include="Offset\BoundOffsetClass.cs" />
+    <Compile Include="Offset\ConstOffsetClass.cs" />
+    <Compile Include="Offset\OffsetTests.cs" />
+    <Compile Include="Order\MutlipleMembersNoOrderClass.cs" />
+    <Compile Include="Order\OrderBaseClass.cs" />
+    <Compile Include="Order\OrderClass.cs" />
+    <Compile Include="Order\OrderDerivedClass.cs" />
+    <Compile Include="Order\OrderTests.cs" />
+    <Compile Include="Order\SingleMemberOrderClass.cs" />
+    <Compile Include="Primitives\PrimitiveTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializeAs\SerializeAsTest.cs" />
+    <Compile Include="SerializeAs\SizedStringClass.cs" />
+    <Compile Include="StreamletTest.cs" />
+    <Compile Include="Streams\StreamClass.cs" />
+    <Compile Include="Streams\StreamTests.cs" />
+    <Compile Include="Subtype\IncompleteSubtypeClass.cs" />
+    <Compile Include="Subtype\SubclassA.cs" />
+    <Compile Include="Subtype\UnspecifiedSubclass.cs" />
+    <Compile Include="Subtype\SubclassB.cs" />
+    <Compile Include="Subtype\SubclassType.cs" />
+    <Compile Include="Subtype\SubSubclassC.cs" />
+    <Compile Include="Subtype\SubtypeClass.cs" />
+    <Compile Include="Subtype\SubtypeTests.cs" />
+    <Compile Include="Subtype\Superclass.cs" />
+    <Compile Include="TestBase.cs" />
+    <Compile Include="Toy.cs" />
+    <Compile Include="UntilItem\UntilItemClass.cs" />
+    <Compile Include="UntilItem\UntilItemContainer.cs" />
+    <Compile Include="UntilItem\UntilItemTests.cs" />
+    <Compile Include="Until\UntilTestClass.cs" />
+    <Compile Include="Until\UntilTests.cs" />
+    <Compile Include="Value\BitMaskConverter.cs" />
+    <Compile Include="Value\FieldCrc32Class.cs" />
+    <Compile Include="Value\FieldSha256Attribute.cs" />
+    <Compile Include="Value\FieldSha256Class.cs" />
+    <Compile Include="Value\FieldValueClass.cs" />
+    <Compile Include="Value\StreamValueClass.cs" />
+    <Compile Include="Value\TcpHeader.cs" />
+    <Compile Include="Value\TcpHeaderFlags.cs" />
+    <Compile Include="Value\FieldCrc16Class.cs" />
+    <Compile Include="Value\FieldCrcInternalClass.cs" />
+    <Compile Include="Value\ValueTests.cs" />
+    <Compile Include="When\WhenEnum.cs" />
+    <Compile Include="When\WhenConverterTestClass.cs" />
+    <Compile Include="When\WhenEnumTestClass.cs" />
+    <Compile Include="When\WhenIntTestClass.cs" />
+    <Compile Include="When\WhenStringTestClass.cs" />
+    <Compile Include="When\WhenTests.cs" />
+    <Compile Include="Zinc.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BinarySerializer\BinarySerializer.Portable.csproj">
+      <Project>{dd5dac31-3ca0-4b79-8340-bdd68724a697}</Project>
+      <Name>BinarySerializer.Portable</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\xunit.runner.visualstudio.2.2.0-beta2-build1149\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.visualstudio.2.2.0-beta2-build1149\build\net20\xunit.runner.visualstudio.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
