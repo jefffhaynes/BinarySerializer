@@ -1,4 +1,8 @@
-﻿using System;
+﻿//TODO: I can't figure this out possible solutions: 
+//http://stackoverflow.com/questions/17418304/cannot-bind-to-the-target-method-when-creating-delegates-for-properties
+//http://stackoverflow.com/questions/16364198/how-to-create-a-delegate-from-a-methodinfo-when-method-signature-cannot-be-known?rq=1
+
+using System;
 using System.Linq;
 using System.Reflection;
 
@@ -29,16 +33,15 @@ namespace BinarySerialization
         // ReSharper disable UnusedMember.Local
         private static Func<object, object> MagicFuncHelper<TTarget, TReturn>(MethodInfo method)
         {
-//#if !PORTABLE328
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
+
+            //#if !PORTABLE328
             Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)method.CreateDelegate
-                (typeof(Func<TTarget, TReturn>), method);
+                (typeof(Func<TTarget, TReturn>));      //hack removed , method);
 
 //#else
-//            // Convert the slow MethodInfo into a fast, strongly typed, open delegate
 //            Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)Delegate.CreateDelegate
 //                (typeof(Func<TTarget, TReturn>), method);
-
 //#endif
 
             // Now create a more weakly typed delegate which will call the strongly typed one
@@ -67,16 +70,15 @@ namespace BinarySerialization
         // ReSharper disable UnusedMember.Local
         private static Action<object, object> MagicActionHelper<TTarget, TValue>(MethodInfo method)
         {
-#if !PORTABLE328
+            //#if !PORTABLE328
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
             Action<TTarget, TValue> action = (Action<TTarget, TValue>)method.CreateDelegate
-                (typeof(Action<TTarget, TValue>), method);
+                (typeof(Action<TTarget, TValue>));  //hack removed -> , method);
 
-#else
-            // Convert the slow MethodInfo into a fast, strongly typed, open delegate
-            Action<TTarget, TValue> action = (Action<TTarget, TValue>)Delegate.CreateDelegate
-                (typeof(Action<TTarget, TValue>), method);
-#endif
+//#else
+//            Action<TTarget, TValue> action = (Action<TTarget, TValue>)Delegate.CreateDelegate
+//                (typeof(Action<TTarget, TValue>), method);
+//#endif
 
             // Now create a more weakly typed delegate which will call the strongly typed one
             Action<object, object> ret = (target, value) =>
