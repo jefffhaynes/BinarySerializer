@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using BinarySerialization.Graph.TypeGraph;
+#if !PORTABLE328
+using System.Reflection;
+#endif
 
 namespace BinarySerialization.Graph.ValueGraph
 {
@@ -223,7 +226,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (EndOfStream(stream))
             {
+#if !PORTABLE328
+                if (TypeNode.Type.GetTypeInfo().IsPrimitive)
+
+#else
                 if (TypeNode.Type.IsPrimitive)
+
+#endif
                     throw new EndOfStreamException();
             }
             else DeserializeOverride(stream, eventShuttle);

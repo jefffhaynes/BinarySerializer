@@ -25,7 +25,15 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
+            // see http://embed.plnkr.co/03ck2dCtnJogBKHJ9EjY/preview
+
+#if NETSTANDARD1_6
+            if (ChildType.GetTypeInfo().IsPrimitive)
+
+#else
             if (ChildType.IsPrimitive)
+
+#endif
                 return new PrimitveArrayValueNode(parent, Name, this);
             return new ArrayValueNode(parent, Name, this);
         }

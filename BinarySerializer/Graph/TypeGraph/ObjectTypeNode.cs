@@ -48,7 +48,11 @@ namespace BinarySerialization.Graph.TypeGraph
 
             _subTypes = new Dictionary<Type, ObjectTypeNode>();
 
+#if NET40
             if (!Type.IsAbstract)
+#else
+            if (!Type.GetTypeInfo().IsAbstract)
+#endif
             {
                 var constructors = Type.GetConstructors(ConstructorBindingFlags);
 
@@ -177,12 +181,20 @@ namespace BinarySerialization.Graph.TypeGraph
                     throw new InvalidOperationException("All fields must have a unique order number.");
             }
 
-            if (parentType.BaseType != null)
+#if !PORTABLE328
+            if (parentType.GetTypeInfo().BaseType != null)
+            {
+                var baseChildren = GenerateChildrenImpl(parentType.GetTypeInfo().BaseType);
+                return baseChildren.Concat(children);
+            }
+
+#else
+               if (parentType.BaseType != null)
             {
                 var baseChildren = GenerateChildrenImpl(parentType.BaseType);
                 return baseChildren.Concat(children);
             }
-
+#endif
             return children;
         }
     }

@@ -29,8 +29,14 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
+#if NET40  //TODO: OR PORTABLE328?
             if(ChildType.IsPrimitive)
+                  return new PrimitiveListValueNode(parent, Name, this);
+#else
+            if (ChildType.GetTypeInfo().IsPrimitive)
                 return new PrimitiveListValueNode(parent, Name, this);
+#endif
+
             return new ListValueNode(parent, Name, this);
         }
     }

@@ -303,7 +303,13 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public static bool IsValueType(Type type)
         {
+#if !PORTABLE328
+            return type.GetTypeInfo().IsPrimitive || type == typeof(string) || type == typeof(byte[]);
+#else
             return type.IsPrimitive || type == typeof (string) || type == typeof (byte[]);
+
+#endif
+
         }
 
         protected Func<object> CreateCompiledConstructor()

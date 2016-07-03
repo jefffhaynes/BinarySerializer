@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace BinarySerialization
 {
@@ -32,7 +33,22 @@ namespace BinarySerialization
 
             if (valueType == type)
                 return value;
+#if !PORTABLE328
+            /* Special handling for strings */
+            if (valueType == typeof(string) && type.GetTypeInfo().IsPrimitive)
+            {
+                if (string.IsNullOrWhiteSpace(value.ToString()))
+                    value = 0;
+            }
 
+            Func<object, object> converter;
+            if (TypeConverters.TryGetValue(type, out converter))
+                return converter(value);
+
+            if (type.GetTypeInfo().IsEnum && valueType.GetTypeInfo().IsPrimitive)
+                return Enum.ToObject(type, Convert.ToInt32(value));
+
+#else
             /* Special handling for strings */
             if (valueType == typeof(string) && type.IsPrimitive)
             {
@@ -46,6 +62,8 @@ namespace BinarySerialization
 
             if (type.IsEnum && valueType.IsPrimitive)
                 return Enum.ToObject(type, Convert.ToInt32(value));
+
+#endif
 
             return value;
         }

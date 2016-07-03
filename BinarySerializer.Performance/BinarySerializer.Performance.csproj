@@ -58,9 +58,9 @@
       <Project>{e6ac3910-60fe-4941-bf6b-fa8279927ec2}</Project>
       <Name>BinarySerializer.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BinarySerializer\BinarySerializer.csproj">
+    <ProjectReference Include="..\BinarySerializer\BinarySerializer.Portable.csproj">
       <Project>{dd5dac31-3ca0-4b79-8340-bdd68724a697}</Project>
-      <Name>BinarySerializer</Name>
+      <Name>BinarySerializer.Portable</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
