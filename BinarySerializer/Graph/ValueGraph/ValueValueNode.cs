@@ -106,9 +106,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (length != null)
                 constLength = length.Value;
-            else if (TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst)
+            else if (TypeNode.FieldLengthBindings != null && TypeNode.FieldLengthBindings.IsConst)
             {
-                constLength = Convert.ToInt32(TypeNode.FieldLengthBinding.ConstValue);
+                constLength = Convert.ToInt32(TypeNode.FieldLengthBindings.ConstValue);
             }
             else if (typeParent?.ItemLengthBinding != null && typeParent.ItemLengthBinding.IsConst)
             {
@@ -224,9 +224,9 @@ namespace BinarySerialization.Graph.ValueGraph
             
             if (length != null)
                 effectiveLength = length.Value;
-            else if (TypeNode.FieldLengthBinding != null)
+            else if (TypeNode.FieldLengthBindings != null)
             {
-                object lengthValue = TypeNode.FieldLengthBinding.GetValue(this);
+                object lengthValue = TypeNode.FieldLengthBindings.GetValue(this);
                 effectiveLength = Convert.ToInt32(lengthValue);
             }
             else if (TypeNode.FieldCountBinding != null)

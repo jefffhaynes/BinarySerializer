@@ -16,8 +16,8 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var valueStream = (Stream)Value;
 
-            var valueStreamlet = TypeNode.FieldLengthBinding.IsConst
-                ? new Streamlet(valueStream, valueStream.Position, Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue))
+            var valueStreamlet = TypeNode.FieldLengthBindings.IsConst
+                ? new Streamlet(valueStream, valueStream.Position, Convert.ToInt64(TypeNode.FieldLengthBindings.ConstValue))
                 : new Streamlet(valueStream);
 
             valueStreamlet.CopyTo(stream);
@@ -30,12 +30,12 @@ namespace BinarySerialization.Graph.ValueGraph
             while (baseStream is BoundedStream)
                 baseStream = (baseStream as BoundedStream).Source;
 
-            var length = TypeNode.FieldLengthBinding == null
+            var length = TypeNode.FieldLengthBindings == null
                 ? (long?)null
-                : Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this));
+                : Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this));
 
             Value = length != null
-                ? new Streamlet(baseStream, baseStream.Position, Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this)))
+                ? new Streamlet(baseStream, baseStream.Position, Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this)))
                 : new Streamlet(baseStream, baseStream.Position);
 
             if (length != null)
@@ -47,8 +47,8 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var valueStream = (Stream)Value;
 
-            if (TypeNode.FieldLengthBinding.IsConst)
-                return Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue);
+            if (TypeNode.FieldLengthBindings.IsConst)
+                return Convert.ToInt64(TypeNode.FieldLengthBindings.ConstValue);
 
             if (valueStream.CanSeek)
                 return valueStream.Length;

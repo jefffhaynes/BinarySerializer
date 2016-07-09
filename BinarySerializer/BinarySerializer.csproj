@@ -49,7 +49,9 @@
     <Compile Include="FieldCrc16Attribute.cs" />
     <Compile Include="FieldValueAttribute.cs" />
     <Compile Include="FieldValueAttributeBase.cs" />
+    <Compile Include="Graph\BindingCollection.cs" />
     <Compile Include="Graph\FieldValueAdapterStream.cs" />
+    <Compile Include="Graph\IBinding.cs" />
     <Compile Include="Graph\ValueBinding.cs" />
     <Compile Include="Graph\Node.cs" />
     <Compile Include="Graph\TypeGraph\ArrayTypeNode.cs" />

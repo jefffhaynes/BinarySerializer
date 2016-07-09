@@ -83,7 +83,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             /* If a field length is specified to be less than the max enum value length, we can't reliably recover the enum
              * values on deserialization. */
-            //if (enumInfo.EnumValueLength != null && FieldLengthBinding != null && FieldLengthBinding.IsConst)
+            //if (enumInfo.EnumValueLength != null && FieldLengthBinding != null && FieldLengthBindings.IsConst)
             //{
             //    if ((int) FieldLengthBinding.Value < enumInfo.EnumValueLength.Value)
             //        throw new InvalidOperationException("Field length cannot be less than max enum name length.");

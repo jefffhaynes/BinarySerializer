@@ -3,7 +3,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph
 {
-    internal class Binding
+    internal class Binding : IBinding
     {
         private readonly object _constValue;
 

@@ -104,10 +104,16 @@ namespace BinarySerialization.Graph.TypeGraph
                     AreStringsNullTerminated = true;
             }
 
-            FieldLengthAttribute = attributes.OfType<FieldLengthAttribute>().SingleOrDefault();
-            if (FieldLengthAttribute != null)
+            FieldLengthAttributes = new ReadOnlyCollection<FieldLengthAttribute>(attributes.OfType<FieldLengthAttribute>().ToList());
+
+            if (FieldLengthAttributes.Any())
             {
-                FieldLengthBinding = new Binding(FieldLengthAttribute, GetBindingLevel(FieldLengthAttribute.Binding));
+                var bindings =
+                    FieldLengthAttributes.Select(
+                        fieldLengthAttribute =>
+                            new Binding(fieldLengthAttribute, GetBindingLevel(fieldLengthAttribute.Binding)));
+
+                FieldLengthBindings = new BindingCollection(bindings);
             }
 
             FieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
@@ -151,7 +157,7 @@ namespace BinarySerialization.Graph.TypeGraph
                         SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
 
                     if (bindingGroups.Count() > 1)
-                        throw new BindingException("Subtypes must all use the same binding configuration.");
+                        throw new BindingException("Subtypes must all specify the same binding configuration.");
 
                     var firstBinding = SubtypeAttributes[0];
                     SubtypeBinding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
@@ -206,7 +212,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public Action<object, object> ValueSetter { get; }
         public Func<object, object> ValueGetter { get; }
-        public Binding FieldLengthBinding { get; }
+        public BindingCollection FieldLengthBindings { get; }
         public Binding ItemLengthBinding { get; }
         public Binding FieldCountBinding { get; }
         public Binding FieldOffsetBinding { get; }
@@ -216,7 +222,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public Binding SubtypeBinding { get; }
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; }
         public IgnoreAttribute IgnoreAttribute { get; }
-        public FieldLengthAttribute FieldLengthAttribute { get; }
+        public ReadOnlyCollection<FieldLengthAttribute> FieldLengthAttributes { get; }
         public FieldCountAttribute FieldCountAttribute { get; }
         public FieldOffsetAttribute FieldOffsetAttribute { get; }
         public FieldValueAttributeBase FieldValueAttribute { get; }
@@ -249,7 +255,7 @@ namespace BinarySerialization.Graph.TypeGraph
             if (serializedType == SerializedType.NullTerminatedString)
             {
                 // If null terminated string is specified but field length is present, override
-                if (FieldLengthAttribute != null)
+                if (FieldLengthAttributes != null)
                     serializedType = SerializedType.SizedString;
 
                 // If null terminated string is specified but item field length is present, override

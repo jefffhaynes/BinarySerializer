@@ -56,11 +56,8 @@ namespace BinarySerialization.Graph.ValueGraph
         public virtual void Bind()
         {
             var typeNode = TypeNode;
-
-            if (typeNode.FieldLengthBinding != null && typeNode.FieldLengthBinding.BindingMode == BindingMode.TwoWay)
-            {
-                typeNode.FieldLengthBinding.Bind(this, () => MeasureOverride());
-            }
+            typeNode.FieldLengthBindings?.Bind(this, () => MeasureOverride());
+            
 
             if (typeNode.ItemLengthBinding != null && typeNode.ItemLengthBinding.BindingMode == BindingMode.TwoWay)
             {
@@ -117,8 +114,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
-                long? maxLength = TypeNode.FieldLengthBinding != null && TypeNode.FieldLengthBinding.IsConst
-                    ? (long?) Convert.ToInt64(TypeNode.FieldLengthBinding.ConstValue)
+                long? maxLength = TypeNode.FieldLengthBindings != null && TypeNode.FieldLengthBindings.IsConst
+                    ? (long?) Convert.ToInt64(TypeNode.FieldLengthBindings.ConstValue)
                     : null;
 
                 if (fieldOffsetBinding != null)
@@ -184,8 +181,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
-                long? maxLength = TypeNode.FieldLengthBinding != null
-                    ? (long?)Convert.ToInt64(TypeNode.FieldLengthBinding.GetValue(this))
+                long? maxLength = TypeNode.FieldLengthBindings != null
+                    ? (long?)Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this))
                     : null;
 
                 if (fieldOffsetBinding != null)
