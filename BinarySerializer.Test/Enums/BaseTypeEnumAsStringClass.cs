@@ -1,6 +1,4 @@
-﻿using BinarySerialization;
-
-namespace BinarySerialization.Test.Enums
+﻿namespace BinarySerialization.Test.Enums
 {
     class BaseTypeEnumAsStringClass
     {

@@ -255,7 +255,7 @@ namespace BinarySerialization.Graph.TypeGraph
             if (serializedType == SerializedType.NullTerminatedString)
             {
                 // If null terminated string is specified but field length is present, override
-                if (FieldLengthAttributes != null)
+                if (FieldLengthAttributes != null && FieldLengthAttributes.Any())
                     serializedType = SerializedType.SizedString;
 
                 // If null terminated string is specified but item field length is present, override
