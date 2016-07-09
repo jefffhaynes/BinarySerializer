@@ -23,36 +23,35 @@ namespace BinarySerialization.Test
             };
         }
 
-        private T Roundtrip<T>(T o, out byte[] data)
+        public T Roundtrip<T>(T o)
         {
             var stream = new MemoryStream();
             Serializer.Serialize(stream, o);
 
             stream.Position = 0;
-            data = stream.ToArray();
             return Serializer.Deserialize<T>(stream);
         }
 
-        protected T Roundtrip<T>(T o) 
-        {
-            byte[] data;
-            return Roundtrip(o, out data);
-        }
-        
         protected T Roundtrip<T>(T o, long expectedLength)
         {
-            byte[] data;
-            var result = Roundtrip(o, out data);
+            var stream = new MemoryStream();
+            Serializer.Serialize(stream, o);
+
+            stream.Position = 0;
+            var data = stream.ToArray();
 
             Assert.AreEqual(expectedLength, data.Length);
 
-            return result;
+            return Serializer.Deserialize<T>(stream);
         }
 
         protected T Roundtrip<T>(T o, byte[] expectedValue)
         {
-            byte[] data;
-            var result = Roundtrip(o, out data);
+            var stream = new MemoryStream();
+            Serializer.Serialize(stream, o);
+
+            stream.Position = 0;
+            var data = stream.ToArray();
 
             for (int i = 0; i < expectedValue.Length; i++)
             {
@@ -63,7 +62,7 @@ namespace BinarySerialization.Test
                     $"Value at position {i} does not match expected value.");
             }
 
-            return result;
+            return Serializer.Deserialize<T>(stream);
         }
 
         protected T Deserialize<T>(string filename)

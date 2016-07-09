@@ -5,7 +5,7 @@ namespace BinarySerialization
     /// <summary>
     /// Specifies the length of a member or object subgraph.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
     public sealed class FieldLengthAttribute : FieldBindingBaseAttribute, ILengthAttribute, IConstAttribute
     {
         /// <summary>

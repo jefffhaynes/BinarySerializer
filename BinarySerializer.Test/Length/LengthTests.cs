@@ -170,5 +170,15 @@ namespace BinarySerialization.Test.Length
             Assert.AreEqual(expected.Items[1].Name, actual.Items[1].Name);
             Assert.AreEqual(expected.Items[2].Name, actual.Items[2].Name);
         }
+
+        [TestMethod]
+        public void MultibindingTest()
+        {
+            var expected = new MultibindingClass {Value = "hi"};
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(actual.Length, 2);
+            Assert.AreEqual(actual.Length2, 2);
+        }
     }
 }

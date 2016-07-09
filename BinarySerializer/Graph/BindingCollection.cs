@@ -25,7 +25,7 @@ namespace BinarySerialization.Graph
             // handle multiple bindings (probably unusual)
             if (Count > 1)
             {
-                if(AdditionalBindings.Any(binding => binding.GetValue(target) != value))
+                if(AdditionalBindings.Any(binding => !binding.GetValue(target).Equals(value)))
                     throw new InvalidOperationException("Multiple source fields bound to the same target must yield the same value.");
             }
 
