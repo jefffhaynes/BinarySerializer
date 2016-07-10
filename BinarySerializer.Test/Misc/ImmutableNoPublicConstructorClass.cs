@@ -6,6 +6,8 @@
         {
         }
 
+        // ReSharper disable UnusedAutoPropertyAccessor.Local
         public byte Value { get; private set; }
+        // ReSharper restore UnusedAutoPropertyAccessor.Local
     }
 }

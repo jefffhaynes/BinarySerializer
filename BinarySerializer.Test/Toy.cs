@@ -31,7 +31,7 @@ namespace BinarySerialization.Test
         {
             unchecked
             {
-                return ((Name != null ? Name.GetHashCode() : 0)*397) ^ Last.GetHashCode();
+                return ((Name?.GetHashCode() ?? 0)*397) ^ Last.GetHashCode();
             }
         }
 

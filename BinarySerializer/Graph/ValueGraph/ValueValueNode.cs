@@ -218,7 +218,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     checked
                     {
-                        effectiveLength = (int) (baseStream.AvailableForReading);
+                        effectiveLength = (int) baseStream.AvailableForReading;
                     }
                 }
             }

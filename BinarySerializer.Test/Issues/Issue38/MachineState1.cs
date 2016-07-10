@@ -51,18 +51,12 @@ namespace BinarySerialization.Test.Issues.Issue38
         /// </summary>
         [FieldOrder(5)]
         [SerializeAs(SerializedType = SerializedType.UInt2)]
-        public ushort PosDataCnt
-        {
-            get
-            {
-                return PosData == null
-                    ? (byte) 0
-                    : PosData.Count > ushort.MaxValue ? ushort.MaxValue : Convert.ToUInt16(PosData.Count);
-            }
-        }
+        public ushort PosDataCnt => PosData == null
+            ? (byte) 0
+            : PosData.Count > ushort.MaxValue ? ushort.MaxValue : Convert.ToUInt16(PosData.Count);
 
         /// <summary>
-        ///     Gets or sets the data of all postions.
+        ///     Gets or sets the data of all positions.
         /// </summary>
         [FieldOrder(6)]
         [FieldCount("PosDataCnt")]

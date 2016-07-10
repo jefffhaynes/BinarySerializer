@@ -19,7 +19,7 @@ namespace BinarySerialization.Test.Issues.Issue25
 
             var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Little};
 
-            byte[] actualBytes = null;
+            byte[] actualBytes;
 
             using (var stream = new MemoryStream())
             {

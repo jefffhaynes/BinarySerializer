@@ -19,15 +19,9 @@ namespace BinarySerialization.Test
             _stream = stream;
         }
 
-        public override bool CanRead
-        {
-            get { return _stream.CanRead; }
-        }
+        public override bool CanRead => _stream.CanRead;
 
-        public override bool CanSeek
-        {
-            get { return false; }
-        }
+        public override bool CanSeek => false;
 
         public override bool CanWrite
         {
@@ -72,10 +66,7 @@ namespace BinarySerialization.Test
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (_stream == null)
-                return;
-
-            _stream.Write(buffer, offset, count);
+            _stream?.Write(buffer, offset, count);
         }
     }
 }

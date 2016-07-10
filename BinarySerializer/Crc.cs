@@ -131,7 +131,7 @@ namespace BinarySerialization
                  */
                 if ((value & 0x01) != 0)
                 {
-                    reflection |= (uint)(1 << ((bitCount - 1) - bit));
+                    reflection |= (uint)(1 << (bitCount - 1 - bit));
                 }
 
                 value = value >> 1;

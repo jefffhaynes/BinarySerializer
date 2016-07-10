@@ -25,12 +25,10 @@ namespace BinarySerialization.Test.Issues.Issue33
                 Occupancy = BinOccupancy.Full,
                 OccupancyString = BinOccupancy.Empty
             };
-
-            byte[] actualBytes;
+            
             using (var stream = new MemoryStream())
             {
                 serializer.Serialize(stream, expected);
-                actualBytes = stream.ToArray();
             }
 
             //Assert.AreEqual(inBytes, actualBytes, "Objects are not equal");
