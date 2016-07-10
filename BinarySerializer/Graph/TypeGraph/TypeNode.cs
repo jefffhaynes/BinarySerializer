@@ -81,7 +81,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             var attributes = memberInfo.GetCustomAttributes(true);
 
-            IgnoreAttribute = attributes.OfType<IgnoreAttribute>().SingleOrDefault();
+            IsIgnored = attributes.OfType<IgnoreAttribute>().Any();
 
             /* Don't go any further if we're ignoring this. */
             if (IsIgnored)
@@ -104,29 +104,10 @@ namespace BinarySerialization.Graph.TypeGraph
                     AreStringsNullTerminated = true;
             }
 
-            FieldLengthAttributes = new ReadOnlyCollection<FieldLengthAttribute>(attributes.OfType<FieldLengthAttribute>().ToList());
-
-            if (FieldLengthAttributes.Any())
-            {
-                var bindings =
-                    FieldLengthAttributes.Select(
-                        fieldLengthAttribute =>
-                            new Binding(fieldLengthAttribute, GetBindingLevel(fieldLengthAttribute.Binding)));
-
-                FieldLengthBindings = new BindingCollection(bindings);
-            }
-
-            FieldCountAttribute = attributes.OfType<FieldCountAttribute>().SingleOrDefault();
-            if (FieldCountAttribute != null)
-            {
-                FieldCountBinding = new Binding(FieldCountAttribute, GetBindingLevel(FieldCountAttribute.Binding));
-            }
-
-            FieldOffsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
-            if (FieldOffsetAttribute != null)
-            {
-                FieldOffsetBinding = new Binding(FieldOffsetAttribute, GetBindingLevel(FieldOffsetAttribute.Binding));
-            }
+         
+            FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
+            FieldCountBindings = GetBindings<FieldCountAttribute>(attributes);
+            FieldOffsetBindings = GetBindings<FieldOffsetAttribute>(attributes);
 
             FieldValueAttribute = attributes.OfType<FieldValueAttributeBase>().SingleOrDefault();
             if (FieldValueAttribute != null)
@@ -189,11 +170,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     GetBindingLevel(SerializeUntilAttribute.Binding));
             }
 
-            ItemLengthAttribute = attributes.OfType<ItemLengthAttribute>().SingleOrDefault();
-            if (ItemLengthAttribute != null)
-            {
-                ItemLengthBinding = new Binding(ItemLengthAttribute, GetBindingLevel(ItemLengthAttribute.Binding));
-            }
+            ItemLengthBindings = GetBindings<ItemLengthAttribute>(attributes);
 
             ItemSerializeUntilAttribute = attributes.OfType<ItemSerializeUntilAttribute>().SingleOrDefault();
 
@@ -204,6 +181,22 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
+        private BindingCollection GetBindings<TAttribute>(object[] attributes) 
+            where TAttribute : FieldBindingBaseAttribute
+        {
+            var typeAttributes = attributes.OfType<TAttribute>().ToList();
+
+            if (!typeAttributes.Any())
+                return null;
+
+            var bindings =
+                typeAttributes.Select(
+                    attribute =>
+                        new Binding(attribute, GetBindingLevel(attribute.Binding)));
+
+            return new BindingCollection(bindings);
+        }
+
         public MemberInfo MemberInfo { get; }
         public Type Type { get; }
         public Type NullableUnderlyingType { get; }
@@ -212,21 +205,19 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public Action<object, object> ValueSetter { get; }
         public Func<object, object> ValueGetter { get; }
+
         public BindingCollection FieldLengthBindings { get; }
-        public Binding ItemLengthBinding { get; }
-        public Binding FieldCountBinding { get; }
-        public Binding FieldOffsetBinding { get; }
-        public Binding FieldValueBinding { get; }
+        public BindingCollection ItemLengthBindings { get; }
+        public BindingCollection FieldCountBindings { get; }
+        public BindingCollection FieldOffsetBindings { get; }
+
         public Binding SerializeUntilBinding { get; private set; }
         public Binding ItemSerializeUntilBinding { get; private set; }
         public Binding SubtypeBinding { get; }
+        public Binding FieldValueBinding { get; }
+
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; }
-        public IgnoreAttribute IgnoreAttribute { get; }
-        public ReadOnlyCollection<FieldLengthAttribute> FieldLengthAttributes { get; }
-        public FieldCountAttribute FieldCountAttribute { get; }
-        public FieldOffsetAttribute FieldOffsetAttribute { get; }
         public FieldValueAttributeBase FieldValueAttribute { get; }
-        public ItemLengthAttribute ItemLengthAttribute { get; }
         public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; }
         public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; }
         public SerializeUntilAttribute SerializeUntilAttribute { get; }
@@ -234,7 +225,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public Endianness? Endianness { get; private set; }
         public Encoding Encoding { get; private set; }
 
-        public bool IsIgnored => IgnoreAttribute != null;
+        public bool IsIgnored { get; }
 
         public int? Order { get; }
 
@@ -255,12 +246,12 @@ namespace BinarySerialization.Graph.TypeGraph
             if (serializedType == SerializedType.NullTerminatedString)
             {
                 // If null terminated string is specified but field length is present, override
-                if (FieldLengthAttributes != null && FieldLengthAttributes.Any())
+                if (FieldLengthBindings != null)
                     serializedType = SerializedType.SizedString;
 
                 // If null terminated string is specified but item field length is present, override
                 var parent = (TypeNode)Parent;
-                if (parent.ItemLengthAttribute != null)
+                if (parent.ItemLengthBindings != null)
                     serializedType = SerializedType.SizedString;
             }
 

@@ -47,9 +47,9 @@ namespace BinarySerialization.Graph.ValueGraph
             var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
 
             IEnumerable<long> itemLengths = null;
-            if (TypeNode.ItemLengthBinding != null)
+            if (TypeNode.ItemLengthBindings != null)
             {
-                var itemLengthValue = TypeNode.ItemLengthBinding.GetValue(this);
+                var itemLengthValue = TypeNode.ItemLengthBindings.GetValue(this);
 
                 var enumerableItemLengthValue = itemLengthValue as IEnumerable;
 

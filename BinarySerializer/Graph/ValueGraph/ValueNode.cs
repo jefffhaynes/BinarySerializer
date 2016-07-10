@@ -56,18 +56,10 @@ namespace BinarySerialization.Graph.ValueGraph
         public virtual void Bind()
         {
             var typeNode = TypeNode;
+
             typeNode.FieldLengthBindings?.Bind(this, () => MeasureOverride());
-            
-
-            if (typeNode.ItemLengthBinding != null && typeNode.ItemLengthBinding.BindingMode == BindingMode.TwoWay)
-            {
-                typeNode.ItemLengthBinding.Bind(this, MeasureItemsOverride);
-            }
-
-            if (typeNode.FieldCountBinding != null && typeNode.FieldCountBinding.BindingMode == BindingMode.TwoWay)
-            {
-                typeNode.FieldCountBinding.Bind(this, () => CountOverride());
-            }
+            typeNode.ItemLengthBindings?.Bind(this, MeasureItemsOverride);
+            typeNode.FieldCountBindings?.Bind(this, () => CountOverride());
 
             if (typeNode.SubtypeBinding != null && typeNode.SubtypeBinding.BindingMode == BindingMode.TwoWay)
             {
@@ -114,14 +106,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 
                 long? maxLength = GetConstFieldLength();
 
-                Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+                var offset = GetBoundFieldOffset();
 
-                if (fieldOffsetBinding != null)
+                if (offset != null)
                 {
                     using (new StreamResetter(stream))
                     {
-                        stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
-
+                        stream.Position = offset.Value;
                         SerializeInternal(stream, eventShuttle, maxLength);
                     }
                 }
@@ -179,14 +170,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 
                 long? maxLength = GetBoundFieldLength();
 
-                Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+                var offset = GetBoundFieldOffset();
 
-                if (fieldOffsetBinding != null)
+                if (offset != null)
                 {
                     using (new StreamResetter(stream))
                     {
-                        stream.Position = Convert.ToInt64(fieldOffsetBinding.GetValue(this));
-
+                        stream.Position = offset.Value;
                         DeserializeInternal(stream, maxLength, eventShuttle);
                     }
                 }
@@ -231,9 +221,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 return length;
 
             var parent = (ValueNode)Parent;
-            if (parent?.TypeNode.ItemLengthBinding != null)
+            if (parent?.TypeNode.ItemLengthBindings != null)
             {
-                var parentItemLength = parent.TypeNode.ItemLengthBinding.GetValue(parent);
+                var parentItemLength = parent.TypeNode.ItemLengthBindings.GetValue(parent);
                 if(parentItemLength.GetType().IsPrimitive)
                     return Convert.ToInt64(parentItemLength);
             }
@@ -249,22 +239,32 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected long? GetBoundFieldCount()
         {
-            return GetBoundNumericValue(TypeNode.FieldCountBinding);
+            return GetBoundNumericValue(TypeNode.FieldCountBindings);
         }
 
         protected long? GetConstFieldCount()
         {
-            return GetConstNumericValue(TypeNode.FieldCountBinding);
+            return GetConstNumericValue(TypeNode.FieldCountBindings);
         }
 
         protected long? GetBoundFieldItemLength()
         {
-            return GetBoundNumericValue(TypeNode.ItemLengthBinding);
+            return GetBoundNumericValue(TypeNode.ItemLengthBindings);
         }
 
         protected long? GetConstFieldItemLength()
         {
-            return GetConstNumericValue(TypeNode.ItemLengthBinding);
+            return GetConstNumericValue(TypeNode.ItemLengthBindings);
+        }
+
+        protected long? GetBoundFieldOffset()
+        {
+            return GetBoundNumericValue(TypeNode.FieldOffsetBindings);
+        }
+
+        protected long? GetConstFieldOffset()
+        {
+            return GetConstNumericValue(TypeNode.FieldOffsetBindings);
         }
 
         private long? GetBoundNumericValue(IBinding binding)
