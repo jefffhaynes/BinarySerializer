@@ -5,7 +5,7 @@ namespace BinarySerialization
     /// <summary>
     /// Specifies the number of items in a collection or array.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
     public sealed class FieldCountAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>

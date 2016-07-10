@@ -67,6 +67,7 @@
     <Compile Include="Count\BoundCountClass.cs" />
     <Compile Include="Count\ConstCountClass.cs" />
     <Compile Include="Count\CountTests.cs" />
+    <Compile Include="Count\MultibindingClass.cs" />
     <Compile Include="Count\PrimitiveListBindingClass.cs" />
     <Compile Include="Count\PrimitiveArrayBindingClass.cs" />
     <Compile Include="CrcTests.cs" />

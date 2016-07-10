@@ -101,5 +101,19 @@ namespace BinarySerialization.Test.Count
 
             Assert.IsNull(actual.Ints);
         }
+
+        [TestMethod]
+        public void MultibindingTest()
+        {
+            var expected = new MultibindingClass
+            {
+                Items = new List<string>(new[] {"hello", "world"})
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(2, actual.Count);
+            Assert.AreEqual(2, actual.Count2);
+        }
     }
 }
