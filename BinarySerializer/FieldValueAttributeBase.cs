@@ -36,7 +36,7 @@ namespace BinarySerialization
         protected abstract void Compute(byte[] buffer, int offset, int count);
 
         /// <summary>
-        /// This is called by the framework to retreive the final value from computation.
+        /// This is called by the framework to retrieve the final value from computation.
         /// </summary>
         /// <returns></returns>
         protected abstract object ComputeFinal();

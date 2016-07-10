@@ -175,7 +175,7 @@ namespace BinarySerialization.Test.Length
         public void MultibindingTest()
         {
             var expected = new MultibindingClass {Value = "hi"};
-            var actual = Roundtrip(expected);
+            var actual = Roundtrip(expected, new byte[] {0x02, (byte) 'h', (byte) 'i', 0x02});
 
             Assert.AreEqual(actual.Length, 2);
             Assert.AreEqual(actual.Length2, 2);

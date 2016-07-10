@@ -99,25 +99,33 @@ namespace BinarySerialization.Graph.ValueGraph
                 else return;
             }
 
-            int? constLength = null;
-            long? maxLength = null;
-
-            var typeParent = TypeNode.Parent as TypeNode;
+            long? constLength = null;
 
             if (length != null)
+            {
                 constLength = length.Value;
-            else if (TypeNode.FieldLengthBindings != null && TypeNode.FieldLengthBindings.IsConst)
-            {
-                constLength = Convert.ToInt32(TypeNode.FieldLengthBindings.ConstValue);
             }
-            else if (typeParent?.ItemLengthBinding != null && typeParent.ItemLengthBinding.IsConst)
+
+            if (constLength == null)
             {
-                constLength = Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue);
+                constLength = GetConstFieldLength();
             }
-            else if (TypeNode.FieldCountBinding != null && TypeNode.FieldCountBinding.IsConst)
+
+            if (constLength == null)
             {
-                constLength = Convert.ToInt32(TypeNode.FieldCountBinding.ConstValue);
+                var typeParent = TypeNode.Parent as TypeNode;
+
+                if (typeParent?.ItemLengthBinding != null && typeParent.ItemLengthBinding.IsConst)
+                {
+                    constLength = Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue);
+                }
+                else if (TypeNode.FieldCountBinding != null && TypeNode.FieldCountBinding.IsConst)
+                {
+                    constLength = Convert.ToInt32(TypeNode.FieldCountBinding.ConstValue);
+                }
             }
+            
+            long? maxLength = null;
 
             if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString || serializedType == SerializedType.NullTerminatedString)
             {
@@ -169,7 +177,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     byte[] data = Encoding.GetBytes(value.ToString());
 
                     if (constLength != null)
-                        Array.Resize(ref data, constLength.Value - 1);
+                        Array.Resize(ref data, (int)constLength.Value - 1);
 
                     if(maxLength != null && data.Length > maxLength)
                         Array.Resize(ref data, (int)maxLength.Value - 1);
@@ -183,7 +191,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     byte[] data = Encoding.GetBytes(value.ToString());
 
                     if (constLength != null)
-                        Array.Resize(ref data, constLength.Value);
+                        Array.Resize(ref data, (int)constLength.Value);
 
                     if (maxLength != null && data.Length > maxLength)
                         Array.Resize(ref data, (int)maxLength.Value);
@@ -220,28 +228,35 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public object Deserialize(EndianAwareBinaryReader reader, SerializedType serializedType, int? length = null)
         {
-            int? effectiveLength = null;
-            
-            if (length != null)
-                effectiveLength = length.Value;
-            else if (TypeNode.FieldLengthBindings != null)
-            {
-                object lengthValue = TypeNode.FieldLengthBindings.GetValue(this);
-                effectiveLength = Convert.ToInt32(lengthValue);
-            }
-            else if (TypeNode.FieldCountBinding != null)
-            {
-                object countValue = TypeNode.FieldCountBinding.GetValue(this);
-                effectiveLength = Convert.ToInt32(countValue);
-            }
-            else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString || serializedType == SerializedType.NullTerminatedString)
-            {
-                // try to get bounded length
-                var baseStream = (BoundedStream) reader.BaseStream;
+            long? effectiveLength = null;
 
-                checked
+            if (length != null)
+            {
+                effectiveLength = length.Value;
+            }
+
+            if (effectiveLength == null)
+            {
+                effectiveLength = GetBoundFieldLength();
+            }
+
+            if (effectiveLength == null)
+            {
+                if (TypeNode.FieldCountBinding != null)
                 {
-                    effectiveLength = (int) (baseStream.AvailableForReading);
+                    object countValue = TypeNode.FieldCountBinding.GetValue(this);
+                    effectiveLength = Convert.ToInt32(countValue);
+                }
+                else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
+                         serializedType == SerializedType.NullTerminatedString)
+                {
+                    // try to get bounded length
+                    var baseStream = (BoundedStream) reader.BaseStream;
+
+                    checked
+                    {
+                        effectiveLength = (int) (baseStream.AvailableForReading);
+                    }
                 }
             }
 
@@ -281,13 +296,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 case SerializedType.ByteArray:
                 {
                     Debug.Assert(effectiveLength != null, "effectiveLength != null");
-                    value = reader.ReadBytes(effectiveLength.Value);
+                    value = reader.ReadBytes((int)effectiveLength.Value);
                     break;
                 }
                 case SerializedType.NullTerminatedString:
                 {
                     Debug.Assert(effectiveLength != null, "effectiveLength != null");
-                    byte[] data = ReadNullTerminated(reader, effectiveLength.Value).ToArray();
+                    byte[] data = ReadNullTerminated(reader, (int)effectiveLength.Value).ToArray();
 
                     value = Encoding.GetString(data, 0, data.Length);
                     break;
@@ -295,7 +310,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 case SerializedType.SizedString:
                 {
                     Debug.Assert(effectiveLength != null, "effectiveLength != null");
-                    byte[] data = reader.ReadBytes(effectiveLength.Value);
+                    byte[] data = reader.ReadBytes((int)effectiveLength.Value);
                     var untrimmed = Encoding.GetString(data, 0, data.Length);
                     if (TypeNode.AreStringsNullTerminated)
                     {

@@ -119,15 +119,15 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             ObjectSerializeOverride(stream, eventShuttle);
 
-            /* Check if we need to pad out object */
-            if (TypeNode.FieldLengthBindings != null)
-            {
-                var length = Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this));
+            var length = GetConstFieldLength();
 
+            /* Check if we need to pad out object */
+            if (length != null)
+            {
                 if (length > stream.RelativePosition)
                 {
                     var padLength = length - stream.RelativePosition;
-                    var pad = new byte[padLength];
+                    var pad = new byte[(int)padLength];
                     stream.Write(pad, 0, pad.Length);
                 }
             }
@@ -211,15 +211,15 @@ namespace BinarySerialization.Graph.ValueGraph
                 ObjectDeserializeOverride(stream, eventShuttle);
             }
 
-            /* Check if we need to read past padding */
-            if (TypeNode.FieldLengthBindings != null)
-            {
-                var length = Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this));
+            var length = GetBoundFieldLength();
 
+            /* Check if we need to read past padding */
+            if (length != null)
+            {
                 if (length > stream.RelativePosition)
                 {
                     var padLength = length - stream.RelativePosition;
-                    var pad = new byte[padLength];
+                    var pad = new byte[(int)padLength];
                     stream.Read(pad, 0, pad.Length);
                 }
             }

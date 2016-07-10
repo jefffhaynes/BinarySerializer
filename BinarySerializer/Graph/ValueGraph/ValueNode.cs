@@ -111,12 +111,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
                     return;
+                
+                long? maxLength = GetConstFieldLength();
 
                 Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
-
-                long? maxLength = TypeNode.FieldLengthBindings != null && TypeNode.FieldLengthBindings.IsConst
-                    ? (long?) Convert.ToInt64(TypeNode.FieldLengthBindings.ConstValue)
-                    : null;
 
                 if (fieldOffsetBinding != null)
                 {
@@ -179,11 +177,9 @@ namespace BinarySerialization.Graph.ValueGraph
                     !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
                     return;
                 
-                Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
+                long? maxLength = GetBoundFieldLength();
 
-                long? maxLength = TypeNode.FieldLengthBindings != null
-                    ? (long?)Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this))
-                    : null;
+                Binding fieldOffsetBinding = TypeNode.FieldOffsetBinding;
 
                 if (fieldOffsetBinding != null)
                 {
@@ -227,6 +223,20 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
         internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);
+
+        protected long? GetBoundFieldLength()
+        {
+            return TypeNode.FieldLengthBindings != null
+                ? (long?) Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this))
+                : null;
+        }
+
+        protected long? GetConstFieldLength()
+        {
+            return TypeNode.FieldLengthBindings != null && TypeNode.FieldLengthBindings.IsConst
+                ? (long?) Convert.ToInt64(TypeNode.FieldLengthBindings.ConstValue)
+                : null;
+        }
 
         public ValueNode GetChild(string path)
         {

@@ -16,11 +16,17 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var valueStream = (Stream)Value;
 
-            var valueStreamlet = TypeNode.FieldLengthBindings.IsConst
-                ? new Streamlet(valueStream, valueStream.Position, Convert.ToInt64(TypeNode.FieldLengthBindings.ConstValue))
-                : new Streamlet(valueStream);
+            var length = GetConstFieldLength();
 
-            valueStreamlet.CopyTo(stream);
+            if (length != null)
+            {
+                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, length.Value);
+                valueStreamlet.CopyTo(stream);
+            }
+            else
+            {
+                valueStream.CopyTo(stream);
+            }
         }
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
@@ -30,12 +36,10 @@ namespace BinarySerialization.Graph.ValueGraph
             while (baseStream is BoundedStream)
                 baseStream = (baseStream as BoundedStream).Source;
 
-            var length = TypeNode.FieldLengthBindings == null
-                ? (long?)null
-                : Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this));
+            var length = GetBoundFieldLength();
 
             Value = length != null
-                ? new Streamlet(baseStream, baseStream.Position, Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this)))
+                ? new Streamlet(baseStream, baseStream.Position, length.Value)
                 : new Streamlet(baseStream, baseStream.Position);
 
             if (length != null)
@@ -47,8 +51,10 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var valueStream = (Stream)Value;
 
-            if (TypeNode.FieldLengthBindings.IsConst)
-                return Convert.ToInt64(TypeNode.FieldLengthBindings.ConstValue);
+            var length = GetConstFieldLength();
+
+            if (length != null)
+                return length.Value;
 
             if (valueStream.CanSeek)
                 return valueStream.Length;

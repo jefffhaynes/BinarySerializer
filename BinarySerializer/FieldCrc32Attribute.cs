@@ -70,7 +70,7 @@
         }
 
         /// <summary>
-        /// This is called by the framework to retreive the final value from computation.
+        /// This is called by the framework to retrieve the final value from computation.
         /// </summary>
         /// <returns></returns>
         protected override object ComputeFinal()

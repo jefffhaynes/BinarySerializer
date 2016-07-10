@@ -13,6 +13,11 @@
         /// <summary>
         /// Only update the target during deserialization.
         /// </summary>
-        OneWay
+        OneWay,
+
+        /// <summary>
+        /// Only update the source during serialization
+        /// </summary>
+        OneWayToSource
     }
 }
