@@ -10,14 +10,14 @@ namespace BinarySerialization.Test.Issues.Issue25
     public class Issue25Tests
     {
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestStackOverflow()
         {
-            var expetedBytes = new byte[] { 0x00, 0x00, 0x00, 0x00 };
+            var expetedBytes = new byte[] {0x00, 0x00, 0x00, 0x00};
 
-            var obj = new LoadCarrierData() { Data = new object() };
+            var obj = new LoadCarrierData {Data = new object()};
 
-            var serializer = new BinarySerializer() { Endianness = BinarySerialization.Endianness.Little };
+            var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Little};
 
             byte[] actualBytes = null;
 

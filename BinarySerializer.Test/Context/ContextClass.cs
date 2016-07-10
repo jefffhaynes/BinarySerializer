@@ -1,6 +1,4 @@
-﻿using BinarySerialization;
-
-namespace BinarySerialization.Test.Context
+﻿namespace BinarySerialization.Test.Context
 {
     public class ContextClass
     {

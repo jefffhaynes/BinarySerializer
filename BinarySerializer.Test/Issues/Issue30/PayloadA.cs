@@ -2,12 +2,6 @@
 {
     public class PayloadA : IPayload
     {
-        [FieldOrder(0)]
-        public byte Mode { get; set; }
-
-        [FieldOrder(1)]
-        public byte Cnt { get; set; }
-
         public PayloadA()
         {
         }
@@ -17,6 +11,12 @@
             Mode = mode;
             Cnt = cnt;
         }
+
+        [FieldOrder(0)]
+        public byte Mode { get; set; }
+
+        [FieldOrder(1)]
+        public byte Cnt { get; set; }
 
         public PayloadType GetPayloadType()
         {

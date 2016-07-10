@@ -16,7 +16,7 @@ namespace BinarySerialization.Test.Offset
         [TestMethod]
         public void BoundOffsetTest()
         {
-            var expected = new BoundOffsetClass { FieldOffsetField = 1000, Field = "FieldValue" };
+            var expected = new BoundOffsetClass {FieldOffsetField = 1000, Field = "FieldValue"};
             var actual = Roundtrip(expected, expected.FieldOffsetField + expected.Field.Length + 1);
             Assert.AreEqual(expected.Field, actual.Field);
         }

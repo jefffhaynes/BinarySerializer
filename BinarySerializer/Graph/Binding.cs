@@ -51,7 +51,7 @@ namespace BinarySerialization.Graph
         }
 
         public string Path { get; }
-        public BindingMode BindingMode { get; private set; }
+        public BindingMode BindingMode { get; }
         public IValueConverter ValueConverter { get; }
         public object ConverterParameter { get; }
         public RelativeSourceMode RelativeSourceMode { get; }

@@ -64,7 +64,7 @@ namespace BinarySerialization.Test.UntilItem
                 }
             };
 
-            var expected = new UntilItemContainer { Items = items, ItemsLastItemExcluded = items, BoundItems = items };
+            var expected = new UntilItemContainer {Items = items, ItemsLastItemExcluded = items, BoundItems = items};
 
             var actual = Roundtrip(expected);
 

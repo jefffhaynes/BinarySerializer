@@ -2,13 +2,13 @@
 {
     public class ConstructOnceClass
     {
-        [Ignore]
-        public static int Count { get; set; }
-
         public ConstructOnceClass()
         {
             Count++;
         }
+
+        [Ignore]
+        public static int Count { get; set; }
 
         public int OtherStuff { get; set; }
     }

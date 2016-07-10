@@ -7,11 +7,11 @@ namespace BinarySerialization.Test.Misc
     public class IOExceptionTest
     {
         [TestMethod]
-        [ExpectedException(typeof(IOException))]
+        [ExpectedException(typeof (IOException))]
         public void ShouldThrowIOExceptionNotInvalidOperationExceptionTest()
         {
             var stream = new UnreadableStream();
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
             serializer.Deserialize<int>(stream);
         }
     }

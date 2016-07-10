@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Primitives
 {
@@ -51,37 +50,37 @@ namespace BinarySerialization.Test.Primitives
         [TestMethod]
         public void Int32Test()
         {
-            RoundtripPrimitive(Int32.MaxValue, 4);
+            RoundtripPrimitive(int.MaxValue, 4);
         }
 
         [TestMethod]
         public void UInt32Test()
         {
-            RoundtripPrimitive(UInt32.MaxValue, 4);
+            RoundtripPrimitive(uint.MaxValue, 4);
         }
 
         [TestMethod]
         public void Int64Test()
         {
-            RoundtripPrimitive(Int64.MaxValue, 8);
+            RoundtripPrimitive(long.MaxValue, 8);
         }
 
         [TestMethod]
         public void UInt64Test()
         {
-            RoundtripPrimitive(UInt64.MaxValue, 8);
+            RoundtripPrimitive(ulong.MaxValue, 8);
         }
 
         [TestMethod]
         public void SingleTest()
         {
-            RoundtripPrimitive(Single.MaxValue, 4);
+            RoundtripPrimitive(float.MaxValue, 4);
         }
 
         [TestMethod]
         public void DoubleTest()
         {
-            RoundtripPrimitive(Double.MaxValue, 8);
+            RoundtripPrimitive(double.MaxValue, 8);
         }
 
         [TestMethod]

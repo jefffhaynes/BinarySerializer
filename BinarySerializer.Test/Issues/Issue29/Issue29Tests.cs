@@ -7,7 +7,7 @@ namespace BinarySerialization.Test.Issues.Issue29
     public class Issue29Tests : TestBase
     {
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestDefaultSerialization()
         {
             var carrierData = new LoadCarrierData(LoadCarrierType.Unknown, null);

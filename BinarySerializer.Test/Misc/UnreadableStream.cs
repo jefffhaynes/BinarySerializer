@@ -5,6 +5,28 @@ namespace BinarySerialization.Test.Misc
 {
     internal class UnreadableStream : Stream
     {
+        public override bool CanRead
+        {
+            get { return true; }
+        }
+
+        public override bool CanSeek
+        {
+            get { return false; }
+        }
+
+        public override bool CanWrite
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override long Length
+        {
+            get { throw new IOException(); }
+        }
+
+        public override long Position { get; set; }
+
         public override void Flush()
         {
             throw new NotImplementedException();
@@ -28,27 +50,5 @@ namespace BinarySerialization.Test.Misc
         public override void Write(byte[] buffer, int offset, int count)
         {
         }
-
-        public override bool CanRead
-        {
-            get { return true; }
-        }
-
-        public override bool CanSeek
-        {
-            get { return false; }
-        }
-
-        public override bool CanWrite
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override long Length
-        {
-            get { throw new IOException(); }
-        }
-
-        public override long Position { get; set; }
     }
 }

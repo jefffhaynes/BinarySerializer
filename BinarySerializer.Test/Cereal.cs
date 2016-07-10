@@ -5,6 +5,8 @@ namespace BinarySerialization.Test
 {
     public class Cereal
     {
+        [FieldOrder(6)] public double DoubleField;
+
         [FieldOrder(0)]
         [SerializeAs(SerializedType.NullTerminatedString)]
         public string IsLittleEndian { get; set; }
@@ -26,9 +28,6 @@ namespace BinarySerialization.Test
 
         [FieldOrder(5)]
         public NutritionalInformation NutritionalInformation { get; set; }
-
-        [FieldOrder(6)]
-        public double DoubleField;
 
         [FieldOrder(7)]
         [FieldCount("OtherStuffCount")]
@@ -53,7 +52,7 @@ namespace BinarySerialization.Test
         public string SerializeMe { get; set; }
 
         [FieldOrder(12)]
-        [SerializeUntil((byte)0)]
+        [SerializeUntil((byte) 0)]
         public List<string> ExplicitlyTerminatedList { get; set; }
 
         [FieldOrder(13)]

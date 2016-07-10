@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO.Ports;
 
 namespace BinarySerialization.Test.Misc
 {

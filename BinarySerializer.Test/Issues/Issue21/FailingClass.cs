@@ -8,6 +8,6 @@ namespace BinarySerialization.Test.Issues.Issue21
         public byte EncodedDataType { get; set; }
 
         [Ignore]
-        public Type DataType => typeof(bool);
+        public Type DataType => typeof (bool);
     }
 }

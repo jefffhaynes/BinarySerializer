@@ -7,7 +7,7 @@ namespace BinarySerialization.Test.Misc
     public class MismatchBindingTests : TestBase
     {
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void MismatchBindingTest()
         {
             var expected = new MismatchBindingClass {Name1 = "Alice", Name2 = "Bob"};

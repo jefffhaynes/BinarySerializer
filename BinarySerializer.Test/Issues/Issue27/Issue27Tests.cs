@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue27
@@ -8,11 +7,11 @@ namespace BinarySerialization.Test.Issues.Issue27
     public class Issue27Tests
     {
         [TestMethod]
-        [ExpectedException(typeof(EndOfStreamException))]
+        [ExpectedException(typeof (EndOfStreamException))]
         public void TestPrematureStreamTermination()
         {
-            var serializer = new BinarySerializer { Endianness = BinarySerialization.Endianness.Little };
-            var inBytes = new byte[] { 0x01, 0x00, 0x00, 0x00, 0x40, 0x34 };
+            var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Little};
+            var inBytes = new byte[] {0x01, 0x00, 0x00, 0x00, 0x40, 0x34};
 
             using (var stream = new MemoryStream(inBytes))
             {

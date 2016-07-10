@@ -17,7 +17,7 @@ namespace BinarySerialization.Test.Issues.Issue30
         {
             message.ComplementHeader();
 
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
                 _binSerializer.Serialize(memoryStream, message);
                 return memoryStream.ToArray();

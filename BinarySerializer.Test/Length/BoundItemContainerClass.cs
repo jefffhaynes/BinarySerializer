@@ -8,6 +8,6 @@ namespace BinarySerialization.Test.Length
         public int NameLength { get; set; }
 
         [FieldOrder(1)]
-        public List<BoundItemClass> Items { get; set; } 
+        public List<BoundItemClass> Items { get; set; }
     }
 }

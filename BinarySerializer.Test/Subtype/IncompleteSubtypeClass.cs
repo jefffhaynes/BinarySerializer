@@ -1,5 +1,3 @@
-using BinarySerialization;
-
 namespace BinarySerialization.Test.Subtype
 {
     public class IncompleteSubtypeClass
@@ -8,7 +6,7 @@ namespace BinarySerialization.Test.Subtype
         public SubclassType Subtype { get; set; }
 
         [FieldOrder(1)]
-        [Subtype("Subtype", SubclassType.A, typeof(SubclassA))]
+        [Subtype("Subtype", SubclassType.A, typeof (SubclassA))]
         public Superclass Field { get; set; }
     }
 }

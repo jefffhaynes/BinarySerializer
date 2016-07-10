@@ -8,7 +8,7 @@ namespace BinarySerialization.Test
     [TestClass]
     public class StreamletTest
     {
-        private static readonly byte[] SourceData = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        private static readonly byte[] SourceData = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
         private void AssertRead(int offset, int length)
         {

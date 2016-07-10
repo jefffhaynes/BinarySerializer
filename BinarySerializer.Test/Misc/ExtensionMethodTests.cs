@@ -1,6 +1,4 @@
-﻿
-using System.Linq;
-using BinarySerialization;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Misc
@@ -11,7 +9,7 @@ namespace BinarySerialization.Test.Misc
         [TestMethod]
         public void GetAttributeTest()
         {
-            var type = typeof(Chemical);
+            var type = typeof (Chemical);
             var member = type.GetMember("Formula").Single();
             var attribute = member.GetAttribute<SerializeAsAttribute>();
             Assert.IsNotNull(attribute);

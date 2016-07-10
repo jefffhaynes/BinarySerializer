@@ -11,11 +11,11 @@ namespace BinarySerialization.Test.Subtype
         [TestMethod]
         public void SubtypeTest()
         {
-            var expected = new SubtypeClass {Field = new SubclassB{SomethingForClassB = 33}, Field2 = new SubclassA()};
+            var expected = new SubtypeClass {Field = new SubclassB {SomethingForClassB = 33}, Field2 = new SubclassA()};
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(SubclassType.B, actual.Subtype);
-            Assert.IsInstanceOfType(actual.Field, typeof(SubclassB));
+            Assert.IsInstanceOfType(actual.Field, typeof (SubclassB));
         }
 
         [TestMethod]
@@ -28,16 +28,17 @@ namespace BinarySerialization.Test.Subtype
                     SomeSuperStuff = 1,
                     SomethingForClassB = 2
                 },
-
                 Field2 = new SubclassA()
             };
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(SubclassType.C, actual.Subtype);
-            Assert.IsInstanceOfType(actual.Field, typeof(SubSubclassC));
+            Assert.IsInstanceOfType(actual.Field, typeof (SubSubclassC));
             Assert.AreEqual(actual.Field.SomeSuperStuff, expected.Field.SomeSuperStuff);
-            Assert.AreEqual(((SubSubclassC)actual.Field).SomethingForClassB, ((SubSubclassC)expected.Field).SomethingForClassB);
-            Assert.AreEqual(((SubSubclassC)actual.Field).SomethingForClassC, ((SubSubclassC)expected.Field).SomethingForClassC);
+            Assert.AreEqual(((SubSubclassC) actual.Field).SomethingForClassB,
+                ((SubSubclassC) expected.Field).SomethingForClassB);
+            Assert.AreEqual(((SubSubclassC) actual.Field).SomethingForClassC,
+                ((SubSubclassC) expected.Field).SomethingForClassC);
         }
 
         [TestMethod]
@@ -64,9 +65,9 @@ namespace BinarySerialization.Test.Subtype
 
             var actualItems = actual.Items;
 
-            Assert.AreEqual(typeof(SubclassA), actualItems[0].Value.GetType());
+            Assert.AreEqual(typeof (SubclassA), actualItems[0].Value.GetType());
             Assert.IsNull(actualItems[1].Value);
-            Assert.AreEqual(typeof(SubSubclassC), actualItems[2].Value.GetType());
+            Assert.AreEqual(typeof (SubSubclassC), actualItems[2].Value.GetType());
         }
 
         //[TestMethod]
@@ -95,7 +96,7 @@ namespace BinarySerialization.Test.Subtype
                 AncestorSubtypeBindingClass =
                     new AncestorSubtypeBindingClass
                     {
-                        InnerClass = new AncestorSubtypeBindingInnerClass { Value = "hello" }
+                        InnerClass = new AncestorSubtypeBindingInnerClass {Value = "hello"}
                     }
             };
 
@@ -113,7 +114,7 @@ namespace BinarySerialization.Test.Subtype
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void IncompatibleBindingsTest()
         {
             var expected = new IncompatibleBindingsClass();
@@ -121,7 +122,7 @@ namespace BinarySerialization.Test.Subtype
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void InvalidSubtypeTest()
         {
             var expected = new InvalidSubtypeClass();
@@ -129,7 +130,7 @@ namespace BinarySerialization.Test.Subtype
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void NonUniqueSubtypesTest()
         {
             var expected = new NonUniqueSubtypesClass();
@@ -137,7 +138,7 @@ namespace BinarySerialization.Test.Subtype
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void NonUniqueSubtypeValuesTest()
         {
             var expected = new NonUniqueSubtypeValuesClass();
@@ -148,7 +149,7 @@ namespace BinarySerialization.Test.Subtype
         [ExpectedException(typeof (InvalidOperationException))]
         public void ThrowOnAbstractTypeWithNoSubtypeTest()
         {
-            Roundtrip(new ThrowOnAbstractTypeWithNoSubtypeClass{Superclass = new SubclassA()});
+            Roundtrip(new ThrowOnAbstractTypeWithNoSubtypeClass {Superclass = new SubclassA()});
         }
     }
 }

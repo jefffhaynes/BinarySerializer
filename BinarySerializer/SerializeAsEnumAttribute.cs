@@ -21,23 +21,6 @@ namespace BinarySerialization
         /// to use during serialization.
         /// </summary>
         /// <param name="value">The literal value of the enum when serialized.</param>
-        /// <example>
-        /// <code>
-        /// using BinarySerializer;
-        /// 
-        /// public enum Shape
-        /// {
-        ///     [SerializeAsEnum("CIR")]
-        ///     Circle,
-        ///     
-        ///     [SerializeAsEnum("SQR")]
-        ///     Square,
-        /// 
-        ///     [SerializeAsEnum("TRI")]
-        ///     Triangle
-        /// }
-        /// </code>
-        /// </example>
         public SerializeAsEnumAttribute(string value)
         {
             Value = value;

@@ -25,7 +25,7 @@ namespace BinarySerialization.Test
         [TestMethod]
         public void Crc16DataReflectedTest()
         {
-            var crc = new Crc16(Crc16Polynomial, 0xffff) { IsDataReflected = true };
+            var crc = new Crc16(Crc16Polynomial, 0xffff) {IsDataReflected = true};
             TestCrc16(crc, "hello world", 0x9f8a);
         }
 

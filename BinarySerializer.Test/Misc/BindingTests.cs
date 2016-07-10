@@ -7,7 +7,7 @@ namespace BinarySerialization.Test.Misc
     public class BindingTests : TestBase
     {
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void InvalidForwardBindingTest()
         {
             Roundtrip(new InvalidForwardBindingClass());

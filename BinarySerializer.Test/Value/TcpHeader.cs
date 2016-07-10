@@ -31,7 +31,7 @@
         public ushort UrgentPointer { get; set; }
 
         [FieldOrder(9)]
-        [FieldLength("DataOffsetAndFlags", ConverterType = typeof(BitMaskConverter), ConverterParameter = 0xf0)]
+        [FieldLength("DataOffsetAndFlags", ConverterType = typeof (BitMaskConverter), ConverterParameter = 0xf0)]
         public uint[] Options { get; set; }
     }
 }

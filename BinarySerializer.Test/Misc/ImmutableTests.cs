@@ -9,7 +9,7 @@ namespace BinarySerialization.Test.Misc
     public class ImmutableTests : TestBase
     {
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void PrivateSetterTest()
         {
             var expected = new PrivateSetterClass();
@@ -50,10 +50,10 @@ namespace BinarySerialization.Test.Misc
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void ImmutableNoPublicConstructorTest()
         {
-            var stream = new MemoryStream(new[] {(byte)0x1});
+            var stream = new MemoryStream(new[] {(byte) 0x1});
             Serializer.Deserialize<ImmutableNoPublicConstructorClass>(stream);
         }
 

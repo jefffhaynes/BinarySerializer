@@ -8,7 +8,8 @@ namespace BinarySerialization.Test.Custom
         [Ignore]
         public uint Value { get; set; }
 
-        public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)
+        public void Serialize(Stream stream, BinarySerialization.Endianness endianness,
+            BinarySerializationContext serializationContext)
         {
             var boundedStream = (BoundedStream) stream;
             Assert.AreEqual(0, boundedStream.Position);
@@ -18,9 +19,10 @@ namespace BinarySerialization.Test.Custom
             varuint.Serialize(stream, endianness, serializationContext);
         }
 
-        public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)
+        public void Deserialize(Stream stream, BinarySerialization.Endianness endianness,
+            BinarySerializationContext serializationContext)
         {
-            var varuint = new Varuint { Value = Value };
+            var varuint = new Varuint {Value = Value};
             varuint.Deserialize(stream, endianness, serializationContext);
             Value = varuint.Value;
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
@@ -259,13 +258,11 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 case SerializedType.ByteArray:
                 {
-                    Debug.Assert(effectiveLength != null, "effectiveLength != null");
                     value = reader.ReadBytes((int)effectiveLength.Value);
                     break;
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    Debug.Assert(effectiveLength != null, "effectiveLength != null");
                     byte[] data = ReadNullTerminated(reader, (int)effectiveLength.Value).ToArray();
 
                     value = Encoding.GetString(data, 0, data.Length);
@@ -273,7 +270,6 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.SizedString:
                 {
-                    Debug.Assert(effectiveLength != null, "effectiveLength != null");
                     byte[] data = reader.ReadBytes((int)effectiveLength.Value);
                     var untrimmed = Encoding.GetString(data, 0, data.Length);
                     if (TypeNode.AreStringsNullTerminated)

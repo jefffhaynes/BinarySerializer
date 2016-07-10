@@ -6,11 +6,11 @@ namespace BinarySerialization.Test.Value
     {
         private readonly SHA256Managed _sha = new SHA256Managed();
 
-        public override int BlockSize => _sha.InputBlockSize;
-
         public FieldSha256Attribute(string valuePath) : base(valuePath)
         {
         }
+
+        public override int BlockSize => _sha.InputBlockSize;
 
         protected override void Reset(BinarySerializationContext context)
         {

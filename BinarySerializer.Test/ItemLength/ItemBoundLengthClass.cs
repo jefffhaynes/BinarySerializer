@@ -9,6 +9,6 @@ namespace BinarySerialization.Test.ItemLength
 
         [FieldOrder(1)]
         [ItemLength("ItemLength")]
-        public List<string> Items { get; set; } 
+        public List<string> Items { get; set; }
     }
 }

@@ -21,10 +21,10 @@ namespace BinarySerialization.Test.Events
             serializer.Serialize(stream, new EventTestClass {InnerClass = new EventTestInnerClass()});
 
             // check types
-            Assert.AreEqual(typeof(MemberSerializingEventArgs), events[0].GetType());
-            Assert.AreEqual(typeof(MemberSerializingEventArgs), events[1].GetType());
-            Assert.AreEqual(typeof(MemberSerializedEventArgs), events[2].GetType());
-            Assert.AreEqual(typeof(MemberSerializedEventArgs), events[3].GetType());
+            Assert.AreEqual(typeof (MemberSerializingEventArgs), events[0].GetType());
+            Assert.AreEqual(typeof (MemberSerializingEventArgs), events[1].GetType());
+            Assert.AreEqual(typeof (MemberSerializedEventArgs), events[2].GetType());
+            Assert.AreEqual(typeof (MemberSerializedEventArgs), events[3].GetType());
 
             // check names
             Assert.AreEqual("InnerClass", events[0].MemberName);

@@ -21,7 +21,7 @@ namespace BinarySerialization.Test.Order
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void MultipleMembersNoOrderAttributeShouldThrowTest()
         {
             var order = new MutlipleMembersNoOrderClass();
@@ -29,7 +29,7 @@ namespace BinarySerialization.Test.Order
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void MultipleMembersDuplicateOrderAttributeShouldThrowTest()
         {
             var order = new MutlipleMembersDuplicateOrderClass();
@@ -39,8 +39,8 @@ namespace BinarySerialization.Test.Order
         [TestMethod]
         public void BaseClassComesBeforeDerivedClassTest()
         {
-            var order = new OrderDerivedClass { First = 1, Second = 2 };
-            Roundtrip(order, new byte[] { 0x1, 0x2 });
+            var order = new OrderDerivedClass {First = 1, Second = 2};
+            Roundtrip(order, new byte[] {0x1, 0x2});
         }
     }
 }

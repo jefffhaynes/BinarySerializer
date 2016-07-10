@@ -19,7 +19,7 @@ namespace BinarySerialization.Test.Length
         {
             var actual = Roundtrip(new ConstLengthClass(), 6);
             Assert.AreEqual(string.Empty, actual.Field);
-            Assert.AreEqual(System.Text.Encoding.ASCII.GetString(new byte[] {0,0,0}), actual.Field2);
+            Assert.AreEqual(System.Text.Encoding.ASCII.GetString(new byte[] {0, 0, 0}), actual.Field2);
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace BinarySerialization.Test.Length
         [TestMethod]
         public void LengthBindingTest2()
         {
-            var expected = new BoundLengthClass<byte[]> { Field = System.Text.Encoding.ASCII.GetBytes("FieldValue") };
+            var expected = new BoundLengthClass<byte[]> {Field = System.Text.Encoding.ASCII.GetBytes("FieldValue")};
             var actual = Roundtrip(expected);
             Assert.AreEqual(expected.Field.Length, actual.FieldLengthField);
             Assert.IsTrue(expected.Field.SequenceEqual(actual.Field));
@@ -43,7 +43,7 @@ namespace BinarySerialization.Test.Length
         [TestMethod]
         public void CollectionConstLengthTest()
         {
-            var expected = new ConstCollectionLengthClass { Field = new List<string>(TestSequence) };
+            var expected = new ConstCollectionLengthClass {Field = new List<string>(TestSequence)};
             var actual = Roundtrip(expected);
             Assert.AreEqual(TestSequence.Length, actual.Field.Count);
             Assert.IsTrue(expected.Field.SequenceEqual(actual.Field));
@@ -60,18 +60,18 @@ namespace BinarySerialization.Test.Length
         [TestMethod]
         public void CollectionLengthTest()
         {
-            var expected = new BoundLengthClass<List<string>> { Field = new List<string>(TestSequence) };
+            var expected = new BoundLengthClass<List<string>> {Field = new List<string>(TestSequence)};
             var actual = Roundtrip(expected);
-            Assert.AreEqual(expected.Field.Count * 2, actual.FieldLengthField);
+            Assert.AreEqual(expected.Field.Count*2, actual.FieldLengthField);
             Assert.AreEqual(TestSequence.Length, actual.Field.Count);
         }
 
         [TestMethod]
         public void EmptyCollectionLengthTest()
         {
-            var expected = new BoundLengthClass<List<string>> { Field = new List<string>() };
+            var expected = new BoundLengthClass<List<string>> {Field = new List<string>()};
             var actual = Roundtrip(expected);
-            Assert.AreEqual(expected.Field.Count * 2, actual.FieldLengthField);
+            Assert.AreEqual(expected.Field.Count*2, actual.FieldLengthField);
             Assert.AreEqual(0, actual.Field.Count);
         }
 
@@ -79,9 +79,9 @@ namespace BinarySerialization.Test.Length
         public void ComplexFieldLengthTest()
         {
             var expected = new BoundLengthClass<ConstLengthClass>
-                {
-                    Field = new ConstLengthClass { Field = "FieldValue" }
-                };
+            {
+                Field = new ConstLengthClass {Field = "FieldValue"}
+            };
             var actual = Roundtrip(expected);
             Assert.AreEqual(3, actual.Field.Field.Length);
             Assert.AreEqual(6, actual.FieldLengthField);
@@ -91,16 +91,16 @@ namespace BinarySerialization.Test.Length
         public void ContainedCollectionTest()
         {
             var expected = new BoundLengthClass<ContainedCollection>
+            {
+                Field = new ContainedCollection
                 {
-                    Field = new ContainedCollection
-                        {
-                            Collection = new List<string>
-                                {
-                                    "hello",
-                                    "world"
-                                }
-                        }
-                };
+                    Collection = new List<string>
+                    {
+                        "hello",
+                        "world"
+                    }
+                }
+            };
 
             var actual = Roundtrip(expected);
             Assert.AreEqual(2, actual.Field.Collection.Count);
@@ -115,7 +115,6 @@ namespace BinarySerialization.Test.Length
                 {
                     Value = "hello"
                 },
-
                 InnerClass2 = new PaddedLengthClassInnerClass
                 {
                     Value = "world"

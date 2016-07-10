@@ -30,7 +30,7 @@
         public uint Polynomial { get; set; } = DefaultPolynomial;
 
         /// <summary>
-        /// Gets or sets the intial value of the polynomial.  By default this is 0xffffffff.
+        /// Gets or sets the initial value of the polynomial.  By default this is 0xffffffff.
         /// </summary>
         public uint InitialValue { get; set; } = DefaultInitialValue;
 

@@ -8,8 +8,8 @@ namespace BinarySerialization.Test
     {
         protected static readonly BinarySerializer Serializer = new BinarySerializer();
 
-        protected static readonly string[] TestSequence = { "a", "b", "c" };
-        protected static readonly int[] PrimitiveTestSequence = { 1, 2, 3 };
+        protected static readonly string[] TestSequence = {"a", "b", "c"};
+        protected static readonly int[] PrimitiveTestSequence = {1, 2, 3};
 
         static TestBase()
         {
@@ -53,7 +53,7 @@ namespace BinarySerialization.Test
             stream.Position = 0;
             var data = stream.ToArray();
 
-            for (int i = 0; i < expectedValue.Length; i++)
+            for (var i = 0; i < expectedValue.Length; i++)
             {
                 var expected = expectedValue[i];
                 var actual = data[i];

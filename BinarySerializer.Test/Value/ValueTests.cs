@@ -53,7 +53,7 @@ namespace BinarySerialization.Test.Value
         {
             var expected = new StreamValueClass
             {
-                Data = new MemoryStream(Enumerable.Repeat((byte)'A', 100000).ToArray())
+                Data = new MemoryStream(Enumerable.Repeat((byte) 'A', 100000).ToArray())
             };
 
             var actual = Roundtrip(expected);
@@ -71,7 +71,7 @@ namespace BinarySerialization.Test.Value
             var actual = Roundtrip(expected);
 
             var expectedHash =
-                (new SHA256Managed()).ComputeHash(new MemoryStream(System.Text.Encoding.ASCII.GetBytes(expected.Value)));
+                new SHA256Managed().ComputeHash(new MemoryStream(System.Text.Encoding.ASCII.GetBytes(expected.Value)));
 
             Assert.IsTrue(expectedHash.SequenceEqual(actual.Hash));
         }

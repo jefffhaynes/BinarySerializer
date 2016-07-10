@@ -112,7 +112,7 @@ namespace BinarySerialization.Graph.TypeGraph
             FieldValueAttribute = attributes.OfType<FieldValueAttributeBase>().SingleOrDefault();
             if (FieldValueAttribute != null)
             {
-                FieldValueBinding = new ValueBinding(FieldValueAttribute, GetBindingLevel(FieldValueAttribute.Binding));
+                FieldValueBinding = new Binding(FieldValueAttribute, GetBindingLevel(FieldValueAttribute.Binding));
             }
 
             var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();

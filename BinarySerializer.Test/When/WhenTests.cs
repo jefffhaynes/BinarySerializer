@@ -35,7 +35,7 @@ namespace BinarySerialization.Test.When
             };
 
             var actual = Roundtrip(expected);
-            
+
             Assert.AreEqual(expected.SerializeThis, actual.SerializeThis);
             Assert.AreNotEqual(expected.DontSerializeThis, actual.DontSerializeThis);
             Assert.AreEqual(expected.SerializeThisNoMatterWhat, actual.SerializeThisNoMatterWhat);
@@ -53,7 +53,7 @@ namespace BinarySerialization.Test.When
             };
 
             var actual = Roundtrip(expected);
-            
+
             Assert.AreEqual(expected.SerializeThis, actual.SerializeThis);
             Assert.AreNotEqual(expected.DontSerializeThis, actual.DontSerializeThis);
             Assert.AreEqual(expected.SerializeThisNoMatterWhat, actual.SerializeThisNoMatterWhat);

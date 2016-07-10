@@ -1,6 +1,6 @@
 ﻿namespace BinarySerialization.Test.Enums
 {
-    class BaseTypeEnumAsStringClass
+    internal class BaseTypeEnumAsStringClass
     {
         [SerializeAs(SerializedType.NullTerminatedString)]
         public BaseTypeEnumValues Field { get; set; }

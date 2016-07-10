@@ -73,7 +73,7 @@ namespace BinarySerialization.Test
         [TestMethod]
         public void Roundtrip()
         {
-            Cereal cereal = Cerealize();
+            var cereal = Cerealize();
 
 
             using (var stream = new MemoryStream())
@@ -136,7 +136,7 @@ namespace BinarySerialization.Test
         {
             if (e.MemberName == "IsLittleEndian")
             {
-                bool isLittleEndian = bool.Parse((string) e.Value);
+                var isLittleEndian = bool.Parse((string) e.Value);
                 if (!isLittleEndian)
                     _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
@@ -148,7 +148,7 @@ namespace BinarySerialization.Test
         {
             if (e.MemberName == "IsLittleEndian")
             {
-                bool isLittleEndian = bool.Parse((string) e.Value);
+                var isLittleEndian = bool.Parse((string) e.Value);
                 if (!isLittleEndian)
                     _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
@@ -229,12 +229,13 @@ namespace BinarySerialization.Test
             Assert.AreEqual(4, byteList.Data.Count);
         }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(NotSupportedException))]
-        //public void CollectionAtRootShouldThrowNotSupportedException()
-        //{
-        //    var serializer = new BinarySerialization.BinarySerializer();
-        //    serializer.Deserialize<List<string>>(new byte[3]);
         //}
+        //    serializer.Deserialize<List<string>>(new byte[3]);
+        //    var serializer = new BinarySerialization.BinarySerializer();
+        //{
+        //public void CollectionAtRootShouldThrowNotSupportedException()
+        //[ExpectedException(typeof(NotSupportedException))]
+
+        //[TestMethod]
     }
 }

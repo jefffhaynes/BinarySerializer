@@ -3,27 +3,27 @@
     public enum LoadCarrierType
     {
         /// <summary>
-        /// unknown
+        ///     unknown
         /// </summary>
         Unknown = 0,
 
         /// <summary>
-        /// bin 1
+        ///     bin 1
         /// </summary>
         Bin1 = 1,
 
         /// <summary>
-        /// bin 2
+        ///     bin 2
         /// </summary>
         Bin2 = 2,
 
         /// <summary>
-        /// palette
+        ///     palette
         /// </summary>
         Palette = 3,
 
         /// <summary>
-        /// pipe
+        ///     pipe
         /// </summary>
         Pipe = 4
     }

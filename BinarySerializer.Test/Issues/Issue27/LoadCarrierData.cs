@@ -19,6 +19,7 @@
         [FieldOrder(3)]
         [SerializeAs(SerializedType = SerializedType.UInt4)]
         public uint Prop4 { get; set; }
+
         #endregion
     }
 }

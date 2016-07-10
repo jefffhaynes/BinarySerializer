@@ -27,7 +27,6 @@ namespace BinarySerialization.Test.Count
             {
                 Field = new List<int>(PrimitiveTestSequence),
                 Field2 = PrimitiveTestSequence.ToArray()
-            
             });
 
             Assert.AreEqual(3, actual.Field.Count);
@@ -38,9 +37,9 @@ namespace BinarySerialization.Test.Count
         public void CountTest()
         {
             var expected = new BoundCountClass
-                {
-                    Field = new List<string>(TestSequence)
-                };
+            {
+                Field = new List<string>(TestSequence)
+            };
 
             var actual = Roundtrip(expected);
             Assert.AreEqual(TestSequence.Length, actual.Field.Count);
@@ -51,7 +50,7 @@ namespace BinarySerialization.Test.Count
         [TestMethod]
         public void ConstCountMismatchTest()
         {
-            var actual = Roundtrip(new ConstCountClass<string> { Field = new List<string>(TestSequence.Take(2)) });
+            var actual = Roundtrip(new ConstCountClass<string> {Field = new List<string>(TestSequence.Take(2))});
             Assert.AreEqual(3, actual.Field.Count);
         }
 
@@ -69,7 +68,7 @@ namespace BinarySerialization.Test.Count
         [TestMethod]
         public void PrimitiveListBindingTest()
         {
-            var expected = new PrimitiveListBindingClass { Ints = new List<int> { 1, 2, 3 } };
+            var expected = new PrimitiveListBindingClass {Ints = new List<int> {1, 2, 3}};
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(expected.Ints.Count, actual.ItemCount);

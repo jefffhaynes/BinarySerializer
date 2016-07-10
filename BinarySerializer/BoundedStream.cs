@@ -32,7 +32,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        ///     Gets the the current offset in the serialized graph.
+        ///     Gets the current offset in the serialized graph.
         /// </summary>
         public long GlobalPosition
         {

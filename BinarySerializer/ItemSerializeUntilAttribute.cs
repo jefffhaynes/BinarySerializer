@@ -5,32 +5,6 @@ namespace BinarySerialization
     /// <summary>
     /// Specifies an explicit list termination condition when it is defined as part of an item in the collection.
     /// </summary>
-    /// <example>
-    /// Consider a list of toys of unknown length, where the toys themselves define a field indicating that
-    /// we have reached the end of the collection.
-    /// <code>
-    /// using BinarySerialization;
-    /// 
-    /// public class Toy
-    /// {
-    ///     public string Name { get; set; }
-    ///     public bool IsLast { get; set; }
-    /// }
-    /// 
-    /// public class ToyChest
-    /// {
-    ///     [ItemSerializeUntil("IsLast", true)]
-    ///     public List&lt;Toy&gt; Toys { get; set; }
-    /// }
-    /// 
-    /// </code>
-    /// </example>
-    /// <remarks>
-    /// It should be noted that this attributes differs from the <see cref="SerializeUntilAttribute"/> class in
-    /// a subtle but significant way.  The <see cref="SerializeUntilAttribute"/> should be used in cases where
-    /// the serialization of collection is terminated explicitly by something defined outside of the scope of an
-    /// item in the collection.  See <see cref="SerializeUntilAttribute"/> for more information.
-    /// </remarks>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class ItemSerializeUntilAttribute : FieldBindingBaseAttribute, IConstAttribute
     {

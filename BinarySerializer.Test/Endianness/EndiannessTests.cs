@@ -9,7 +9,7 @@ namespace BinarySerialization.Test.Endianness
         [TestMethod]
         public void TestSerializerEndianness()
         {
-            var serializer = new BinarySerialization.BinarySerializer {Endianness = BinarySerialization.Endianness.Big};
+            var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Big};
             var expected = new EndiannessClass {Short = 1};
 
             var stream = new MemoryStream();

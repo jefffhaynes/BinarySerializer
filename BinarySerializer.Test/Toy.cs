@@ -1,20 +1,11 @@
 ﻿using System;
-using BinarySerialization;
 
 namespace BinarySerialization.Test
 {
     public class Toy : IEquatable<Toy>
     {
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((Name != null ? Name.GetHashCode() : 0)*397) ^ Last.GetHashCode();
-            }
-        }
-
         public Toy()
-        {    
+        {
         }
 
         public Toy(string name, bool last = false)
@@ -36,11 +27,19 @@ namespace BinarySerialization.Test
             return string.Equals(Name, other.Name) && Last.Equals(other.Last);
         }
 
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Name != null ? Name.GetHashCode() : 0)*397) ^ Last.GetHashCode();
+            }
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Toy) obj);
         }
     }

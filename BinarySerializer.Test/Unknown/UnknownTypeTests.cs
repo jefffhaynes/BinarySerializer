@@ -22,7 +22,7 @@ namespace BinarySerialization.Test.Unknown
         [ExpectedException(typeof (BindingException))]
         public void SubtypesOnUnknownTypeFieldShouldThrowBindingException()
         {
-            var unknownTypeClass = new InvalidUnknownTypeClass { Field = "hello" };
+            var unknownTypeClass = new InvalidUnknownTypeClass {Field = "hello"};
 
             var serializer = new BinarySerializer();
 
@@ -46,14 +46,14 @@ namespace BinarySerialization.Test.Unknown
 
             var data = stream.ToArray();
 
-            Assert.AreEqual((byte)childClass.Subfield.Length, data[0]);
+            Assert.AreEqual((byte) childClass.Subfield.Length, data[0]);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void ObjectSerializationShouldThrow()
         {
-            var unknownTypeClass = new UnknownTypeClass { Field = new object() };
+            var unknownTypeClass = new UnknownTypeClass {Field = new object()};
             Roundtrip(unknownTypeClass);
         }
     }

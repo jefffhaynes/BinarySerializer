@@ -13,7 +13,7 @@ namespace BinarySerialization.Test.Issues.Issue24
             var actual = Roundtrip(data);
 
             Assert.AreEqual(actual.CarrierType, LoadCarrierType.Bin1);
-            Assert.IsInstanceOfType(actual.Data, typeof(Bin1Data));
+            Assert.IsInstanceOfType(actual.Data, typeof (Bin1Data));
         }
     }
 }

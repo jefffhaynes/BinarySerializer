@@ -19,7 +19,7 @@ namespace BinarySerialization.Test.ItemLength
         [TestMethod]
         public void ItemBoundLengthTest()
         {
-            var expected = new ItemBoundLengthClass { Items = new List<string>(new[] { "abc", "def", "ghi" }) };
+            var expected = new ItemBoundLengthClass {Items = new List<string>(new[] {"abc", "def", "ghi"})};
 
             var itemLength = expected.Items[0].Length;
             var expectedLength = sizeof (int) + itemLength*expected.Items.Count;
@@ -41,10 +41,10 @@ namespace BinarySerialization.Test.ItemLength
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void ItemBoundMismatchLengthTest_ShouldThrowInvalidOperation()
         {
-            var expected = new ItemBoundLengthClass { Items = new List<string>(new[] { "abc", "defghi"}) };
+            var expected = new ItemBoundLengthClass {Items = new List<string>(new[] {"abc", "defghi"})};
             Roundtrip(expected);
         }
 
@@ -83,7 +83,7 @@ namespace BinarySerialization.Test.ItemLength
         public void JaggedArrayTest()
         {
             var expected = new JaggedArrayClass {NameArray = new[] {"Alice", "Bob", "Charlie"}};
-            
+
             var actual = Roundtrip(expected);
 
             var nameLengths = expected.NameArray.Select(name => name.Length);
@@ -94,7 +94,7 @@ namespace BinarySerialization.Test.ItemLength
         [TestMethod]
         public void JaggedListTest()
         {
-            var expected = new JaggedListClass { NameList = new[] { "Alice", "Bob", "Charlie" }.ToList() };
+            var expected = new JaggedListClass {NameList = new[] {"Alice", "Bob", "Charlie"}.ToList()};
             var actual = Roundtrip(expected);
 
             var nameLengths = expected.NameList.Select(name => name.Length);
@@ -105,7 +105,7 @@ namespace BinarySerialization.Test.ItemLength
         [TestMethod]
         public void JaggedDoubleBoundTest()
         {
-            var expected = new JaggedDoubleBoundClass() { NameArray = new[] { "Alice", "Bob", "Charlie" } };
+            var expected = new JaggedDoubleBoundClass {NameArray = new[] {"Alice", "Bob", "Charlie"}};
             expected.NameList = expected.NameArray.ToList();
 
             var actual = Roundtrip(expected);
@@ -120,7 +120,7 @@ namespace BinarySerialization.Test.ItemLength
         public void JaggedByteArrayTest()
         {
             var names = new[] {"Alice", "Bob", "Charlie"};
-            var expected = new JaggedByteArrayClass()
+            var expected = new JaggedByteArrayClass
             {
                 NameData = names.Select(name => System.Text.Encoding.ASCII.GetBytes(name)).ToArray()
             };
@@ -134,7 +134,7 @@ namespace BinarySerialization.Test.ItemLength
         [TestMethod]
         public void JaggedIntArrayTest()
         {
-            var expected = new JaggedIntArrayClass()
+            var expected = new JaggedIntArrayClass
             {
                 Arrays = new[] {new[] {1}, new[] {2, 2}, new[] {3, 3, 3}}
             };

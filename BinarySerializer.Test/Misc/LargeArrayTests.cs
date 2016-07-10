@@ -10,7 +10,7 @@ namespace BinarySerialization.Test.Misc
         public void LargeArrayTest()
         {
             var ser = new BinarySerializer();
-            var data = new byte[65536 * sizeof(int) * 2];
+            var data = new byte[65536*sizeof (int)*2];
 
             ser.Deserialize<IntArray64K>(data);
 
