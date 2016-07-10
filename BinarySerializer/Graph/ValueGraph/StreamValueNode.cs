@@ -55,7 +55,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (length != null)
                 return length.Value;
-
+            
             if (valueStream.CanSeek)
                 return valueStream.Length;
 

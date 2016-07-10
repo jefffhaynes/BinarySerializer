@@ -56,15 +56,11 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            int? itemLength = null;
-            if (TypeNode.ItemLengthBinding != null && TypeNode.ItemLengthBinding.IsConst)
-                itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.ConstValue);
+            long? itemLength = GetConstFieldItemLength();
 
-            int? itemCount = null;
-            if (TypeNode.FieldCountBinding != null && TypeNode.FieldCountBinding.IsConst)
-                itemCount = Convert.ToInt32(TypeNode.FieldCountBinding.ConstValue);
+            var count = GetConstFieldCount();
 
-            PrimitiveCollectionSerializeOverride(stream, itemLength, itemCount);
+            PrimitiveCollectionSerializeOverride(stream, itemLength, count);
 
             var typeNode = (CollectionTypeNode) TypeNode;
 
@@ -101,18 +97,14 @@ namespace BinarySerialization.Graph.ValueGraph
             var reader = new EndianAwareBinaryReader(stream, Endianness);
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
-            var count = TypeNode.FieldCountBinding != null
-                ? Convert.ToInt32(TypeNode.FieldCountBinding.GetValue(this))
-                : int.MaxValue;
+            var count = GetBoundFieldCount() ?? long.MaxValue;
 
-            int? itemLength = null;
-            if (TypeNode.ItemLengthBinding != null)
-                itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.GetValue(this));
+            long? itemLength = GetBoundFieldItemLength();
 
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
 
-            for (var i = 0; i < count; i++)
+            for (long i = 0; i < count; i++)
             {
                 if (EndOfStream(stream))
                     break;
@@ -136,10 +128,10 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, int? length, int? itemCount);
-        protected abstract object CreateCollection(int size);
+        protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, long? length, long? itemCount);
+        protected abstract object CreateCollection(long size);
         protected abstract object CreateCollection(IEnumerable enumerable);
-        protected abstract void SetCollectionValue(object item, int index);
+        protected abstract void SetCollectionValue(object item, long index);
 
         protected override object GetLastItemValueOverride()
         {

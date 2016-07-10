@@ -36,11 +36,12 @@ namespace BinarySerialization.Graph
         {
             foreach (var binding in this)
             {
-                if(binding.BindingMode == BindingMode.TwoWay)
+                if(binding.BindingMode != BindingMode.OneWay)
                     binding.Bind(target, callback);
             }
         }
 
-        private IEnumerable<Binding> AdditionalBindings => this.Skip(1);
+        private IEnumerable<Binding> AdditionalBindings
+            => this.Skip(1).Where(binding => binding.BindingMode != BindingMode.OneWayToSource);
     }
 }

@@ -62,6 +62,9 @@ namespace BinarySerialization.Graph
             if (IsConst)
                 return _constValue;
 
+            if (BindingMode == BindingMode.OneWayToSource)
+                return null;
+
             var source = GetSource(target);
 
             return ValueConverter == null ? source.Value : Convert(source.Value, target.CreateSerializationContext());

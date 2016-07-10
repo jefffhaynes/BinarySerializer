@@ -43,10 +43,11 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var typeNode = (ListTypeNode)TypeNode;
 
-                if (typeNode.FieldCountBinding != null && typeNode.FieldCountBinding.IsConst)
+                var count = GetConstFieldCount();
+
+                if (count != null)
                 {
                     /* Pad out const-sized list */
-                    var count = Convert.ToInt32(typeNode.FieldCountBinding.GetValue(this));
                     while (list.Count < count)
                     {
                         var item = typeNode.ChildType == typeof (string)

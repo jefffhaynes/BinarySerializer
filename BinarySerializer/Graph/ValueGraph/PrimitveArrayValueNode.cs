@@ -11,7 +11,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void PrimitiveCollectionSerializeOverride(BoundedStream stream, int? itemLength, int? itemCount)
+        protected override void PrimitiveCollectionSerializeOverride(BoundedStream stream, long? itemLength, long? itemCount)
         {
             var typeNode = (ArrayTypeNode)TypeNode;
             var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
@@ -42,10 +42,10 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected override object CreateCollection(int size)
+        protected override object CreateCollection(long size)
         {
             var typeNode = (ArrayTypeNode)TypeNode;
-            return Array.CreateInstance(typeNode.ChildType, size);
+            return Array.CreateInstance(typeNode.ChildType, (int)size);
         }
 
         protected override object CreateCollection(IEnumerable enumerable)
@@ -54,11 +54,11 @@ namespace BinarySerialization.Graph.ValueGraph
             return enumerable.Cast<object>().Select(item => item.ConvertTo(typeNode.ChildType)).ToArray();
         }
 
-        protected override void SetCollectionValue(object item, int index)
+        protected override void SetCollectionValue(object item, long index)
         {
             var array = (Array)BoundValue;
             var typeNode = (ArrayTypeNode)TypeNode;
-            array.SetValue(item.ConvertTo(typeNode.ChildType), index);
+            array.SetValue(item.ConvertTo(typeNode.ChildType), (int)index);
         }
 
         protected override long CountOverride()

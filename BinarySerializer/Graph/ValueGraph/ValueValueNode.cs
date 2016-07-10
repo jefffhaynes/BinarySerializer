@@ -82,14 +82,14 @@ namespace BinarySerialization.Graph.ValueGraph
             Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }
 
-        public void Serialize(Stream stream, object value, SerializedType serializedType, int? length = null)
+        public void Serialize(Stream stream, object value, SerializedType serializedType, long? length = null)
         {
             var writer = new EndianAwareBinaryWriter(stream, Endianness);
             Serialize(writer, value, serializedType, length);
         }
 
         public void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType,
-            int? length = null)
+            long? length = null)
         {
             if (value == null)
             {
@@ -99,31 +99,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 else return;
             }
 
-            long? constLength = null;
-
-            if (length != null)
-            {
-                constLength = length.Value;
-            }
-
-            if (constLength == null)
-            {
-                constLength = GetConstFieldLength();
-            }
-
-            if (constLength == null)
-            {
-                var typeParent = TypeNode.Parent as TypeNode;
-
-                if (typeParent?.ItemLengthBinding != null && typeParent.ItemLengthBinding.IsConst)
-                {
-                    constLength = Convert.ToInt32(typeParent.ItemLengthBinding.ConstValue);
-                }
-                else if (TypeNode.FieldCountBinding != null && TypeNode.FieldCountBinding.IsConst)
-                {
-                    constLength = Convert.ToInt32(TypeNode.FieldCountBinding.ConstValue);
-                }
-            }
+            // prioritization of field length specifiers
+            long? constLength = length ?? // explicit length passed from parent
+                                GetConstFieldLength() ?? // calculated length from this field
+                                GetConstFieldCount(); // explicit field count (used for byte arrays and strings)
             
             long? maxLength = null;
 
@@ -220,34 +199,19 @@ namespace BinarySerialization.Graph.ValueGraph
             Value = ConvertToFieldType(value);
         }
 
-        public object Deserialize(BoundedStream stream, SerializedType serializedType, int? length = null)
+        public object Deserialize(BoundedStream stream, SerializedType serializedType, long? length = null)
         {
             var reader = new EndianAwareBinaryReader(stream, Endianness);
             return Deserialize(reader, serializedType, length);
         }
 
-        public object Deserialize(EndianAwareBinaryReader reader, SerializedType serializedType, int? length = null)
+        public object Deserialize(EndianAwareBinaryReader reader, SerializedType serializedType, long? length = null)
         {
-            long? effectiveLength = null;
-
-            if (length != null)
-            {
-                effectiveLength = length.Value;
-            }
+            long? effectiveLength = length ?? GetBoundFieldLength() ?? GetBoundFieldCount();
 
             if (effectiveLength == null)
             {
-                effectiveLength = GetBoundFieldLength();
-            }
-
-            if (effectiveLength == null)
-            {
-                if (TypeNode.FieldCountBinding != null)
-                {
-                    object countValue = TypeNode.FieldCountBinding.GetValue(this);
-                    effectiveLength = Convert.ToInt32(countValue);
-                }
-                else if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
+                if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
                          serializedType == SerializedType.NullTerminatedString)
                 {
                     // try to get bounded length

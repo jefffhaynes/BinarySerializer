@@ -16,9 +16,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var serializableChildren = GetSerializableChildren();
 
-            int? itemLength = null;
-            if (TypeNode.ItemLengthBinding != null && TypeNode.ItemLengthBinding.IsConst)
-                itemLength = Convert.ToInt32(TypeNode.ItemLengthBinding.ConstValue);
+            long? itemLength = GetConstFieldItemLength();
 
             foreach (var child in serializableChildren)
             {
@@ -43,29 +41,30 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var typeNode = (CollectionTypeNode)TypeNode;
 
-            var count = TypeNode.FieldCountBinding != null ? Convert.ToInt32(TypeNode.FieldCountBinding.GetValue(this)) : Int32.MaxValue;
+            var count = GetBoundFieldCount() ?? long.MaxValue;
 
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
 
-            IEnumerable<int> itemLengths = null;
+            IEnumerable<long> itemLengths = null;
             if (TypeNode.ItemLengthBinding != null)
             {
                 var itemLengthValue = TypeNode.ItemLengthBinding.GetValue(this);
 
                 var enumerableItemLengthValue = itemLengthValue as IEnumerable;
 
-                itemLengths = enumerableItemLengthValue?.Cast<object>().Select(Convert.ToInt32) ?? GetInfiniteSequence(Convert.ToInt32(itemLengthValue));
+                itemLengths = enumerableItemLengthValue?.Cast<object>().Select(Convert.ToInt64) ?? 
+                    GetInfiniteSequence(Convert.ToInt64(itemLengthValue));
             }
                       
-            IEnumerator<int> itemLengthEnumerator = null;
+            IEnumerator<long> itemLengthEnumerator = null;
 
             try
             {
                 if (itemLengths != null)
                     itemLengthEnumerator = itemLengths.GetEnumerator();
 
-                for (int i = 0; i < count; i++)
+                for (long i = 0; i < count; i++)
                 {
                     if (EndOfStream(stream))
                         break;
@@ -150,7 +149,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return terminationItemChild.BoundValue;
         }
         
-        private static IEnumerable<int> GetInfiniteSequence(int value)
+        private static IEnumerable<long> GetInfiniteSequence(long value)
         {
             while (true)
                 yield return value;

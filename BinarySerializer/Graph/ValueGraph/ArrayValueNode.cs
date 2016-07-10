@@ -39,11 +39,12 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var array = (Array)value;
 
-                if (typeNode.FieldCountBinding != null && typeNode.FieldCountBinding.IsConst)
+                var count = GetConstFieldCount();
+
+                if (count != null)
                 {
                     /* Pad out const-sized array */
-                    var count = Convert.ToInt32(typeNode.FieldCountBinding.ConstValue);
-                    var valueArray = Array.CreateInstance(typeNode.ChildType, count);
+                    var valueArray = Array.CreateInstance(typeNode.ChildType, (int)count);
                     Array.Copy(array, valueArray, array.Length);
                     array = valueArray;
                 }

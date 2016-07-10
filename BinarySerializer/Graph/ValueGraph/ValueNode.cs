@@ -226,16 +226,65 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected long? GetBoundFieldLength()
         {
-            return TypeNode.FieldLengthBindings != null
-                ? (long?) Convert.ToInt64(TypeNode.FieldLengthBindings.GetValue(this))
-                : null;
+            var length = GetBoundNumericValue(TypeNode.FieldLengthBindings);
+            if (length != null)
+                return length;
+
+            var parent = (ValueNode)Parent;
+            if (parent?.TypeNode.ItemLengthBinding != null)
+            {
+                var parentItemLength = parent.TypeNode.ItemLengthBinding.GetValue(parent);
+                if(parentItemLength.GetType().IsPrimitive)
+                    return Convert.ToInt64(parentItemLength);
+            }
+
+            return null;
         }
 
         protected long? GetConstFieldLength()
         {
-            return TypeNode.FieldLengthBindings != null && TypeNode.FieldLengthBindings.IsConst
-                ? (long?) Convert.ToInt64(TypeNode.FieldLengthBindings.ConstValue)
-                : null;
+            return GetConstNumericValue(TypeNode.FieldLengthBindings) ??
+                   (Parent as ValueNode)?.GetConstFieldItemLength();
+        }
+
+        protected long? GetBoundFieldCount()
+        {
+            return GetBoundNumericValue(TypeNode.FieldCountBinding);
+        }
+
+        protected long? GetConstFieldCount()
+        {
+            return GetConstNumericValue(TypeNode.FieldCountBinding);
+        }
+
+        protected long? GetBoundFieldItemLength()
+        {
+            return GetBoundNumericValue(TypeNode.ItemLengthBinding);
+        }
+
+        protected long? GetConstFieldItemLength()
+        {
+            return GetConstNumericValue(TypeNode.ItemLengthBinding);
+        }
+
+        private long? GetBoundNumericValue(IBinding binding)
+        {
+            var value = binding?.GetValue(this);
+            if (value == null)
+                return null;
+
+            return Convert.ToInt64(value);
+        }
+
+        private long? GetConstNumericValue(IBinding binding)
+        {
+            if (binding == null)
+                return null;
+
+            if (!binding.IsConst)
+                return null;
+
+            return Convert.ToInt64(binding.ConstValue);
         }
 
         public ValueNode GetChild(string path)

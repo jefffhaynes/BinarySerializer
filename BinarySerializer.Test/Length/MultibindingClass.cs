@@ -7,7 +7,7 @@
 
         [FieldOrder(1)]
         [FieldLength("Length")]
-        [FieldLength("Length2", BindingMode = BindingMode.OneWay)]
+        [FieldLength("Length2", BindingMode = BindingMode.OneWayToSource)]
         public string Value { get; set; }
 
         [FieldOrder(2)]
