@@ -39,6 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dotMemory.Unit">
+      <HintPath>..\packages\JetBrains.dotMemoryUnit.2.3.20160517.113140\lib\dotMemory.Unit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -165,6 +169,7 @@
     <Compile Include="Misc\AbstractClass.cs" />
     <Compile Include="Misc\AbstractClassContainer.cs" />
     <Compile Include="Misc\AsbtractClassTests.cs" />
+    <Compile Include="Misc\BindingTests.cs" />
     <Compile Include="Misc\CollectionMiscTests.cs" />
     <Compile Include="Misc\DerivedClass.cs" />
     <Compile Include="Misc\DictionaryTests.cs" />
@@ -177,6 +182,7 @@
     <Compile Include="Misc\ImmutableNoPublicConstructorClass.cs" />
     <Compile Include="Misc\ImmutableTests.cs" />
     <Compile Include="Misc\IntArray64K.cs" />
+    <Compile Include="Misc\InvalidForwardBindingClass.cs" />
     <Compile Include="Misc\IOExceptionTest.cs" />
     <Compile Include="Misc\LargeArrayTests.cs" />
     <Compile Include="Misc\MismatchBindingClass.cs" />
@@ -289,6 +295,9 @@
       <Project>{dd5dac31-3ca0-4b79-8340-bdd68724a697}</Project>
       <Name>BinarySerializer</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

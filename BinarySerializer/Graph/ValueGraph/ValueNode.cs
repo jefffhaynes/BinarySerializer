@@ -53,6 +53,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public virtual object BoundValue => Value;
 
+        public virtual bool Visited { get; set; }
+
         public virtual void Bind()
         {
             var typeNode = TypeNode;
@@ -99,11 +101,11 @@ namespace BinarySerialization.Graph.ValueGraph
             try
             {
                 var serializeWhenBindings = TypeNode.SerializeWhenBindings;
-                
+
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
                     return;
-                
+
                 long? maxLength = GetConstFieldLength();
 
                 var offset = GetBoundFieldOffset();
@@ -132,6 +134,10 @@ namespace BinarySerialization.Graph.ValueGraph
                     : $"member '{Name}'";
                 string message = $"Error serializing {reference}.  See inner exception for detail.";
                 throw new InvalidOperationException(message, e);
+            }
+            finally
+            {
+                Visited = true;
             }
         }
 
@@ -167,7 +173,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
                     return;
-                
+
                 long? maxLength = GetBoundFieldLength();
 
                 var offset = GetBoundFieldOffset();
@@ -196,6 +202,10 @@ namespace BinarySerialization.Graph.ValueGraph
                     : $"member '{Name}'";
                 string message = $"Error deserializing '{reference}'.  See inner exception for detail.";
                 throw new InvalidOperationException(message, e);
+            }
+            finally
+            {
+                Visited = true;
             }
         }
 

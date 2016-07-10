@@ -33,5 +33,19 @@ namespace BinarySerialization.Graph.ValueGraph
             binarySerializable.Deserialize(stream, Endianness, serializationContext);
             Value = binarySerializable;
         }
+
+        public override bool Visited
+        {
+            get { return base.Visited; }
+
+            set
+            {
+                // no children will be marked as visited so we'll do it for them
+                foreach (ValueNode child in Children)
+                    child.Visited = value;
+
+                base.Visited = value;
+            }
+        }
     }
 }

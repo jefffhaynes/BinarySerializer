@@ -66,7 +66,11 @@ namespace BinarySerialization.Graph
                 return null;
 
             var source = GetSource(target);
-
+            
+            if (!source.Visited)
+                throw new InvalidOperationException(
+                    "Binding source has not been deserialized.  Consider specifying a BindingMode of OneWayToSource.");
+            
             return ValueConverter == null ? source.Value : Convert(source.Value, target.CreateSerializationContext());
         }
 
