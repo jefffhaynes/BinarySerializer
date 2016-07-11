@@ -819,4 +819,5 @@ All public members of BinarySerializer are thread-safe and may be used concurren
 
 ## Examples ##
 
-See [XBee](https://github.com/jefffhaynes/XBee) for a complete example of BinarySerializer use.
+[XBee](https://github.com/jefffhaynes/XBee) 
+[PcapNgNet](https://github.com/jefffhaynes/PcapNgNet) 
