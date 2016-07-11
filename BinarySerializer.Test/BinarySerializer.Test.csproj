@@ -163,6 +163,8 @@
     <Compile Include="Length\BoundItemContainerClass.cs" />
     <Compile Include="Length\EmbeddedConstrainedCollectionClass.cs" />
     <Compile Include="Length\EmbeddedConstrainedCollectionInnerClass.cs" />
+    <Compile Include="Length\EmptyClass.cs" />
+    <Compile Include="Length\EmptyInternalClass.cs" />
     <Compile Include="Length\MultibindingClass.cs" />
     <Compile Include="Length\PaddedLengthClassClass.cs" />
     <Compile Include="Length\PaddedLengthClassInnerClass.cs" />

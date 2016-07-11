@@ -179,5 +179,15 @@ namespace BinarySerialization.Test.Length
             Assert.AreEqual(actual.Length, 2);
             Assert.AreEqual(actual.Length2, 2);
         }
+
+        [TestMethod]
+        public void EmptyClassTest()
+        {
+            var expected = new EmptyClass {Internal = new EmptyInternalClass()};
+            var actual = Roundtrip(expected);
+
+            Assert.IsNotNull(actual);
+            Assert.IsNotNull(actual.Internal);
+        }
     }
 }

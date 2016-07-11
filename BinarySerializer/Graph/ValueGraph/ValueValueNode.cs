@@ -192,8 +192,18 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
+
+
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
+            if (EndOfStream(stream))
+            {
+                if (TypeNode.IsNullable)
+                    return;
+
+                throw new EndOfStreamException();
+            }
+
             object value = Deserialize(stream, TypeNode.GetSerializedType());
             Value = ConvertToFieldType(value);
         }

@@ -214,12 +214,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (maxLength != null)
                 stream = new BoundedStream(stream, maxLength.Value);
 
-            if (EndOfStream(stream))
-            {
-                if (TypeNode.Type.IsPrimitive)
-                    throw new EndOfStreamException();
-            }
-            else DeserializeOverride(stream, eventShuttle);
+            DeserializeOverride(stream, eventShuttle);
         }
 
         internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);

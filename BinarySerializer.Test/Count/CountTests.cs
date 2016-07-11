@@ -84,21 +84,21 @@ namespace BinarySerialization.Test.Count
         }
 
         [TestMethod]
-        public void NullListBindingTest()
+        public void EmptyListBindingTest()
         {
             var expected = new PrimitiveListBindingClass();
             var actual = Roundtrip(expected);
 
-            Assert.IsNull(actual.Ints);
+            Assert.AreEqual(0, actual.Ints.Count);
         }
 
         [TestMethod]
-        public void NullArrayBindingTest()
+        public void EmptyArrayBindingTest()
         {
             var expected = new PrimitiveArrayBindingClass();
             var actual = Roundtrip(expected);
 
-            Assert.IsNull(actual.Ints);
+            Assert.AreEqual(0, actual.Ints.Length);
         }
 
         [TestMethod]

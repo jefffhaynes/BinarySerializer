@@ -104,7 +104,17 @@ namespace BinarySerialization.Graph.TypeGraph
                     AreStringsNullTerminated = true;
             }
 
-         
+            IsNullable = NullableUnderlyingType != null;
+            if (!IsNullable)
+            {
+                var serializedType = GetSerializedType();
+                IsNullable = serializedType == SerializedType.Default ||
+                             serializedType == SerializedType.ByteArray ||
+                             serializedType == SerializedType.NullTerminatedString ||
+                             serializedType == SerializedType.SizedString;
+            }
+
+            // setup bindings
             FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
             FieldCountBindings = GetBindings<FieldCountAttribute>(attributes);
             FieldOffsetBindings = GetBindings<FieldOffsetAttribute>(attributes);
@@ -230,6 +240,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public int? Order { get; }
 
         public bool AreStringsNullTerminated { get; }
+
+        public bool IsNullable { get; }
 
         public SerializedType GetSerializedType(Type referenceType = null)
         {
