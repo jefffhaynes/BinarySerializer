@@ -156,13 +156,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var serializableChildren = GetSerializableChildren();
 
-            var serializationContextLazy = new Lazy<BinarySerializationContext>(CreateSerializationContext);
+            var lazyContext = CreateLazySerializationContext();
             
             foreach (var child in serializableChildren)
             {
                 // report on serialization start if subscribed
                 if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
-                    eventShuttle.OnMemberSerializing(this, child.Name, serializationContextLazy.Value,
+                    eventShuttle.OnMemberSerializing(this, child.Name, lazyContext,
                         stream.GlobalPosition);
 
                 // serialize child
@@ -170,7 +170,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 // report on serialization complete if subscribed
                 if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
-                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, serializationContextLazy.Value,
+                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, lazyContext,
                         stream.GlobalPosition);
             }
         }
@@ -246,13 +246,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
             }
 
-            var serializationContextLazy = new Lazy<BinarySerializationContext>(CreateSerializationContext);
+            var lazyContext = CreateLazySerializationContext();
 
             foreach (var child in GetSerializableChildren())
             {
                 // report on deserialization start if subscribed
                 if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
-                    eventShuttle.OnMemberDeserializing(this, child.Name, serializationContextLazy.Value,
+                    eventShuttle.OnMemberDeserializing(this, child.Name, lazyContext,
                         stream.GlobalPosition);
 
                 // deserialize child
@@ -260,7 +260,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 // report on deserialization complete if subscribed
                 if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
-                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, serializationContextLazy.Value,
+                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, lazyContext,
                         stream.GlobalPosition);
             }
         }

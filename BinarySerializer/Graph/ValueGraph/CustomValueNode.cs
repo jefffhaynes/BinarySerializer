@@ -11,7 +11,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override void ObjectSerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            var serializationContext = CreateSerializationContext();
+            var serializationContext = CreateLazySerializationContext();
 
             var value = BoundValue;
 
@@ -28,7 +28,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override void ObjectDeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            var serializationContext = CreateSerializationContext();
+            var serializationContext = CreateLazySerializationContext();
             var binarySerializable = (IBinarySerializable)Activator.CreateInstance(TypeNode.Type);
             binarySerializable.Deserialize(stream, Endianness, serializationContext);
             Value = binarySerializable;

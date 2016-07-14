@@ -149,7 +149,7 @@ namespace BinarySerialization.Graph.ValueGraph
             // if I need to store serialized data for later...
             if (TypeNode.FieldValueAttribute != null)
             {
-                var context = CreateSerializationContext();
+                var context = CreateLazySerializationContext();
                 TypeNode.FieldValueAttribute.ResetInternal(context);
                 var tap = new FieldValueAdapterStream(TypeNode.FieldValueAttribute);
                 stream = new TapStream(stream, tap);
@@ -315,6 +315,12 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var parent = Parent as ValueNode;
             return new BinarySerializationContext(Value, parent?.Value, parent?.TypeNode.Type, parent?.CreateSerializationContext());
+        }
+
+        public virtual LazyBinarySerializationContext CreateLazySerializationContext()
+        {
+            var lazyContext = new Lazy<BinarySerializationContext>(CreateSerializationContext);
+            return new LazyBinarySerializationContext(lazyContext);
         }
 
         protected virtual long MeasureOverride()

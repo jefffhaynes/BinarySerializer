@@ -71,7 +71,7 @@ namespace BinarySerialization.Graph
                 throw new InvalidOperationException(
                     "Binding source has not been deserialized.  Consider specifying a BindingMode of OneWayToSource.");
             
-            return ValueConverter == null ? source.Value : Convert(source.Value, target.CreateSerializationContext());
+            return ValueConverter == null ? source.Value : Convert(source.Value, target.CreateLazySerializationContext());
         }
 
         public object GetBoundValue(ValueNode target)
@@ -80,7 +80,7 @@ namespace BinarySerialization.Graph
                 return _constValue;
 
             var source = GetSource(target);
-
+            
             return ValueConverter == null
                 ? source.BoundValue
                 : Convert(source.BoundValue, target.CreateSerializationContext());
@@ -139,7 +139,7 @@ namespace BinarySerialization.Graph
                 return;
 
             ValueNode source = GetSource(target);
-
+            
             var finalCallback = ValueConverter == null
                 ? callback
                 : () => ConvertBack(callback(), target.CreateSerializationContext());

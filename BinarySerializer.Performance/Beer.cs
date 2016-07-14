@@ -12,7 +12,7 @@ namespace BinarySerialization.Performance
         [NonSerialized] [FieldOrder(1)] public byte SortCount;
 
         [FieldOrder(2)]
-        [FieldCount("SortCount")]
+        [FieldCount("SortCount", ConverterType = typeof(TwiceConverter))]
         [FieldCrc16("Crc")]
         public List<SortContainer> Sort;
 

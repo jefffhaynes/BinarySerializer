@@ -10,6 +10,10 @@ namespace BinarySerialization
     /// </summary>
 	public class BinarySerializationContext
     {
+        internal BinarySerializationContext()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the BinarySerializationContext class with a parent, parentType, and parentContext.
         /// </summary>
@@ -31,22 +35,22 @@ namespace BinarySerialization
         /// <summary>
         /// The value of the object being serialized.
         /// </summary>
-        public object Value { get; }
+        public virtual object Value { get; }
 
         /// <summary>
         /// The parent value in the object graph of the object being serialized.
         /// </summary>
-        public object ParentValue { get; }
+        public virtual object ParentValue { get; }
 
         /// <summary>
         /// The type of the parent.
         /// </summary>
-		public Type ParentType { get; }
+		public virtual Type ParentType { get; }
 
         /// <summary>
         /// The parent object serialization context.
         /// </summary>
-		public BinarySerializationContext ParentContext { get; }
+		public virtual BinarySerializationContext ParentContext { get; }
 
         /// <summary>
         /// Depth of the object graph at this context.
@@ -91,7 +95,7 @@ namespace BinarySerialization
         /// The parent value in the object graph of the object being serialized.
         /// </summary>
         [Obsolete("Use ParentValue")]
-        public object Parent { get; }
+        public virtual object Parent { get; }
     }
 }
 

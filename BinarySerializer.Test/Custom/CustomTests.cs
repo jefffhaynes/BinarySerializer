@@ -18,12 +18,14 @@ namespace BinarySerialization.Test.Custom
         [TestMethod]
         public void CustomWithContextTest()
         {
-            var expected = new CustomWithContextClass();
+            var expected = new CustomWithContextContainerClass {Value = new CustomWithContextClass()};
 
             var serializer = new BinarySerializer();
             var stream = new MemoryStream();
 
             serializer.Serialize(stream, expected, "context");
+            stream.Position = 0;
+            serializer.Deserialize<CustomWithContextContainerClass>(stream);
         }
 
         [TestMethod]

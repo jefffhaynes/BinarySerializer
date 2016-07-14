@@ -81,6 +81,7 @@
     <Compile Include="Custom\CustomSubtypeCustomClass.cs" />
     <Compile Include="Custom\CustomTests.cs" />
     <Compile Include="Custom\CustomWithContextClass.cs" />
+    <Compile Include="Custom\CustomWithContextContainerClass.cs" />
     <Compile Include="Custom\Varuint.cs" />
     <Compile Include="Encoding\EncodingClass.cs" />
     <Compile Include="Encoding\EncodingTests.cs" />

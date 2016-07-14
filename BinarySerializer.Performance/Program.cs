@@ -17,7 +17,8 @@ namespace BinarySerialization.Performance
                 Brand = "Brand",
                 Sort = new List<SortContainer>
                 {
-                    new SortContainer{Name = "some sort of beer"}
+                    new SortContainer{Name = "some sort of beer"},
+                    new SortContainer {Name = "another beer"}
                 },
                 Brewery = "Brasserie Grain d'Orge"
             };
