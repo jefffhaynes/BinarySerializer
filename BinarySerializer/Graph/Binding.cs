@@ -83,7 +83,7 @@ namespace BinarySerialization.Graph
             
             return ValueConverter == null
                 ? source.BoundValue
-                : Convert(source.BoundValue, target.CreateSerializationContext());
+                : Convert(source.BoundValue, target.CreateLazySerializationContext());
         }
 
         public ValueNode GetSource(ValueNode target)
@@ -142,7 +142,7 @@ namespace BinarySerialization.Graph
             
             var finalCallback = ValueConverter == null
                 ? callback
-                : () => ConvertBack(callback(), target.CreateSerializationContext());
+                : () => ConvertBack(callback(), target.CreateLazySerializationContext());
 
             source.Bindings.Add(finalCallback);
         }

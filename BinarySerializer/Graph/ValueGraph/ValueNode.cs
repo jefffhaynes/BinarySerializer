@@ -311,13 +311,13 @@ namespace BinarySerialization.Graph.ValueGraph
             return child;
         }
 
-        public virtual BinarySerializationContext CreateSerializationContext()
+        private BinarySerializationContext CreateSerializationContext()
         {
             var parent = Parent as ValueNode;
             return new BinarySerializationContext(Value, parent?.Value, parent?.TypeNode.Type, parent?.CreateSerializationContext());
         }
 
-        public virtual LazyBinarySerializationContext CreateLazySerializationContext()
+        public LazyBinarySerializationContext CreateLazySerializationContext()
         {
             var lazyContext = new Lazy<BinarySerializationContext>(CreateSerializationContext);
             return new LazyBinarySerializationContext(lazyContext);
