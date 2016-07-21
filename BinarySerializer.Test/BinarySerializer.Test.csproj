@@ -91,6 +91,7 @@
     <Compile Include="Enums\EnumTests.cs" />
     <Compile Include="Enums\NullableEnumClass.cs" />
     <Compile Include="Events\EventTestClass.cs" />
+    <Compile Include="Events\EventTestInnerInnerClass.cs" />
     <Compile Include="Events\EventTestInnerClass.cs" />
     <Compile Include="Events\EventTests.cs" />
     <Compile Include="Ignore\IgnoreObjectClass.cs" />

@@ -34,10 +34,7 @@ namespace BinarySerialization
         /// <summary>
         ///     Gets the current offset in the serialized graph.
         /// </summary>
-        public long GlobalPosition
-        {
-            get { return Ancestors.Sum(stream => stream.RelativePosition); }
-        }
+        public long GlobalPosition => Ancestors.Last().RelativePosition;
 
         /// <summary>
         ///     The underlying source <see cref="Stream" />.
