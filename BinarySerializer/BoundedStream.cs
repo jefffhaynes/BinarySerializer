@@ -10,6 +10,7 @@ namespace BinarySerialization
     /// </summary>
     public class BoundedStream : Stream
     {
+        private readonly BoundedStream _root;
         private readonly bool _canSeek;
         private readonly long _length;
 
@@ -29,12 +30,19 @@ namespace BinarySerialization
 
             if (_canSeek)
                 _length = source.Length;
+
+            _root = this;
+
+            while (_root.Source is BoundedStream)
+            {
+                _root = (BoundedStream) _root.Source;
+            }
         }
 
         /// <summary>
         ///     Gets the current offset in the serialized graph.
         /// </summary>
-        public long GlobalPosition => Ancestors.Last().RelativePosition;
+        public long GlobalPosition => _root.RelativePosition;
 
         /// <summary>
         ///     The underlying source <see cref="Stream" />.
@@ -215,20 +223,6 @@ namespace BinarySerialization
                     return long.MaxValue;
 
                 return MaxLength.Value - Position;
-            }
-        }
-
-        private IEnumerable<BoundedStream> Ancestors
-        {
-            get
-            {
-                var parent = this;
-
-                while (parent != null)
-                {
-                    yield return parent;
-                    parent = parent.Source as BoundedStream;
-                }
             }
         }
     }

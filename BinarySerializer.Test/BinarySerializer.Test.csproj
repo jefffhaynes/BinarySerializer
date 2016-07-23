@@ -58,6 +58,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Alignment\AlignmentClass.cs" />
+    <Compile Include="Alignment\AlignmentTests.cs" />
     <Compile Include="BinarySerializerTests.cs" />
     <Compile Include="CalciumCarbonate.cs" />
     <Compile Include="Cereal.cs" />

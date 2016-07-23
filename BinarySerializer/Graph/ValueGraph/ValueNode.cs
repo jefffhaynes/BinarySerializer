@@ -96,7 +96,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return Children.Where(child => !child.TypeNode.IsIgnored);
         }
 
-        public void Serialize(BoundedStream stream, EventShuttle eventShuttle)
+        public void Serialize(BoundedStream stream, EventShuttle eventShuttle, bool align = true)
         {
             try
             {
@@ -105,6 +105,15 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
                     return;
+
+                if (align)
+                {
+                    long? leftAlignment = GetConstFieldAlignment();
+                    if (leftAlignment != null)
+                    {
+                        Align(stream, leftAlignment, true);
+                    }
+                }
 
                 long? maxLength = GetConstFieldLength();
 
@@ -121,6 +130,15 @@ namespace BinarySerialization.Graph.ValueGraph
                 else
                 {
                     SerializeInternal(stream, eventShuttle, maxLength);
+                }
+
+                if (align)
+                {
+                    long? rightAlignment = GetConstFieldAlignment();
+                    if (rightAlignment != null)
+                    {
+                        Align(stream, rightAlignment, true);
+                    }
                 }
             }
             catch (IOException)
@@ -173,6 +191,12 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (serializeWhenBindings != null &&
                     !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
                     return;
+                
+                long? leftAlignment = GetBoundFieldAlignment();
+                if (leftAlignment != null)
+                {
+                    Align(stream, leftAlignment);
+                }
 
                 long? maxLength = GetBoundFieldLength();
 
@@ -189,6 +213,12 @@ namespace BinarySerialization.Graph.ValueGraph
                 else
                 {
                     DeserializeInternal(stream, maxLength, eventShuttle);
+                }
+
+                long? rightAlignment = GetBoundFieldAlignment();
+                if (rightAlignment != null)
+                {
+                    Align(stream, rightAlignment);
                 }
             }
             catch (IOException)
@@ -207,6 +237,33 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 Visited = true;
             }
+        }
+
+        private void Align(BoundedStream stream, long? alignment, bool pad = false)
+        {
+            if (alignment == null)
+                throw new ArgumentNullException(nameof(alignment));
+
+            var position = stream.RelativePosition;
+            var delta = (alignment.Value - position % alignment.Value)%alignment.Value;
+
+            if (delta == 0)
+                return;
+
+            if (pad)
+            {
+                var padding = new byte[delta];
+                stream.Write(padding, 0, padding.Length);
+            }
+            else
+            {
+                for (int i = 0; i < delta; i++)
+                {
+                    if (stream.ReadByte() < 0)
+                        break;
+                }
+            }
+
         }
 
         private void DeserializeInternal(BoundedStream stream, long? maxLength, EventShuttle eventShuttle)
@@ -245,6 +302,16 @@ namespace BinarySerialization.Graph.ValueGraph
         protected long? GetBoundFieldCount()
         {
             return GetBoundNumericValue(TypeNode.FieldCountBindings);
+        }
+
+        protected long? GetConstFieldAlignment()
+        {
+            return GetConstNumericValue(TypeNode.FieldAlignmentBindings);
+        }
+
+        protected long? GetBoundFieldAlignment()
+        {
+            return GetBoundNumericValue(TypeNode.FieldAlignmentBindings);
         }
 
         protected long? GetConstFieldCount()
@@ -327,7 +394,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var nullStream = new NullStream();
             var boundedStream = new BoundedStream(nullStream);
-            Serialize(boundedStream, null);
+            Serialize(boundedStream, null, false);
             return boundedStream.RelativePosition;
         }
 

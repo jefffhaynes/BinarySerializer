@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Primitives
 {
@@ -93,7 +94,7 @@ namespace BinarySerialization.Test.Primitives
         public void StringTest()
         {
             const string value = "hello";
-            Roundtrip(value, System.Text.Encoding.UTF8.GetBytes(value));
+            Roundtrip(value, System.Text.Encoding.UTF8.GetBytes(value + "\0"));
         }
 
 

@@ -27,7 +27,7 @@ namespace BinarySerialization.Test.Enums
         public void NamedEnumTest()
         {
             var expected = new NamedEnumClass {Field = NamedEnumValues.B};
-            var actual = Roundtrip(expected, System.Text.Encoding.UTF8.GetBytes("Bravo"));
+            var actual = Roundtrip(expected, System.Text.Encoding.UTF8.GetBytes("Bravo\0"));
 
             Assert.AreEqual(expected.Field, actual.Field);
         }
@@ -36,7 +36,7 @@ namespace BinarySerialization.Test.Enums
         public void NamedEnumTest2()
         {
             var expected = new NamedEnumClass {Field = NamedEnumValues.C};
-            var actual = Roundtrip(expected, System.Text.Encoding.UTF8.GetBytes("C"));
+            var actual = Roundtrip(expected, System.Text.Encoding.UTF8.GetBytes("C\0"));
 
             Assert.AreEqual(expected.Field, actual.Field);
         }

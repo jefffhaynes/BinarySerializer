@@ -9,7 +9,7 @@ namespace BinarySerialization.Test.Encoding
         public void TestEncoding()
         {
             var expected = new EncodingClass {Name = "غدير"};
-            var expectedData = System.Text.Encoding.GetEncoding("windows-1256").GetBytes(expected.Name);
+            var expectedData = System.Text.Encoding.GetEncoding("windows-1256").GetBytes(expected.Name + "\0");
             var actual = Roundtrip(expected, expectedData);
 
             Assert.AreEqual(expected.Name, actual.Name);

@@ -118,6 +118,7 @@ namespace BinarySerialization.Graph.TypeGraph
             FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
             FieldCountBindings = GetBindings<FieldCountAttribute>(attributes);
             FieldOffsetBindings = GetBindings<FieldOffsetAttribute>(attributes);
+            FieldAlignmentBindings = GetBindings<FieldAlignmentAttribute>(attributes);
 
             FieldValueAttribute = attributes.OfType<FieldValueAttributeBase>().SingleOrDefault();
             if (FieldValueAttribute != null)
@@ -220,6 +221,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public BindingCollection ItemLengthBindings { get; }
         public BindingCollection FieldCountBindings { get; }
         public BindingCollection FieldOffsetBindings { get; }
+        public BindingCollection FieldAlignmentBindings { get; }
 
         public Binding SerializeUntilBinding { get; private set; }
         public Binding ItemSerializeUntilBinding { get; private set; }

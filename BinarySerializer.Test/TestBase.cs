@@ -53,16 +53,36 @@ namespace BinarySerialization.Test
             stream.Position = 0;
             var data = stream.ToArray();
 
-            for (var i = 0; i < expectedValue.Length; i++)
-            {
-                var expected = expectedValue[i];
-                var actual = data[i];
+            AssertEqual(expectedValue, data);
+            
+            return Serializer.Deserialize<T>(stream);
+        }
 
-                Assert.AreEqual(expected, actual,
-                    $"Value at position {i} does not match expected value.");
+        private void AssertEqual(byte[] expected, byte[] actual)
+        {
+            var length = Math.Min(expected.Length, actual.Length);
+
+            for (var i = 0; i < length; i++)
+            {
+                var e = expected[i];
+                var a = actual[i];
+
+                Assert.AreEqual(e, a, $"Value at position {i} does not match expected value.");
             }
 
-            return Serializer.Deserialize<T>(stream);
+            Assert.AreEqual(expected.Length, actual.Length, "Sequence lengths do not match");
+        }
+
+        protected T RoundtripReverse<T>(byte[] data)
+        {
+            var o = Deserialize<T>(data);
+
+            var stream = new MemoryStream();
+            Serializer.Serialize(stream, o);
+
+            AssertEqual(data, stream.ToArray());
+
+            return o;
         }
 
         protected T Deserialize<T>(string filename)
