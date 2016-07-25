@@ -75,6 +75,7 @@ Attributes
 * [FieldValue](#fieldvalueattribute)
 * [FieldCrc16Attribute](#fieldcrc16attribute)
 * [FieldCrc32Attribute](#fieldcrc32attribute)
+* [FieldAlignmentAttribute](#fieldalignmentattribute)
 * [FieldOffset](#fieldoffsetattribute)
 * [Subtype](#subtypeattribute)
 * [SerializeAs](#serializeasattribute)
@@ -304,6 +305,23 @@ Note that the attribute can also be used on complex types to calculate the check
 
 The FieldCrc32 is identical to the FieldCrc16 with the difference that it operates on an unsigned 32-bit field and with appropriate default algorithm values.
 
+### FieldAlignmentAttribute ###
+
+The FieldAlignment attribute can be used to force fields to align to a constant or bound (probably unusual) value while keeping bound field lengths intact.  For example, you may have construct wherein the length of a group is specified, but with the qualifier than irrespective of the value the grouping will be 32-bit aligned.  In that case, you may need to specify:
+
+```c#
+public class Entry
+{
+    [FieldOrder(0)]
+    public byte Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldAlignment(4)]
+    [FieldLength("Length")]
+    public string Value { get; set; }
+}
+
+Let's say Value is 'hi'.  In this case the framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned on 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not "hi\0\0").
 
 ### FieldOffsetAttribute ###
 
