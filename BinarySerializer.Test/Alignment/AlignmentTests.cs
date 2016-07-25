@@ -28,6 +28,7 @@ namespace BinarySerialization.Test.Alignment
             });
 
             Assert.AreEqual(2, actual.Length);
+            Assert.AreEqual(4, actual.Alignment);
             Assert.AreEqual("hi", actual.Value);
         }
     }

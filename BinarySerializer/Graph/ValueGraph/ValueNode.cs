@@ -108,7 +108,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (align)
                 {
-                    long? leftAlignment = GetConstFieldAlignment();
+                    long? leftAlignment = GetFieldAlignment();
                     if (leftAlignment != null)
                     {
                         Align(stream, leftAlignment, true);
@@ -134,7 +134,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (align)
                 {
-                    long? rightAlignment = GetConstFieldAlignment();
+                    long? rightAlignment = GetFieldAlignment();
                     if (rightAlignment != null)
                     {
                         Align(stream, rightAlignment, true);
@@ -301,16 +301,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected long? GetFieldAlignment()
         {
+            // Field alignment cannot be determined from graph
+            // so always go to a const or bound value
             var value = TypeNode.FieldAlignmentBindings?.GetBoundValue(this);
             if (value == null)
                 return null;
 
             return Convert.ToInt64(value);
-        }
-        
-        protected long? GetConstFieldAlignment()
-        {
-            return GetConstNumericValue(TypeNode.FieldAlignmentBindings);
         }
 
         protected long? GetFieldCount()

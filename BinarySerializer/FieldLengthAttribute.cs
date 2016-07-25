@@ -18,10 +18,10 @@ namespace BinarySerialization
         /// <summary>
         /// Initializes a new instance of the FieldLength class with a constant length.
         /// </summary>
-        /// <param name="constLength">The fixed-size length of the decorated member.</param>
-        public FieldLengthAttribute(ulong constLength)
+        /// <param name="length">The fixed-size length of the decorated member.</param>
+        public FieldLengthAttribute(ulong length)
         {
-            ConstLength = constLength;
+            ConstLength = length;
         }
 
 
