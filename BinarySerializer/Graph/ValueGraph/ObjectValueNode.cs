@@ -211,7 +211,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 ObjectDeserializeOverride(stream, eventShuttle);
             }
 
-            var length = GetBoundFieldLength();
+            var length = GetFieldLength();
 
             /* Check if we need to read past padding */
             if (length != null)

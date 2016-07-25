@@ -8,6 +8,7 @@ namespace BinarySerialization.Graph
         bool IsConst { get; }
         object ConstValue { get; }
         object GetValue(ValueNode target);
+        object GetBoundValue(ValueNode target);
         void Bind(ValueNode target, Func<object> callback);
     }
 }

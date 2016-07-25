@@ -97,9 +97,9 @@ namespace BinarySerialization.Graph.ValueGraph
             var reader = new EndianAwareBinaryReader(stream, Endianness);
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
-            var count = GetBoundFieldCount() ?? long.MaxValue;
+            var count = GetFieldCount() ?? long.MaxValue;
 
-            long? itemLength = GetBoundFieldItemLength();
+            long? itemLength = GetFieldItemLength();
 
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);

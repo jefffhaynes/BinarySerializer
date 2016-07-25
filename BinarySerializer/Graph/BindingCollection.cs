@@ -32,6 +32,20 @@ namespace BinarySerialization.Graph
             return value;
         }
 
+        public object GetBoundValue(ValueNode target)
+        {
+            var value = this[0].GetBoundValue(target);
+
+            // handle multiple bindings (probably unusual)
+            if (Count > 1)
+            {
+                if (AdditionalBindings.Any(binding => !binding.GetBoundValue(target).Equals(value)))
+                    throw new InvalidOperationException("Multiple source fields bound to the same target must yield the same value.");
+            }
+
+            return value;
+        }
+
         public void Bind(ValueNode target, Func<object> callback)
         {
             foreach (var binding in this)

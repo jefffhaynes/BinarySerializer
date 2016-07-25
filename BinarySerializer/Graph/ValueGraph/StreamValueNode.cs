@@ -36,7 +36,7 @@ namespace BinarySerialization.Graph.ValueGraph
             while (baseStream is BoundedStream)
                 baseStream = (baseStream as BoundedStream).Source;
 
-            var length = GetBoundFieldLength();
+            var length = GetFieldLength();
 
             Value = length != null
                 ? new Streamlet(baseStream, baseStream.Position, length.Value)

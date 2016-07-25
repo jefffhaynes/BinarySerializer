@@ -117,7 +117,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 long? maxLength = GetConstFieldLength();
 
-                var offset = GetBoundFieldOffset();
+                var offset = GetFieldOffset();
 
                 if (offset != null)
                 {
@@ -192,15 +192,15 @@ namespace BinarySerialization.Graph.ValueGraph
                     !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
                     return;
                 
-                long? leftAlignment = GetBoundFieldAlignment();
+                long? leftAlignment = GetFieldAlignment();
                 if (leftAlignment != null)
                 {
                     Align(stream, leftAlignment);
                 }
 
-                long? maxLength = GetBoundFieldLength();
+                long? maxLength = GetFieldLength();
 
-                var offset = GetBoundFieldOffset();
+                var offset = GetFieldOffset();
 
                 if (offset != null)
                 {
@@ -215,7 +215,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     DeserializeInternal(stream, maxLength, eventShuttle);
                 }
 
-                long? rightAlignment = GetBoundFieldAlignment();
+                long? rightAlignment = GetFieldAlignment();
                 if (rightAlignment != null)
                 {
                     Align(stream, rightAlignment);
@@ -276,9 +276,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);
 
-        protected long? GetBoundFieldLength()
+        protected long? GetFieldLength()
         {
-            var length = GetBoundNumericValue(TypeNode.FieldLengthBindings);
+            var length = GetNumericValue(TypeNode.FieldLengthBindings);
             if (length != null)
                 return length;
 
@@ -299,19 +299,23 @@ namespace BinarySerialization.Graph.ValueGraph
                    (Parent as ValueNode)?.GetConstFieldItemLength();
         }
 
-        protected long? GetBoundFieldCount()
+        protected long? GetFieldAlignment()
         {
-            return GetBoundNumericValue(TypeNode.FieldCountBindings);
-        }
+            var value = TypeNode.FieldAlignmentBindings?.GetBoundValue(this);
+            if (value == null)
+                return null;
 
+            return Convert.ToInt64(value);
+        }
+        
         protected long? GetConstFieldAlignment()
         {
             return GetConstNumericValue(TypeNode.FieldAlignmentBindings);
         }
 
-        protected long? GetBoundFieldAlignment()
+        protected long? GetFieldCount()
         {
-            return GetBoundNumericValue(TypeNode.FieldAlignmentBindings);
+            return GetNumericValue(TypeNode.FieldCountBindings);
         }
 
         protected long? GetConstFieldCount()
@@ -319,9 +323,9 @@ namespace BinarySerialization.Graph.ValueGraph
             return GetConstNumericValue(TypeNode.FieldCountBindings);
         }
 
-        protected long? GetBoundFieldItemLength()
+        protected long? GetFieldItemLength()
         {
-            return GetBoundNumericValue(TypeNode.ItemLengthBindings);
+            return GetNumericValue(TypeNode.ItemLengthBindings);
         }
 
         protected long? GetConstFieldItemLength()
@@ -329,9 +333,9 @@ namespace BinarySerialization.Graph.ValueGraph
             return GetConstNumericValue(TypeNode.ItemLengthBindings);
         }
 
-        protected long? GetBoundFieldOffset()
+        protected long? GetFieldOffset()
         {
-            return GetBoundNumericValue(TypeNode.FieldOffsetBindings);
+            return GetNumericValue(TypeNode.FieldOffsetBindings);
         }
 
         protected long? GetConstFieldOffset()
@@ -339,7 +343,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return GetConstNumericValue(TypeNode.FieldOffsetBindings);
         }
 
-        private long? GetBoundNumericValue(IBinding binding)
+        private long? GetNumericValue(IBinding binding)
         {
             var value = binding?.GetValue(this);
             if (value == null)

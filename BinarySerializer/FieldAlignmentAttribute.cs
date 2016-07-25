@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BinarySerialization
+﻿namespace BinarySerialization
 {
     public sealed class FieldAlignmentAttribute : FieldBindingBaseAttribute, IConstAttribute
     {

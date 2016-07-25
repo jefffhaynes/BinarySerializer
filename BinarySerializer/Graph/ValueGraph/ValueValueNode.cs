@@ -216,7 +216,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public object Deserialize(EndianAwareBinaryReader reader, SerializedType serializedType, long? length = null)
         {
-            long? effectiveLength = length ?? GetBoundFieldLength() ?? GetBoundFieldCount();
+            long? effectiveLength = length ?? GetFieldLength() ?? GetFieldCount();
 
             if (effectiveLength == null)
             {

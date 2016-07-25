@@ -41,7 +41,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var typeNode = (CollectionTypeNode)TypeNode;
 
-            var count = GetBoundFieldCount() ?? long.MaxValue;
+            var count = GetFieldCount() ?? long.MaxValue;
 
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);

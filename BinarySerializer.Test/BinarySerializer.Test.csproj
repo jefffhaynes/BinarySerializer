@@ -58,6 +58,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Alignment\BoundAlignmentClass.cs" />
     <Compile Include="Alignment\AlignmentClass.cs" />
     <Compile Include="Alignment\AlignmentTests.cs" />
     <Compile Include="BinarySerializerTests.cs" />
