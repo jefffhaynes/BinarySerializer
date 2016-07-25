@@ -307,7 +307,7 @@ The FieldCrc32 is identical to the FieldCrc16 with the difference that it operat
 
 ### FieldAlignmentAttribute ###
 
-The FieldAlignment attribute can be used to force fields to align to a constant or bound (probably unusual) value while keeping bound field lengths intact.  For example, you may have construct wherein the length of a group is specified, but with the qualifier than irrespective of the value the grouping will be 32-bit aligned.  In that case, you may need to specify:
+The FieldAlignment attribute can be used to force field alignment to a constant or bound (probably unusual) value while keeping bound field lengths intact.  For example, take a construct wherein the length of a complex field is specified, but with the qualifier that irrespective of the specified length the grouping will be 32-bit aligned.  In that case, we may need to specify:
 
 ```c#
 public class Entry
@@ -321,7 +321,7 @@ public class Entry
     public string Value { get; set; }
 }
 
-Let's say Value is 'hi'.  In this case the framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned on 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not "hi\0\0").
+Let's say Value is set to 'hi'.  The framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned to 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not, for example, "hi\0\0").  FieldAlignment is not inherited by child fields.
 
 ### FieldOffsetAttribute ###
 
