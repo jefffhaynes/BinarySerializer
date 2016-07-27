@@ -64,7 +64,7 @@ namespace BinarySerialization.Test
         public int[] ArrayOfInts { get; set; }
 
         [FieldOrder(15)]
-        [FieldLength]
+        [FieldLength(null)]
         public string InvalidFieldLength { get; set; }
 
         [FieldOrder(16)]

@@ -23,14 +23,14 @@ namespace BinarySerialization.Graph.ValueGraph
             if (binarySerializable == null)
                 throw new InvalidOperationException("Must implement IBinarySerializable");
 
-            binarySerializable.Serialize(stream, Endianness, serializationContext);
+            binarySerializable.Serialize(stream, GetFieldEndianness(), serializationContext);
         }
 
         protected override void ObjectDeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             var serializationContext = CreateLazySerializationContext();
             var binarySerializable = (IBinarySerializable)Activator.CreateInstance(TypeNode.Type);
-            binarySerializable.Deserialize(stream, Endianness, serializationContext);
+            binarySerializable.Deserialize(stream, GetFieldEndianness(), serializationContext);
             Value = binarySerializable;
         }
 

@@ -89,7 +89,12 @@
     <Compile Include="Encoding\EncodingClass.cs" />
     <Compile Include="Encoding\EncodingTests.cs" />
     <Compile Include="Endianness\EndiannessClass.cs" />
+    <Compile Include="Endianness\EndiannessConverter.cs" />
     <Compile Include="Endianness\EndiannessTests.cs" />
+    <Compile Include="Endianness\FieldEndiannessClassInvalidConverter.cs" />
+    <Compile Include="Endianness\FieldEndiannessClass.cs" />
+    <Compile Include="Endianness\FieldEndiannessConstClass.cs" />
+    <Compile Include="Endianness\InvalidEndiannessConverter.cs" />
     <Compile Include="Enums\BaseTypeEnumAsStringClass.cs" />
     <Compile Include="Enums\EnumTests.cs" />
     <Compile Include="Enums\NullableEnumClass.cs" />

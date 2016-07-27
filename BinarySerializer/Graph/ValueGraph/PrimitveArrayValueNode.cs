@@ -16,7 +16,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeNode = (ArrayTypeNode)TypeNode;
             var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
 
-            var writer = new EndianAwareBinaryWriter(stream, Endianness);
+            var writer = new EndianAwareBinaryWriter(stream, GetFieldEndianness());
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
             var array = BoundValue as Array;

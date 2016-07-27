@@ -37,18 +37,6 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public virtual Endianness Endianness
-        {
-            get
-            {
-                if (TypeNode.Endianness != null && TypeNode.Endianness != Endianness.Inherit)
-                    return TypeNode.Endianness.Value;
-
-                var parent = (ValueNode)Parent;
-                return parent.Endianness;
-            }
-        }
-
         public abstract object Value { get; set; }
 
         public virtual object BoundValue => Value;
@@ -339,6 +327,58 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             return GetConstNumericValue(TypeNode.FieldOffsetBindings);
         }
+
+        protected virtual Endianness GetFieldEndianness()
+        {
+            Endianness endianness = TypeNode.Endianness ?? Endianness.Inherit;
+
+            if (endianness == Endianness.Inherit)
+            {
+                var value = TypeNode.FieldEndiannessBindings?.GetBoundValue(this);
+
+                if (value != null)
+                {
+                    if (value is Endianness)
+                    {
+                        endianness = (Endianness) Enum.ToObject(typeof (Endianness), value);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("FieldEndianness converters must return a valid Endianness.");
+                    }
+                }
+            }
+
+            if (endianness == Endianness.Inherit && Parent != null)
+            {
+                var parent = (ValueNode) Parent;
+                endianness = parent.GetFieldEndianness();
+            }
+
+            return endianness;
+        }
+
+        //protected Endianness GetConstFieldEndianness()
+        //{
+        //    var endianness = LegacyEndianness;
+
+        //    if (endianness == Endianness.Inherit)
+        //    {
+        //        if (TypeNode.FieldEndiannessBindings == null)
+        //            return Endianness.Inherit;
+
+        //        if (TypeNode.FieldEndiannessBindings.IsConst)
+        //            endianness = (Endianness) TypeNode.FieldEndiannessBindings.ConstValue;
+        //    }
+            
+        //    if (endianness == Endianness.Inherit && Parent != null)
+        //    {
+        //        var parent = (ValueNode)Parent;
+        //        endianness = parent.GetConstFieldEndianness();
+        //    }
+
+        //    return endianness;
+        //}
 
         private long? GetNumericValue(IBinding binding)
         {

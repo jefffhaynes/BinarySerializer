@@ -94,7 +94,7 @@ namespace BinarySerialization.Graph.ValueGraph
             /* Create single serializer to do all the work */
             var childSerializer = (ValueValueNode) typeNode.Child.CreateSerializer(this);
 
-            var reader = new EndianAwareBinaryReader(stream, Endianness);
+            var reader = new EndianAwareBinaryReader(stream, GetFieldEndianness());
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
             var count = GetFieldCount() ?? long.MaxValue;

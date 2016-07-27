@@ -83,7 +83,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public void Serialize(Stream stream, object value, SerializedType serializedType, long? length = null)
         {
-            var writer = new EndianAwareBinaryWriter(stream, Endianness);
+            var writer = new EndianAwareBinaryWriter(stream, GetFieldEndianness());
             Serialize(writer, value, serializedType, length);
         }
 
@@ -210,7 +210,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public object Deserialize(BoundedStream stream, SerializedType serializedType, long? length = null)
         {
-            var reader = new EndianAwareBinaryReader(stream, Endianness);
+            var reader = new EndianAwareBinaryReader(stream, GetFieldEndianness());
             return Deserialize(reader, serializedType, length);
         }
 

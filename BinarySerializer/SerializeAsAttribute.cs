@@ -36,6 +36,7 @@ namespace BinarySerialization
         /// <summary>
         /// Specifies the endianness to use when serializing the decorated member.
         /// </summary>
+        [Obsolete("Use the FieldEndianness attribute")]
         public Endianness Endianness { get; set; }
     }
 }

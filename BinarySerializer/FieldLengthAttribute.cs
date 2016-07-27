@@ -9,13 +9,6 @@ namespace BinarySerialization
     public sealed class FieldLengthAttribute : FieldBindingBaseAttribute, ILengthAttribute, IConstAttribute
     {
         /// <summary>
-        /// Initializes a new instance of the FieldLength class.
-        /// </summary>
-        public FieldLengthAttribute()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the FieldLength class with a constant length.
         /// </summary>
         /// <param name="length">The fixed-size length of the decorated member.</param>

@@ -1,13 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Endianness
 {
     [TestClass]
-    public class EndiannessTests
+    public class EndiannessTests : TestBase
     {
         [TestMethod]
-        public void TestSerializerEndianness()
+        public void SerializerEndiannessTest()
         {
             var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Big};
             var expected = new EndiannessClass {Short = 1};
@@ -18,6 +19,57 @@ namespace BinarySerialization.Test.Endianness
             var data = stream.ToArray();
 
             Assert.AreEqual(0x1, data[1]);
+        }
+
+        [TestMethod]
+        public void FieldEndiannessBeTest()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write(EndiannessConverter.BigEndiannessMagic);
+
+            writer.Write((byte)0x0);
+            writer.Write((byte)0x1);
+
+            var data = stream.ToArray();
+
+            var actual = RoundtripReverse<FieldEndiannessClass>(data);
+
+            Assert.AreEqual(1, actual.Value);
+        }
+
+        [TestMethod]
+        public void FieldEndiannessLeTest()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write(EndiannessConverter.LittleEndiannessMagic);
+
+            writer.Write((byte)0x1);
+            writer.Write((byte)0x0);
+
+            var data = stream.ToArray();
+
+            var actual = RoundtripReverse<FieldEndiannessClass>(data);
+
+            Assert.AreEqual(1, actual.Value);
+        }
+
+        [TestMethod]
+        public void FieldEndiannessConstTest()
+        {
+            var expected = new FieldEndiannessConstClass {Value = 1};
+            var actual = Roundtrip(expected, new byte[] {0x0, 0x0, 0x0, 0x1});
+            Assert.AreEqual(expected.Value, actual.Value);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void InvalidFieldEndiannessConverterTest()
+        {
+            Roundtrip(typeof (FieldEndiannessInvalidConverterClass));
         }
     }
 }

@@ -63,8 +63,6 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public override Endianness Endianness => EndiannessCallback();
-
         public override Encoding Encoding => EncodingCallback();
 
         public Func<Endianness> EndiannessCallback { get; set; }
@@ -85,6 +83,11 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             Child = ((RootTypeNode)TypeNode).Child.CreateSerializer(this);
             Child.Deserialize(stream, eventShuttle);
+        }
+
+        protected override Endianness GetFieldEndianness()
+        {
+            return EndiannessCallback();
         }
     }
 }
