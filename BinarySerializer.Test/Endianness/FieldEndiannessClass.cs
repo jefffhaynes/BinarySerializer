@@ -3,7 +3,7 @@
     public class FieldEndiannessClass
     {
         [FieldOrder(0)]
-        public int Endianness { get; set; }
+        public uint Endianness { get; set; }
 
         [FieldOrder(1)]
         [FieldEndianness("Endianness", typeof(EndiannessConverter))]

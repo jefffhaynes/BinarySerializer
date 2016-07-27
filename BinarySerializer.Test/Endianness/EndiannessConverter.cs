@@ -20,7 +20,7 @@ namespace BinarySerialization.Test.Endianness
 
         public object ConvertBack(object value, object parameter, BinarySerializationContext context)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

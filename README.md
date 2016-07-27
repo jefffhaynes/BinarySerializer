@@ -76,6 +76,7 @@ Attributes
 * [FieldCrc16Attribute](#fieldcrc16attribute)
 * [FieldCrc32Attribute](#fieldcrc32attribute)
 * [FieldAlignmentAttribute](#fieldalignmentattribute)
+* [FieldEndianness](#fieldendiannessattribute)
 * [FieldOffset](#fieldoffsetattribute)
 * [Subtype](#subtypeattribute)
 * [SerializeAs](#serializeasattribute)
@@ -322,6 +323,48 @@ public class Entry
 }
 
 Let's say Value is set to 'hi'.  The framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned to 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not, for example, "hi\0\0").  FieldAlignment is not inherited by child fields.
+
+### FieldEndiannessAttribute ###
+
+The FieldEndianness attribute allows for the dynamic switching of endianness during deserialization.  This can be useful for dealing with formats which specify endianness through the use of magic numbers or values.  The binding constructor for FieldEndianness requires the type of a value converter, which returns an Endianness value be specified.
+
+```c#
+    public class Packet
+    {
+        [FieldOrder(0)]
+        public uint Endianness { get; set; }
+
+        [FieldOrder(1)]
+        [FieldEndianness("Endianness", typeof(EndiannessConverter))]
+        public ushort Value { get; set; }
+    }
+```
+
+In order to convert the Endianness "magic" number field into Endianness, we define a converter.
+
+```c#
+    public class EndiannessConverter : IValueConverter
+    {
+        private const uint LittleEndiannessMagic = 0x1A2B3C4D;
+        private const uint BigEndiannessMagic = 0x4D3C2B1A;
+
+        public object Convert(object value, object parameter, BinarySerializationContext context)
+        {
+            var indicator = System.Convert.ToUInt32(value);
+            if (indicator == LittleEndiannessMagic)
+                return BinarySerialization.Endianness.Little;
+            else if (indicator == BigEndiannessMagic)
+                return BinarySerialization.Endianness.Big;
+
+            throw new InvalidOperationException("Invalid endian magic");
+        }
+
+		public object ConvertBack(object value, object parameter, BinarySerializationContext context)
+        {
+            throw new NotSupportedException();
+        }
+    }
+```
 
 ### FieldOffsetAttribute ###
 
