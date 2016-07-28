@@ -116,7 +116,7 @@ public class DerivedClass : BaseClass
 
 ### FieldLengthAttribute ###
 
-FieldLength can be used to specify either a bound or a constant field length.  Field lengths can apply to anything that is sizable including strings, arrays, lists, streams, and even objects.
+FieldLength can be used to specify either a bound or constant field length.  Field lengths can apply to anything that is sizable including strings, arrays, lists, streams, and even objects.
 
 For constant length fields, the serialized field length will always result in the specified length, either by limiting the serialization operation or padding out the result with zeros.  For bound length fields, the source will be updated with the serialized length.  Typically source fields are value types such as integers but value converters may also be used to update other types.
 
