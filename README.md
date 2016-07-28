@@ -63,7 +63,7 @@ serializer.Serialize(stream, person);
 
 Note that it is not necessary that NameLength contain the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
 
-Length can also be specified at an object level.  See the FieldLengthAttribute section for more examples.
+Length can also be specified at an object level.  See the [FieldLength](#fieldlengthattribute) section for more examples.
 
 
 Attributes
