@@ -91,18 +91,7 @@ There are a number of attributes that can be used to control the serialization o
 
 ### IgnoreAttribute ###
 
-Any field or property with an Ignore attribute will not be included in serialization or deserialization.  These fields can still be used in bindings, however properties will be treated as flat fields.  If you need to do some calculation on a binding source your best option is to define a ValueConverter (see below).
-
-```c#
-[SerializeAs(SerializedType.Int1)]
-public int Value { get; set; }
-        
-[SerializeAs(Encoding = "windows-1256")]
-public string Name { get; set;  }
-    
-[SerializeAs(Endianness = Endianness.Big)]
-public uint SectorCountBig { get; set; }
-```
+Any field or property with an Ignore attribute will not be included in serialization or deserialization.  These fields can still be used in bindings, however properties will be treated as normal fields.  If some calculation on a binding source is required, this can be accomplished with a binding converter.
 
 ### FieldOrderAttribute ###
 
