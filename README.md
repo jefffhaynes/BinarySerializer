@@ -76,10 +76,8 @@ Attributes
 * [FieldCrc16](#fieldcrc16attribute)
 * [FieldCrc32](#fieldcrc32attribute)
 * [FieldAlignment](#fieldalignmentattribute)
-* [FieldCrc16Attribute](#fieldcrc16attribute)
-* [FieldCrc32Attribute](#fieldcrc32attribute)
-* [FieldAlignmentAttribute](#fieldalignmentattribute)
 * [FieldEndianness](#fieldendiannessattribute)
+* [FieldEncoding](#fieldencodingattribute)
 * [FieldOffset](#fieldoffsetattribute)
 * [Subtype](#subtypeattribute)
 * [SerializeAs](#serializeasattribute)
@@ -329,7 +327,7 @@ Let's say Value is set to 'hi'.  The framework will compute two (2) for the valu
 
 ### FieldEndiannessAttribute ###
 
-The FieldEndianness attribute allows for the dynamic switching of endianness during deserialization.  This can be useful for dealing with formats which specify endianness through the use of magic numbers or values.  The binding constructor for FieldEndianness requires the type of a value converter, which returns an Endianness value be specified.
+The FieldEndianness attribute allows for the dynamic switching of endianness during deserialization.  This can be useful for dealing with formats which specify endianness through the use of magic numbers or values.  The binding constructor for FieldEndianness requires the type of a value converter, which returns an Endianness value be specified.  This attribute will be inherited by all child fields unless overwritten.
 
 ```c#
     public class Packet
@@ -368,6 +366,10 @@ In order to convert the Endianness "magic" number field into Endianness, we defi
         }
     }
 ```
+
+### FieldEncodingAttribute ###
+
+Similar to the FieldEndianness attribute, the FieldEncoding attribute can be used to specify the string encoding for a field.  This attribute will be inherited by all child fields unless overwritten.
 
 ### FieldOffsetAttribute ###
 
@@ -433,7 +435,7 @@ Note that the Chunk field is bound to both the Length field and the ChunkType fi
 
 ### SerializeAsAttribute ###
 
-In general you shouldn't need this as most things tend to work out without it.  However, you can always override the default behavior by specifying SerializeAs.  This attribute can also be used to specify encodings and endianness if needed.
+In general you shouldn't need this as most things tend to work out without it.  However, you can always override the default behavior by specifying SerializeAs.
 
 ### SerializeAsEnumAttribute ###
 
@@ -691,7 +693,7 @@ public List<DirectoryRecord> Records { get; set; }
 
 ### Custom Serialization ###
 
-If all else fails, you can define a custom serialization object.
+When all else fails, you can define a custom serialization object.
 
 ```c#
 /// <summary>
@@ -743,25 +745,25 @@ Also note that in the case that FieldLength is specified for the custom object, 
 
 ### Encoding ###
 
-Text encoding can be specified by the <code>SerializeAsAttribute</code> and is inherited by all children unless overridden.
+Text encoding can be specified by the <code>FieldEncodingAttribute</code> and is inherited by all children unless overridden.
 
 ```c#
-[SerializeAs(Encoding = "windows-1256")]
+[FieldEncoding("windows-1256")]
 public string Name { get; set;  }
 ```
 
 ### Endianness ###
 
-Maybe a quaint topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or on a field-by-field basis.  If you're working in a system that deals entirely in big endian, you can simply do:
+Maybe a quaint topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or on a field basis.  If you're working in a system that deals entirely in big endian, you can simply write:
 
 ```c#
 serializer.Endianness = Endianness.Big;
 ```
  
-In other cases you may actually have a mix of big and little endian and again you can use the <code>SerializeAsAttribute</code> to specify endianness.  As with encoding, endianness is inherited through the graph hierarchy unless overridden by a child field.
+In other cases you may actually have a mix of big and little endian and again you can use the <code>FieldEndiannessAttribute</code> to specify endianness.  As with encoding, endianness is inherited through the graph hierarchy unless overridden by a child field.
 
 ```c#
-[SerializeAs(Endianness = Endianness.Big)]
+[FieldEndianness(Endianness.Big)]
 public uint SectorCountBig { get; set; }
 ```
 

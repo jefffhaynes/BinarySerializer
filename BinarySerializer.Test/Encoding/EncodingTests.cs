@@ -30,5 +30,15 @@ namespace BinarySerialization.Test.Encoding
             Assert.AreEqual(expected.Encoding, actual.Encoding);
             Assert.AreEqual(expected.Value, actual.Value);
         }
+
+        [TestMethod]
+        public void ConstFieldEncodingTest()
+        {
+            var expected = new ConstEncodingClass {Value = "السلام عليكم"};
+            var expectedData = System.Text.Encoding.GetEncoding("windows-1256").GetBytes(expected.Value + "\0");
+            var actual = Roundtrip(expected, expectedData);
+
+            Assert.AreEqual(expected.Value, actual.Value);
+        }
     }
 }

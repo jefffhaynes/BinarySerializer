@@ -14,10 +14,10 @@ namespace BinarySerialization
         /// <summary>
         /// Initializes a new instance of the FieldEncoding class with a fixed encoding.
         /// </summary>
-        /// <param name="encoding">The field encoding.</param>
-        public FieldEncodingAttribute(Encoding encoding)
+        /// <param name="encodingName">The field encoding name.</param>
+        public FieldEncodingAttribute(string encodingName)
         {
-            _encoding = encoding;
+            _encoding = Encoding.GetEncoding(encodingName);
         }
 
 
