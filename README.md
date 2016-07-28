@@ -72,12 +72,12 @@ Attributes
 * [FieldOrder](#fieldorderattribute)
 * [FieldLength](#fieldlengthattribute)
 * [FieldCount](#fieldcountattribute)
-* [FieldValue](#fieldvalueattribute)
-* [FieldCrc16](#fieldcrc16attribute)
-* [FieldCrc32](#fieldcrc32attribute)
 * [FieldAlignment](#fieldalignmentattribute)
 * [FieldEndianness](#fieldendiannessattribute)
 * [FieldEncoding](#fieldencodingattribute)
+* [FieldValue](#fieldvalueattribute)
+* [FieldCrc16](#fieldcrc16attribute)
+* [FieldCrc32](#fieldcrc32attribute)
 * [FieldOffset](#fieldoffsetattribute)
 * [Subtype](#subtypeattribute)
 * [SerializeAs](#serializeasattribute)
@@ -269,44 +269,6 @@ public class Directory
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/CountBinding.png" />
 </p>
 
-
-### FieldValueAttributeBase ###
-
-The FieldValueAttributeBase class is an abstract class that allows for the computation of complex fields based on either the value or serialized value of another field.  This can be used to create hashes, checksums, and other complex fields.  For information on custom FieldValue attributes, see [below](#extending-fieldvalue-attributes).
-
-### FieldValueAttribute ###
-
-This is the most trivial example of a FieldValue attribute and will simply copy the value of one field to another.
-
-### FieldCrc16Attribute ###
-
-The FieldCrc16 attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an unsigned 16-bit checksum.
-
-*Note that this attribute is only used during serialization.  The CRC is not checked during deserialization.*
-
-```c#
-public class Packet
-{
-    [FieldOrder(0)]
-    public int Length { get; set; }
-
-    [FieldOrder(1)]
-    [FieldLength("Length")]
-    [FieldCrc16("Crc")]
-    public byte[] Data { get; set; }
-
-    [FieldOrder(2)]
-    public ushort Crc { get; set; }
-}
-```
-
-Note that the attribute can also be used on complex types to calculate the checksum over a set of fields.  The attribute can be configured by specifing the various properties, including the polynomial, the initial value, as well as others.
-
-
-### FieldCrc32Attribute ###
-
-The FieldCrc32 is identical to the FieldCrc16 with the difference that it operates on an unsigned 32-bit field and with appropriate default algorithm values.
-
 ### FieldAlignmentAttribute ###
 
 The FieldAlignment attribute can be used to force field alignment to a constant or bound (probably unusual) value while keeping bound field lengths intact.  For example, take a construct wherein the length of a complex field is specified, but with the qualifier that irrespective of the specified length the grouping will be 32-bit aligned.  In that case, we may need to specify:
@@ -370,6 +332,43 @@ In order to convert the Endianness "magic" number field into Endianness, we defi
 ### FieldEncodingAttribute ###
 
 Similar to the FieldEndianness attribute, the FieldEncoding attribute can be used to specify the string encoding for a field.  This attribute will be inherited by all child fields unless overwritten.
+
+### FieldValueAttributeBase ###
+
+The FieldValueAttributeBase class is an abstract class that allows for the computation of complex fields based on either the value or serialized value of another field.  This can be used to create hashes, checksums, and other complex fields.  For information on custom FieldValue attributes, see [below](#extending-fieldvalue-attributes).
+
+### FieldValueAttribute ###
+
+This is the most trivial example of a FieldValue attribute and will simply copy the value of one field to another.
+
+### FieldCrc16Attribute ###
+
+The FieldCrc16 attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an unsigned 16-bit checksum.
+
+*Note that this attribute is only used during serialization.  The CRC is not checked during deserialization.*
+
+```c#
+public class Packet
+{
+    [FieldOrder(0)]
+    public int Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldLength("Length")]
+    [FieldCrc16("Crc")]
+    public byte[] Data { get; set; }
+
+    [FieldOrder(2)]
+    public ushort Crc { get; set; }
+}
+```
+
+Note that the attribute can also be used on complex types to calculate the checksum over a set of fields.  The attribute can be configured by specifing the various properties, including the polynomial, the initial value, as well as others.
+
+
+### FieldCrc32Attribute ###
+
+The FieldCrc32 is identical to the FieldCrc16 with the difference that it operates on an unsigned 32-bit field and with appropriate default algorithm values.
 
 ### FieldOffsetAttribute ###
 
