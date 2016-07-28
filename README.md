@@ -60,7 +60,7 @@ var person = new Person { Name = "Alice" };
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/LengthBinding.png" />
 </p>
 
-Note that it is not necessary that NameLength contains the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
+Note that it is not necessary that NameLength contain the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
 
 Length can also be specified at an object level.  See the FieldLengthAttribute section for more examples.
 
@@ -73,6 +73,9 @@ Attributes
 * [FieldLength](#fieldlengthattribute)
 * [FieldCount](#fieldcountattribute)
 * [FieldValue](#fieldvalueattribute)
+* [FieldCrc16](#fieldcrc16attribute)
+* [FieldCrc32](#fieldcrc32attribute)
+* [FieldAlignment](#fieldalignmentattribute)
 * [FieldCrc16Attribute](#fieldcrc16attribute)
 * [FieldCrc32Attribute](#fieldcrc32attribute)
 * [FieldAlignmentAttribute](#fieldalignmentattribute)
