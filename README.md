@@ -54,6 +54,7 @@ public class Person
 
 ```c#
 var person = new Person { Name = "Alice" };
+serializer.Serialize(stream, person);
 ```
 
 <p align="center">
