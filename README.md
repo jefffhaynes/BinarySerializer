@@ -68,6 +68,8 @@ Length can also be specified at an object level.  See the FieldLengthAttribute s
 Attributes
 ----------
 
+There are a number of attributes that can be used to control the serialization of fields.
+
 * [Ignore](#ignoreattribute)
 * [FieldOrder](#fieldorderattribute)
 * [FieldLength](#fieldlengthattribute)
@@ -86,8 +88,6 @@ Attributes
 * [SerializeUntil](#serializeuntilattribute)
 * [ItemLength](#itemlengthattribute)
 * [ItemSerializeUntil](#itemserializeuntilattribute)
-
-There are a number of attributes that can be used to control the serialization of fields.
 
 ### IgnoreAttribute ###
 
