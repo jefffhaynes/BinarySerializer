@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Encoding
 {
@@ -6,13 +7,28 @@ namespace BinarySerialization.Test.Encoding
     public class EncodingTests : TestBase
     {
         [TestMethod]
-        public void TestEncoding()
+        public void EncodingTest()
         {
-            var expected = new EncodingClass {Name = "غدير"};
+            var expected = new EncodingClass {Name = "السلام عليكم" };
             var expectedData = System.Text.Encoding.GetEncoding("windows-1256").GetBytes(expected.Name + "\0");
             var actual = Roundtrip(expected, expectedData);
 
             Assert.AreEqual(expected.Name, actual.Name);
+        }
+
+        [TestMethod]
+        public void FieldEncodingTest()
+        {
+            var expected = new FieldEncodingClass {Value = "السلام عليكم", Encoding = "windows-1256"};
+            var encodingFieldData = System.Text.Encoding.UTF8.GetBytes(expected.Encoding + "\0");
+            var expectedValueData = System.Text.Encoding.GetEncoding(expected.Encoding).GetBytes(expected.Value + "\0");
+
+            var expectedData = encodingFieldData.Concat(expectedValueData).ToArray();
+
+            var actual = Roundtrip(expected, expectedData);
+
+            Assert.AreEqual(expected.Encoding, actual.Encoding);
+            Assert.AreEqual(expected.Value, actual.Value);
         }
     }
 }

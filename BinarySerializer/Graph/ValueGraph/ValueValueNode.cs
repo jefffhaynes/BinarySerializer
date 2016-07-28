@@ -48,7 +48,7 @@ namespace BinarySerialization.Graph.ValueGraph
                             if (TypeNode.Type == typeof (byte[]))
                                 value = data;
                             else if (TypeNode.Type == typeof (string))
-                                value = Encoding.GetString(data, 0, data.Length);
+                                value = GetFieldEncoding().GetString(data, 0, data.Length);
                         }
                         else value = GetScalar(enumerableValue);
                     }
@@ -152,7 +152,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    byte[] data = Encoding.GetBytes(value.ToString());
+                    byte[] data = GetFieldEncoding().GetBytes(value.ToString());
 
                     if (constLength != null)
                         Array.Resize(ref data, (int)constLength.Value - 1);
@@ -166,7 +166,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.SizedString:
                 {
-                    byte[] data = Encoding.GetBytes(value.ToString());
+                    byte[] data = GetFieldEncoding().GetBytes(value.ToString());
 
                     if (constLength != null)
                         Array.Resize(ref data, (int)constLength.Value);
@@ -275,13 +275,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     byte[] data = ReadNullTerminated(reader, (int)effectiveLength.Value).ToArray();
 
-                    value = Encoding.GetString(data, 0, data.Length);
+                    value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
                 }
                 case SerializedType.SizedString:
                 {
                     byte[] data = reader.ReadBytes((int)effectiveLength.Value);
-                    var untrimmed = Encoding.GetString(data, 0, data.Length);
+                    var untrimmed = GetFieldEncoding().GetString(data, 0, data.Length);
                     if (TypeNode.AreStringsNullTerminated)
                     {
                         var nullIndex = untrimmed.IndexOf((char) 0);

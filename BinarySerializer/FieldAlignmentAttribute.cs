@@ -18,9 +18,9 @@
 
         /// <summary>
         /// Initializes a new instance of the FieldAlignment class with a path pointing to a binding source member.
-        /// <param name="alignmentPath">A path to the source member.</param> 
+        /// <param name="path">A path to the source member.</param> 
         /// </summary>
-        public FieldAlignmentAttribute(string alignmentPath) : base(alignmentPath)
+        public FieldAlignmentAttribute(string path) : base(path)
         {
         }
 

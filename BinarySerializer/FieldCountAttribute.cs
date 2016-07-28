@@ -19,17 +19,17 @@ namespace BinarySerialization
         /// <summary>
         /// Initializes a new instance of the FieldCount class with a fixed item count.
         /// </summary>
-        /// <param name="constCount">Used to specify the number of items in a fixed-size collection or array.</param>
-        public FieldCountAttribute(ulong constCount)
+        /// <param name="count">Used to specify the number of items in a fixed-size collection or array.</param>
+        public FieldCountAttribute(ulong count)
         {
-            ConstCount = constCount;
+            ConstCount = count;
         }
 
         /// <summary>
         /// Initializes a new instance of the FieldCount class with a path pointing to a source binding member.
         /// </summary>
-        /// <param name="countPath">A path to the source member.</param>
-        public FieldCountAttribute(string countPath) : base(countPath)
+        /// <param name="path">A path to the source member.</param>
+        public FieldCountAttribute(string path) : base(path)
         {
         }
 

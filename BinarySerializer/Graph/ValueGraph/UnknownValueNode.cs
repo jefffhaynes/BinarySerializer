@@ -29,22 +29,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 var unknownTypeGraph = new RootTypeNode((TypeNode)TypeNode.Parent, valueType);
                 var unknownSerializer = (ContextValueNode)unknownTypeGraph.CreateSerializer((ValueNode)Parent);
                 unknownSerializer.EndiannessCallback = GetFieldEndianness;
-                unknownSerializer.EncodingCallback = () => Encoding;
+                unknownSerializer.EncodingCallback = GetFieldEncoding;
                 unknownSerializer.Value = value;
                 Children.Add(unknownSerializer.Child);
 
                 _cachedValue = value;
             }
         }
-
-        //public override Node Parent
-        //{
-        //    get
-        //    {
-        //        var parent = base.Parent;
-        //        return parent.Parent;
-        //    }
-        //}
 
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {

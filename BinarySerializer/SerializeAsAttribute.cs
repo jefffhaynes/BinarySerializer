@@ -31,6 +31,7 @@ namespace BinarySerialization
         /// <summary>
         /// Specifies the encoding to use when serializing strings.
         /// </summary>
+        [Obsolete("Use the FieldEncoding attribute")]
         public string Encoding { get; set; }
 
         /// <summary>

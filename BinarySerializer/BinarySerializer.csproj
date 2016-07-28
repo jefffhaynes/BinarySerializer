@@ -48,6 +48,7 @@
     <Compile Include="FieldAlignmentAttribute.cs" />
     <Compile Include="FieldCrc32Attribute.cs" />
     <Compile Include="FieldCrc16Attribute.cs" />
+    <Compile Include="FieldEncodingAttribute.cs" />
     <Compile Include="FieldEndiannessAttribute.cs" />
     <Compile Include="FieldValueAttribute.cs" />
     <Compile Include="FieldValueAttributeBase.cs" />

@@ -25,18 +25,6 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public List<Func<object>> Bindings { get; set; }
 
-        public virtual Encoding Encoding
-        {
-            get
-            {
-                if (TypeNode.Encoding != null)
-                    return TypeNode.Encoding;
-
-                var parent = (ValueNode)Parent;
-                return parent.Encoding;
-            }
-        }
-
         public abstract object Value { get; set; }
 
         public virtual object BoundValue => Value;
@@ -358,28 +346,36 @@ namespace BinarySerialization.Graph.ValueGraph
             return endianness;
         }
 
-        //protected Endianness GetConstFieldEndianness()
-        //{
-        //    var endianness = LegacyEndianness;
+        protected virtual Encoding GetFieldEncoding()
+        {
+            Encoding encoding = TypeNode.Encoding;
 
-        //    if (endianness == Endianness.Inherit)
-        //    {
-        //        if (TypeNode.FieldEndiannessBindings == null)
-        //            return Endianness.Inherit;
+            if (encoding == null)
+            {
+                var value = TypeNode.FieldEncodingBindings?.GetBoundValue(this);
 
-        //        if (TypeNode.FieldEndiannessBindings.IsConst)
-        //            endianness = (Endianness) TypeNode.FieldEndiannessBindings.ConstValue;
-        //    }
-            
-        //    if (endianness == Endianness.Inherit && Parent != null)
-        //    {
-        //        var parent = (ValueNode)Parent;
-        //        endianness = parent.GetConstFieldEndianness();
-        //    }
+                if (value != null)
+                {
+                    if (value is Encoding)
+                    {
+                        encoding = value as Encoding;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("FieldEncoding converters must return a valid Encoding.");
+                    }
+                }
+            }
 
-        //    return endianness;
-        //}
+            if (encoding == null && Parent != null)
+            {
+                var parent = (ValueNode)Parent;
+                encoding = parent.GetFieldEncoding();
+            }
 
+            return encoding;
+        }
+        
         private long? GetNumericValue(IBinding binding)
         {
             var value = binding?.GetValue(this);

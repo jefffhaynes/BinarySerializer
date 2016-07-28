@@ -87,7 +87,9 @@
     <Compile Include="Custom\CustomWithContextContainerClass.cs" />
     <Compile Include="Custom\Varuint.cs" />
     <Compile Include="Encoding\EncodingClass.cs" />
+    <Compile Include="Encoding\EncodingConverter.cs" />
     <Compile Include="Encoding\EncodingTests.cs" />
+    <Compile Include="Encoding\FieldEncodingClass.cs" />
     <Compile Include="Endianness\EndiannessClass.cs" />
     <Compile Include="Endianness\EndiannessConverter.cs" />
     <Compile Include="Endianness\EndiannessTests.cs" />

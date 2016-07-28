@@ -22,10 +22,10 @@ namespace BinarySerialization
 
         /// <summary>
         /// Initializes a new instance of the FieldEndianness class with a path pointing to a binding source member.
-        /// <param name="lengthPath">A path to the source member.</param> 
+        /// <param name="path">A path to the source member.</param> 
         /// <param name="converterType"> Gets or sets the type of converter to use.  The specified converter must return a valid Endianness.</param> 
         /// </summary>
-        public FieldEndiannessAttribute(string lengthPath, Type converterType) : base(lengthPath)
+        public FieldEndiannessAttribute(string path, Type converterType) : base(path)
         {
             ConverterType = converterType;
         }

@@ -20,9 +20,9 @@ namespace BinarySerialization
 
         /// <summary>
         /// Initializes a new instance of the FieldLength class with a path pointing to a binding source member.
-        /// <param name="lengthPath">A path to the source member.</param> 
+        /// <param name="path">A path to the source member.</param> 
         /// </summary>
-        public FieldLengthAttribute(string lengthPath) : base(lengthPath)
+        public FieldLengthAttribute(string path) : base(path)
         {
         }
 
