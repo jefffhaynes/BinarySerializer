@@ -876,4 +876,6 @@ All public members of BinarySerializer are thread-safe and may be used concurren
 
 [XBee](https://github.com/jefffhaynes/XBee) 
 
+[PcapNet](https://github.com/jefffhaynes/PcapNet) 
+
 [PcapNgNet](https://github.com/jefffhaynes/PcapNgNet) 
