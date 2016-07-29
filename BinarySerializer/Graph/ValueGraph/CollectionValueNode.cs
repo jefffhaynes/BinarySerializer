@@ -46,6 +46,12 @@ namespace BinarySerialization.Graph.ValueGraph
             var terminationValue = typeNode.TerminationValue;
             var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
 
+            object itemTerminationValue = null;
+            if (TypeNode.ItemSerializeUntilBinding != null)
+            {
+                itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
+            }
+
             IEnumerable<long> itemLengths = null;
             if (TypeNode.ItemLengthBindings != null)
             {
@@ -97,10 +103,13 @@ namespace BinarySerialization.Graph.ValueGraph
                     /* Check child termination case */
                     if (TypeNode.ItemSerializeUntilBinding != null)
                     {
-                        var itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
+                        itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
                         var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
 
-                        if (itemTerminationChild.Value.Equals(itemTerminationValue))
+                        var convertedItemTerminationValue =
+                            itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
+
+                        if (itemTerminationChild.Value.Equals(convertedItemTerminationValue))
                         {
                             if (!TypeNode.ItemSerializeUntilAttribute.ExcludeLastItem)
                             {

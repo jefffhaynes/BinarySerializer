@@ -283,6 +283,7 @@
     <Compile Include="Toy.cs" />
     <Compile Include="UntilItem\UntilItemClass.cs" />
     <Compile Include="UntilItem\UntilItemContainer.cs" />
+    <Compile Include="UntilItem\UntilItemEnum.cs" />
     <Compile Include="UntilItem\UntilItemTests.cs" />
     <Compile Include="Until\UntilTestClass.cs" />
     <Compile Include="Until\UntilTests.cs" />

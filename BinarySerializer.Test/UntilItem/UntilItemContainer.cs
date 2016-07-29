@@ -24,5 +24,12 @@ namespace BinarySerialization.Test.UntilItem
 
         [FieldOrder(5)]
         public uint StuffAfter { get; set; }
+
+        [FieldOrder(6)]
+        [ItemSerializeUntil("Type", (int)UntilItemEnum.End)]
+        public List<UntilItemClass> EnumTerminationItems { get; set; }
+
+        [FieldOrder(7)]
+        public uint MoreStuffAfter { get; set; }
     }
 }
