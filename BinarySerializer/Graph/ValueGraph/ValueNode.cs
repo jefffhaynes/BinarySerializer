@@ -72,7 +72,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (typeNode.FieldValueAttribute != null)
             {
-                typeNode.FieldValueBinding.Bind(this, () => typeNode.FieldValueAttribute.ComputeFinalInternal());
+                typeNode.FieldValueBinding.Bind(this, ComputeFinalFieldValue);
             }
 
             foreach (ValueNode child in Children)
@@ -465,6 +465,14 @@ namespace BinarySerialization.Graph.ValueGraph
         protected virtual object GetLastItemValueOverride()
         {
             throw new InvalidOperationException("Not a collection field.");
+        }
+
+        private object ComputeFinalFieldValue()
+        {
+            if(!Visited)
+                throw new InvalidOperationException("Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
+
+            return TypeNode.FieldValueAttribute.ComputeFinalInternal();
         }
 
         protected static bool EndOfStream(BoundedStream stream)
