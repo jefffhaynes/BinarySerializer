@@ -769,8 +769,10 @@ public class LongAddress
         High = high;
     }
 
+    [FieldOrder(0)]
     public int Low { get; private set; }
 
+    [FieldOrder(1)]
     public int High { get; private set; }
 }
 ```
