@@ -30,6 +30,8 @@ namespace BinarySerialization
 
         internal BindingInfo Binding { get; set; }
 
+        internal virtual bool SupportsDeferredBinding => false;
+
         /// <summary>
         /// Gets or sets the path to the binding source property.
         /// </summary>

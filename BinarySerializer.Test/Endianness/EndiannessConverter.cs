@@ -9,10 +9,15 @@ namespace BinarySerialization.Test.Endianness
 
         public object Convert(object value, object parameter, BinarySerializationContext context)
         {
+            if (value == null)
+                return BinarySerialization.Endianness.Little;
+
             var indicator = System.Convert.ToUInt32(value);
+
             if (indicator == LittleEndiannessMagic)
                 return BinarySerialization.Endianness.Little;
-            else if (indicator == BigEndiannessMagic)
+
+            if (indicator == BigEndiannessMagic)
                 return BinarySerialization.Endianness.Big;
 
             throw new InvalidOperationException("Invalid endian magic");

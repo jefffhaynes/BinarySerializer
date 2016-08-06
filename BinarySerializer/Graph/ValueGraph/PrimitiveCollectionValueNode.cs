@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -94,7 +95,7 @@ namespace BinarySerialization.Graph.ValueGraph
             /* Create single serializer to do all the work */
             var childSerializer = (ValueValueNode) typeNode.Child.CreateSerializer(this);
 
-            var reader = new EndianAwareBinaryReader(stream, GetFieldEndianness());
+            var reader = new BinaryReader(stream);
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
             var count = GetFieldCount() ?? long.MaxValue;
@@ -124,7 +125,8 @@ namespace BinarySerialization.Graph.ValueGraph
                     }
                 }
 
-                yield return childSerializer.Deserialize(reader, childSerializedType, itemLength);
+                childSerializer.Deserialize(reader, childSerializedType, itemLength);
+                yield return childSerializer.GetValue(childSerializedType);
             }
         }
 

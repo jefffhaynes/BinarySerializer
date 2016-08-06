@@ -91,6 +91,7 @@
     <Compile Include="Encoding\EncodingConverter.cs" />
     <Compile Include="Encoding\EncodingTests.cs" />
     <Compile Include="Encoding\FieldEncodingClass.cs" />
+    <Compile Include="Endianness\DeferredEndiannessEvaluationClass.cs" />
     <Compile Include="Endianness\EndiannessClass.cs" />
     <Compile Include="Endianness\EndiannessConverter.cs" />
     <Compile Include="Endianness\EndiannessTests.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="Length\EmbeddedConstrainedCollectionInnerClass.cs" />
     <Compile Include="Length\EmptyClass.cs" />
     <Compile Include="Length\EmptyInternalClass.cs" />
+    <Compile Include="Length\InvalidForwardBindingClass.cs" />
     <Compile Include="Length\MultibindingClass.cs" />
     <Compile Include="Length\PaddedLengthClassClass.cs" />
     <Compile Include="Length\PaddedLengthClassInnerClass.cs" />
@@ -288,6 +290,7 @@
     <Compile Include="Until\UntilTestClass.cs" />
     <Compile Include="Until\UntilTests.cs" />
     <Compile Include="Value\BitMaskConverter.cs" />
+    <Compile Include="Value\EasyMistakeCrcClass.cs" />
     <Compile Include="Value\FieldCrc32Class.cs" />
     <Compile Include="Value\FieldSha256Attribute.cs" />
     <Compile Include="Value\FieldSha256Class.cs" />

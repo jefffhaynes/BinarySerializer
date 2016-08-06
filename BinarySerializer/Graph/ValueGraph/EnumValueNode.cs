@@ -22,7 +22,8 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeNode = (EnumTypeNode)TypeNode;
             var enumInfo = typeNode.EnumInfo;
 
-            var value = Deserialize(stream, enumInfo.SerializedType, enumInfo.EnumValueLength);
+            Deserialize(stream, enumInfo.SerializedType, enumInfo.EnumValueLength);
+            var value = GetValue(enumInfo.SerializedType);
 
             if (enumInfo.ValueEnums != null)
             {

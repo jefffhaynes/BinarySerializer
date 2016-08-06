@@ -19,7 +19,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            return new ContextValueNode(parent, Name, this);
+            return new RootValueNode(parent, Name, this);
         }
     }
 }

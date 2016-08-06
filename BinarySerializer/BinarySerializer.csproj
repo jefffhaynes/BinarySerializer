@@ -66,7 +66,7 @@
     <Compile Include="Graph\TypeGraph\UnknownTypeNode.cs" />
     <Compile Include="Graph\ValueGraph\ArrayValueNode.cs" />
     <Compile Include="Graph\ValueGraph\CollectionValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\ContextValueNode.cs" />
+    <Compile Include="Graph\ValueGraph\RootValueNode.cs" />
     <Compile Include="Graph\ValueGraph\CustomValueNode.cs" />
     <Compile Include="Graph\ValueGraph\EnumValueNode.cs" />
     <Compile Include="EventShuttle.cs" />

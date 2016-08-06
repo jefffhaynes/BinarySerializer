@@ -18,6 +18,7 @@ namespace BinarySerialization
         public FieldEncodingAttribute(string encodingName)
         {
             _encoding = Encoding.GetEncoding(encodingName);
+            BindingMode = BindingMode.OneWay;
         }
 
 
@@ -29,6 +30,7 @@ namespace BinarySerialization
         public FieldEncodingAttribute(string path, Type converterType) : base(path)
         {
             ConverterType = converterType;
+            BindingMode = BindingMode.OneWay;
         }
 
         /// <summary>

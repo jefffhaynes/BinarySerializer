@@ -9,6 +9,7 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal abstract class ValueNode : Node
     {
+        private bool _visited;
         private const char PathSeparator = '.';
 
         protected ValueNode(Node parent, string name, TypeNode typeNode) : base(parent)
@@ -29,7 +30,18 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public virtual object BoundValue => Value;
 
-        public virtual bool Visited { get; set; }
+        public virtual bool Visited
+        {
+            get { return _visited; }
+
+            set
+            {
+                foreach (var child in Children)
+                    child.Visited = value;
+
+                _visited = value;
+            }
+        }
 
         public virtual void Bind()
         {
@@ -140,7 +152,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (maxLength != null)
                 stream = new BoundedStream(stream, maxLength.Value);
 
-            // if I need to store serialized data for later...
+            // Setup tap for value attributes if we need to siphon serialized data for later
             if (TypeNode.FieldValueAttribute != null)
             {
                 var context = CreateLazySerializationContext();

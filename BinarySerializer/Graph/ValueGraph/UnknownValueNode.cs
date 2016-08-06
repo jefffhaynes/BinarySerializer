@@ -27,7 +27,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 /* Create graph as if parent were creating it */
                 var unknownTypeGraph = new RootTypeNode((TypeNode)TypeNode.Parent, valueType);
-                var unknownSerializer = (ContextValueNode)unknownTypeGraph.CreateSerializer((ValueNode)Parent);
+                var unknownSerializer = (RootValueNode)unknownTypeGraph.CreateSerializer((ValueNode)Parent);
                 unknownSerializer.EndiannessCallback = GetFieldEndianness;
                 unknownSerializer.EncodingCallback = GetFieldEncoding;
                 unknownSerializer.Value = value;

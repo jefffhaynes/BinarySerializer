@@ -11,12 +11,7 @@ namespace BinarySerialization
         /// to bind one member of that object to another member on the same object.
         /// </summary>
 		Self,
-
-        /// <summary>
-        /// Allows you to bind the previous data item in lists or arrays.
-        /// </summary>
-		PreviousData,
-
+        
         /// <summary>
         /// Refers to the ancestor in the parent chain of the data-bound member. 
         /// You can use this to bind to an ancestor of a specific type or its subclasses. 

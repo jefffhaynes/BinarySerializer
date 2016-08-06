@@ -7,7 +7,7 @@ namespace BinarySerialization.Graph
     {
         private readonly object _constValue;
 
-        public Binding(IBindableFieldAttribute attribute, int level)
+        public Binding(FieldBindingBaseAttribute attribute, int level)
         {
             Path = attribute.Path;
             BindingMode = attribute.BindingMode;
@@ -35,6 +35,8 @@ namespace BinarySerialization.Graph
             RelativeSourceMode = attribute.RelativeSourceMode;
 
             Level = level;
+
+            SupportsDeferredEvaluation = attribute.SupportsDeferredBinding;
         }
 
         public bool IsConst { get; }
@@ -56,6 +58,7 @@ namespace BinarySerialization.Graph
         public object ConverterParameter { get; }
         public RelativeSourceMode RelativeSourceMode { get; }
         public int Level { get; set; }
+        public bool SupportsDeferredEvaluation { get; }
 
         public object GetValue(ValueNode target)
         {
@@ -66,12 +69,12 @@ namespace BinarySerialization.Graph
                 return null;
 
             var source = GetSource(target);
-            
-            if (!source.Visited)
-                throw new InvalidOperationException(
-                    "Binding source has not been deserialized.  Consider specifying a BindingMode of OneWayToSource.");
-            
-            return ValueConverter == null ? source.Value : Convert(source.Value, target.CreateLazySerializationContext());
+
+            CheckSource(source);
+
+            return ValueConverter == null
+                ? source.Value 
+                : Convert(source.Value, target.CreateLazySerializationContext());
         }
 
         public object GetBoundValue(ValueNode target)
@@ -80,7 +83,9 @@ namespace BinarySerialization.Graph
                 return _constValue;
 
             var source = GetSource(target);
-            
+
+            CheckSource(source);
+
             return ValueConverter == null
                 ? source.BoundValue
                 : Convert(source.BoundValue, target.CreateLazySerializationContext());
@@ -105,8 +110,6 @@ namespace BinarySerialization.Graph
                 case RelativeSourceMode.SerializationContext:
                     source = FindAncestor(target);
                     break;
-                case RelativeSourceMode.PreviousData:
-                    throw new NotImplementedException();
             }
 
             return source;
@@ -126,7 +129,7 @@ namespace BinarySerialization.Graph
 
                 parent = parent.Parent;
 
-                if (!(parent is ContextValueNode))
+                if (!(parent is RootValueNode))
                     level++;
             }
 
@@ -156,5 +159,13 @@ namespace BinarySerialization.Graph
         {
             return ValueConverter.ConvertBack(value, ConverterParameter, context);
         }
+
+        // ReSharper disable UnusedParameter.Local
+        private void CheckSource(ValueNode source)
+        {
+            if (!source.Visited && !SupportsDeferredEvaluation)
+                throw new InvalidOperationException("This attribute does not support forward binding.  Consider specifying a BindingMode of OneWayToSource.");
+        }
+        // ReSharper restore UnusedParameter.Local
     }
 }

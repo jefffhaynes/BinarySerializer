@@ -66,6 +66,24 @@ namespace BinarySerialization.Test.Endianness
         }
 
         [TestMethod]
+        public void DeferredFieldEndiannessBeTest()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+
+            writer.Write((byte)0x0);
+            writer.Write((byte)0x1);
+
+            writer.Write(EndiannessConverter.BigEndiannessMagic);
+
+            var data = stream.ToArray();
+
+            var actual = RoundtripReverse<DeferredEndiannessEvaluationClass>(data);
+
+            Assert.AreEqual(1, actual.Value);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void InvalidFieldEndiannessConverterTest()
         {

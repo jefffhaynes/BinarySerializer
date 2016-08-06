@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -188,6 +189,13 @@ namespace BinarySerialization.Test.Length
 
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Internal);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void InvalidForwardBindingTest()
+        {
+            Roundtrip(new InvalidForwardBindingClass());
         }
     }
 }

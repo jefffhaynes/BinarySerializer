@@ -5,12 +5,12 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal class ContextValueNode : ValueNode
+    internal class RootValueNode : ValueNode
     {
         private static readonly Dictionary<Type, RootTypeNode> ContextCache = new Dictionary<Type, RootTypeNode>();
         private static readonly object ContextCacheLock = new object();
 
-        public ContextValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public RootValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 
@@ -56,8 +56,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 /* We have to dynamically generate a type graph for this new type */
                 var contextGraph = GetContextGraph(value.GetType());
-                var contextSerializer = (ContextValueNode)contextGraph.CreateSerializer(this);
+                var contextSerializer = (RootValueNode)contextGraph.CreateSerializer(this);
+                contextSerializer.EncodingCallback = EncodingCallback;
+                contextSerializer.EndiannessCallback = EndiannessCallback;
                 contextSerializer.Value = value;
+                
+                // root or context nodes aren't part of serialization so they're created "visited"
+                contextSerializer.Child.Visited = true;
 
                 Children.AddRange(contextSerializer.Child.Children);
             }

@@ -9,12 +9,53 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ValueValueNode : ValueNode
     {
+        private object _value;
+        private object _cachedValue;
+
         public ValueValueNode(Node parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
         }
 
-        public override object Value { get; set; }
+        public override object Value
+        {
+            get { return GetValue(TypeNode.GetSerializedType()); }
+            set { _cachedValue = value; }
+        }
+
+        public object GetValue(SerializedType serializedType)
+        {
+            if (_cachedValue != null)
+                return _cachedValue;
+
+            if (_value == null)
+                return null;
+
+            if (GetFieldEndianness() == Endianness.Big)
+            {
+                switch (serializedType)
+                {
+                    case SerializedType.Int2:
+                        return Bytes.Reverse((short) _value);
+                    case SerializedType.UInt2:
+                        return Bytes.Reverse((ushort) _value);
+                    case SerializedType.Int4:
+                        return Bytes.Reverse((int) _value);
+                    case SerializedType.UInt4:
+                        return Bytes.Reverse((uint) _value);
+                    case SerializedType.Int8:
+                        return Bytes.Reverse((long) _value);
+                    case SerializedType.UInt8:
+                        return Bytes.Reverse((ulong) _value);
+                    case SerializedType.Float4:
+                        return Bytes.Reverse((float) _value);
+                    case SerializedType.Float8:
+                        return Bytes.Reverse((double) _value);
+                }
+            }
+
+            return _value;
+        }
 
         public override object BoundValue
         {
@@ -22,7 +63,11 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 object value;
 
-                if (Bindings.Count > 0)
+                if (Bindings.Count == 0)
+                {
+                    value = Value;
+                }
+                else
                 {
                     value = Bindings[0].Invoke();
 
@@ -37,7 +82,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     // handle case where we might be binding to a list or array
                     var enumerableValue = value as IEnumerable;
-                    
+
                     if (enumerableValue != null)
                     {
                         // handle special cases
@@ -53,7 +98,6 @@ namespace BinarySerialization.Graph.ValueGraph
                         else value = GetScalar(enumerableValue);
                     }
                 }
-                else value = Value;
 
                 return ConvertToFieldType(value);
             }
@@ -204,17 +248,16 @@ namespace BinarySerialization.Graph.ValueGraph
                 throw new EndOfStreamException();
             }
 
-            object value = Deserialize(stream, TypeNode.GetSerializedType());
-            Value = ConvertToFieldType(value);
+            Deserialize(stream, TypeNode.GetSerializedType());
         }
 
-        public object Deserialize(BoundedStream stream, SerializedType serializedType, long? length = null)
+        public void Deserialize(BoundedStream stream, SerializedType serializedType, long? length = null)
         {
-            var reader = new EndianAwareBinaryReader(stream, GetFieldEndianness());
-            return Deserialize(reader, serializedType, length);
+            var reader = new BinaryReader(stream);
+            Deserialize(reader, serializedType, length);
         }
 
-        public object Deserialize(EndianAwareBinaryReader reader, SerializedType serializedType, long? length = null)
+        public void Deserialize(BinaryReader reader, SerializedType serializedType, long? length = null)
         {
             long? effectiveLength = length ?? GetFieldLength() ?? GetFieldCount();
 
@@ -287,7 +330,10 @@ namespace BinarySerialization.Graph.ValueGraph
                         var nullIndex = untrimmed.IndexOf((char) 0);
                         value = nullIndex != -1 ? untrimmed.Substring(0, nullIndex) : untrimmed;
                     }
-                    else value = untrimmed;
+                    else
+                    {
+                        value = untrimmed;
+                    }
 
                     break;
                 }
@@ -301,7 +347,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     throw new NotSupportedException();
             }
 
-            return value;
+            _value = ConvertToFieldType(value);
         }
 
         protected override long CountOverride()

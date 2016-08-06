@@ -311,8 +311,6 @@ namespace BinarySerialization.Graph.TypeGraph
                 case RelativeSourceMode.FindAncestor:
                     level = FindAncestorLevel(binding);
                     break;
-                case RelativeSourceMode.PreviousData:
-                    throw new NotImplementedException();
                 case RelativeSourceMode.SerializationContext:
                     level = FindAncestorLevel(null);
                     break;

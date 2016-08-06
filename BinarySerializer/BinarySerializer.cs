@@ -120,7 +120,7 @@ namespace BinarySerialization
 
             RootTypeNode graph = GetGraph(value.GetType());
 
-            var serializer = (ContextValueNode)graph.CreateSerializer(null);
+            var serializer = (RootValueNode)graph.CreateSerializer(null);
             serializer.EndiannessCallback = () => Endianness;
             serializer.EncodingCallback = () => Encoding;
             serializer.Value = value;
@@ -154,7 +154,7 @@ namespace BinarySerialization
         {
             RootTypeNode graph = GetGraph(type);
 
-            var serializer = (ContextValueNode)graph.CreateSerializer(null);
+            var serializer = (RootValueNode)graph.CreateSerializer(null);
             serializer.EndiannessCallback = () => Endianness;
             serializer.EncodingCallback = () => Encoding;
             serializer.Context = context;

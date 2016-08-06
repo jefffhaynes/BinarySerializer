@@ -17,6 +17,7 @@ namespace BinarySerialization
         public FieldEndiannessAttribute(Endianness endianness)
         {
             _endianness = endianness;
+            BindingMode = BindingMode.OneWay;
         }
 
 
@@ -28,6 +29,7 @@ namespace BinarySerialization
         public FieldEndiannessAttribute(string path, Type converterType) : base(path)
         {
             ConverterType = converterType;
+            BindingMode = BindingMode.OneWay;
         }
 
         /// <summary>
@@ -37,5 +39,7 @@ namespace BinarySerialization
         {
             return _endianness;
         }
+
+        internal override bool SupportsDeferredBinding => true;
     }
 }
