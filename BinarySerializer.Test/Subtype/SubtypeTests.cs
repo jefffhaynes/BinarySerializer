@@ -70,23 +70,29 @@ namespace BinarySerialization.Test.Subtype
             Assert.AreEqual(typeof (SubSubclassC), actualItems[2].Value.GetType());
         }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(BindingException))]
-        //public void MissingSubtypeTest()
-        //{
-        //    var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
-        //    Roundtrip(expected);
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void MissingSubtypeTest()
+        {
+            var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
+            Roundtrip(expected);
+        }
 
-        //[TestMethod]
-        //public void BestFitSubtypeTest()
-        //{
-        //    var expected = new SubtypeClass { Field = new UnspecifiedSubclass() };
-        //    var actual = Roundtrip(expected);
+        [TestMethod]
+        public void SubtypeDefaultTest()
+        {
+            var data = new byte[] {0x0, 0x1, 0x2, 0x3, 0x4, 0x5};
+            var actual = Deserialize<DefaultSubtypeContainerClass>(data);
+            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
+        }
 
-        //    Assert.AreEqual(SubclassType.B, actual.Subtype);
-        //    Assert.IsInstanceOfType(actual.Field, typeof(SubclassB));
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void InvalidSubtypeDefaultTest()
+        {
+            var data = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5 };
+            Deserialize<DefaultSubtypeContainerClass>(data);
+        }
 
         [TestMethod]
         public void AncestorSubtypeBindingTest()

@@ -141,6 +141,7 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 if (!_subTypes.ContainsKey(type))
                 {
+                    // check for custom subtype
                     var parent = (TypeNode)Parent;
                     var typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
                         ? new CustomTypeNode((TypeNode) Parent, parent.Type, MemberInfo, type)

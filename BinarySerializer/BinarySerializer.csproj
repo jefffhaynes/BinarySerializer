@@ -124,6 +124,7 @@
     <Compile Include="Graph\ValueGraph\ValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ObjectValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ValueValueNode.cs" />
+    <Compile Include="SubtypeDefaultAttribute.cs" />
     <Compile Include="TapStream.cs" />
     <Compile Include="TypeExtensions.cs" />
   </ItemGroup>

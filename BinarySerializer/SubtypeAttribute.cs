@@ -9,7 +9,7 @@ namespace BinarySerialization
     public sealed class SubtypeAttribute : FieldBindingBaseAttribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubtypeAttribute"/>.
+        /// Initializes a new instance of <see cref="SubtypeAttribute"/>.
         /// </summary>
         /// <param name="valuePath">The path to the binding source.</param>
         /// <param name="value">The value to be used in determining if the subtype should be used.</param>

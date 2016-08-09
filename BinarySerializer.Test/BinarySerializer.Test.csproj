@@ -217,6 +217,9 @@
     <Compile Include="Subtype\AncestorSubtypeBindingClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingContainerClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingInnerClass.cs" />
+    <Compile Include="Subtype\DefaultSubtypeClass.cs" />
+    <Compile Include="Subtype\InvalidDefaultSubtypeContainerClass.cs" />
+    <Compile Include="Subtype\DefaultSubtypeContainerClass.cs" />
     <Compile Include="Subtype\IncompatibleBindingsClass.cs" />
     <Compile Include="Subtype\InvalidSubtypeClass.cs" />
     <Compile Include="Subtype\NonUniqueSubtypeValuesClass.cs" />

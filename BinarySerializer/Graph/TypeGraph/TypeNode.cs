@@ -181,6 +181,14 @@ namespace BinarySerialization.Graph.TypeGraph
                 }
             }
 
+            SubtypeDefaultAttribute = attributes.OfType<SubtypeDefaultAttribute>().SingleOrDefault();
+
+            if (SubtypeDefaultAttribute != null)
+            {
+                if(!Type.IsAssignableFrom(SubtypeDefaultAttribute.Subtype))
+                    throw new InvalidOperationException($"{SubtypeDefaultAttribute.Subtype} is not a subtype of {Type}");
+            }
+
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             if (SerializeUntilAttribute != null)
             {
@@ -240,6 +248,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; }
         public FieldValueAttributeBase FieldValueAttribute { get; }
         public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; }
+        public SubtypeDefaultAttribute SubtypeDefaultAttribute { get; }
         public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; }
         public SerializeUntilAttribute SerializeUntilAttribute { get; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; }

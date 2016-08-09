@@ -61,7 +61,11 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     var objectTypeNode = (ObjectTypeNode)typeNode;
 
-                    return objectTypeNode.SubTypeKeys[valueType];
+                    object value;
+                    if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
+                        return value;
+
+                    throw new InvalidOperationException($"No subtype specified for ${valueType}");
                 });
             }
 

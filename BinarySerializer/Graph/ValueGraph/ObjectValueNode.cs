@@ -197,6 +197,11 @@ namespace BinarySerialization.Graph.ValueGraph
                             subTypeValue.Equals(Convert.ChangeType(attribute.Value, subTypeValue.GetType(), null)));
 
                 _valueType = matchingAttribute?.Subtype;
+
+                if (_valueType == null && TypeNode.SubtypeDefaultAttribute != null)
+                {
+                    _valueType = TypeNode.SubtypeDefaultAttribute.Subtype;
+                }
             }
 
             // skip over if null (this may happen if subtypes are unknown during deserialization)

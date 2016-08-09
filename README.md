@@ -83,6 +83,7 @@ There are a number of attributes that can be used to control the serialization o
 * [FieldCrc32](#fieldcrc32attribute)
 * [FieldOffset](#fieldoffsetattribute)
 * [Subtype](#subtypeattribute)
+* [SubtypeDefault](#subtypeattribute)
 * [SerializeAs](#serializeasattribute)
 * [SerializeAsEnum](#serializeasenumattribute)
 * [SerializeWhen](#serializewhenattribute)
@@ -378,6 +379,7 @@ public class Packet
     [Subtype("FrameType", FrameType.Message, typeof(MessageFrame)]
     [Subtype("FrameType", FrameType.Control, typeof(ControlFrame)]
     [Subtype("FrameType", FrameType.Trigger, typeof(TriggerFrame)]
+	[SubtypeDefault(typeof(UnknownFrame))]
     public Frame Frame { get; set; }
 }
 ```
@@ -389,6 +391,8 @@ public class Packet
 It is not necessary that FrameType be correct during serialization; it will be updated with the appropriate value based on the instantiated type.  During deserialization the FrameType field will be used to construct the correct type.
 
 The Subtype attribute can be used with the FieldLength attribute to write forward compatible processors.  Take the example of PNG, which uses "chunks" of data that may be able to be skipped even if they aren't understood.
+
+Additionally, the SubtypeDefault attribute may be used to specify a fallback subtype to be used in the event that an unknown indicator is encountered during deserialization.
 
 ```c#
 public class ChunkContainer
