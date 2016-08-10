@@ -91,7 +91,21 @@ namespace BinarySerialization.Test.Subtype
         public void InvalidSubtypeDefaultTest()
         {
             var data = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5 };
-            Deserialize<DefaultSubtypeContainerClass>(data);
+            Deserialize<InvalidDefaultSubtypeContainerClass>(data);
+        }
+
+        [TestMethod]
+        public void DefaultSubtypeForwardTest()
+        {
+            var expected = new DefaultSubtypeContainerClass
+            {
+                Value = new SubclassA()
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(1, actual.Indicator);
+            Assert.AreEqual(typeof(SubclassA), actual.Value.GetType());
         }
 
         [TestMethod]

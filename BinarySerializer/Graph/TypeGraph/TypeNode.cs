@@ -179,14 +179,14 @@ namespace BinarySerialization.Graph.TypeGraph
                     if (invalidSubtype != null)
                         throw new InvalidOperationException($"{invalidSubtype.Subtype} is not a subtype of {Type}");
                 }
-            }
 
-            SubtypeDefaultAttribute = attributes.OfType<SubtypeDefaultAttribute>().SingleOrDefault();
+                SubtypeDefaultAttribute = attributes.OfType<SubtypeDefaultAttribute>().SingleOrDefault();
 
-            if (SubtypeDefaultAttribute != null)
-            {
-                if(!Type.IsAssignableFrom(SubtypeDefaultAttribute.Subtype))
-                    throw new InvalidOperationException($"{SubtypeDefaultAttribute.Subtype} is not a subtype of {Type}");
+                if (SubtypeDefaultAttribute != null)
+                {
+                    if (!Type.IsAssignableFrom(SubtypeDefaultAttribute.Subtype))
+                        throw new InvalidOperationException($"{SubtypeDefaultAttribute.Subtype} is not a subtype of {Type}");
+                }
             }
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
