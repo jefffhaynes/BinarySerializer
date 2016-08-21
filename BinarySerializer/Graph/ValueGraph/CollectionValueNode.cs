@@ -14,10 +14,29 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            var serializableChildren = GetSerializableChildren();
+            var serializableChildren = GetSerializableChildren().ToList();
 
+            var typeNode = (CollectionTypeNode)TypeNode;
+
+            if (typeNode.ItemSerializeUntilAttribute != null &&
+                typeNode.ItemSerializeUntilAttribute.LastItemMode == LastItemMode.Include)
+            {
+                var lastChild = serializableChildren.LastOrDefault();
+
+                if (lastChild != null)
+                {
+                    var itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetBoundValue(this);
+                    var itemTerminationChild = lastChild.GetChild(typeNode.ItemSerializeUntilAttribute.ItemValuePath);
+
+                    var convertedItemTerminationValue =
+                        itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
+
+                    itemTerminationChild.Value = convertedItemTerminationValue;
+                }
+            }
+            
             long? itemLength = GetConstFieldItemLength();
-
+            
             foreach (var child in serializableChildren)
             {
                 if (stream.IsAtLimit)
@@ -26,8 +45,6 @@ namespace BinarySerialization.Graph.ValueGraph
                 var childStream = itemLength == null ? stream : new BoundedStream(stream, itemLength.Value);
                 child.Serialize(childStream, eventShuttle);
             }
-
-            var typeNode = (CollectionTypeNode)TypeNode;
 
             if (typeNode.TerminationChild != null)
             {
@@ -105,7 +122,6 @@ namespace BinarySerialization.Graph.ValueGraph
                         /* Check child termination case */
                         if (TypeNode.ItemSerializeUntilBinding != null)
                         {
-                            //itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
                             var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
 
                             var convertedItemTerminationValue =
@@ -113,7 +129,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
                             if (itemTerminationChild.Value.Equals(convertedItemTerminationValue))
                             {
+#pragma warning disable 618
                                 if (TypeNode.ItemSerializeUntilAttribute.ExcludeLastItem)
+#pragma warning restore 618
                                 {
                                     streamResetter.CancelReset();
                                     break;

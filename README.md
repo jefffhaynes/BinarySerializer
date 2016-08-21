@@ -561,6 +561,26 @@ public class ToyChest
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/ItemUntil.png" />
 </p>
 
+This attribute can be used to break many blocks into multiple sections using the LastItemMode property.
+
+```c#
+public class Section
+{
+    [FieldOrder(0)]
+    public Block Header { get; set; }
+	
+    [FieldOrder(1)]
+	[ItemSerializeUntil("Type", BlockType.Header, LastItemMode = LastItemMode.Defer)]
+	public List<Block> Blocks { get; set; }
+}
+
+public class Document
+{
+	public List<Section> Sections { get; set; }
+}
+```
+
+This will deserialize blocks until a block with type Header is encountered.  At that point, because LastItemMode is set to Defer, the stream will be rewound and used to deserialize the next section.
 
 -----------
 

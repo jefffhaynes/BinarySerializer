@@ -26,7 +26,7 @@ namespace BinarySerialization.Test.UntilItem
                 new UntilItemClass
                 {
                     Name = "Charlie",
-                    LastItem = "Yep",
+                    LastItem = "Yep", // this is only needed for bound case but it's that or reproduce it a bunch of times
                     Description = "What??  That's a great idea!",
                     Type = UntilItemEnum.End
                 }
