@@ -97,26 +97,47 @@ namespace BinarySerialization.Graph.ValueGraph
                     var childStream = itemLengthEnumerator == null
                         ? stream
                         : new BoundedStream(stream, itemLengthEnumerator.Current);
-
-                    child.Deserialize(childStream, eventShuttle);
-
-                    /* Check child termination case */
-                    if (TypeNode.ItemSerializeUntilBinding != null)
+                    
+                    using (var streamResetter = new StreamResetter(childStream))
                     {
-                        itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
-                        var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
+                        child.Deserialize(childStream, eventShuttle);
 
-                        var convertedItemTerminationValue =
-                            itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
-
-                        if (itemTerminationChild.Value.Equals(convertedItemTerminationValue))
+                        /* Check child termination case */
+                        if (TypeNode.ItemSerializeUntilBinding != null)
                         {
-                            if (!TypeNode.ItemSerializeUntilAttribute.ExcludeLastItem)
+                            //itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
+                            var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
+
+                            var convertedItemTerminationValue =
+                                itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
+
+                            if (itemTerminationChild.Value.Equals(convertedItemTerminationValue))
                             {
-                                Children.Add(child);
+                                if (TypeNode.ItemSerializeUntilAttribute.ExcludeLastItem)
+                                {
+                                    streamResetter.CancelReset();
+                                    break;
+                                }
+
+                                switch (TypeNode.ItemSerializeUntilAttribute.LastItemMode)
+                                {
+                                    case LastItemMode.Include:
+                                        streamResetter.CancelReset();
+                                        Children.Add(child);
+                                        break;
+                                    case LastItemMode.Discard:
+                                        streamResetter.CancelReset();
+                                        break;
+                                    case LastItemMode.Defer:
+                                        // stream will reset
+                                        break;
+                                }
+
+                                break;
                             }
-                            break;
                         }
+
+                        streamResetter.CancelReset();
                     }
 
                     Children.Add(child);

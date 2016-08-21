@@ -76,6 +76,7 @@
     <Compile Include="Graph\ValueGraph\PrimitveArrayValueNode.cs" />
     <Compile Include="Graph\ValueGraph\StreamValueNode.cs" />
     <Compile Include="Graph\ValueGraph\UnknownValueNode.cs" />
+    <Compile Include="LastItemMode.cs" />
     <Compile Include="LazyBinarySerializationContext.cs" />
     <Compile Include="MagicMethods.cs" />
     <Compile Include="SerializeAsAttribute.cs" />

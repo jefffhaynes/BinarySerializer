@@ -286,9 +286,12 @@
     <Compile Include="Subtype\Superclass.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="Toy.cs" />
+    <Compile Include="UntilItem\Section.cs" />
     <Compile Include="UntilItem\UntilItemClass.cs" />
     <Compile Include="UntilItem\UntilItemContainer.cs" />
+    <Compile Include="UntilItem\UntilItemContainerDeferred.cs" />
     <Compile Include="UntilItem\UntilItemEnum.cs" />
+    <Compile Include="UntilItem\UntilItemSimpleClass.cs" />
     <Compile Include="UntilItem\UntilItemTests.cs" />
     <Compile Include="Until\UntilTestClass.cs" />
     <Compile Include="Until\UntilTests.cs" />

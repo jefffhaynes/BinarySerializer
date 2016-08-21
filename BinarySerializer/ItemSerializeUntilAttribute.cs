@@ -35,7 +35,10 @@ namespace BinarySerialization
         /// <summary>
         /// Used to specify whether the terminating item should be included in the collection.
         /// </summary>
+        [Obsolete("Use LastItemMode")]
         public bool ExcludeLastItem { get; set; }
+
+        public LastItemMode LastItemMode { get; set; }
 
         /// <summary>
         /// Get constant value or null if not constant.

@@ -11,7 +11,7 @@
         [FieldOrder(2)]
         public string Description { get; set; }
 
-        [FieldOrder(4)]
+        [FieldOrder(3)]
         public UntilItemEnum Type { get; set; }
     }
 }

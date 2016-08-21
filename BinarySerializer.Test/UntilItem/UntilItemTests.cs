@@ -106,5 +106,44 @@ namespace BinarySerialization.Test.UntilItem
 
             Assert.AreEqual(expected.EnumTerminationItems.Count, actual.EnumTerminationItems.Count);
         }
+
+        [TestMethod]
+        public void UntilItemDeferredTest()
+        {
+            var expected = new UntilItemContainerDeferred
+            {
+                Sections = new List<Section>
+                {
+                    new Section
+                    {
+                        Header = new UntilItemSimpleClass {Type = UntilItemEnum.Header},
+                        Items = new List<UntilItemSimpleClass>
+                        {
+                            new UntilItemSimpleClass(),
+                            new UntilItemSimpleClass()
+                        }
+                    },
+                    new Section
+                    {
+                        Header = new UntilItemSimpleClass {Type = UntilItemEnum.Header},
+                        Items = new List<UntilItemSimpleClass>
+                        {
+                            new UntilItemSimpleClass(),
+                            new UntilItemSimpleClass()
+                        }
+                    },
+                }
+            };
+
+            var actual = Roundtrip(expected, new byte[]
+            {
+                2,0,0,0,0,0,
+                2,0,0,0,0,0
+            });
+
+            Assert.AreEqual(expected.Sections.Count, actual.Sections.Count);
+            Assert.AreEqual(expected.Sections[0].Items.Count, actual.Sections[0].Items.Count);
+            Assert.AreEqual(expected.Sections[1].Items.Count, actual.Sections[1].Items.Count);
+        }
     }
 }
