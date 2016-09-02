@@ -318,10 +318,8 @@ namespace BinarySerialization.Graph.TypeGraph
                     level = 1;
                     break;
                 case RelativeSourceMode.FindAncestor:
-                    level = FindAncestorLevel(binding);
-                    break;
                 case RelativeSourceMode.SerializationContext:
-                    level = FindAncestorLevel(null);
+                    level = FindAncestorLevel(binding);
                     break;
             }
 
@@ -361,9 +359,15 @@ namespace BinarySerialization.Graph.TypeGraph
             var parent = (TypeNode) Parent;
             while (parent != null)
             {
-                if (binding != null)
+                if (binding != null && binding.RelativeSourceMode == RelativeSourceMode.FindAncestor)
                 {
-                    if (binding.AncestorLevel == level || parent.Type == binding.AncestorType)
+                    if (binding.AncestorLevel == level)
+                    {
+                        return level;
+                    }
+
+                    if(binding.AncestorType != null && parent.Type != null && 
+                        binding.AncestorType.IsAssignableFrom(parent.Type))
                     {
                         return level;
                     }
@@ -373,7 +377,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 level++;
             }
 
-            return level;
+            if (binding != null && binding.RelativeSourceMode == RelativeSourceMode.SerializationContext)
+                return level;
+
+            throw new BindingException("No ancestor found.");
         }
     }
 }

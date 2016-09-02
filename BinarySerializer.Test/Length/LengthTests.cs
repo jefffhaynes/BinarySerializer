@@ -197,5 +197,19 @@ namespace BinarySerialization.Test.Length
         {
             Roundtrip(new InvalidForwardBindingClass());
         }
+
+        [TestMethod]
+        public void InterfaceAncestoryBindingTest()
+        {
+            var expected = new LengthSourceClass
+            {
+                Internal = new InterfaceAncestoryBindingClass
+                {
+                    Value = "hello"
+                }
+            };
+
+            var actual = Roundtrip(expected);
+        }
     }
 }

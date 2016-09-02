@@ -179,7 +179,10 @@
     <Compile Include="Length\EmbeddedConstrainedCollectionInnerClass.cs" />
     <Compile Include="Length\EmptyClass.cs" />
     <Compile Include="Length\EmptyInternalClass.cs" />
+    <Compile Include="Length\ILengthSource.cs" />
+    <Compile Include="Length\InterfaceAncestoryBindingClass.cs" />
     <Compile Include="Length\InvalidForwardBindingClass.cs" />
+    <Compile Include="Length\LengthSourceClass.cs" />
     <Compile Include="Length\MultibindingClass.cs" />
     <Compile Include="Length\PaddedLengthClassClass.cs" />
     <Compile Include="Length\PaddedLengthClassInnerClass.cs" />
