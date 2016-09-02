@@ -210,6 +210,25 @@ namespace BinarySerialization.Test.Length
             };
 
             var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Internal.Value, actual.Internal.Value);
+        }
+
+        [TestMethod]
+        public void AncestorBindingCollectionItemTest()
+        {
+            var expected = new AncestorBindingCollectionClass
+            {
+                Items = new List<AncestorBindingCollectionItemClass>
+                {
+                    new AncestorBindingCollectionItemClass
+                    {
+                        Value = "hello"
+                    }
+                }
+            };
+
+            var actual = Roundtrip(expected);
         }
     }
 }

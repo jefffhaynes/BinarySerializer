@@ -173,6 +173,8 @@
     <Compile Include="ItemLength\JaggedListClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassInnerClass.cs" />
+    <Compile Include="Length\AncestorBindingCollectionClass.cs" />
+    <Compile Include="Length\AncestorBindingCollectionItemClass.cs" />
     <Compile Include="Length\BoundItemClass.cs" />
     <Compile Include="Length\BoundItemContainerClass.cs" />
     <Compile Include="Length\EmbeddedConstrainedCollectionClass.cs" />

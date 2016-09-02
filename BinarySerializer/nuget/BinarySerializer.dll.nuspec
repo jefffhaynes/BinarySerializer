@@ -2,13 +2,13 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>5.6-beta</version>
+    <version>5.6</version>
     <authors>Jeff Haynes</authors>
     <owners></owners>
     <projectUrl>https://github.com/jefffhaynes/BinarySerializer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A declarative serialization framework for controlling formatting of data at the byte level using field bindings, converters, and code.</description>
-    <releaseNotes>Adds LastItemMode, deprecates ExcludeLastItem.</releaseNotes>
+    <releaseNotes>Adds LastItemMode, deprecates ExcludeLastItem.  Bug fixes.</releaseNotes>
     <tags>Serialization Serializer Binary Format Protocol</tags>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
   </metadata>
