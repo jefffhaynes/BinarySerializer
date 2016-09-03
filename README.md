@@ -392,7 +392,7 @@ It is not necessary that FrameType be correct during serialization; it will be u
 
 The Subtype attribute can be used with the FieldLength attribute to write forward compatible processors.  Take the example of PNG, which uses "chunks" of data that may be able to be skipped even if they aren't understood.
 
-Additionally, the SubtypeDefault attribute may be used to specify a fallback subtype to be used in the event that an unknown indicator is encountered during deserialization.
+Additionally, the SubtypeDefault attribute may be used to specify a fallback subtype to be used in the event that an unknown indicator is encountered during deserialization.  During serialization the default subtype may be included without a corresponding subtype binding.
 
 ```c#
 public class ChunkContainer
