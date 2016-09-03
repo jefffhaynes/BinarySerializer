@@ -71,9 +71,18 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     value = Bindings[0].Invoke();
 
+                    if (value == UnsetValue)
+                    {
+                        value = Value;
+                    }
+
                     if (Bindings.Count != 1)
                     {
-                        object[] targetValues = Bindings.Select(binding => binding()).ToArray();
+                        object[] targetValues = Bindings.Select(binding =>
+                        {
+                            var bindingValue = binding();
+                            return bindingValue == UnsetValue ? Value : bindingValue;
+                        }).ToArray();
 
                         if (targetValues.Any(v => !value.Equals(v)))
                             throw new BindingException(

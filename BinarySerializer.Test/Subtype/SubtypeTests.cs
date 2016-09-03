@@ -109,6 +109,21 @@ namespace BinarySerialization.Test.Subtype
         }
 
         [TestMethod]
+        public void DefaultSubtypeAllowOnSerialize()
+        {
+            var expected = new DefaultSubtypeContainerClass
+            {
+                Indicator = 33,
+                Value = new DefaultSubtypeClass()
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(33, actual.Indicator);
+            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
+        }
+
+        [TestMethod]
         public void AncestorSubtypeBindingTest()
         {
             var expected = new AncestorSubtypeBindingContainerClass

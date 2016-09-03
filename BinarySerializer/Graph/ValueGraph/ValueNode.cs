@@ -9,6 +9,8 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal abstract class ValueNode : Node
     {
+        public static readonly object UnsetValue = new object();
+
         private bool _visited;
         private const char PathSeparator = '.';
 
@@ -60,6 +62,13 @@ namespace BinarySerialization.Graph.ValueGraph
                         throw new InvalidOperationException("Binding targets must not be null.");
 
                     var objectTypeNode = (ObjectTypeNode)typeNode;
+
+                    // allow default subtypes in order to support round-trip
+                    if (objectTypeNode.SubtypeDefaultAttribute != null)
+                    {
+                        if (valueType == objectTypeNode.SubtypeDefaultAttribute.Subtype)
+                            return UnsetValue;
+                    }
 
                     object value;
                     if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
