@@ -44,7 +44,7 @@ namespace BinarySerialization
 
         public void Compute(byte[] buffer, int offset, int count)
         {
-            var remainder = ToUInt32(_initialValue);
+            var remainder = ToUInt32(_crc);
 
             for (var i = offset; i < count; ++i)
             {

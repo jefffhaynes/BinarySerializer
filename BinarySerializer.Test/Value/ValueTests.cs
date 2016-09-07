@@ -26,12 +26,13 @@ namespace BinarySerialization.Test.Value
             {
                 Internal = new FieldCrcInternalClass
                 {
+                    IntegerValue = 1,
                     Value = "hello world"
                 }
             };
 
             var actual = Roundtrip(expected);
-            Assert.AreEqual(0xefeb, actual.Crc);
+            Assert.AreEqual(0xbc68, actual.Crc);
         }
 
         [TestMethod]
