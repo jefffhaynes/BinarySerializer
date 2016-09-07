@@ -321,6 +321,26 @@ In order to convert the Endianness "magic" number field into Endianness, we defi
     }
 ```
 
+FieldEndianness is one of the stranger attributes in that in some instances the framework will defer evaluation of fields of bound endianness.  This can be useful in formats which declare endianness for specific fields even after those fields have already been encountered during deserialization.  Although odd, this may not actually represent an issue in the format, however it does mean that in these cases it is not safe to interpret the value of such a field until the "last possible moment".  Take the following example:
+
+```c#
+public class Header
+{
+    [FieldOrder(0)]
+	[Endianness("ByteOrderIndicator", Converter = typeof(EndiannessConverter)]
+	public int Length { get; set; }
+	
+    [FieldOrder(1)]
+	public int ByteOrderIndicator { get; set; }
+	
+    [FieldOrder(2)]
+	[FieldLength("Length")]
+	public string Value { get; set; }
+}
+```
+
+In this example the value of the Length field will not be evaluated until after the endianness has been determined.  Note that if the order of the last two fields were reversed the serializer would throw an exception as the resulting graph would be impossible to resolve. 
+
 ### FieldEncodingAttribute ###
 
 Similar to the FieldEndianness attribute, the FieldEncoding attribute can be used to specify the string encoding for a field.  This attribute will be inherited by all child fields unless overwritten.
