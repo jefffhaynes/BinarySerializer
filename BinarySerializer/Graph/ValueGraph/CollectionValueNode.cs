@@ -111,6 +111,9 @@ namespace BinarySerialization.Graph.ValueGraph
                     var child = typeNode.Child.CreateSerializer(this);
 
                     itemLengthEnumerator?.MoveNext();
+
+                    // TODO this doesn't allow for deferred eval of endianness in the case of jagged arrays
+                    // probably extremely rare but still...
                     var itemLength = itemLengthEnumerator?.Current;
                     var childStream = itemLength == null ? stream : new BoundedStream(stream, () => itemLength);
                     
