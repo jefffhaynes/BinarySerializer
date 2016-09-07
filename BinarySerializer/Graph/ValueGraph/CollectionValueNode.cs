@@ -111,10 +111,8 @@ namespace BinarySerialization.Graph.ValueGraph
                     var child = typeNode.Child.CreateSerializer(this);
 
                     itemLengthEnumerator?.MoveNext();
-
-                    var childStream = itemLengthEnumerator == null
-                        ? stream
-                        : new BoundedStream(stream, () => itemLengthEnumerator.Current);
+                    var itemLength = itemLengthEnumerator?.Current;
+                    var childStream = itemLength == null ? stream : new BoundedStream(stream, () => itemLength);
                     
                     using (var streamResetter = new StreamResetter(childStream))
                     {
