@@ -30,6 +30,13 @@ namespace BinarySerialization.Test
         }
 
         [TestMethod]
+        public void Crc16DataReflectedRemainderReflectedTest()
+        {
+            var crc = new Crc16(Crc16Polynomial, 0xffff) { IsDataReflected = true, IsRemainderReflected = true };
+            TestCrc16(crc, "hello world", 0x51f9);
+        }
+
+        [TestMethod]
         public void Crc32Test()
         {
             var crc = new Crc32(Crc32Polynomial, 0xffffffff);
@@ -37,6 +44,36 @@ namespace BinarySerialization.Test
             crc.Compute(messageData, 0, messageData.Length);
             var final = crc.ComputeFinal();
             Assert.AreEqual(0xfd11ac49, final);
+        }
+
+        [TestMethod]
+        public void Crc32NoDataReflectTest()
+        {
+            var crc = new Crc32(Crc32Polynomial, 0xffffffff) {IsDataReflected = false};
+            var messageData = System.Text.Encoding.ASCII.GetBytes("hello world");
+            crc.Compute(messageData, 0, messageData.Length);
+            var final = crc.ComputeFinal();
+            Assert.AreEqual(0xf8485336, final);
+        }
+
+        [TestMethod]
+        public void Crc32NoRemainderReflectTest()
+        {
+            var crc = new Crc32(Crc32Polynomial, 0xffffffff) { IsRemainderReflected = false };
+            var messageData = System.Text.Encoding.ASCII.GetBytes("hello world");
+            crc.Compute(messageData, 0, messageData.Length);
+            var final = crc.ComputeFinal();
+            Assert.AreEqual(0x923588bf, final);
+        }
+
+        [TestMethod]
+        public void Crc32NoDataReflectNoRemainderReflectTest()
+        {
+            var crc = new Crc32(Crc32Polynomial, 0xffffffff) { IsDataReflected = false, IsRemainderReflected = false };
+            var messageData = System.Text.Encoding.ASCII.GetBytes("hello world");
+            crc.Compute(messageData, 0, messageData.Length);
+            var final = crc.ComputeFinal();
+            Assert.AreEqual((uint)0x6cca121f, final);
         }
 
         private void TestCrc16(Crc16 crc, string value, ushort expected)
