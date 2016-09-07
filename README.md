@@ -284,41 +284,46 @@ Let's say Value is set to 'hi'.  The framework will compute two (2) for the valu
 The FieldEndianness attribute allows for the dynamic switching of endianness during deserialization.  This can be useful for dealing with formats which specify endianness through the use of magic numbers or values.  The binding constructor for FieldEndianness requires the type of a value converter, which returns an Endianness value be specified.  This attribute will be inherited by all child fields unless overwritten.
 
 ```c#
-    public class Packet
-    {
-        [FieldOrder(0)]
-        public uint Endianness { get; set; }
+public class Packet
+{
+    [FieldOrder(0)]
+    public uint Endianness { get; set; }
 
-        [FieldOrder(1)]
-        [FieldEndianness("Endianness", typeof(EndiannessConverter))]
-        public ushort Value { get; set; }
-    }
+    [FieldOrder(1)]
+    [FieldEndianness("Endianness", typeof(EndiannessConverter))]
+    public ushort Value { get; set; }
+}
 ```
 
 In order to convert the Endianness "magic" number field into Endianness, we define a converter.
 
 ```c#
-    public class EndiannessConverter : IValueConverter
+public class EndiannessConverter : IValueConverter
+{
+    private const uint LittleEndiannessMagic = 0x1A2B3C4D;
+    private const uint BigEndiannessMagic = 0x4D3C2B1A;
+
+    public object Convert(object value, object parameter, BinarySerializationContext context)
     {
-        private const uint LittleEndiannessMagic = 0x1A2B3C4D;
-        private const uint BigEndiannessMagic = 0x4D3C2B1A;
+        var indicator = System.Convert.ToUInt32(value);
 
-        public object Convert(object value, object parameter, BinarySerializationContext context)
+        if (indicator == LittleEndiannessMagic)
         {
-            var indicator = System.Convert.ToUInt32(value);
-            if (indicator == LittleEndiannessMagic)
-                return BinarySerialization.Endianness.Little;
-            else if (indicator == BigEndiannessMagic)
-                return BinarySerialization.Endianness.Big;
-
-            throw new InvalidOperationException("Invalid endian magic");
-        }
-
-		public object ConvertBack(object value, object parameter, BinarySerializationContext context)
+		    return BinarySerialization.Endianness.Little;
+	    }
+        else if (indicator == BigEndiannessMagic)
         {
-            throw new NotSupportedException();
-        }
+		    return BinarySerialization.Endianness.Big;
+	    }
+
+        throw new InvalidOperationException("Invalid endian magic");
     }
+
+    public object ConvertBack(object value, object parameter, BinarySerializationContext context)
+    {
+        throw new NotSupportedException();
+    }
+}
 ```
 
 FieldEndianness is one of the stranger attributes in that in some instances the framework will defer evaluation of fields of bound endianness.  This can be useful in formats which declare endianness for specific fields even after those fields have already been encountered during deserialization.  Although odd, this may not actually represent an issue in the format, however it does mean that in these cases it is not safe to interpret the value of such a field until the "last possible moment".  Take the following example:
