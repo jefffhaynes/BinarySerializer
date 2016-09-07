@@ -35,14 +35,15 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
             }
             
-            long? itemLength = GetConstFieldItemLength();
-            
             foreach (var child in serializableChildren)
             {
                 if (stream.IsAtLimit)
                     break;
 
-                var childStream = itemLength == null ? stream : new BoundedStream(stream, itemLength.Value);
+                var childStream = GetConstFieldItemLength() == null
+                    ? stream
+                    : new BoundedStream(stream, GetConstFieldItemLength);
+
                 child.Serialize(childStream, eventShuttle);
             }
 
@@ -113,7 +114,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     var childStream = itemLengthEnumerator == null
                         ? stream
-                        : new BoundedStream(stream, itemLengthEnumerator.Current);
+                        : new BoundedStream(stream, () => itemLengthEnumerator.Current);
                     
                     using (var streamResetter = new StreamResetter(childStream))
                     {

@@ -11,17 +11,15 @@ namespace BinarySerialization
         private readonly BoundedStream _root;
         private readonly bool _canSeek;
         private readonly long _length;
-
-        internal BoundedStream(Stream source, long? maxLength = null)
+        private readonly Func<long?> _maxLengthDelegate; 
+        
+        internal BoundedStream(Stream source, Func<long?> maxLengthDelegate = null)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
-
-            if (maxLength < 0)
-                throw new ArgumentOutOfRangeException(nameof(maxLength), "Cannot be negative.");
-
+            
             Source = source;
-            MaxLength = maxLength;
+            _maxLengthDelegate = maxLengthDelegate;
 
             /* Store for performance */
             _canSeek = source.CanSeek;
@@ -65,7 +63,7 @@ namespace BinarySerialization
         /// <summary>
         ///     Gets the maximum length of the stream in bytes if bounded.  Returns null if stream is unbounded.
         /// </summary>
-        public long? MaxLength { get; }
+        public long? MaxLength => _maxLengthDelegate?.Invoke();
 
         /// <summary>
         ///     Gets the length in bytes of the stream.

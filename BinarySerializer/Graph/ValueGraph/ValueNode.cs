@@ -115,9 +115,7 @@ namespace BinarySerialization.Graph.ValueGraph
                         Align(stream, leftAlignment, true);
                     }
                 }
-
-                long? maxLength = GetConstFieldLength();
-
+                
                 var offset = GetFieldOffset();
 
                 if (offset != null)
@@ -125,12 +123,12 @@ namespace BinarySerialization.Graph.ValueGraph
                     using (new StreamResetter(stream))
                     {
                         stream.Position = offset.Value;
-                        SerializeInternal(stream, eventShuttle, maxLength);
+                        SerializeInternal(stream, GetConstFieldLength, eventShuttle);
                     }
                 }
                 else
                 {
-                    SerializeInternal(stream, eventShuttle, maxLength);
+                    SerializeInternal(stream, GetConstFieldLength, eventShuttle);
                 }
 
                 if (align)
@@ -160,10 +158,10 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private void SerializeInternal(BoundedStream stream, EventShuttle eventShuttle, long? maxLength)
+        private void SerializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
         {
-            if (maxLength != null)
-                stream = new BoundedStream(stream, maxLength.Value);
+            if (maxLengthDelegate() != null)
+                stream = new BoundedStream(stream, maxLengthDelegate);
 
             // Setup tap for value attributes if we need to siphon serialized data for later
             if (TypeNode.FieldValueAttribute != null)
@@ -199,8 +197,6 @@ namespace BinarySerialization.Graph.ValueGraph
                     Align(stream, leftAlignment);
                 }
 
-                long? maxLength = GetFieldLength();
-
                 var offset = GetFieldOffset();
 
                 if (offset != null)
@@ -208,12 +204,12 @@ namespace BinarySerialization.Graph.ValueGraph
                     using (new StreamResetter(stream))
                     {
                         stream.Position = offset.Value;
-                        DeserializeInternal(stream, maxLength, eventShuttle);
+                        DeserializeInternal(stream, GetFieldLength, eventShuttle);
                     }
                 }
                 else
                 {
-                    DeserializeInternal(stream, maxLength, eventShuttle);
+                    DeserializeInternal(stream, GetFieldLength, eventShuttle);
                 }
 
                 long? rightAlignment = GetFieldAlignment();
@@ -267,10 +263,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
         }
 
-        private void DeserializeInternal(BoundedStream stream, long? maxLength, EventShuttle eventShuttle)
+        private void DeserializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
         {
-            if (maxLength != null)
-                stream = new BoundedStream(stream, maxLength.Value);
+            if (maxLengthDelegate() != null)
+                stream = new BoundedStream(stream, maxLengthDelegate);
 
             DeserializeOverride(stream, eventShuttle);
         }

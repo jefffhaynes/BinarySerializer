@@ -275,6 +275,7 @@ public class Entry
     [FieldLength("Length")]
     public string Value { get; set; }
 }
+```
 
 Let's say Value is set to 'hi'.  The framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned to 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not, for example, "hi\0\0").  FieldAlignment is not inherited by child fields.
 

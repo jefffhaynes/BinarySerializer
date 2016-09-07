@@ -8,6 +8,5 @@
         
         [FieldOrder(1)]
         public uint Endianness { get; set; }
-
     }
 }
