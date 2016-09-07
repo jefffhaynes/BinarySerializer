@@ -17,6 +17,8 @@ namespace BinarySerialization
         protected Crc(T polynomial, T initialValue)
         {
             _initialValue = initialValue;
+            
+            Reset();
 
             lock (TableLock)
             {
@@ -27,8 +29,6 @@ namespace BinarySerialization
 
                 Tables.Add(polynomial, _table);
             }
-
-            Reset();
         }
 
         public bool IsDataReflected { get; set; }
@@ -58,16 +58,16 @@ namespace BinarySerialization
                 remainder = ToUInt32(_table[data]) ^ (remainder << 8);
             }
 
-            if (IsRemainderReflected)
-                remainder = Reflect(remainder, Width);
-
-            _crc = FromUInt32(remainder ^ ToUInt32(FinalXor));
+            _crc = FromUInt32(remainder);
         }
 
        
         public T ComputeFinal()
         {
-            return _crc;
+            if (IsRemainderReflected)
+                _crc = FromUInt32(Reflect(ToUInt32(_crc), Width));
+
+            return FromUInt32(ToUInt32(_crc) ^ ToUInt32(FinalXor));
         }
 
         private T[] BuildTable(T polynomial)
