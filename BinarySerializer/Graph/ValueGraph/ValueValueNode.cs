@@ -326,7 +326,6 @@ namespace BinarySerialization.Graph.ValueGraph
                 case SerializedType.NullTerminatedString:
                 {
                     byte[] data = ReadNullTerminated(reader, (int)effectiveLength.Value).ToArray();
-
                     value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
                 }
