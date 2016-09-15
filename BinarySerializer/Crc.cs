@@ -64,10 +64,12 @@ namespace BinarySerialization
        
         public T ComputeFinal()
         {
-            if (IsRemainderReflected)
-                _crc = FromUInt32(Reflect(ToUInt32(_crc), Width));
+            var crc = _crc;
 
-            return FromUInt32(ToUInt32(_crc) ^ ToUInt32(FinalXor));
+            if (IsRemainderReflected)
+                crc = FromUInt32(Reflect(ToUInt32(crc), Width));
+
+            return FromUInt32(ToUInt32(crc) ^ ToUInt32(FinalXor));
         }
 
         private T[] BuildTable(T polynomial)
