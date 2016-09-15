@@ -26,13 +26,25 @@ namespace BinarySerialization.Test.Value
             {
                 Internal = new FieldCrcInternalClass
                 {
-                    IntegerValue = 1,
+                    UshortValue = 1,
+                    ByteValue = 2,
+                    ArrayValue = new byte[] {0x3, 0x4},
                     Value = "hello world"
                 }
             };
 
-            var actual = Roundtrip(expected);
-            Assert.AreEqual(0xbc68, actual.Crc);
+            var expectedData = new byte[]
+            {
+                0x10, 0x0, 0x0, 0x0,
+                0x01, 0x00,
+                0x02,
+                0x03, 0x04,
+                0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64,
+                0x79, 0xcd
+            };
+
+            var actual = Roundtrip(expected, expectedData);
+            Assert.AreEqual(0xcd79, actual.Crc);
         }
 
         [TestMethod]
@@ -42,13 +54,25 @@ namespace BinarySerialization.Test.Value
             {
                 Internal = new FieldCrcInternalClass
                 {
-                    IntegerValue = (byte)'#',
+                    UshortValue = 1,
+                    ByteValue = 2,
+                    ArrayValue = new byte[] { 0x3, 0x4 },
                     Value = "hello world"
                 }
             };
 
-            var actual = Roundtrip(expected);
-            Assert.AreEqual(0xfead58db, actual.Crc);
+            var expectedData = new byte[]
+            {
+                0x10, 0x0, 0x0, 0x0,
+                0x01, 0x00,
+                0x02,
+                0x03, 0x04,
+                0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64,
+                0xdf, 0x4d, 0x34, 0xf8
+            };
+
+            var actual = Roundtrip(expected, expectedData);
+            Assert.AreEqual(0xF8344DDF, actual.Crc);
         }
 
         [TestMethod]

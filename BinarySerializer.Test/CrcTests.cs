@@ -47,6 +47,22 @@ namespace BinarySerialization.Test
         }
 
         [TestMethod]
+        public void Crc32MultipleCallsTest()
+        {
+            var crc = new Crc32(Crc32Polynomial, 0xffffffff);
+            var messageData = System.Text.Encoding.ASCII.GetBytes("hello");
+            crc.Compute(messageData, 0, messageData.Length);
+            messageData = System.Text.Encoding.ASCII.GetBytes(" ");
+            crc.Compute(messageData, 0, messageData.Length);
+            messageData = System.Text.Encoding.ASCII.GetBytes("world");
+            crc.Compute(messageData, 0, messageData.Length);
+            var final = crc.ComputeFinal();
+            Assert.AreEqual(0xfd11ac49, final);
+            final = crc.ComputeFinal();
+            Assert.AreEqual(0xfd11ac49, final);
+        }
+
+        [TestMethod]
         public void Crc32NoDataReflectTest()
         {
             var crc = new Crc32(Crc32Polynomial, 0xffffffff) {IsDataReflected = false};
