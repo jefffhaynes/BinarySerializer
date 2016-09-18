@@ -143,6 +143,16 @@ namespace BinarySerialization.Graph.TypeGraph
                         attribute => new ConditionalBinding(attribute, GetBindingLevel(attribute.Binding))).ToList());
             }
 
+            var serializeWhenNotAttributes = attributes.OfType<SerializeWhenNotAttribute>().ToArray();
+            SerializeWhenNotAttributes = new ReadOnlyCollection<SerializeWhenNotAttribute>(serializeWhenNotAttributes);
+
+            if (SerializeWhenNotAttributes.Count > 0)
+            {
+                SerializeWhenNotBindings = new ReadOnlyCollection<ConditionalBinding>(
+                    serializeWhenNotAttributes.Select(
+                        attribute => new ConditionalBinding(attribute, GetBindingLevel(attribute.Binding))).ToList());
+            }
+
             // don't inherit subtypes if this is itself a subtype
             if (subType == null)
             {
@@ -246,10 +256,12 @@ namespace BinarySerialization.Graph.TypeGraph
         public Binding FieldValueBinding { get; }
 
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; }
+        public ReadOnlyCollection<ConditionalBinding> SerializeWhenNotBindings { get; }
         public FieldValueAttributeBase FieldValueAttribute { get; }
         public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; }
         public SubtypeDefaultAttribute SubtypeDefaultAttribute { get; }
         public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; }
+        public ReadOnlyCollection<SerializeWhenNotAttribute> SerializeWhenNotAttributes { get; }
         public SerializeUntilAttribute SerializeUntilAttribute { get; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; }
         public Endianness? Endianness { get; private set; }

@@ -101,10 +101,12 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                var serializeWhenBindings = TypeNode.SerializeWhenBindings;
+                if (TypeNode.SerializeWhenBindings != null &&
+                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
+                    return;
 
-                if (serializeWhenBindings != null &&
-                    !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
+                if (TypeNode.SerializeWhenNotBindings != null &&
+                    TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
                     return;
 
                 if (align)
@@ -186,11 +188,14 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                var serializeWhenBindings = TypeNode.SerializeWhenBindings;
-                if (serializeWhenBindings != null &&
-                    !serializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+                if (TypeNode.SerializeWhenBindings != null &&
+                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
                     return;
-                
+
+                if (TypeNode.SerializeWhenNotBindings != null &&
+                    TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+                    return;
+
                 long? leftAlignment = GetFieldAlignment();
                 if (leftAlignment != null)
                 {

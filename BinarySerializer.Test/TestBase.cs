@@ -92,6 +92,13 @@ namespace BinarySerialization.Test
             return o;
         }
 
+        protected byte[] Serialize(object o)
+        {
+            var stream = new MemoryStream();
+            Serializer.Serialize(stream, o);
+            return stream.ToArray();
+        }
+
         protected T Deserialize<T>(string filename)
         {
             using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read))

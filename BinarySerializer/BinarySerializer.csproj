@@ -94,6 +94,8 @@
     <Compile Include="Graph\TypeGraph\ObjectTypeNode.cs" />
     <Compile Include="Graph\TypeGraph\RootTypeNode.cs" />
     <Compile Include="BoundedStream.cs" />
+    <Compile Include="ConditionalAttribute.cs" />
+    <Compile Include="SerializeWhenNotAttribute.cs" />
     <Compile Include="StreamResetter.cs" />
     <Compile Include="SubtypeAttribute.cs" />
     <Compile Include="SerializeUntilAttribute.cs" />

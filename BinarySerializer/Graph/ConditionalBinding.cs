@@ -6,7 +6,7 @@ namespace BinarySerialization.Graph
     {
         private readonly Type _conditionalValueType;
 
-        public ConditionalBinding(SerializeWhenAttribute attribute, int level)
+        public ConditionalBinding(ConditionalAttribute attribute, int level)
             : base(attribute, level)
         {
             ConditionalValue = attribute.Value;

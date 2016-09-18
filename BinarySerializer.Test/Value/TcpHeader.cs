@@ -1,6 +1,8 @@
-﻿namespace BinarySerialization.Test.Value
+﻿using System.Collections.Generic;
+
+namespace BinarySerialization.Test.Value
 {
-    // TODO not finished
+    // TODO not tested
     public class TcpHeader
     {
         [FieldOrder(0)]
@@ -16,7 +18,7 @@
         public uint AckNumber { get; set; }
 
         [FieldOrder(4)]
-        public ushort DataOffsetAndFlags { get; set; }
+        public byte Offset { get; set; }
 
         [FieldOrder(5)]
         public TcpHeaderFlags Flags { get; set; }
@@ -31,7 +33,9 @@
         public ushort UrgentPointer { get; set; }
 
         [FieldOrder(9)]
-        [FieldLength("DataOffsetAndFlags", ConverterType = typeof (BitMaskConverter), ConverterParameter = 0xf0)]
-        public uint[] Options { get; set; }
+        [FieldAlignment(4)]
+        [FieldLength("Offset", ConverterType = typeof(OffsetLengthConverter))]
+        [ItemSerializeUntil("Kind", TcpOptionKind.End)]
+        public List<TcpOption> Options { get; set; }
     }
 }

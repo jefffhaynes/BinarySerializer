@@ -87,6 +87,7 @@ There are a number of attributes that can be used to control the serialization o
 * [SerializeAs](#serializeasattribute)
 * [SerializeAsEnum](#serializeasenumattribute)
 * [SerializeWhen](#serializewhenattribute)
+* [SerializeWhenNot](#serializewhennotattribute)
 * [SerializeUntil](#serializeuntilattribute)
 * [ItemLength](#itemlengthattribute)
 * [ItemSerializeUntil](#itemserializeuntilattribute)
@@ -504,6 +505,10 @@ public ReceivedSignalStrengthIndicator RSSI { get; set; }
 <p align="center">
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/WhenBinding.png" />
 </p>
+
+### SerializeWhenNotAttribute ###
+
+Identitcal to the SerializeWhen attribute for negative conditions. 
 
 ### SerializeUntilAttribute ###
 
