@@ -380,7 +380,25 @@ public class Packet
 }
 ```
 
-Note that the attribute can also be used on complex types to calculate the checksum over a set of fields.  The attribute can be configured by specifing the various properties, including the polynomial, the initial value, as well as others.
+Note that the attribute can also be used on complex types to calculate the checksum over sets of fields.  The attribute can be configured by specifing the various properties, including the polynomial and the initial value.
+
+```c#
+public class Packet
+{
+    [FieldOrder(0)]
+    public int Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldLength("Length")]
+    [FieldCrc16("Crc", InitialValue = 0, IsDataReflected = false, IsRemainderReflected = false)]
+    public Internal Internal { get; set; }
+
+    [FieldOrder(2)]
+    public ushort Crc { get; set; }
+}
+```
+
+Also note that the target field must be an unsigned short, or unsigned int in the case of FieldCrc32.
 
 
 ### FieldCrc32Attribute ###
