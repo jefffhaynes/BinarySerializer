@@ -9,19 +9,13 @@
         private const uint DefaultInitialValue = uint.MaxValue;
         private const uint DefaultFinalXor = uint.MaxValue;
         
-        private readonly Crc32 _crc;
+        private Crc32 _crc;
 
         /// <summary>
         /// Initializes a new instance of the FieldCrc32 class.
         /// </summary>
         public FieldCrc32Attribute(string valuePath) : base(valuePath)
         {
-            _crc = new Crc32(Polynomial, InitialValue)
-            {
-                IsDataReflected = IsDataReflected,
-                IsRemainderReflected = IsRemainderReflected,
-                FinalXor = FinalXor
-            };
         }
 
         /// <summary>
@@ -55,6 +49,16 @@
         /// <param name="context"></param>
         protected override void Reset(BinarySerializationContext context)
         {
+            if(_crc == null)
+            {
+                _crc = new Crc32(Polynomial, InitialValue)
+                {
+                    IsDataReflected = IsDataReflected,
+                    IsRemainderReflected = IsRemainderReflected,
+                    FinalXor = FinalXor
+                };
+            }
+
             _crc.Reset();
         }
 

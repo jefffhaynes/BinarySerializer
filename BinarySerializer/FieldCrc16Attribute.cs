@@ -8,19 +8,13 @@
         private const ushort DefaultPolynomial = 0x1021;
         private const ushort DefaultInitialValue = ushort.MaxValue;
         
-        private readonly Crc16 _crc;
+        private Crc16 _crc;
 
         /// <summary>
         /// Initializes a new instance of the FieldCrc16 class.
         /// </summary>
         public FieldCrc16Attribute(string valuePath) : base(valuePath)
         {
-            _crc = new Crc16(Polynomial, InitialValue)
-            {
-                IsDataReflected = IsDataReflected,
-                IsRemainderReflected = IsRemainderReflected,
-                FinalXor = FinalXor
-            };
         }
 
         /// <summary>
@@ -54,6 +48,16 @@
         /// <param name="context"></param>
         protected override void Reset(BinarySerializationContext context)
         {
+            if(_crc == null)
+            {
+                _crc = new Crc16(Polynomial, InitialValue)
+                {
+                    IsDataReflected = IsDataReflected,
+                    IsRemainderReflected = IsRemainderReflected,
+                    FinalXor = FinalXor
+                };
+            }
+
             _crc.Reset();
         }
 
