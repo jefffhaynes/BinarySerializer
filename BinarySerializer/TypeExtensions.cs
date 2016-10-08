@@ -45,7 +45,7 @@ namespace BinarySerialization
                 return converter(value);
 
             if (type.IsEnum && (valueType.IsPrimitive || valueType.IsEnum))
-                return Enum.ToObject(type, Convert.ToInt32(value));
+                return Enum.ToObject(type, Convert.ToUInt64(value));
 
             return value;
         }

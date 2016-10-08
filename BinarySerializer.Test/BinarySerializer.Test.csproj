@@ -159,6 +159,10 @@
     <Compile Include="Issues\Issue38\PositionData1.cs" />
     <Compile Include="Issues\Issue39\InputsStateFrameData.cs" />
     <Compile Include="Issues\Issue39\Issue39Tests.cs" />
+    <Compile Include="Issues\Issue50\Issue50Tests.cs" />
+    <Compile Include="Issues\Issue50\MsgHeader.cs" />
+    <Compile Include="Issues\Issue50\PlcMessageType.cs" />
+    <Compile Include="Issues\Issue50\PlcPayloadType.cs" />
     <Compile Include="Issues\Issue9\ElementClass.cs" />
     <Compile Include="Issues\Issue9\Entry.cs" />
     <Compile Include="Issues\Issue9\Issue9Tests.cs" />
