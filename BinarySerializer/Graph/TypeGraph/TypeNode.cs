@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -156,39 +157,10 @@ namespace BinarySerialization.Graph.TypeGraph
             // don't inherit subtypes if this is itself a subtype
             if (subType == null)
             {
-                var subtypeAttributes = attributes.OfType<SubtypeAttribute>().ToArray();
+                var subtypeAttributes = attributes.OfType<SubtypeAttribute>().Cast<SubtypeBaseAttribute>().ToArray();
 
-                SubtypeAttributes = new ReadOnlyCollection<SubtypeAttribute>(subtypeAttributes);
-
-                if (SubtypeAttributes.Count > 0)
-                {
-                    var bindingGroups =
-                        SubtypeAttributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
-
-                    if (bindingGroups.Count() > 1)
-                        throw new BindingException("Subtypes must all specify the same binding configuration.");
-
-                    var firstBinding = SubtypeAttributes[0];
-                    SubtypeBinding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
-
-                    var valueGroups = SubtypeAttributes.GroupBy(attribute => attribute.Value);
-                    if (valueGroups.Count() < SubtypeAttributes.Count)
-                        throw new InvalidOperationException("Subtype values must be unique.");
-
-                    if (SubtypeBinding.BindingMode == BindingMode.TwoWay)
-                    {
-                        var subTypeGroups = SubtypeAttributes.GroupBy(attribute => attribute.Subtype);
-                        if (subTypeGroups.Count() < SubtypeAttributes.Count)
-                            throw new InvalidOperationException(
-                                "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
-                    }
-
-                    var invalidSubtype =
-                        SubtypeAttributes.FirstOrDefault(attribute => !Type.IsAssignableFrom(attribute.Subtype));
-
-                    if (invalidSubtype != null)
-                        throw new InvalidOperationException($"{invalidSubtype.Subtype} is not a subtype of {Type}");
-                }
+                SubtypeAttributes = new ReadOnlyCollection<SubtypeBaseAttribute>(subtypeAttributes);
+                SubtypeBinding = GetBinding(subtypeAttributes, Type);
 
                 SubtypeDefaultAttribute = attributes.OfType<SubtypeDefaultAttribute>().SingleOrDefault();
 
@@ -197,6 +169,36 @@ namespace BinarySerialization.Graph.TypeGraph
                     if (!Type.IsAssignableFrom(SubtypeDefaultAttribute.Subtype))
                         throw new InvalidOperationException($"{SubtypeDefaultAttribute.Subtype} is not a subtype of {Type}");
                 }
+            }
+
+            var itemSubtypeAttributes = attributes.OfType<ItemSubtypeAttribute>().Cast<SubtypeBaseAttribute>().ToArray();
+            ItemSubtypeAttributes = new ReadOnlyCollection<SubtypeBaseAttribute>(itemSubtypeAttributes);
+
+            if (itemSubtypeAttributes.Length > 0)
+            {
+                Type itemBaseType;
+
+                if (Type.IsArray)
+                {
+                    itemBaseType = Type.GetElementType();
+                }
+                else if (typeof (IList).IsAssignableFrom(Type))
+                {
+                    var genericArguments = Type.GetGenericArguments();
+                    if (genericArguments.Length > 1)
+                    {
+                        throw new InvalidOperationException("Multiple generic arguments not supported.");
+                    }
+
+                    itemBaseType = genericArguments[0];
+                }
+                else
+                {
+                    throw new InvalidOperationException("ItemSubtype can only be used with collections.");
+                }
+
+                ItemSubtypeBinding = GetBinding(itemSubtypeAttributes, itemBaseType);
+                ItemSubtypeDefaultAttribute = attributes.OfType<ItemSubtypeDefaultAttribute>().SingleOrDefault();
             }
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
@@ -233,6 +235,43 @@ namespace BinarySerialization.Graph.TypeGraph
             return new BindingCollection(bindings);
         }
 
+        private Binding GetBinding(SubtypeBaseAttribute[] attributes, Type checkType)
+        {
+            if (attributes.Length == 0)
+                return null;
+
+            var bindingGroups =
+                attributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
+
+            if (bindingGroups.Count() > 1)
+                throw new BindingException("Subtypes must all specify the same binding configuration.");
+
+            var firstBinding = attributes[0];
+            var binding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
+
+            var valueGroups = attributes.GroupBy(attribute => attribute.Value);
+            if (valueGroups.Count() < attributes.Length)
+                throw new InvalidOperationException("Subtype values must be unique.");
+
+            if (binding.BindingMode == BindingMode.TwoWay)
+            {
+                var subTypeGroups = attributes.GroupBy(attribute => attribute.Subtype);
+                if (subTypeGroups.Count() < attributes.Length)
+                    throw new InvalidOperationException(
+                        "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
+            }
+
+            var invalidSubtype =
+                attributes.FirstOrDefault(attribute => !checkType.IsAssignableFrom(attribute.Subtype));
+
+            if (invalidSubtype != null)
+                throw new InvalidOperationException($"{invalidSubtype.Subtype} is not a subtype of {checkType}");
+
+            return binding;
+        }
+
+
+
         public MemberInfo MemberInfo { get; }
         public Type Type { get; }
         public Type NullableUnderlyingType { get; }
@@ -253,13 +292,16 @@ namespace BinarySerialization.Graph.TypeGraph
         public Binding SerializeUntilBinding { get; }
         public Binding ItemSerializeUntilBinding { get; }
         public Binding SubtypeBinding { get; }
+        public Binding ItemSubtypeBinding { get; }
         public Binding FieldValueBinding { get; }
 
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; }
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenNotBindings { get; }
         public FieldValueAttributeBase FieldValueAttribute { get; }
-        public ReadOnlyCollection<SubtypeAttribute> SubtypeAttributes { get; }
+        public ReadOnlyCollection<SubtypeBaseAttribute> SubtypeAttributes { get; }
         public SubtypeDefaultAttribute SubtypeDefaultAttribute { get; }
+        public ReadOnlyCollection<SubtypeBaseAttribute> ItemSubtypeAttributes { get; }
+        public ItemSubtypeDefaultAttribute ItemSubtypeDefaultAttribute { get; }
         public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; }
         public ReadOnlyCollection<SerializeWhenNotAttribute> SerializeWhenNotAttributes { get; }
         public SerializeUntilAttribute SerializeUntilAttribute { get; }

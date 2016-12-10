@@ -177,6 +177,11 @@
     <Compile Include="ItemLength\JaggedListClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassInnerClass.cs" />
+    <Compile Include="ItemSubtype\IItemSubtype.cs" />
+    <Compile Include="ItemSubtype\ItemSubtypeClass.cs" />
+    <Compile Include="ItemSubtype\ItemSubtypeTests.cs" />
+    <Compile Include="ItemSubtype\ItemTypeA.cs" />
+    <Compile Include="ItemSubtype\ItemTypeB.cs" />
     <Compile Include="Length\AncestorBindingCollectionClass.cs" />
     <Compile Include="Length\AncestorBindingCollectionItemClass.cs" />
     <Compile Include="Length\BoundItemClass.cs" />
