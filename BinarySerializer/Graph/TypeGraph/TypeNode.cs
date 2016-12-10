@@ -250,8 +250,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public BindingCollection FieldEndiannessBindings { get; }
         public BindingCollection FieldEncodingBindings { get; }
 
-        public Binding SerializeUntilBinding { get; private set; }
-        public Binding ItemSerializeUntilBinding { get; private set; }
+        public Binding SerializeUntilBinding { get; }
+        public Binding ItemSerializeUntilBinding { get; }
         public Binding SubtypeBinding { get; }
         public Binding FieldValueBinding { get; }
 
@@ -264,8 +264,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public ReadOnlyCollection<SerializeWhenNotAttribute> SerializeWhenNotAttributes { get; }
         public SerializeUntilAttribute SerializeUntilAttribute { get; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; }
-        public Endianness? Endianness { get; private set; }
-        public Encoding Encoding { get; private set; }
+        public Endianness? Endianness { get; }
+        public Encoding Encoding { get; }
 
         public bool IsIgnored { get; }
 
