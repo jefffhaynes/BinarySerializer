@@ -280,6 +280,24 @@ public class Entry
 
 Let's say Value is set to 'hi'.  The framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned to 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not, for example, "hi\0\0").  FieldAlignment is not inherited by child fields.
 
+By default FieldAlignment will align both the "left" and "right" boundary of the field.  However, you can override this behavior by setting the FieldAlignmentMode to LeftOnly or RightOnly.  In advanced cases, left and right alignment values can be mixed with multiple attributes.
+
+```c#
+public class Entry
+{
+    [FieldOrder(0)]
+    public byte Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldAlignment(4, FieldAlignmentMode.LeftOnly)]
+    [FieldAlignment(2, FieldAlignmentMode.RightOnly)]
+    [FieldLength("Length")]
+    public string Value { get; set; }
+}
+```
+
+In this example the Value field will always start on a modulo 4 byte boundary but terminate on a modulo 2 byte boundary with respect to the parent.
+
 ### FieldEndiannessAttribute ###
 
 The FieldEndianness attribute allows for the dynamic switching of endianness during deserialization.  This can be useful for dealing with formats which specify endianness through the use of magic numbers or values.  The binding constructor for FieldEndianness requires the type of a value converter, which returns an Endianness value be specified.  This attribute will be inherited by all child fields unless overwritten.
