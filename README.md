@@ -278,9 +278,11 @@ public class Entry
 }
 ```
 
-Let's say Value is set to 'hi'.  The framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned to 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not, for example, "hi\0\0").  FieldAlignment is not inherited by child fields.
+Let's say Value is set to 'hi'.  The framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned to 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not, for example, "hi\0\0").
 
 By default FieldAlignment will align both the "left" and "right" boundary of the field.  However, you can override this behavior by setting the FieldAlignmentMode to LeftOnly or RightOnly.  In advanced cases, left and right alignment values can be mixed with multiple attributes.
+
+FieldAlignment is not inherited by child fields.
 
 ```c#
 public class Entry
