@@ -98,6 +98,7 @@
     <Compile Include="ConditionalAttribute.cs" />
     <Compile Include="SerializeWhenNotAttribute.cs" />
     <Compile Include="StreamResetter.cs" />
+    <Compile Include="ItemSubtypeAttribute.cs" />
     <Compile Include="SubtypeAttribute.cs" />
     <Compile Include="SerializeUntilAttribute.cs" />
     <Compile Include="ItemSerializeUntilAttribute.cs" />
@@ -128,6 +129,9 @@
     <Compile Include="Graph\ValueGraph\ValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ObjectValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ValueValueNode.cs" />
+    <Compile Include="SubtypeBaseAttribute.cs" />
+    <Compile Include="ItemSubtypeDefaultAttribute.cs" />
+    <Compile Include="SubtypeDefaultBaseAttribute.cs" />
     <Compile Include="SubtypeDefaultAttribute.cs" />
     <Compile Include="TapStream.cs" />
     <Compile Include="TypeExtensions.cs" />
