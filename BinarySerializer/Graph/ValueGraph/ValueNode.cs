@@ -111,7 +111,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (align)
                 {
-                    long? leftAlignment = GetFieldAlignment();
+                    long? leftAlignment = GetLeftFieldAlignment();
                     if (leftAlignment != null)
                     {
                         Align(stream, leftAlignment, true);
@@ -135,7 +135,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (align)
                 {
-                    long? rightAlignment = GetFieldAlignment();
+                    long? rightAlignment = GetRightFieldAlignment();
                     if (rightAlignment != null)
                     {
                         Align(stream, rightAlignment, true);
@@ -196,7 +196,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
                     return;
 
-                long? leftAlignment = GetFieldAlignment();
+                long? leftAlignment = GetLeftFieldAlignment();
                 if (leftAlignment != null)
                 {
                     Align(stream, leftAlignment);
@@ -217,7 +217,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     DeserializeInternal(stream, GetFieldLength, eventShuttle);
                 }
 
-                long? rightAlignment = GetFieldAlignment();
+                long? rightAlignment = GetRightFieldAlignment();
                 if (rightAlignment != null)
                 {
                     Align(stream, rightAlignment);
@@ -301,11 +301,22 @@ namespace BinarySerialization.Graph.ValueGraph
                    (Parent as ValueNode)?.GetConstFieldItemLength();
         }
 
-        protected long? GetFieldAlignment()
+        protected long? GetLeftFieldAlignment()
         {
             // Field alignment cannot be determined from graph
             // so always go to a const or bound value
-            var value = TypeNode.FieldAlignmentBindings?.GetBoundValue(this);
+            var value = TypeNode.LeftFieldAlignmentBindings?.GetBoundValue(this);
+            if (value == null)
+                return null;
+
+            return Convert.ToInt64(value);
+        }
+
+        protected long? GetRightFieldAlignment()
+        {
+            // Field alignment cannot be determined from graph
+            // so always go to a const or bound value
+            var value = TypeNode.RightFieldAlignmentBindings?.GetBoundValue(this);
             if (value == null)
                 return null;
 

@@ -123,9 +123,20 @@ namespace BinarySerialization.Graph.TypeGraph
             FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
             FieldCountBindings = GetBindings<FieldCountAttribute>(attributes);
             FieldOffsetBindings = GetBindings<FieldOffsetAttribute>(attributes);
-            FieldAlignmentBindings = GetBindings<FieldAlignmentAttribute>(attributes);
             FieldEndiannessBindings = GetBindings<FieldEndiannessAttribute>(attributes);
             FieldEncodingBindings = GetBindings<FieldEncodingAttribute>(attributes);
+
+            var fieldAlignmentAttributes = attributes.OfType<FieldAlignmentAttribute>().ToLookup(attribute => attribute.Mode);
+            var leftAlignmentAttributes =
+                fieldAlignmentAttributes[FieldAlignmentMode.LeftAndRight].Concat(
+                    fieldAlignmentAttributes[FieldAlignmentMode.LeftOnly]);
+
+            var rightAlignmentAttributes =
+                fieldAlignmentAttributes[FieldAlignmentMode.LeftAndRight].Concat(
+                    fieldAlignmentAttributes[FieldAlignmentMode.RightOnly]);
+
+            LeftFieldAlignmentBindings = GetBindings<FieldAlignmentAttribute>(leftAlignmentAttributes.Cast<object>().ToArray());
+            RightFieldAlignmentBindings = GetBindings<FieldAlignmentAttribute>(rightAlignmentAttributes.Cast<object>().ToArray());
 
             FieldValueAttribute = attributes.OfType<FieldValueAttributeBase>().SingleOrDefault();
             if (FieldValueAttribute != null)
@@ -246,7 +257,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public BindingCollection ItemLengthBindings { get; }
         public BindingCollection FieldCountBindings { get; }
         public BindingCollection FieldOffsetBindings { get; }
-        public BindingCollection FieldAlignmentBindings { get; }
+        public BindingCollection LeftFieldAlignmentBindings { get; }
+        public BindingCollection RightFieldAlignmentBindings { get; }
         public BindingCollection FieldEndiannessBindings { get; }
         public BindingCollection FieldEncodingBindings { get; }
 

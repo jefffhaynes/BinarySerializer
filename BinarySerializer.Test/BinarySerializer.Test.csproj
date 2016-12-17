@@ -61,6 +61,9 @@
     <Compile Include="Alignment\BoundAlignmentClass.cs" />
     <Compile Include="Alignment\AlignmentClass.cs" />
     <Compile Include="Alignment\AlignmentTests.cs" />
+    <Compile Include="Alignment\MixedAlignmentClass.cs" />
+    <Compile Include="Alignment\RightAlignmentClass.cs" />
+    <Compile Include="Alignment\LeftAlignmentClass.cs" />
     <Compile Include="BinarySerializerTests.cs" />
     <Compile Include="CalciumCarbonate.cs" />
     <Compile Include="Cereal.cs" />
