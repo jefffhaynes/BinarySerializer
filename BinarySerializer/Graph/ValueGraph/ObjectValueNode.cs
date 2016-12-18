@@ -58,50 +58,64 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
+        /// <summary>
+        /// Used to get node value with a value selector to select between value and bound value.
+        /// </summary>
+        /// <param name="childValueSelector"></param>
+        /// <returns></returns>
         private object GetValue(Func<ValueNode, object> childValueSelector)
         {
             if (_valueType == null)
                 return null;
 
+            // can't do anything if this type is abstract
             if (_valueType.IsAbstract)
                 return null;
 
+            // make sure we're operating on the correct (possibly sub-) type.
             var objectTypeNode = (ObjectTypeNode)TypeNode;
             var subType = objectTypeNode.GetSubType(_valueType);
 
             if (subType.IsIgnored)
                 return null;
 
+            // see if it's possible to construct at all
             if (subType.Constructor == null)
                 throw new InvalidOperationException("No public constructors.");
-
-            IEnumerable<ValueNode> nonparameterizedChildren = Children.ToList();
-
+            
+            // let's figure out the actual value now
             object value;
+            IEnumerable<ValueNode> nonparameterizedChildren;
 
             if (subType.ConstructorParameterNames.Length == 0)
             {
                 // handle simple case of no parameterized constructors
                 value = subType.CompiledConstructor();
+
+                nonparameterizedChildren = Children.ToList();
             }
             else
             {
                 // find best match for constructor
                 var serializableChildren = GetSerializableChildren();
 
-                // find children that can be initialized or partially initialized with construction
+                // find children that can be initialized or partially initialized with construction based on matching name
                 var parameterizedChildren = subType.ConstructorParameterNames.Join(serializableChildren,
                     parameter => parameter.ToLower(), 
                     serializableChild => serializableChild.Name.ToLower(),
                     (parameter, serializableChild) => serializableChild).ToList();
 
+                // get constructor arguments based on child selector
                 var parameterValues = parameterizedChildren.Select(childValueSelector).ToArray();
 
+                // construct our value
                 value = subType.Constructor.Invoke(parameterValues);
                 
+                // get remaining children that weren't used during construction
                 nonparameterizedChildren = Children.Except(parameterizedChildren).ToList();
             }
 
+            // set any children not used during construction
             foreach (var child in nonparameterizedChildren)
             {
                 var setter = child.TypeNode.ValueSetter;
@@ -191,6 +205,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 // try to resolve value type using subtype mapping
                 var subTypeValue = TypeNode.SubtypeBinding.GetValue(this);
 
+                // find matching subtype, if available
                 var matchingAttribute =
                     TypeNode.SubtypeAttributes.SingleOrDefault(
                         attribute =>
@@ -198,6 +213,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 _valueType = matchingAttribute?.Subtype;
 
+                // we couldn't match so use default if specified
                 if (_valueType == null && TypeNode.SubtypeDefaultAttribute != null)
                 {
                     _valueType = TypeNode.SubtypeDefaultAttribute.Subtype;
