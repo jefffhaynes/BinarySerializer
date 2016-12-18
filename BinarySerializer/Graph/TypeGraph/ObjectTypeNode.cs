@@ -13,7 +13,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private readonly object _subTypesLock = new object();
 
-        private IDictionary<Type, ObjectTypeNode> _subTypes;
+        private readonly Lazy<IDictionary<Type, ObjectTypeNode>> _subTypesLazy =
+            new Lazy<IDictionary<Type, ObjectTypeNode>>(() => new Dictionary<Type, ObjectTypeNode>());
 
         public ObjectTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
@@ -39,8 +40,14 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public IDictionary<Type, object> SubTypeKeys { get; private set; }
 
+        private bool _isConstructed;
+
         public ObjectTypeNode GetSubType(Type type)
         {
+            // handle trivial, fast case
+            if (_isConstructed && type == Type)
+                return this;
+
             lock (_subTypesLock)
             {
                 // make sure we're constructed first
@@ -54,7 +61,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 GenerateSubtype(type);
 
                 // get matching subtype and make sure it's constructed
-                var subType = _subTypes[type];
+                var subType = _subTypesLazy.Value[type];
                 subType.Construct();
                 return subType;
             }
@@ -62,36 +69,30 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void Construct()
         {
-            if (_subTypes != null)
+            if (_subTypesLazy.IsValueCreated)
                 return;
 
+            ConstructSubtypes();
+
             Children = IsIgnored ? new List<TypeNode>() : GenerateChildrenImpl(Type).ToList();
-
-            _subTypes = new Dictionary<Type, ObjectTypeNode>();
-
+            
             InitializeConstructors();
 
-            ConstructSubtypes();
+            _isConstructed = true;
         }
 
         private void GenerateSubtype(Type type)
         {
-            if (_subTypes.ContainsKey(type))
+            if (_subTypesLazy.Value.ContainsKey(type))
                 return;
 
-            lock (_subTypesLock)
-            {
-                if (!_subTypes.ContainsKey(type))
-                {
-                    // check for custom subtype
-                    var parent = (TypeNode)Parent;
-                    var typeNode = typeof(IBinarySerializable).IsAssignableFrom(type)
-                        ? new CustomTypeNode((TypeNode)Parent, parent.Type, MemberInfo, type)
-                        : new ObjectTypeNode((TypeNode)Parent, parent.Type, MemberInfo, type);
+            // check for custom subtype
+            var parent = (TypeNode) Parent;
+            var typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
+                ? new CustomTypeNode((TypeNode) Parent, parent.Type, MemberInfo, type)
+                : new ObjectTypeNode((TypeNode) Parent, parent.Type, MemberInfo, type);
 
-                    _subTypes.Add(type, typeNode);
-                }
-            }
+            _subTypesLazy.Value.Add(type, typeNode);
         }
 
         /// <summary>
@@ -120,6 +121,7 @@ namespace BinarySerialization.Graph.TypeGraph
         /// </summary>
         private void InitializeConstructors()
         {
+            // if abstract we will never be constructed, nothing to do
             if (Type.IsAbstract)
                 return;
 
