@@ -9,8 +9,8 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class ValueValueNode : ValueNode
     {
-        private object _value;
         private object _cachedValue;
+        private object _value;
 
         public ValueValueNode(Node parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
@@ -21,40 +21,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             get { return GetValue(TypeNode.GetSerializedType()); }
             set { _cachedValue = value; }
-        }
-
-        public object GetValue(SerializedType serializedType)
-        {
-            if (_cachedValue != null)
-                return _cachedValue;
-
-            if (_value == null)
-                return null;
-
-            if (GetFieldEndianness() == Endianness.Big)
-            {
-                switch (serializedType)
-                {
-                    case SerializedType.Int2:
-                        return Bytes.Reverse((short) _value);
-                    case SerializedType.UInt2:
-                        return Bytes.Reverse((ushort) _value);
-                    case SerializedType.Int4:
-                        return Bytes.Reverse((int) _value);
-                    case SerializedType.UInt4:
-                        return Bytes.Reverse((uint) _value);
-                    case SerializedType.Int8:
-                        return Bytes.Reverse((long) _value);
-                    case SerializedType.UInt8:
-                        return Bytes.Reverse((ulong) _value);
-                    case SerializedType.Float4:
-                        return Bytes.Reverse((float) _value);
-                    case SerializedType.Float8:
-                        return Bytes.Reverse((double) _value);
-                }
-            }
-
-            return _value;
         }
 
         public override object BoundValue
@@ -78,7 +44,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     if (Bindings.Count != 1)
                     {
-                        object[] targetValues = Bindings.Select(binding =>
+                        var targetValues = Bindings.Select(binding =>
                         {
                             var bindingValue = binding();
                             return bindingValue == UnsetValue ? Value : bindingValue;
@@ -112,6 +78,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
+        public object GetValue(SerializedType serializedType)
+        {
+            if (_cachedValue != null)
+                return _cachedValue;
+
+            return GetValue(_value, serializedType);
+        }
+
         private object GetScalar(IEnumerable enumerable)
         {
             var childLengths = enumerable.Cast<object>().Select(ConvertToFieldType).ToList();
@@ -122,7 +96,8 @@ namespace BinarySerialization.Graph.ValueGraph
             var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
 
             if (childLengthGroups.Count > 1)
-                throw new InvalidOperationException("Unable to update scalar binding source because not all enumerable items have equal lengths.");
+                throw new InvalidOperationException(
+                    "Unable to update scalar binding source because not all enumerable items have equal lengths.");
 
             var childLengthGroup = childLengthGroups.Single();
 
@@ -134,14 +109,7 @@ namespace BinarySerialization.Graph.ValueGraph
             Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }
 
-        public void Serialize(Stream stream, object value, SerializedType serializedType, long? length = null)
-        {
-            var writer = new EndianAwareBinaryWriter(stream, GetFieldEndianness());
-            Serialize(writer, value, serializedType, length);
-        }
-
-        public void Serialize(EndianAwareBinaryWriter writer, object value, SerializedType serializedType,
-            long? length = null)
+        public void Serialize(BoundedStream stream, object value, SerializedType serializedType, long? length = null)
         {
             if (value == null)
             {
@@ -152,90 +120,117 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             // prioritization of field length specifiers
-            long? constLength = length ?? // explicit length passed from parent
-                                GetConstFieldLength() ?? // calculated length from this field
-                                GetConstFieldCount(); // explicit field count (used for byte arrays and strings)
-            
+            var constLength = length ?? // explicit length passed from parent
+                              GetConstFieldLength() ?? // calculated length from this field
+                              GetConstFieldCount(); // explicit field count (used for byte arrays and strings)
+
             long? maxLength = null;
 
-            if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString || serializedType == SerializedType.NullTerminatedString)
+            if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
+                serializedType == SerializedType.NullTerminatedString)
             {
                 // try to get bounded length
-                var baseStream = (BoundedStream) writer.BaseStream;
-                maxLength = baseStream.AvailableForWriting;
+                maxLength = stream.AvailableForWriting;
             }
+
+            var convertedValue = GetValue(value, serializedType);
 
             switch (serializedType)
             {
                 case SerializedType.Int1:
-                    writer.Write(Convert.ToSByte(value));
+                    stream.WriteByte(Convert.ToByte(convertedValue));
                     break;
                 case SerializedType.UInt1:
-                    writer.Write(Convert.ToByte(value));
+                    stream.WriteByte(Convert.ToByte(convertedValue));
                     break;
                 case SerializedType.Int2:
-                    writer.Write(Convert.ToInt16(value));
+                {
+                    var data = BitConverter.GetBytes(Convert.ToInt16(convertedValue));
+                    stream.Write(data, 0, data.Length);
+                }
                     break;
                 case SerializedType.UInt2:
-                    writer.Write(Convert.ToUInt16(value));
+                {
+                    var data = BitConverter.GetBytes(Convert.ToUInt16(convertedValue));
+                    stream.Write(data, 0, data.Length);
+                }
                     break;
                 case SerializedType.Int4:
-                    writer.Write(Convert.ToInt32(value));
+                {
+                    var data = BitConverter.GetBytes(Convert.ToInt32(convertedValue));
+                    stream.Write(data, 0, data.Length);
+                }
                     break;
                 case SerializedType.UInt4:
-                    writer.Write(Convert.ToUInt32(value));
+                {
+                    var data = BitConverter.GetBytes(Convert.ToUInt32(convertedValue));
+                    stream.Write(data, 0, data.Length);
+                }
                     break;
                 case SerializedType.Int8:
-                    writer.Write(Convert.ToInt64(value));
+                {
+                    var data = BitConverter.GetBytes(Convert.ToInt64(convertedValue));
+                    stream.Write(data, 0, data.Length);
+                }
                     break;
                 case SerializedType.UInt8:
-                    writer.Write(Convert.ToUInt64(value));
+                {
+                    var data = BitConverter.GetBytes(Convert.ToUInt64(convertedValue));
+                    stream.Write(data, 0, data.Length);
+                }
                     break;
                 case SerializedType.Float4:
-                    writer.Write(Convert.ToSingle(value));
+                {
+                    var data = BitConverter.GetBytes(Convert.ToSingle(convertedValue));
+                    stream.Write(data, 0, data.Length);
+                }
                     break;
                 case SerializedType.Float8:
-                    writer.Write(Convert.ToDouble(value));
+                {
+                    var data = BitConverter.GetBytes(Convert.ToDouble(convertedValue));
+                    stream.Write(data, 0, data.Length);
+                }
                     break;
                 case SerializedType.ByteArray:
                 {
                     var data = (byte[]) value;
-                    writer.Write(data, 0, data.Length);
+                    stream.Write(data, 0, data.Length);
                     break;
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    byte[] data = GetFieldEncoding().GetBytes(value.ToString());
+                    var data = GetFieldEncoding().GetBytes(value.ToString());
 
                     if (constLength != null)
-                        Array.Resize(ref data, (int)constLength.Value - 1);
+                        Array.Resize(ref data, (int) constLength.Value - 1);
 
-                    if(maxLength != null && data.Length > maxLength)
-                        Array.Resize(ref data, (int)maxLength.Value - 1);
+                    if (maxLength != null && data.Length > maxLength)
+                        Array.Resize(ref data, (int) maxLength.Value - 1);
 
-                    writer.Write(data);
-                    writer.Write((byte) 0);
+                    stream.Write(data, 0, data.Length);
+                    stream.WriteByte(0);
                     break;
                 }
                 case SerializedType.SizedString:
                 {
-                    byte[] data = GetFieldEncoding().GetBytes(value.ToString());
+                    var data = GetFieldEncoding().GetBytes(value.ToString());
 
                     if (constLength != null)
-                        Array.Resize(ref data, (int)constLength.Value);
+                        Array.Resize(ref data, (int) constLength.Value);
 
                     if (maxLength != null && data.Length > maxLength)
-                        Array.Resize(ref data, (int)maxLength.Value);
+                        Array.Resize(ref data, (int) maxLength.Value);
 
-                    writer.Write(data);
+                    stream.Write(data, 0, data.Length);
 
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
                 {
-                    if(constLength != null)
+                    if (constLength != null)
                         throw new NotSupportedException("Length-prefixed strings cannot have a const length.");
 
+                    var writer = new BinaryWriter(stream, GetFieldEncoding());
                     writer.Write(value.ToString());
                     break;
                 }
@@ -244,7 +239,6 @@ namespace BinarySerialization.Graph.ValueGraph
                     throw new NotSupportedException();
             }
         }
-
 
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
@@ -268,12 +262,12 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public void Deserialize(BinaryReader reader, SerializedType serializedType, long? length = null)
         {
-            long? effectiveLength = length ?? GetFieldLength() ?? GetFieldCount();
+            var effectiveLength = length ?? GetFieldLength() ?? GetFieldCount();
 
             if (effectiveLength == null)
             {
                 if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
-                         serializedType == SerializedType.NullTerminatedString)
+                    serializedType == SerializedType.NullTerminatedString)
                 {
                     // try to get bounded length
                     var baseStream = (BoundedStream) reader.BaseStream;
@@ -320,18 +314,18 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 case SerializedType.ByteArray:
                 {
-                    value = reader.ReadBytes((int)effectiveLength.Value);
+                    value = reader.ReadBytes((int) effectiveLength.Value);
                     break;
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    byte[] data = ReadNullTerminated(reader, (int)effectiveLength.Value).ToArray();
+                    var data = ReadNullTerminated(reader, (int) effectiveLength.Value).ToArray();
                     value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
                 }
                 case SerializedType.SizedString:
                 {
-                    byte[] data = reader.ReadBytes((int)effectiveLength.Value);
+                    var data = reader.ReadBytes((int) effectiveLength.Value);
                     var untrimmed = GetFieldEncoding().GetString(data, 0, data.Length);
                     if (TypeNode.AreStringsNullTerminated)
                     {
@@ -370,6 +364,44 @@ namespace BinarySerialization.Graph.ValueGraph
             // handle special case of byte[]
             var boundValue = BoundValue as byte[];
             return boundValue?.Length ?? base.MeasureOverride();
+        }
+
+        private object GetValue(object value, SerializedType serializedType)
+        {
+            if (value == null)
+                return null;
+
+            // only resolve endianness if it matters
+            if (serializedType == SerializedType.Int2 || serializedType == SerializedType.UInt2 ||
+                serializedType == SerializedType.Int4 || serializedType == SerializedType.UInt4 ||
+                serializedType == SerializedType.Int8 || serializedType == SerializedType.UInt8 ||
+                serializedType == SerializedType.Float4 || serializedType == SerializedType.Float8)
+            {
+                if (GetFieldEndianness() != Endianness.Big)
+                    return value;
+
+                switch (serializedType)
+                {
+                    case SerializedType.Int2:
+                        return Bytes.Reverse(Convert.ToInt16(value));
+                    case SerializedType.UInt2:
+                        return Bytes.Reverse(Convert.ToUInt16(value));
+                    case SerializedType.Int4:
+                        return Bytes.Reverse(Convert.ToInt32(value));
+                    case SerializedType.UInt4:
+                        return Bytes.Reverse(Convert.ToUInt32(value));
+                    case SerializedType.Int8:
+                        return Bytes.Reverse(Convert.ToInt64(value));
+                    case SerializedType.UInt8:
+                        return Bytes.Reverse(Convert.ToUInt64(value));
+                    case SerializedType.Float4:
+                        return Bytes.Reverse(Convert.ToSingle(value));
+                    case SerializedType.Float8:
+                        return Bytes.Reverse(Convert.ToDouble(value));
+                }
+            }
+
+            return value;
         }
 
         private object ConvertToFieldType(object value)

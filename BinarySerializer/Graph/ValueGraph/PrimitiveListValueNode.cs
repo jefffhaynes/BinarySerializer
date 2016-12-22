@@ -15,8 +15,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var typeNode = (ListTypeNode)TypeNode;
             var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
-
-            var writer = new EndianAwareBinaryWriter(stream, GetFieldEndianness());
+            
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
             var list = BoundValue as IList;
@@ -39,7 +38,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (stream.IsAtLimit)
                     break;
 
-                childSerializer.Serialize(writer, value, childSerializedType, itemLength);
+                childSerializer.Serialize(stream, value, childSerializedType, itemLength);
             }
         }
 

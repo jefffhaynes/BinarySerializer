@@ -11,7 +11,7 @@ namespace BinarySerialization.Graph.TypeGraph
         private const BindingFlags MemberBindingFlags =
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
-        private readonly object _subTypesLock = new object();
+        private readonly object _initializationLock = new object();
 
         private readonly Lazy<IDictionary<Type, ObjectTypeNode>> _subTypesLazy =
             new Lazy<IDictionary<Type, ObjectTypeNode>>(() => new Dictionary<Type, ObjectTypeNode>());
@@ -44,20 +44,18 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public ObjectTypeNode GetSubType(Type type)
         {
-            // handle trivial, fast case
-            if (_isConstructed && type == Type)
+            // make sure we're constructed first
+            Construct();
+
+            // trivial case, nothing to do
+            if (type == Type)
                 return this;
 
-            lock (_subTypesLock)
+            // we need to check to see if we know about this type either because it was a listed subtype
+            // or because we've already encountered it previously.
+            lock (_initializationLock)
             {
-                // make sure we're constructed first
-                Construct();
-
-                // trivial case, nothing to do
-                if (type == Type)
-                    return this;
-
-                // If this is a type we've never seen before let's update our reference types.
+                // In case this is a type we've never seen before let's add it.
                 GenerateSubtype(type);
 
                 // get matching subtype and make sure it's constructed
@@ -69,16 +67,22 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void Construct()
         {
-            if (_subTypesLazy.IsValueCreated)
+            if (_isConstructed)
                 return;
 
-            ConstructSubtypes();
+            lock (_initializationLock)
+            {
+                if (_isConstructed)
+                    return;
 
-            Children = IsIgnored ? new List<TypeNode>() : GenerateChildrenImpl(Type).ToList();
-            
-            InitializeConstructors();
+                ConstructSubtypes();
 
-            _isConstructed = true;
+                Children = IsIgnored ? new List<TypeNode>() : GenerateChildren(Type).ToList();
+
+                InitializeConstructors();
+
+                _isConstructed = true;
+            }
         }
 
         private void GenerateSubtype(Type type)
@@ -179,7 +183,7 @@ namespace BinarySerialization.Graph.TypeGraph
             return new ObjectValueNode(parent, Name, this);
         }
 
-        private IEnumerable<TypeNode> GenerateChildrenImpl(Type parentType)
+        private IEnumerable<TypeNode> GenerateChildren(Type parentType)
         {
             IEnumerable<MemberInfo> properties = parentType.GetProperties(MemberBindingFlags);
             IEnumerable<MemberInfo> fields = parentType.GetFields(MemberBindingFlags);
@@ -207,7 +211,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (parentType.BaseType != null)
             {
-                var baseChildren = GenerateChildrenImpl(parentType.BaseType);
+                var baseChildren = GenerateChildren(parentType.BaseType);
                 return baseChildren.Concat(children);
             }
 

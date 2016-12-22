@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.IO;
 
 namespace BinarySerialization
@@ -6,6 +7,7 @@ namespace BinarySerialization
     /// <summary>
     /// An extension of the <see cref="BinaryWriter"/> class that supports big- and little-endian byte ordering.
     /// </summary>
+    [Obsolete("This class is no longer used internally and may be removed in the future.")]
     public class EndianAwareBinaryWriter : BinaryWriter
     {
         /// <summary>
