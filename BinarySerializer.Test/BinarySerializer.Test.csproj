@@ -216,6 +216,9 @@
     <Compile Include="Misc\ImmutableNoPublicConstructorClass.cs" />
     <Compile Include="Misc\ImmutableTests.cs" />
     <Compile Include="Misc\IntArray64K.cs" />
+    <Compile Include="Misc\InvalidButIgnoredContainerClass.cs" />
+    <Compile Include="Misc\InvalidButIgnoredTests.cs" />
+    <Compile Include="Misc\InvalidButIgnoredTypeClass.cs" />
     <Compile Include="Misc\InvalidForwardBindingClass.cs" />
     <Compile Include="Misc\IOExceptionTest.cs" />
     <Compile Include="Misc\LargeArrayTests.cs" />
