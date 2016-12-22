@@ -93,8 +93,8 @@ namespace BinarySerialization.Graph.TypeGraph
             // check for custom subtype
             var parent = (TypeNode) Parent;
             var typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
-                ? new CustomTypeNode((TypeNode) Parent, parent.Type, MemberInfo, type)
-                : new ObjectTypeNode((TypeNode) Parent, parent.Type, MemberInfo, type);
+                ? new CustomTypeNode(parent, parent.Type, MemberInfo, type)
+                : new ObjectTypeNode(parent, parent.Type, MemberInfo, type);
 
             _subTypesLazy.Value.Add(type, typeNode);
         }
