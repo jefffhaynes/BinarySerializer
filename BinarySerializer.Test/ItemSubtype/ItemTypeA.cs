@@ -2,6 +2,6 @@
 {
     public class ItemTypeA : IItemSubtype
     {
-        public byte Value { get; set; }
+        public ushort Value { get; set; }
     }
 }

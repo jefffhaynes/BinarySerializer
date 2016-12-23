@@ -42,7 +42,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private bool _isConstructed;
 
-        public ObjectTypeNode GetSubType(Type type)
+        public ObjectTypeNode GetSubTypeNode(Type type)
         {
             // make sure we're constructed first
             Construct();
@@ -90,11 +90,23 @@ namespace BinarySerialization.Graph.TypeGraph
             if (_subTypesLazy.Value.ContainsKey(type))
                 return;
 
-            // check for custom subtype
+            ObjectTypeNode typeNode;
+
             var parent = (TypeNode) Parent;
-            var typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
-                ? new CustomTypeNode(parent, parent.Type, MemberInfo, type)
-                : new ObjectTypeNode(parent, parent.Type, MemberInfo, type);
+            if (MemberInfo != null)
+            {
+                // check for custom subtype
+                typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
+                    ? new CustomTypeNode(parent, parent.Type, MemberInfo, type)
+                    : new ObjectTypeNode(parent, parent.Type, MemberInfo, type);
+            }
+            else // handle collection case
+            {
+                // check for custom subtype
+                typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
+                    ? new CustomTypeNode(parent, type)
+                    : new ObjectTypeNode(parent, type);
+            }
 
             _subTypesLazy.Value.Add(type, typeNode);
         }
@@ -104,19 +116,34 @@ namespace BinarySerialization.Graph.TypeGraph
         /// </summary>
         private void ConstructSubtypes()
         {
-            if (SubtypeAttributes == null || SubtypeAttributes.Count <= 0)
-                return;
+            var parent = (TypeNode)Parent;
 
-            // Get subtype keys 
-            if (SubtypeBinding.BindingMode == BindingMode.TwoWay)
-                SubTypeKeys = SubtypeAttributes.ToDictionary(attribute => attribute.Subtype,
-                    attribute => attribute.Value);
+            if (SubtypeAttributes != null && SubtypeAttributes.Count > 0)
+            {
+                // Get subtype keys 
+                if (SubtypeBinding.BindingMode == BindingMode.TwoWay)
+                    SubTypeKeys = SubtypeAttributes.ToDictionary(attribute => attribute.Subtype,
+                        attribute => attribute.Value);
 
-            // Generate subtype children 
-            var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
+                // Generate subtype children 
+                var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
 
-            foreach (var subType in subTypes)
-                GenerateSubtype(subType);
+                foreach (var subType in subTypes)
+                    GenerateSubtype(subType);
+            }
+            else if (parent.ItemSubtypeAttributes != null && parent.ItemSubtypeAttributes.Count > 0)
+            {
+                // Get subtype keys 
+                if (parent.ItemSubtypeBinding.BindingMode == BindingMode.TwoWay)
+                    SubTypeKeys = parent.ItemSubtypeAttributes.ToDictionary(attribute => attribute.Subtype,
+                        attribute => attribute.Value);
+
+                // Generate subtype children 
+                var subTypes = parent.ItemSubtypeAttributes.Select(attribute => attribute.Subtype);
+
+                foreach (var subType in subTypes)
+                    GenerateSubtype(subType);
+            }
         }
 
         /// <summary>

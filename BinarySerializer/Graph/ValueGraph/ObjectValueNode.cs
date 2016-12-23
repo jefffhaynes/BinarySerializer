@@ -42,7 +42,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 // always check for user-defined subtypes, whether they exist or not. 
                 // In the trivial case we get the value type node back.
-                var subType = typeNode.GetSubType(valueType);
+                var subType = typeNode.GetSubTypeNode(valueType);
 
                 // create all child serializers
                 Children = subType.Children.Select(child => child.CreateSerializer(this)).ToList();
@@ -72,25 +72,27 @@ namespace BinarySerialization.Graph.ValueGraph
             if (_valueType.IsAbstract)
                 return null;
 
-            // make sure we're operating on the correct (possibly sub-) type.
             var objectTypeNode = (ObjectTypeNode)TypeNode;
-            var subType = objectTypeNode.GetSubType(_valueType);
 
-            if (subType.IsIgnored)
+            // don't anything if ignored
+            if (objectTypeNode.IsIgnored)
                 return null;
 
+            // make sure we're operating on the correct (possibly sub-) type.
+            var node = objectTypeNode.GetSubTypeNode(_valueType);
+
             // see if it's possible to construct at all
-            if (subType.Constructor == null)
+            if (node.Constructor == null)
                 throw new InvalidOperationException("No public constructors.");
             
             // let's figure out the actual value now
             object value;
             IEnumerable<ValueNode> nonparameterizedChildren;
 
-            if (subType.ConstructorParameterNames.Length == 0)
+            if (node.ConstructorParameterNames.Length == 0)
             {
                 // handle simple case of no parameterized constructors
-                value = subType.CompiledConstructor();
+                value = node.CompiledConstructor();
 
                 nonparameterizedChildren = Children.ToList();
             }
@@ -100,7 +102,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 var serializableChildren = GetSerializableChildren();
 
                 // find children that can be initialized or partially initialized with construction based on matching name
-                var parameterizedChildren = subType.ConstructorParameterNames.Join(serializableChildren,
+                var parameterizedChildren = node.ConstructorParameterNames.Join(serializableChildren,
                     parameter => parameter.ToLower(), 
                     serializableChild => serializableChild.Name.ToLower(),
                     (parameter, serializableChild) => serializableChild).ToList();
@@ -109,7 +111,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 var parameterValues = parameterizedChildren.Select(childValueSelector).ToArray();
 
                 // construct our value
-                value = subType.Constructor.Invoke(parameterValues);
+                value = node.Constructor.Invoke(parameterValues);
                 
                 // get remaining children that weren't used during construction
                 nonparameterizedChildren = Children.Except(parameterizedChildren).ToList();
@@ -152,10 +154,11 @@ namespace BinarySerialization.Graph.ValueGraph
             // check to see if we are actually supposed to be a custom serialization.  This is a side-effect of
             // treating all object members as object nodes.  In the case of sub-types we could later discover we
             // are actually a custom node because the specified subtype implements IBinarySerializable.
-            if (_valueType != null && TypeNode.SubtypeBinding != null)
+            var parent = (TypeNode) TypeNode.Parent;
+            if (_valueType != null && (TypeNode.SubtypeBinding != null || parent.ItemSubtypeBinding != null))
             {
                 var typeNode = (ObjectTypeNode)TypeNode;
-                var subType = typeNode.GetSubType(_valueType);
+                var subType = typeNode.GetSubTypeNode(_valueType);
 
                 if (subType is CustomTypeNode)
                 {
@@ -191,16 +194,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            // resolve value type for deserialization
-            if (TypeNode.SubtypeBinding == null)
-            {
-                // trivial case with no subtypes
-                _valueType = TypeNode.Type;
+            var parent = (TypeNode)TypeNode.Parent;
 
-                if(_valueType.IsAbstract)
-                    throw new InvalidOperationException("Abstract types must have at least one subtype binding to be deserialized.");
-            }
-            else
+            // resolve value type for deserialization
+            if (TypeNode.SubtypeBinding != null)
             {
                 // try to resolve value type using subtype mapping
                 var subTypeValue = TypeNode.SubtypeBinding.GetValue(this);
@@ -219,6 +216,34 @@ namespace BinarySerialization.Graph.ValueGraph
                     _valueType = TypeNode.SubtypeDefaultAttribute.Subtype;
                 }
             }
+            else if (parent.ItemSubtypeBinding != null)
+            {
+                // try to resolve value type using subtype mapping
+                var subTypeValue = parent.ItemSubtypeBinding.GetValue((ValueNode)Parent);
+
+                // find matching subtype, if available
+                var matchingAttribute =
+                    parent.ItemSubtypeAttributes.SingleOrDefault(
+                        attribute =>
+                            subTypeValue.Equals(Convert.ChangeType(attribute.Value, subTypeValue.GetType(), null)));
+
+                _valueType = matchingAttribute?.Subtype;
+
+                // we couldn't match so use default if specified
+                if (_valueType == null && parent.ItemSubtypeDefaultAttribute != null)
+                {
+                    _valueType = parent.ItemSubtypeDefaultAttribute.Subtype;
+                }
+            }
+            else
+            {
+                // trivial case with no subtypes
+                _valueType = TypeNode.Type;
+
+                if (_valueType.IsAbstract)
+                    throw new InvalidOperationException(
+                        "Abstract types must have at least one subtype binding to be deserialized.");
+            }
 
             // skip over if null (this may happen if subtypes are unknown during deserialization)
             if (_valueType != null)
@@ -226,7 +251,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 var typeNode = (ObjectTypeNode) TypeNode;
 
                 // generate correct children for this subtype
-                var subType = typeNode.GetSubType(_valueType);
+                var subType = typeNode.GetSubTypeNode(_valueType);
                 Children = new List<ValueNode>(subType.Children.Select(child => child.CreateSerializer(this)));
 
                 ObjectDeserializeOverride(stream, eventShuttle);
@@ -251,10 +276,11 @@ namespace BinarySerialization.Graph.ValueGraph
             // check to see if we are actually supposed to be a custom deserialization.  This is a side-effect of
             // treating all object members as object nodes.  In the case of sub-types we could later discover we
             // are actually a custom node because the specified subtype implements IBinarySerializable.
-            if (_valueType != null && TypeNode.SubtypeBinding != null)
+            var parent = (TypeNode)TypeNode.Parent;
+            if (_valueType != null && (TypeNode.SubtypeBinding != null || parent.ItemSubtypeBinding != null))
             {
                 var typeNode = (ObjectTypeNode)TypeNode;
-                var subType = typeNode.GetSubType(_valueType);
+                var subType = typeNode.GetSubTypeNode(_valueType);
 
                 if (subType is CustomTypeNode)
                 {

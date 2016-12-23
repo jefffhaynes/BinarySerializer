@@ -68,9 +68,35 @@ namespace BinarySerialization.Graph.ValueGraph
                         return value;
                     
                     // allow default subtypes in order to support round-trip
-                    if (objectTypeNode.SubtypeDefaultAttribute != null)
+                    if (typeNode.SubtypeDefaultAttribute != null)
                     {
-                        if (valueType == objectTypeNode.SubtypeDefaultAttribute.Subtype)
+                        if (valueType == typeNode.SubtypeDefaultAttribute.Subtype)
+                            return UnsetValue;
+                    }
+
+                    throw new InvalidOperationException($"No subtype specified for ${valueType}");
+                });
+            }
+
+            var parent = (TypeNode)typeNode.Parent;
+            if (parent.ItemSubtypeBinding != null && parent.ItemSubtypeBinding.BindingMode == BindingMode.TwoWay)
+            {
+                parent.ItemSubtypeBinding.Bind((ValueNode)Parent, () =>
+                {
+                    Type valueType = GetValueTypeOverride();
+                    if (valueType == null)
+                        throw new InvalidOperationException("Binding targets must not be null.");
+
+                    var objectTypeNode = (ObjectTypeNode)typeNode;
+
+                    object value;
+                    if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
+                        return value;
+
+                    // allow default subtypes in order to support round-trip
+                    if (parent.ItemSubtypeDefaultAttribute != null)
+                    {
+                        if (valueType == parent.ItemSubtypeDefaultAttribute.Subtype)
                             return UnsetValue;
                     }
 

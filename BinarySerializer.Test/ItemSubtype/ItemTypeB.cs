@@ -1,7 +1,7 @@
 ﻿namespace BinarySerialization.Test.ItemSubtype
 {
-    public class ItemTypeB
+    public class ItemTypeB : IItemSubtype
     {
-        public int Value { get; set; }
+        public byte Value { get; set; }
     }
 }

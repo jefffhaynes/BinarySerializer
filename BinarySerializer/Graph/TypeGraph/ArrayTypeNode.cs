@@ -19,8 +19,12 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void Construct()
         {
-            ChildType = Type.GetElementType();
-            CompiledChildConstructor = CreateCompiledConstructor(ChildType);
+            CompiledChildConstructor = CreateCompiledConstructor(GetChildType());
+        }
+
+        protected override Type GetChildType()
+        {
+            return Type.GetElementType();
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
