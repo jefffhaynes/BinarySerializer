@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using BinarySerialization.Graph.ValueGraph;
@@ -120,30 +121,26 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (SubtypeAttributes != null && SubtypeAttributes.Count > 0)
             {
-                // Get subtype keys 
-                if (SubtypeBinding.BindingMode == BindingMode.TwoWay)
-                    SubTypeKeys = SubtypeAttributes.ToDictionary(attribute => attribute.Subtype,
-                        attribute => attribute.Value);
-
-                // Generate subtype children 
-                var subTypes = SubtypeAttributes.Select(attribute => attribute.Subtype);
-
-                foreach (var subType in subTypes)
-                    GenerateSubtype(subType);
+                ConstructSubtypes(SubtypeBinding, SubtypeAttributes);
             }
             else if (parent.ItemSubtypeAttributes != null && parent.ItemSubtypeAttributes.Count > 0)
             {
-                // Get subtype keys 
-                if (parent.ItemSubtypeBinding.BindingMode == BindingMode.TwoWay)
-                    SubTypeKeys = parent.ItemSubtypeAttributes.ToDictionary(attribute => attribute.Subtype,
-                        attribute => attribute.Value);
-
-                // Generate subtype children 
-                var subTypes = parent.ItemSubtypeAttributes.Select(attribute => attribute.Subtype);
-
-                foreach (var subType in subTypes)
-                    GenerateSubtype(subType);
+                ConstructSubtypes(parent.ItemSubtypeBinding, parent.ItemSubtypeAttributes);
             }
+        }
+
+        private void ConstructSubtypes(Binding binding, ReadOnlyCollection<SubtypeBaseAttribute> attributes)
+        {
+            // Get subtype keys 
+            if (binding.BindingMode == BindingMode.TwoWay)
+                SubTypeKeys = attributes.ToDictionary(attribute => attribute.Subtype,
+                    attribute => attribute.Value);
+
+            // Generate subtype children 
+            var subTypes = attributes.Select(attribute => attribute.Subtype);
+
+            foreach (var subType in subTypes)
+                GenerateSubtype(subType);
         }
 
         /// <summary>
