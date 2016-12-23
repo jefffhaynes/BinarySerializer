@@ -49,5 +49,17 @@ namespace BinarySerialization.Test.ItemSubtype
             Assert.AreEqual(expected.Items[0].GetType(), actual.Items[0].GetType());
             Assert.AreEqual(expected.Items[1].GetType(), actual.Items[1].GetType());
         }
+
+
+        [TestMethod]
+        public void DefaultItemSubtypeTest()
+        {
+            var data = new byte[] {4, 0, 1, 2, 3 };
+            var actual = Deserialize<ItemSubtypeClass>(data);
+
+            Assert.AreEqual(4, actual.Indicator);
+            Assert.AreEqual(2, actual.Items.Count);
+            Assert.AreEqual(typeof(ItemTypeA), actual.Items[0].GetType());
+        }
     }
 }
