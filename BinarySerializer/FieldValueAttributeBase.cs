@@ -5,7 +5,7 @@ namespace BinarySerialization
     /// <summary>
     /// Used as the abstract base for deriving field value attributes.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
     public abstract class FieldValueAttributeBase : FieldBindingBaseAttribute
     {
         /// <summary>

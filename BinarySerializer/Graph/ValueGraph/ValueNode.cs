@@ -109,11 +109,26 @@ namespace BinarySerialization.Graph.ValueGraph
                 typeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
             }
 
-            if (typeNode.FieldValueAttribute != null)
+            if (typeNode.FieldValueBindings != null)
             {
-                typeNode.FieldValueBinding.Bind(this, ComputeFinalFieldValue);
+                // for each field value binding, create an anonymous function to get the final value from the corresponding attribute.
+                for (int index = 0; index < typeNode.FieldValueBindings.Count; index++)
+                {
+                    var fieldValueBinding = typeNode.FieldValueBindings[index];
+
+                    var attributeIndex = index;
+                    fieldValueBinding.Bind(this, () =>
+                    {
+                        if (!Visited)
+                            throw new InvalidOperationException(
+                                "Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
+
+                        return TypeNode.FieldValueAttributes[attributeIndex].ComputeFinalInternal();
+                    });
+                }
             }
 
+            // recurse to children
             foreach (ValueNode child in Children)
                 child.Bind();
         }
@@ -191,18 +206,21 @@ namespace BinarySerialization.Graph.ValueGraph
             if (maxLengthDelegate() != null)
                 stream = new BoundedStream(stream, maxLengthDelegate);
 
-            // Setup tap for value attributes if we need to siphon serialized data for later
-            if (TypeNode.FieldValueAttribute != null)
+            if (TypeNode.FieldValueAttributes != null)
             {
-                var context = CreateLazySerializationContext();
-                TypeNode.FieldValueAttribute.ResetInternal(context);
-                var tap = new FieldValueAdapterStream(TypeNode.FieldValueAttribute);
-                stream = new TapStream(stream, tap);
-            } 
+                // Setup tap for value attributes if we need to siphon serialized data for later
+                foreach (var fieldValueAttribute in TypeNode.FieldValueAttributes)
+                {
+                    var context = CreateLazySerializationContext();
+                    fieldValueAttribute.ResetInternal(context);
+                    var tap = new FieldValueAdapterStream(fieldValueAttribute);
+                    stream = new TapStream(stream, tap);
+                }
+            }
 
             SerializeOverride(stream, eventShuttle);
 
-            if(TypeNode.FieldValueAttribute != null)
+            if(TypeNode.FieldValueAttributes != null)
                 stream.Flush();
         }
 
@@ -516,14 +534,6 @@ namespace BinarySerialization.Graph.ValueGraph
         protected virtual object GetLastItemValueOverride()
         {
             throw new InvalidOperationException("Not a collection field.");
-        }
-
-        private object ComputeFinalFieldValue()
-        {
-            if(!Visited)
-                throw new InvalidOperationException("Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
-
-            return TypeNode.FieldValueAttribute.ComputeFinalInternal();
         }
 
         protected static bool EndOfStream(BoundedStream stream)

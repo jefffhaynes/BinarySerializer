@@ -139,10 +139,12 @@ namespace BinarySerialization.Graph.TypeGraph
             LeftFieldAlignmentBindings = GetBindings<FieldAlignmentAttribute>(leftAlignmentAttributes.Cast<object>().ToArray());
             RightFieldAlignmentBindings = GetBindings<FieldAlignmentAttribute>(rightAlignmentAttributes.Cast<object>().ToArray());
 
-            FieldValueAttribute = attributes.OfType<FieldValueAttributeBase>().SingleOrDefault();
-            if (FieldValueAttribute != null)
+            var fieldValueAttributes = attributes.OfType<FieldValueAttributeBase>().ToArray();
+            FieldValueAttributes = new ReadOnlyCollection<FieldValueAttributeBase>(fieldValueAttributes);
+
+            if (FieldValueAttributes.Count > 0)
             {
-                FieldValueBinding = new Binding(FieldValueAttribute, GetBindingLevel(FieldValueAttribute.Binding));
+                FieldValueBindings = GetBindings<FieldValueAttributeBase>(attributes);
             }
 
             var serializeWhenAttributes = attributes.OfType<SerializeWhenAttribute>().ToArray();
@@ -300,16 +302,16 @@ namespace BinarySerialization.Graph.TypeGraph
         public BindingCollection RightFieldAlignmentBindings { get; }
         public BindingCollection FieldEndiannessBindings { get; }
         public BindingCollection FieldEncodingBindings { get; }
+        public BindingCollection FieldValueBindings { get; }
 
         public Binding SerializeUntilBinding { get; }
         public Binding ItemSerializeUntilBinding { get; }
         public Binding SubtypeBinding { get; }
         public Binding ItemSubtypeBinding { get; }
-        public Binding FieldValueBinding { get; }
 
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; }
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenNotBindings { get; }
-        public FieldValueAttributeBase FieldValueAttribute { get; }
+        public ReadOnlyCollection<FieldValueAttributeBase> FieldValueAttributes { get; }
         public ReadOnlyCollection<SubtypeBaseAttribute> SubtypeAttributes { get; }
         public SubtypeDefaultAttribute SubtypeDefaultAttribute { get; }
         public ReadOnlyCollection<SubtypeBaseAttribute> ItemSubtypeAttributes { get; }

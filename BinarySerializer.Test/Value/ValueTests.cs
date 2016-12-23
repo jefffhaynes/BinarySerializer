@@ -121,21 +121,6 @@ namespace BinarySerialization.Test.Value
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(0xEC, actual.Checksum);
-        }
-
-        [TestMethod]
-        public void ChecksumModuloTest()
-        {
-            var expected = new FieldChecksumClass
-            {
-                Value = "hello",
-                Value2 = "hello",
-                Value3 = "hello"
-            };
-
-            var actual = Roundtrip(expected);
-
-            Assert.AreEqual(0xEC, actual.Checksum);
             Assert.AreEqual(0x14, actual.ModuloChecksum);
             Assert.AreEqual(0x62, actual.XorChecksum);
         }
