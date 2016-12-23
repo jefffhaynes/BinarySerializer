@@ -9,14 +9,6 @@ namespace BinarySerialization
     public sealed class FieldCountAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>
-        /// Initializes a new instance of the FieldCount class.
-        /// </summary>
-        public FieldCountAttribute()
-        {
-            ConstCount = ulong.MaxValue;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the FieldCount class with a fixed item count.
         /// </summary>
         /// <param name="count">Used to specify the number of items in a fixed-size collection or array.</param>

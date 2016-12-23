@@ -233,6 +233,7 @@
     <Compile Include="Misc\RecursiveGraphTests.cs" />
     <Compile Include="Order\MutlipleMembersDuplicateOrderClass.cs" />
     <Compile Include="Primitives\ContainedStringClass.cs" />
+    <Compile Include="Primitives\PrimitiveBindingsClass.cs" />
     <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingBaseClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingClass.cs" />

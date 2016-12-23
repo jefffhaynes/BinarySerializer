@@ -103,5 +103,28 @@ namespace BinarySerialization.Test.Primitives
             var container = new ContainedStringClass {Value = "hello"};
             Roundtrip(container, container.Value.Length + 5);
         }
+
+        [TestMethod]
+        public void PrimitiveBindingTest()
+        {
+            var expected = new PrimitiveBindingsClass
+            {
+                Value = "hello"
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Value.Length, actual.ByteLength);
+            Assert.AreEqual(expected.Value.Length, actual.SByteLength);
+            Assert.AreEqual(expected.Value.Length, actual.ShortLength);
+            Assert.AreEqual(expected.Value.Length, actual.UShortLength);
+            Assert.AreEqual(expected.Value.Length, actual.IntLength);
+            Assert.AreEqual((uint)expected.Value.Length, actual.UIntLength);
+            Assert.AreEqual(expected.Value.Length, actual.LongLength);
+            Assert.AreEqual((ulong)expected.Value.Length, actual.ULongLength);
+            Assert.AreEqual(expected.Value.Length, actual.FloatLength);
+            Assert.AreEqual(expected.Value.Length, actual.DoubleLength);
+            Assert.AreEqual(expected.Value.Length, actual.CharLength);
+        }
     }
 }

@@ -206,12 +206,13 @@ namespace BinarySerialization.Graph.ValueGraph
             if (maxLengthDelegate() != null)
                 stream = new BoundedStream(stream, maxLengthDelegate);
 
-            if (TypeNode.FieldValueAttributes != null)
+            if (TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Count > 0)
             {
+                var context = CreateLazySerializationContext();
+
                 // Setup tap for value attributes if we need to siphon serialized data for later
                 foreach (var fieldValueAttribute in TypeNode.FieldValueAttributes)
                 {
-                    var context = CreateLazySerializationContext();
                     fieldValueAttribute.ResetInternal(context);
                     var tap = new FieldValueAdapterStream(fieldValueAttribute);
                     stream = new TapStream(stream, tap);
