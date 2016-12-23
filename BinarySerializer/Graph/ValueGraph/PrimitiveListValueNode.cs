@@ -51,6 +51,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override object CreateCollection(IEnumerable enumerable)
         {
+            // don't think this can ever actually happen b/c it would signify a "jagged list", which isn't a real thing
+            // TODO probably remove at some point once I verify that
             var typeNode = (ListTypeNode)TypeNode;
             return enumerable.Cast<object>().Select(item => item.ConvertTo(typeNode.ChildType)).ToList();
         }
