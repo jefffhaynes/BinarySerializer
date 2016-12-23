@@ -79,6 +79,7 @@ There are a number of attributes that can be used to control the serialization o
 * [FieldEndianness](#fieldendiannessattribute)
 * [FieldEncoding](#fieldencodingattribute)
 * [FieldValue](#fieldvalueattribute)
+* [FieldChecksum](#fieldchecksumattribute)
 * [FieldCrc16](#fieldcrc16attribute)
 * [FieldCrc32](#fieldcrc32attribute)
 * [FieldOffset](#fieldoffsetattribute)
@@ -90,6 +91,7 @@ There are a number of attributes that can be used to control the serialization o
 * [SerializeWhenNot](#serializewhennotattribute)
 * [SerializeUntil](#serializeuntilattribute)
 * [ItemLength](#itemlengthattribute)
+* [ItemSubtype](#itemsubtypeattribute)
 * [ItemSerializeUntil](#itemserializeuntilattribute)
 
 ### IgnoreAttribute ###
@@ -379,6 +381,28 @@ The FieldValueAttributeBase class is an abstract class that allows for the compu
 
 This is the most trivial example of a FieldValue attribute and will simply copy the value of one field to another.
 
+### FieldChecksumAttribute ###
+
+The FieldChecksum attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an 8-bit checksum.  The checksum can be configured with one of three modes: 2's complement, modulo 256, or xor.
+
+*Note that this attribute is only used during serialization.  The checksum is not checked during deserialization.*
+
+```c#
+public class Packet
+{
+    [FieldOrder(0)]
+    public int Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldLength("Length")]
+    [FieldCrc16("Checksum", Mode = ChecksumMode.Xor)]
+    public byte[] Data { get; set; }
+
+    [FieldOrder(2)]
+    public byte Checksum { get; set; }
+}
+```
+
 ### FieldCrc16Attribute ###
 
 The FieldCrc16 attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an unsigned 16-bit checksum.
@@ -607,6 +631,24 @@ public class JaggedArrayClass
 ```
 
 Note that the ordering of the values and value lengths must coincide for this approach to work.
+
+
+### ItemSubtypeAttribute ###
+
+The ItemSubtype attribute is similar to the Subtype attribute but can be used to specify an item subtype on homogenous collections.
+
+```c#
+public class ChocolateBox
+{
+	[FieldOrder(0)]
+	public ChocolateType Type { get; set; }
+
+	[FieldOrder(1)]
+	[ItemSubtype("Type", ChocolateType.Dark, typeof(DarkChocolate))]
+	[ItemSubtype("Type", ChocolateType.NutsAndChews, typeof(NutsAndChewsChocolate))]
+	public List<Chocolate> Chocolates;
+}
+```
 
 ### ItemSerializeUntilAttribute ###
 

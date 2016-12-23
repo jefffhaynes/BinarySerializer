@@ -42,11 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindingMode.cs" />
+    <Compile Include="ChecksumMode.cs" />
     <Compile Include="Crc.cs" />
     <Compile Include="Crc32.cs" />
     <Compile Include="Crc16.cs" />
     <Compile Include="FieldAlignmentAttribute.cs" />
     <Compile Include="FieldAlignmentMode.cs" />
+    <Compile Include="FieldChecksumAttribute.cs" />
     <Compile Include="FieldCrc32Attribute.cs" />
     <Compile Include="FieldCrc16Attribute.cs" />
     <Compile Include="FieldEncodingAttribute.cs" />
