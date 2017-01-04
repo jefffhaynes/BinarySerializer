@@ -219,6 +219,9 @@
     <Compile Include="Misc\ExtensionMethodTests.cs" />
     <Compile Include="Misc\RecursiveGraphClass.cs" />
     <Compile Include="Misc\RecursiveGraphTests.cs" />
+    <Compile Include="Misc\SkipableClass.cs" />
+    <Compile Include="Misc\SkipableContainerClass.cs" />
+    <Compile Include="Misc\SkipableTests.cs" />
     <Compile Include="Order\MutlipleMembersDuplicateOrderClass.cs" />
     <Compile Include="Primitives\ContainedStringClass.cs" />
     <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
