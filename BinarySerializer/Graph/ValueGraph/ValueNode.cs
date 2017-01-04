@@ -317,7 +317,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             if (maxLengthDelegate() != null)
                 stream = new BoundedStream(stream, maxLengthDelegate);
-
+            
             DeserializeOverride(stream, eventShuttle);
         }
 

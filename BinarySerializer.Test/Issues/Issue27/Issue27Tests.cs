@@ -7,7 +7,6 @@ namespace BinarySerialization.Test.Issues.Issue27
     public class Issue27Tests
     {
         [TestMethod]
-        [ExpectedException(typeof (EndOfStreamException))]
         public void TestPrematureStreamTermination()
         {
             var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Little};

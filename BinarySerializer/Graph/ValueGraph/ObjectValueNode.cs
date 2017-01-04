@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -226,9 +227,17 @@ namespace BinarySerialization.Graph.ValueGraph
                 var subType = typeNode.GetSubTypeNode(_valueType);
                 Children = new List<ValueNode>(subType.Children.Select(child => child.CreateSerializer(this)));
 
-                ObjectDeserializeOverride(stream, eventShuttle);
+                try
+                {
+                    ObjectDeserializeOverride(stream, eventShuttle);
+                }
+                catch (EndOfStreamException)
+                {
+                    // this is ok but we can't consider this object fully formed.
+                    _valueType = null;
+                }
             }
-
+            
             var length = GetFieldLength();
 
             // Check if we need to read past padding
