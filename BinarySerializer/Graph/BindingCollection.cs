@@ -20,27 +20,42 @@ namespace BinarySerialization.Graph
 
         public object GetValue(ValueNode target)
         {
-            var value = this[0].GetValue(target);
-
-            // handle multiple bindings (probably unusual)
-            if (Count > 1)
-            {
-                if(AdditionalBindings.Any(binding => !binding.GetValue(target).Equals(value)))
-                    throw new InvalidOperationException("Multiple source fields bound to the same target must yield the same value.");
-            }
-
-            return value;
+            return GetValue(binding => binding.GetValue(target));
         }
 
         public object GetBoundValue(ValueNode target)
         {
-            var value = this[0].GetBoundValue(target);
+            return GetValue(binding => binding.GetBoundValue(target));
+        }
+        
+        private object GetValue(Func<Binding, object> bindingFunction)
+        {
+            // get first value and use that to compare any others
+            var value = bindingFunction(this[0]);
 
-            // handle multiple bindings (probably unusual)
+            // handle multiple bindings (probably not typical)
             if (Count > 1)
             {
-                if (AdditionalBindings.Any(binding => !binding.GetBoundValue(target).Equals(value)))
-                    throw new InvalidOperationException("Multiple source fields bound to the same target must yield the same value.");
+                if (AdditionalBindings.Any(binding =>
+                {
+                    var otherValue = bindingFunction(binding);
+
+                    if (value != null)
+                    {
+                        var convertedValue = Convert.ChangeType(otherValue, value.GetType(), null);
+
+                        if (convertedValue == null)
+                            return false;
+
+                        return !convertedValue.Equals(value);
+                    }
+
+                    return otherValue == null;
+                }))
+                {
+                    throw new InvalidOperationException(
+                        "Multiple source fields bound to the same target must yield the same value.");
+                }
             }
 
             return value;

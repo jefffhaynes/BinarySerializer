@@ -16,7 +16,7 @@
         Discard,
 
         /// <summary>
-        /// Defer processing of the underlying data.
+        /// Defer processing of the underlying data (don't advance stream).
         /// </summary>
         Defer
     }

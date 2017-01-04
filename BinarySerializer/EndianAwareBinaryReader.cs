@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 namespace BinarySerialization
@@ -6,6 +7,7 @@ namespace BinarySerialization
     /// <summary>
     /// An extension of the <see cref="BinaryReader"/> class that supports big- and little-endian byte ordering.
     /// </summary>
+    [Obsolete("This class is no longer used internally and may be removed in the future.")]
     public class EndianAwareBinaryReader : BinaryReader
     {
         /// <summary>

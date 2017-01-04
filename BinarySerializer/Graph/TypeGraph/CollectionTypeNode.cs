@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
     internal abstract class CollectionTypeNode : ContainerTypeNode
     {
-        private Lazy<TypeNode> _lazyChild; 
+        private Lazy<TypeNode> _lazyChild;
 
         protected CollectionTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
@@ -28,14 +29,18 @@ namespace BinarySerialization.Graph.TypeGraph
         public TypeNode TerminationChild { get; private set; }
 
         public object TerminationValue { get; private set; }
+        
+        protected abstract Type GetChildType();
 
         private void Construct()
         {
             CompiledConstructor = CreateCompiledConstructor();
+            ChildType = GetChildType();
 
             object terminationValue;
             TerminationChild = GetTerminationChild(out terminationValue);
             TerminationValue = terminationValue;
+
             _lazyChild = new Lazy<TypeNode>(() => GenerateChild(ChildType));
         }
 

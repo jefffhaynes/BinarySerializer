@@ -31,5 +31,50 @@ namespace BinarySerialization.Test.Alignment
             Assert.AreEqual(4, actual.Alignment);
             Assert.AreEqual("hi", actual.Value);
         }
+
+        [TestMethod]
+        public void LeftAlignmentTest()
+        {
+            var actual = RoundtripReverse<LeftAlignmentClass>(new byte[]
+            {
+                0x1, 0x0, 0x0, 0x0,
+                0x2,
+                0x3
+            });
+
+            Assert.AreEqual((byte)1, actual.Header);
+            Assert.AreEqual((byte)2, actual.Value);
+            Assert.AreEqual((byte)3, actual.Trailer);
+        }
+
+        [TestMethod]
+        public void RightAlignmentTest()
+        {
+            var actual = RoundtripReverse<RightAlignmentClass>(new byte[]
+            {
+                0x1,
+                0x2, 0x0, 0x0, 
+                0x3
+            });
+
+            Assert.AreEqual((byte)1, actual.Header);
+            Assert.AreEqual((byte)2, actual.Value);
+            Assert.AreEqual((byte)3, actual.Trailer);
+        }
+
+        [TestMethod]
+        public void MixedAlignmentTest()
+        {
+            var actual = RoundtripReverse<MixedAlignmentClass>(new byte[]
+            {
+                0x1, 0x0, 0x0, 0x0,
+                0x2, 0x0,
+                0x3
+            });
+
+            Assert.AreEqual((byte)1, actual.Header);
+            Assert.AreEqual((byte)2, actual.Value);
+            Assert.AreEqual((byte)3, actual.Trailer);
+        }
     }
 }

@@ -49,7 +49,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     value = CreateCollection(enumerableValue);
                 }
-                else value = Value;
+                else
+                {
+                    value = Value;
+                }
 
                 return value;
             }

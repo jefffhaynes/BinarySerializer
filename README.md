@@ -5,11 +5,11 @@ A .NET declarative serialization framework for controlling formatting of data at
 
 ### What BinarySerializer is not ###
 
-BinarySerializer is not a competitor to protobuf, MessagePack, or any other number of fixed-format serializers.  While fast, BinarySerializer is slower than most of these specialized serializers as it is designed to be first and foremost flexible in terms of the underlying data format.  If you don't like the way protobuf is serializing your data, you're stuck with it.  With BinarySerializer you can define precisely how your data is formatted using types, bindings, converters, and code.
+BinarySerializer is not a competitor to protobuf, MessagePack, or any other number of fixed-format serializers.  While fast, BinarySerializer is designed to be first and foremost flexible in terms of the underlying data format.  If you don't like the way protobuf is serializing your data, you're stuck with it.  With BinarySerializer you can define precisely how your data is formatted using types, bindings, converters, and code.
 
 ### Field Ordering ###
 
-There is no completely reliable way to get member ordering from the CLR so as of BinarySerializer 3.0 <code>FieldOrder</code> attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following <code>DerivedClass</code> will serialize in the order A, B, C.
+There is no completely reliable way to get member ordering from the CLR so <code>FieldOrder</code> attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following <code>DerivedClass</code> will serialize in the order A, B, C.
 
 ```c#
 public class BaseClass
@@ -79,6 +79,7 @@ There are a number of attributes that can be used to control the serialization o
 * [FieldEndianness](#fieldendiannessattribute)
 * [FieldEncoding](#fieldencodingattribute)
 * [FieldValue](#fieldvalueattribute)
+* [FieldChecksum](#fieldchecksumattribute)
 * [FieldCrc16](#fieldcrc16attribute)
 * [FieldCrc32](#fieldcrc32attribute)
 * [FieldOffset](#fieldoffsetattribute)
@@ -90,6 +91,7 @@ There are a number of attributes that can be used to control the serialization o
 * [SerializeWhenNot](#serializewhennotattribute)
 * [SerializeUntil](#serializeuntilattribute)
 * [ItemLength](#itemlengthattribute)
+* [ItemSubtype](#itemsubtypeattribute)
 * [ItemSerializeUntil](#itemserializeuntilattribute)
 
 ### IgnoreAttribute ###
@@ -278,7 +280,27 @@ public class Entry
 }
 ```
 
-Let's say Value is set to 'hi'.  The framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned to 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not, for example, "hi\0\0").  FieldAlignment is not inherited by child fields.
+Let's say Value is set to 'hi'.  The framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned to 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not, for example, "hi\0\0").
+
+By default FieldAlignment will align both the "left" and "right" boundary of the field.  However, you can override this behavior by setting the FieldAlignmentMode to LeftOnly or RightOnly.  In advanced cases, left and right alignment values can be mixed with multiple attributes.
+
+FieldAlignment is not inherited by child fields.
+
+```c#
+public class Entry
+{
+    [FieldOrder(0)]
+    public byte Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldAlignment(4, FieldAlignmentMode.LeftOnly)]
+    [FieldAlignment(2, FieldAlignmentMode.RightOnly)]
+    [FieldLength("Length")]
+    public string Value { get; set; }
+}
+```
+
+In this example the Value field will always start on a modulo 4 byte boundary but terminate on a modulo 2 byte boundary with respect to the parent.
 
 ### FieldEndiannessAttribute ###
 
@@ -358,6 +380,28 @@ The FieldValueAttributeBase class is an abstract class that allows for the compu
 ### FieldValueAttribute ###
 
 This is the most trivial example of a FieldValue attribute and will simply copy the value of one field to another.
+
+### FieldChecksumAttribute ###
+
+The FieldChecksum attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an 8-bit checksum.  The checksum can be configured with one of three modes: 2's complement, modulo 256, or xor.
+
+*Note that this attribute is only used during serialization.  The checksum is not checked during deserialization.*
+
+```c#
+public class Packet
+{
+    [FieldOrder(0)]
+    public int Length { get; set; }
+
+    [FieldOrder(1)]
+    [FieldLength("Length")]
+    [FieldCrc16("Checksum", Mode = ChecksumMode.Xor)]
+    public byte[] Data { get; set; }
+
+    [FieldOrder(2)]
+    public byte Checksum { get; set; }
+}
+```
 
 ### FieldCrc16Attribute ###
 
@@ -587,6 +631,24 @@ public class JaggedArrayClass
 ```
 
 Note that the ordering of the values and value lengths must coincide for this approach to work.
+
+
+### ItemSubtypeAttribute ###
+
+The ItemSubtype attribute is similar to the Subtype attribute but can be used to specify an item subtype on homogenous collections.
+
+```c#
+public class ChocolateBox
+{
+	[FieldOrder(0)]
+	public ChocolateType Type { get; set; }
+
+	[FieldOrder(1)]
+	[ItemSubtype("Type", ChocolateType.Dark, typeof(DarkChocolate))]
+	[ItemSubtype("Type", ChocolateType.NutsAndChews, typeof(NutsAndChewsChocolate))]
+	public List<Chocolate> Chocolates;
+}
+```
 
 ### ItemSerializeUntilAttribute ###
 

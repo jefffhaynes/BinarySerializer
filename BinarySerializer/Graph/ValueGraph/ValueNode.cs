@@ -68,9 +68,35 @@ namespace BinarySerialization.Graph.ValueGraph
                         return value;
                     
                     // allow default subtypes in order to support round-trip
-                    if (objectTypeNode.SubtypeDefaultAttribute != null)
+                    if (typeNode.SubtypeDefaultAttribute != null)
                     {
-                        if (valueType == objectTypeNode.SubtypeDefaultAttribute.Subtype)
+                        if (valueType == typeNode.SubtypeDefaultAttribute.Subtype)
+                            return UnsetValue;
+                    }
+
+                    throw new InvalidOperationException($"No subtype specified for ${valueType}");
+                });
+            }
+
+            var parent = (TypeNode)typeNode.Parent;
+            if (parent.ItemSubtypeBinding != null && parent.ItemSubtypeBinding.BindingMode == BindingMode.TwoWay)
+            {
+                parent.ItemSubtypeBinding.Bind((ValueNode)Parent, () =>
+                {
+                    Type valueType = GetValueTypeOverride();
+                    if (valueType == null)
+                        throw new InvalidOperationException("Binding targets must not be null.");
+
+                    var objectTypeNode = (ObjectTypeNode)typeNode;
+
+                    object value;
+                    if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
+                        return value;
+
+                    // allow default subtypes in order to support round-trip
+                    if (parent.ItemSubtypeDefaultAttribute != null)
+                    {
+                        if (valueType == parent.ItemSubtypeDefaultAttribute.Subtype)
                             return UnsetValue;
                     }
 
@@ -83,11 +109,26 @@ namespace BinarySerialization.Graph.ValueGraph
                 typeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
             }
 
-            if (typeNode.FieldValueAttribute != null)
+            if (typeNode.FieldValueBindings != null)
             {
-                typeNode.FieldValueBinding.Bind(this, ComputeFinalFieldValue);
+                // for each field value binding, create an anonymous function to get the final value from the corresponding attribute.
+                for (int index = 0; index < typeNode.FieldValueBindings.Count; index++)
+                {
+                    var fieldValueBinding = typeNode.FieldValueBindings[index];
+
+                    var attributeIndex = index;
+                    fieldValueBinding.Bind(this, () =>
+                    {
+                        if (!Visited)
+                            throw new InvalidOperationException(
+                                "Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
+
+                        return TypeNode.FieldValueAttributes[attributeIndex].ComputeFinalInternal();
+                    });
+                }
             }
 
+            // recurse to children
             foreach (ValueNode child in Children)
                 child.Bind();
         }
@@ -111,7 +152,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (align)
                 {
-                    long? leftAlignment = GetFieldAlignment();
+                    long? leftAlignment = GetLeftFieldAlignment();
                     if (leftAlignment != null)
                     {
                         Align(stream, leftAlignment, true);
@@ -135,7 +176,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (align)
                 {
-                    long? rightAlignment = GetFieldAlignment();
+                    long? rightAlignment = GetRightFieldAlignment();
                     if (rightAlignment != null)
                     {
                         Align(stream, rightAlignment, true);
@@ -165,18 +206,22 @@ namespace BinarySerialization.Graph.ValueGraph
             if (maxLengthDelegate() != null)
                 stream = new BoundedStream(stream, maxLengthDelegate);
 
-            // Setup tap for value attributes if we need to siphon serialized data for later
-            if (TypeNode.FieldValueAttribute != null)
+            if (TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Count > 0)
             {
                 var context = CreateLazySerializationContext();
-                TypeNode.FieldValueAttribute.ResetInternal(context);
-                var tap = new FieldValueAdapterStream(TypeNode.FieldValueAttribute);
-                stream = new TapStream(stream, tap);
-            } 
+
+                // Setup tap for value attributes if we need to siphon serialized data for later
+                foreach (var fieldValueAttribute in TypeNode.FieldValueAttributes)
+                {
+                    fieldValueAttribute.ResetInternal(context);
+                    var tap = new FieldValueAdapterStream(fieldValueAttribute);
+                    stream = new TapStream(stream, tap);
+                }
+            }
 
             SerializeOverride(stream, eventShuttle);
 
-            if(TypeNode.FieldValueAttribute != null)
+            if(TypeNode.FieldValueAttributes != null)
                 stream.Flush();
         }
 
@@ -196,7 +241,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
                     return;
 
-                long? leftAlignment = GetFieldAlignment();
+                long? leftAlignment = GetLeftFieldAlignment();
                 if (leftAlignment != null)
                 {
                     Align(stream, leftAlignment);
@@ -217,7 +262,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     DeserializeInternal(stream, GetFieldLength, eventShuttle);
                 }
 
-                long? rightAlignment = GetFieldAlignment();
+                long? rightAlignment = GetRightFieldAlignment();
                 if (rightAlignment != null)
                 {
                     Align(stream, rightAlignment);
@@ -301,11 +346,22 @@ namespace BinarySerialization.Graph.ValueGraph
                    (Parent as ValueNode)?.GetConstFieldItemLength();
         }
 
-        protected long? GetFieldAlignment()
+        protected long? GetLeftFieldAlignment()
         {
             // Field alignment cannot be determined from graph
             // so always go to a const or bound value
-            var value = TypeNode.FieldAlignmentBindings?.GetBoundValue(this);
+            var value = TypeNode.LeftFieldAlignmentBindings?.GetBoundValue(this);
+            if (value == null)
+                return null;
+
+            return Convert.ToInt64(value);
+        }
+
+        protected long? GetRightFieldAlignment()
+        {
+            // Field alignment cannot be determined from graph
+            // so always go to a const or bound value
+            var value = TypeNode.RightFieldAlignmentBindings?.GetBoundValue(this);
             if (value == null)
                 return null;
 
@@ -479,14 +535,6 @@ namespace BinarySerialization.Graph.ValueGraph
         protected virtual object GetLastItemValueOverride()
         {
             throw new InvalidOperationException("Not a collection field.");
-        }
-
-        private object ComputeFinalFieldValue()
-        {
-            if(!Visited)
-                throw new InvalidOperationException("Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
-
-            return TypeNode.FieldValueAttribute.ComputeFinalInternal();
         }
 
         protected static bool EndOfStream(BoundedStream stream)

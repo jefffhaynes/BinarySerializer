@@ -109,5 +109,20 @@ namespace BinarySerialization.Test.Value
         {
             Roundtrip(new EasyMistakeCrcClass());
         }
+
+        [TestMethod]
+        public void ChecksumTest()
+        {
+            var expected = new FieldChecksumClass
+            {
+                Value = "hello"
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(0xEC, actual.Checksum);
+            Assert.AreEqual(0x14, actual.ModuloChecksum);
+            Assert.AreEqual(0x62, actual.XorChecksum);
+        }
     }
 }

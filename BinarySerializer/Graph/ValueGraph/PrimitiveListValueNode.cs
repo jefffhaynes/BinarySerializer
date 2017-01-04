@@ -15,8 +15,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var typeNode = (ListTypeNode)TypeNode;
             var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
-
-            var writer = new EndianAwareBinaryWriter(stream, GetFieldEndianness());
+            
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
             var list = BoundValue as IList;
@@ -39,7 +38,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (stream.IsAtLimit)
                     break;
 
-                childSerializer.Serialize(writer, value, childSerializedType, itemLength);
+                childSerializer.Serialize(stream, value, childSerializedType, itemLength);
             }
         }
 
@@ -52,6 +51,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override object CreateCollection(IEnumerable enumerable)
         {
+            // don't think this can ever actually happen b/c it would signify a "jagged list", which isn't a real thing
+            // TODO probably remove at some point once I verify that
             var typeNode = (ListTypeNode)TypeNode;
             return enumerable.Cast<object>().Select(item => item.ConvertTo(typeNode.ChildType)).ToList();
         }

@@ -42,10 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindingMode.cs" />
+    <Compile Include="ChecksumMode.cs" />
     <Compile Include="Crc.cs" />
     <Compile Include="Crc32.cs" />
     <Compile Include="Crc16.cs" />
     <Compile Include="FieldAlignmentAttribute.cs" />
+    <Compile Include="FieldAlignmentMode.cs" />
+    <Compile Include="FieldChecksumAttribute.cs" />
     <Compile Include="FieldCrc32Attribute.cs" />
     <Compile Include="FieldCrc16Attribute.cs" />
     <Compile Include="FieldEncodingAttribute.cs" />
@@ -97,6 +100,7 @@
     <Compile Include="ConditionalAttribute.cs" />
     <Compile Include="SerializeWhenNotAttribute.cs" />
     <Compile Include="StreamResetter.cs" />
+    <Compile Include="ItemSubtypeAttribute.cs" />
     <Compile Include="SubtypeAttribute.cs" />
     <Compile Include="SerializeUntilAttribute.cs" />
     <Compile Include="ItemSerializeUntilAttribute.cs" />
@@ -127,6 +131,9 @@
     <Compile Include="Graph\ValueGraph\ValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ObjectValueNode.cs" />
     <Compile Include="Graph\ValueGraph\ValueValueNode.cs" />
+    <Compile Include="SubtypeBaseAttribute.cs" />
+    <Compile Include="ItemSubtypeDefaultAttribute.cs" />
+    <Compile Include="SubtypeDefaultBaseAttribute.cs" />
     <Compile Include="SubtypeDefaultAttribute.cs" />
     <Compile Include="TapStream.cs" />
     <Compile Include="TypeExtensions.cs" />

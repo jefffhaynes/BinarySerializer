@@ -61,6 +61,9 @@
     <Compile Include="Alignment\BoundAlignmentClass.cs" />
     <Compile Include="Alignment\AlignmentClass.cs" />
     <Compile Include="Alignment\AlignmentTests.cs" />
+    <Compile Include="Alignment\MixedAlignmentClass.cs" />
+    <Compile Include="Alignment\RightAlignmentClass.cs" />
+    <Compile Include="Alignment\LeftAlignmentClass.cs" />
     <Compile Include="BinarySerializerTests.cs" />
     <Compile Include="CalciumCarbonate.cs" />
     <Compile Include="Cereal.cs" />
@@ -177,6 +180,12 @@
     <Compile Include="ItemLength\JaggedListClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassClass.cs" />
     <Compile Include="ItemLength\LimitedItemLengthClassInnerClass.cs" />
+    <Compile Include="ItemSubtype\CustomItem.cs" />
+    <Compile Include="ItemSubtype\IItemSubtype.cs" />
+    <Compile Include="ItemSubtype\ItemSubtypeClass.cs" />
+    <Compile Include="ItemSubtype\ItemSubtypeTests.cs" />
+    <Compile Include="ItemSubtype\ItemTypeA.cs" />
+    <Compile Include="ItemSubtype\ItemTypeB.cs" />
     <Compile Include="Length\AncestorBindingCollectionClass.cs" />
     <Compile Include="Length\AncestorBindingCollectionItemClass.cs" />
     <Compile Include="Length\BoundItemClass.cs" />
@@ -208,6 +217,9 @@
     <Compile Include="Misc\ImmutableNoPublicConstructorClass.cs" />
     <Compile Include="Misc\ImmutableTests.cs" />
     <Compile Include="Misc\IntArray64K.cs" />
+    <Compile Include="Misc\InvalidButIgnoredContainerClass.cs" />
+    <Compile Include="Misc\InvalidButIgnoredTests.cs" />
+    <Compile Include="Misc\InvalidButIgnoredTypeClass.cs" />
     <Compile Include="Misc\InvalidForwardBindingClass.cs" />
     <Compile Include="Misc\IOExceptionTest.cs" />
     <Compile Include="Misc\LargeArrayTests.cs" />
@@ -224,6 +236,7 @@
     <Compile Include="Misc\SkipableTests.cs" />
     <Compile Include="Order\MutlipleMembersDuplicateOrderClass.cs" />
     <Compile Include="Primitives\ContainedStringClass.cs" />
+    <Compile Include="Primitives\PrimitiveBindingsClass.cs" />
     <Compile Include="SerializeAs\LengthPrefixedStringClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingBaseClass.cs" />
     <Compile Include="Subtype\AncestorSubtypeBindingClass.cs" />
@@ -308,6 +321,7 @@
     <Compile Include="Until\UntilTestClass.cs" />
     <Compile Include="Until\UntilTests.cs" />
     <Compile Include="Value\EasyMistakeCrcClass.cs" />
+    <Compile Include="Value\FieldChecksumClass.cs" />
     <Compile Include="Value\FieldCrc32Class.cs" />
     <Compile Include="Value\FieldSha256Attribute.cs" />
     <Compile Include="Value\FieldSha256Class.cs" />
