@@ -75,9 +75,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var objectTypeNode = (ObjectTypeNode) TypeNode;
 
-            // don't anything if ignored
+            // if ignored, the best we can do is return set value
             if (objectTypeNode.IsIgnored)
-                return null;
+                return _cachedValue;
 
             // make sure we're operating on the correct (possibly sub-) type.
             var node = objectTypeNode.GetSubTypeNode(_valueType);

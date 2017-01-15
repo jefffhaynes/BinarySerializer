@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Custom
@@ -12,6 +13,14 @@ namespace BinarySerialization.Test.Custom
             var expected = new Varuint {Value = ushort.MaxValue};
             var actual = Roundtrip(expected, 3);
 
+            Assert.AreEqual(expected.Value, actual.Value);
+        }
+
+        [TestMethod]
+        public void TestCustomDateTime()
+        {
+            var expected = new CustomDateTime {Value = new DateTime(1776, 7, 4)};
+            var actual = Roundtrip(expected);
             Assert.AreEqual(expected.Value, actual.Value);
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -38,6 +39,15 @@ namespace BinarySerialization.Test.Issues.Issue38
                 var actualObj = serializer.Deserialize<MachineState1>(stream);
                 Assert.AreEqual(null, actualObj, "Deserialization done with invalid Stream.");
             }
+        }
+
+        [TestMethod]
+        public void TimestampTest()
+        {
+            var expected = new TimestampStruct {Value = new DateTime(2000, 1, 1)};
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Value, actual.Value);
         }
     }
 }

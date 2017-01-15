@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace BinarySerialization.Performance
@@ -23,8 +24,9 @@ namespace BinarySerialization.Performance
                 Brewery = "Brasserie Grain d'Orge"
             };
 
-            DoBS(beer, 100000);
-            DoBF(beer, 100000);
+            //DoBS(beer, 100000);
+            DoBSParallel(beer, 100000);
+            //DoBF(beer, 100000);
             Console.ReadKey();
         }
 
@@ -62,6 +64,33 @@ namespace BinarySerialization.Performance
                 Console.WriteLine("BS DESER: {0}", stopwatch.Elapsed);
                 stopwatch.Reset();
             }
+        }
+
+        private static void DoBSParallel<T>(T obj, int iterations)
+        {
+            var stopwatch = new Stopwatch();
+
+            var ser = new BinarySerializer();
+
+            stopwatch.Start();
+            var data = Enumerable.Range(0, iterations).AsParallel().Select(i =>
+            {
+                using (var ms = new MemoryStream())
+                {
+                    ser.Serialize(ms, obj);
+                    return ms.ToArray();
+                }
+            }).ToArray();
+            
+            stopwatch.Stop();
+            Console.WriteLine("BS || SER: {0}", stopwatch.Elapsed);
+            stopwatch.Reset();
+            
+            stopwatch.Start();
+            data.AsParallel().ForAll(d => ser.Deserialize<T>(d));
+            stopwatch.Stop();
+            Console.WriteLine("BS || DESER: {0}", stopwatch.Elapsed);
+            stopwatch.Reset();
         }
 
         private static void DoBF(object obj, int iterations)
