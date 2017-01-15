@@ -40,14 +40,5 @@ namespace BinarySerialization.Test.Issues.Issue38
                 Assert.AreEqual(null, actualObj, "Deserialization done with invalid Stream.");
             }
         }
-
-        [TestMethod]
-        public void TimestampTest()
-        {
-            var expected = new TimestampStruct {Value = new DateTime(2000, 1, 1)};
-            var actual = Roundtrip(expected);
-
-            Assert.AreEqual(expected.Value, actual.Value);
-        }
     }
 }
