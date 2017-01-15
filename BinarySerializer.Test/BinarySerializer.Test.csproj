@@ -81,6 +81,7 @@
     <Compile Include="Count\PrimitiveListBindingClass.cs" />
     <Compile Include="Count\PrimitiveArrayBindingClass.cs" />
     <Compile Include="CrcTests.cs" />
+    <Compile Include="Custom\CustomDateTime.cs" />
     <Compile Include="Custom\CustomSourceBinding.cs" />
     <Compile Include="Custom\CustomSubtypeBaseClass.cs" />
     <Compile Include="Custom\CustomSubtypeContainerClass.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="Issues\Issue38\Issue38Tests.cs" />
     <Compile Include="Issues\Issue38\MachineState1.cs" />
     <Compile Include="Issues\Issue38\PositionData1.cs" />
+    <Compile Include="Issues\Issue38\TimestampStruct.cs" />
     <Compile Include="Issues\Issue39\InputsStateFrameData.cs" />
     <Compile Include="Issues\Issue39\Issue39Tests.cs" />
     <Compile Include="Issues\Issue50\Issue50Tests.cs" />
