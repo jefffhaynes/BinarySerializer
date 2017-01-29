@@ -150,7 +150,7 @@ namespace BinarySerialization.Graph.TypeGraph
         private void InitializeConstructors()
         {
             // if abstract we will never be constructed, nothing to do
-            if (Type.IsAbstract)
+            if (Type.GetTypeInfo().IsAbstract)
                 return;
 
             // we're going to start finding valid constructors.  start by getting all constructors.
@@ -233,9 +233,9 @@ namespace BinarySerialization.Graph.TypeGraph
                     throw new InvalidOperationException("All fields must have a unique order number.");
             }
 
-            if (parentType.BaseType != null)
+            if (parentType.GetTypeInfo().BaseType != null)
             {
-                var baseChildren = GenerateChildren(parentType.BaseType);
+                var baseChildren = GenerateChildren(parentType.GetTypeInfo().BaseType);
                 return baseChildren.Concat(children);
             }
 

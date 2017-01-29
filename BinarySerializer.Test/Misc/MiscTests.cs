@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using BinarySerialization.Test;
 
 namespace BinarySerializer.Test.Misc
 {

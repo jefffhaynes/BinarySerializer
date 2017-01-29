@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -71,7 +72,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 return null;
 
             // can't do anything if this type is abstract
-            if (_valueType.IsAbstract)
+            if (_valueType.GetTypeInfo().IsAbstract)
                 return null;
 
             var objectTypeNode = (ObjectTypeNode) TypeNode;
@@ -213,7 +214,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 // trivial case with no subtypes
                 _valueType = TypeNode.Type;
 
-                if (_valueType.IsAbstract)
+                if (_valueType.GetTypeInfo().IsAbstract)
                     throw new InvalidOperationException(
                         "Abstract types must have at least one subtype binding to be deserialized.");
             }

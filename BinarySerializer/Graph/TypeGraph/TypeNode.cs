@@ -232,7 +232,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-        private BindingCollection GetBindings<TAttribute>(object[] attributes) 
+        private BindingCollection GetBindings<TAttribute>(IEnumerable<object> attributes) 
             where TAttribute : FieldBindingBaseAttribute
         {
             var typeAttributes = attributes.OfType<TAttribute>().ToList();
@@ -396,7 +396,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public static bool IsValueType(Type type)
         {
-            return type.IsPrimitive || type == typeof (string) || type == typeof (byte[]);
+            return type.GetTypeInfo().IsPrimitive || type == typeof (string) || type == typeof (byte[]);
         }
 
         protected Func<object> CreateCompiledConstructor()

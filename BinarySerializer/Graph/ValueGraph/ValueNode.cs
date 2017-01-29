@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -333,7 +334,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (parent?.TypeNode.ItemLengthBindings != null)
             {
                 var parentItemLength = parent.TypeNode.ItemLengthBindings.GetValue(parent);
-                if(parentItemLength.GetType().IsPrimitive)
+                if(parentItemLength.GetType().GetTypeInfo().IsPrimitive)
                     return Convert.ToInt64(parentItemLength);
             }
 
