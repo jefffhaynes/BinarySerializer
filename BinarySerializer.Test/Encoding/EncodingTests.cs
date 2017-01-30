@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Encoding
@@ -6,6 +7,12 @@ namespace BinarySerialization.Test.Encoding
     [TestClass]
     public class EncodingTests : TestBase
     {
+        [TestInitialize]
+        public void Initialize()
+        {
+            System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+
         [TestMethod]
         public void EncodingTest()
         {

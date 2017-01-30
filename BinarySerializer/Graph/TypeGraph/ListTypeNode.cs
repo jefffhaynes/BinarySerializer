@@ -22,7 +22,7 @@ namespace BinarySerialization.Graph.TypeGraph
         
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            if(ChildType.IsPrimitive)
+            if(ChildType.GetTypeInfo().IsPrimitive)
                 return new PrimitiveListValueNode(parent, Name, this);
             return new ListValueNode(parent, Name, this);
         }

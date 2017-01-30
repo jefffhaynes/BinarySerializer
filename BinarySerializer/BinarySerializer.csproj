@@ -1,158 +1,36 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DD5DAC31-3CA0-4B79-8340-BDD68724A697}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BinarySerialization</RootNamespace>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <Description>A declarative serialization framework for controlling formatting of data at the byte level.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile328</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\BinarySerializer.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
+    <PackageReleaseNotes>Updated package to target .NET Platform Standard 1.3</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/Mephistofeles/BinarySerializer.git</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Mephistofeles/BinarySerializer.git</RepositoryUrl>
+    <AssemblyVersion>7.0.0.0</AssemblyVersion>
+    <FileVersion>7.0.0.0</FileVersion>
+    <Version>7.0.0</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.IO" Version="4.3.0" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
+    <PackageReference Include="System.Threading" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BindingMode.cs" />
-    <Compile Include="ChecksumMode.cs" />
-    <Compile Include="Crc.cs" />
-    <Compile Include="Crc32.cs" />
-    <Compile Include="Crc16.cs" />
-    <Compile Include="FieldAlignmentAttribute.cs" />
-    <Compile Include="FieldAlignmentMode.cs" />
-    <Compile Include="FieldChecksumAttribute.cs" />
-    <Compile Include="FieldCrc32Attribute.cs" />
-    <Compile Include="FieldCrc16Attribute.cs" />
-    <Compile Include="FieldEncodingAttribute.cs" />
-    <Compile Include="FieldEndiannessAttribute.cs" />
-    <Compile Include="FieldValueAttribute.cs" />
-    <Compile Include="FieldValueAttributeBase.cs" />
-    <Compile Include="Graph\BindingCollection.cs" />
-    <Compile Include="Graph\FieldValueAdapterStream.cs" />
-    <Compile Include="Graph\IBinding.cs" />
-    <Compile Include="Graph\Node.cs" />
-    <Compile Include="Graph\TypeGraph\ArrayTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\CollectionTypeNode.cs" />
-    <Compile Include="Graph\ConditionalBinding.cs" />
-    <Compile Include="Graph\TypeGraph\CustomTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\EnumTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\ListTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\StreamTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\UnknownTypeNode.cs" />
-    <Compile Include="Graph\ValueGraph\ArrayValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\CollectionValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\RootValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\CustomValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\EnumValueNode.cs" />
-    <Compile Include="EventShuttle.cs" />
-    <Compile Include="Graph\ValueGraph\ListValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\PrimitiveCollectionValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\PrimitiveListValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\PrimitveArrayValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\StreamValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\UnknownValueNode.cs" />
-    <Compile Include="LastItemMode.cs" />
-    <Compile Include="LazyBinarySerializationContext.cs" />
-    <Compile Include="MagicMethods.cs" />
-    <Compile Include="SerializeAsAttribute.cs" />
-    <Compile Include="BinarySerializer.cs" />
-    <Compile Include="BindingException.cs" />
-    <Compile Include="Bytes.cs" />
-    <Compile Include="Graph\Binding.cs" />
-    <Compile Include="Graph\TypeGraph\ContainerTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\EnumInfo.cs" />
-    <Compile Include="IConstAttribute.cs" />
-    <Compile Include="ILengthAttribute.cs" />
-    <Compile Include="MemberSerializingEventArgs.cs" />
-    <Compile Include="Graph\TypeGraph\TypeNode.cs" />
-    <Compile Include="NullStream.cs" />
-    <Compile Include="Graph\TypeGraph\ObjectTypeNode.cs" />
-    <Compile Include="Graph\TypeGraph\RootTypeNode.cs" />
-    <Compile Include="BoundedStream.cs" />
-    <Compile Include="ConditionalAttribute.cs" />
-    <Compile Include="SerializeWhenNotAttribute.cs" />
-    <Compile Include="StreamResetter.cs" />
-    <Compile Include="ItemSubtypeAttribute.cs" />
-    <Compile Include="SubtypeAttribute.cs" />
-    <Compile Include="SerializeUntilAttribute.cs" />
-    <Compile Include="ItemSerializeUntilAttribute.cs" />
-    <Compile Include="IValueConverter.cs" />
-    <Compile Include="BindingInfo.cs" />
-    <Compile Include="SerializeWhenAttribute.cs" />
-    <Compile Include="FieldLengthAttribute.cs" />
-    <Compile Include="IBinarySerializable.cs" />
-    <Compile Include="FieldOffsetAttribute.cs" />
-    <Compile Include="IgnoreAttribute.cs" />
-    <Compile Include="SerializeAsEnumAttribute.cs" />
-    <Compile Include="ItemLengthAttribute.cs" />
-    <Compile Include="ReflectionExtensionMethods.cs" />
-    <Compile Include="FieldCountAttribute.cs" />
-    <Compile Include="EndianAwareBinaryReader.cs" />
-    <Compile Include="EndianAwareBinaryWriter.cs" />
-    <Compile Include="Endianness.cs" />
-    <Compile Include="MemberSerializedEventArgs.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FieldOrderAttribute.cs" />
-    <Compile Include="SerializedType.cs" />
-    <Compile Include="BinarySerializationContext.cs" />
-    <Compile Include="RelativeSourceMode.cs" />
-    <Compile Include="FieldBindingBaseAttribute.cs" />
-    <Compile Include="IBindableFieldAttribute.cs" />
-    <Compile Include="Streamlet.cs" />
-    <Compile Include="Graph\TypeGraph\ValueTypeNode.cs" />
-    <Compile Include="Graph\ValueGraph\ValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\ObjectValueNode.cs" />
-    <Compile Include="Graph\ValueGraph\ValueValueNode.cs" />
-    <Compile Include="SubtypeBaseAttribute.cs" />
-    <Compile Include="ItemSubtypeDefaultAttribute.cs" />
-    <Compile Include="SubtypeDefaultBaseAttribute.cs" />
-    <Compile Include="SubtypeDefaultAttribute.cs" />
-    <Compile Include="TapStream.cs" />
-    <Compile Include="TypeExtensions.cs" />
+    <Reference Include="System.Text.Encoding.CodePages">
+      <HintPath>..\..\..\..\..\.nuget\packages\system.text.encoding.codepages\4.3.0\ref\netstandard1.3\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="nuget\BinarySerializer.dll.nuspec" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="nuget\nuget.exe" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)\nuget\nuget.exe" pack "$(ProjectPath)" -Prop Configuration=Release</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

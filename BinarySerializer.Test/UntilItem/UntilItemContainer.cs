@@ -12,7 +12,7 @@ namespace BinarySerialization.Test.UntilItem
         public List<UntilItemClass> Items { get; set; }
 
         [FieldOrder(2)]
-        [ItemSerializeUntil("LastItem", "Yep", ExcludeLastItem = true)]
+        [ItemSerializeUntil("LastItem", "Yep", LastItemMode = LastItemMode.Discard)]
         public List<UntilItemClass> ItemsLastItemExcluded { get; set; }
 
         [FieldOrder(3)]

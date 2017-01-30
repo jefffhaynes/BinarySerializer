@@ -70,7 +70,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             var effectiveType = nullableType ?? type;
 
-            if (effectiveType.IsEnum)
+            if (effectiveType.GetTypeInfo().IsEnum)
                 return typeof(EnumTypeNode);
 
             if (IsValueType(effectiveType))
