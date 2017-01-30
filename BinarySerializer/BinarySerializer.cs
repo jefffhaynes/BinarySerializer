@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using BinarySerialization.Graph.TypeGraph;
@@ -27,8 +27,7 @@ namespace BinarySerialization
         private const Endianness DefaultEndianness = Endianness.Little;
         private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
-        private static readonly Dictionary<Type, RootTypeNode> GraphCache = new Dictionary<Type, RootTypeNode>();
-        private static readonly object GraphCacheLock = new object();
+        private static readonly ConcurrentDictionary<Type, RootTypeNode> GraphCache = new ConcurrentDictionary<Type, RootTypeNode>();
 
         /// <summary>
         /// Default constructor.
@@ -91,17 +90,7 @@ namespace BinarySerialization
 
         private RootTypeNode GetGraph(Type valueType)
         {
-            lock (GraphCacheLock)
-            {
-                RootTypeNode graph;
-                if (GraphCache.TryGetValue(valueType, out graph))
-                    return graph;
-
-                graph = new RootTypeNode(valueType);
-                GraphCache.Add(valueType, graph);
-
-                return graph;
-            }
+            return GraphCache.GetOrAdd(valueType, type => new RootTypeNode(type));
         }
 
         /// <summary>
