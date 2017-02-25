@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.IO;
 using System.Reflection;
@@ -100,6 +100,8 @@ namespace BinarySerialization.Graph.TypeGraph
                 return typeof(ValueTypeNode);
             }
 
+            if (type == typeof(bool[]))
+                return typeof(PackedBooleanArrayTypeNode);
             if (type.IsArray)
             {
                 return typeof(ArrayTypeNode);
