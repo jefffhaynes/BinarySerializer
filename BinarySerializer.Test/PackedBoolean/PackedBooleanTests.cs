@@ -108,6 +108,27 @@ namespace BinarySerialization.Test.PackedBoolean
             CheckSequence(expectedLength, result.ConstantLengthArray);
         }
 
+        [TestMethod]
+        public void DoesntAffectUnpackedBooleanArrays()
+        {
+            var original = new UnpackedBooleanClass
+            {
+                UnpackedArray = new[] { true, true, false, false, true, true }
+            };
+
+            var expected = new byte[] { 6, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1 };
+            var actual = Serialize(original);
+
+            CheckSequence(expected, actual);
+
+            var deserialized = Deserialize<UnpackedBooleanClass>(actual);
+
+            Assert.AreEqual(original.UnpackedArray.Length, deserialized.UnpackedArrayLength, "Invalid length binding on unpacked boolean array.");
+            Assert.AreEqual(original.UnpackedArray.Length, deserialized.UnpackedArrayCount, "Invalid count binding on unpacked boolean array.");
+
+            CheckSequence(original.UnpackedArray, deserialized.UnpackedArray);
+        }
+
         private void CheckSequence<T>(IEnumerable<T> expected, IEnumerable<T> actual)
         {
             Assert.AreEqual(expected.Count(), actual.Count(), "Incorrect length");
