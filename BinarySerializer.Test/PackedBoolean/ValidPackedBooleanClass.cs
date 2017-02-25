@@ -10,7 +10,7 @@ namespace BinarySerialization.Test.PackedBoolean
         [FieldOrder(1)] public long BooleanArrayLength { get; set; }
 
         [FieldCount(nameof(BooleanArrayCount)), FieldLength(nameof(BooleanArrayLength))]
-        [FieldOrder(2)]
+        [FieldOrder(2), Pack]
         public bool[] BooleanArray { get; set; }
     }
 }

@@ -10,11 +10,11 @@ namespace BinarySerialization.Test.PackedBoolean
         [Ignore] public const int LengthConstraint = 2;
 
         [FieldCount(CountConstraint)]
-        [FieldOrder(0)]
+        [FieldOrder(0), Pack]
         public bool[] ConstantCountArray { get; set; }
 
-        [FieldLength(2)]
-        [FieldOrder(1)]
+        [FieldLength(LengthConstraint)]
+        [FieldOrder(1), Pack]
         public bool[] ConstantLengthArray { get; set; }
     }
 }
