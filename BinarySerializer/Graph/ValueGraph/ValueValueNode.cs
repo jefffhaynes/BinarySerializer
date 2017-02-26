@@ -385,7 +385,10 @@ namespace BinarySerialization.Graph.ValueGraph
                     case SerializedType.Int2:
                         return Bytes.Reverse(Convert.ToInt16(value));
                     case SerializedType.UInt2:
-                        return Bytes.Reverse(Convert.ToUInt16(value));
+                        var value2 = Bytes.Reverse(Convert.ToUInt16(value));
+
+                        // handle special case of char
+                        return ConvertToFieldType(value2);
                     case SerializedType.Int4:
                         return Bytes.Reverse(Convert.ToInt32(value));
                     case SerializedType.UInt4:

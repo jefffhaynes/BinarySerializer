@@ -80,7 +80,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
-            var attributes = memberInfo.GetCustomAttributes(true);
+            var attributes = memberInfo.GetCustomAttributes(true).ToList();
 
             IsIgnored = attributes.OfType<IgnoreAttribute>().Any();
 

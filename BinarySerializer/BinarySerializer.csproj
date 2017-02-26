@@ -4,17 +4,20 @@
     <Description>A declarative serialization framework for controlling formatting of data at the byte level.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Fixes issue with non-seekable streams</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixes issue with big endian char fields</PackageReleaseNotes>
     <PackageProjectUrl>binaryserializer.net</PackageProjectUrl>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>binaryserializer.net</RepositoryUrl>
-    <AssemblyVersion>7.0.1.0</AssemblyVersion>
-    <FileVersion>7.0.1.0</FileVersion>
-    <Version>7.0.1</Version>
+    <AssemblyVersion>7.0.2.0</AssemblyVersion>
+    <FileVersion>7.0.2.0</FileVersion>
+    <Version>7.0.2</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Collections" Version="4.3.0" />

@@ -10,6 +10,11 @@ namespace BinarySerialization.Test
     {
         protected static readonly BinarySerializer Serializer = new BinarySerializer();
 
+        protected static readonly BinarySerializer SerializerBe = new BinarySerializer
+        {
+            Endianness = BinarySerialization.Endianness.Big
+        };
+
         protected static readonly string[] TestSequence = {"a", "b", "c"};
         protected static readonly int[] PrimitiveTestSequence = {1, 2, 3};
 
@@ -47,6 +52,22 @@ namespace BinarySerialization.Test
 
             PrintDeserialize(typeof(T));
             return Serializer.Deserialize<T>(stream);
+        }
+
+
+        protected T RoundtripBigEndian<T>(T o, long expectedLength)
+        {
+            PrintSerialize(typeof(T));
+            var stream = new MemoryStream();
+            SerializerBe.Serialize(stream, o);
+
+            stream.Position = 0;
+            var data = stream.ToArray();
+
+            Assert.AreEqual(expectedLength, data.Length);
+
+            PrintDeserialize(typeof(T));
+            return SerializerBe.Deserialize<T>(stream);
         }
 
         protected T Roundtrip<T>(T o, byte[] expectedValue)

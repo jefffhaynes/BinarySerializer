@@ -9,6 +9,9 @@ namespace BinarySerialization.Test.Primitives
         {
             var actual = Roundtrip(value, expectedLength);
             Assert.AreEqual(value, actual);
+
+            var actualBe = RoundtripBigEndian(value, expectedLength);
+            Assert.AreEqual(value, actualBe);
         }
 
         [TestMethod]
@@ -20,67 +23,73 @@ namespace BinarySerialization.Test.Primitives
         [TestMethod]
         public void ByteTest()
         {
-            RoundtripPrimitive(byte.MaxValue, 1);
+            RoundtripPrimitive(byte.MaxValue, sizeof(byte));
         }
 
         [TestMethod]
         public void SByteTest()
         {
-            RoundtripPrimitive(sbyte.MaxValue, 1);
+            RoundtripPrimitive(sbyte.MaxValue, sizeof(sbyte));
         }
 
         [TestMethod]
         public void CharTest()
         {
-            RoundtripPrimitive(char.MaxValue, 2);
+            RoundtripPrimitive(char.MaxValue, sizeof(char));
         }
 
         [TestMethod]
         public void ShortTest()
         {
-            RoundtripPrimitive(short.MaxValue, 2);
+            RoundtripPrimitive(short.MaxValue, sizeof(short));
         }
 
         [TestMethod]
         public void UShortTest()
         {
-            RoundtripPrimitive(ushort.MaxValue, 2);
+            RoundtripPrimitive(ushort.MaxValue, sizeof(ushort));
         }
 
         [TestMethod]
         public void Int32Test()
         {
-            RoundtripPrimitive(int.MaxValue, 4);
+            RoundtripPrimitive(int.MaxValue, sizeof(int));
         }
 
         [TestMethod]
         public void UInt32Test()
         {
-            RoundtripPrimitive(uint.MaxValue, 4);
+            RoundtripPrimitive(uint.MaxValue, sizeof(uint));
         }
 
         [TestMethod]
         public void Int64Test()
         {
-            RoundtripPrimitive(long.MaxValue, 8);
+            RoundtripPrimitive(long.MaxValue, sizeof(long));
         }
 
         [TestMethod]
         public void UInt64Test()
         {
-            RoundtripPrimitive(ulong.MaxValue, 8);
+            RoundtripPrimitive(ulong.MaxValue, sizeof(ulong));
         }
 
         [TestMethod]
         public void SingleTest()
         {
-            RoundtripPrimitive(float.MaxValue, 4);
+            RoundtripPrimitive(float.MaxValue, sizeof(float));
+        }
+
+        [TestMethod]
+        public void SingleTest2()
+        {
+            RoundtripPrimitive(-48.651363f, sizeof(float));
         }
 
         [TestMethod]
         public void DoubleTest()
         {
-            RoundtripPrimitive(double.MaxValue, 8);
+            RoundtripPrimitive(double.MaxValue, sizeof(double));
         }
 
         [TestMethod]
