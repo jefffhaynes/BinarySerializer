@@ -5,10 +5,10 @@
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
     <PackageReleaseNotes>Fixes issue with big endian char fields</PackageReleaseNotes>
-    <PackageProjectUrl>binaryserializer.net</PackageProjectUrl>
+    <PackageProjectUrl>http://binaryserializer.com</PackageProjectUrl>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>binaryserializer.net</RepositoryUrl>
+    <RepositoryUrl>http://binaryserializer.com</RepositoryUrl>
     <AssemblyVersion>7.0.2.0</AssemblyVersion>
     <FileVersion>7.0.2.0</FileVersion>
     <Version>7.0.2</Version>
