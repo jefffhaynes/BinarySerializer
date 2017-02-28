@@ -13,9 +13,6 @@ namespace BinarySerialization
             if (!resetOnDispose)
                 return;
 
-            if (!stream.CanSeek)
-                throw new InvalidOperationException("Not supported on non-seekable streams");
-
             _stream = stream;
             _position = _stream.Position;
         }
@@ -29,6 +26,9 @@ namespace BinarySerialization
         {
             if (_position == null)
                 return;
+            
+            if (!_stream.CanSeek)
+                throw new InvalidOperationException("Not supported on non-seekable streams");
 
             _stream.Position = (long)_position;
         }
