@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace BinarySerialization
 {
@@ -37,6 +38,11 @@ namespace BinarySerialization
         /// The parent object serialization context.
         /// </summary>
         public override BinarySerializationContext ParentContext => _lazyContext.Value.ParentContext;
+
+        /// <summary>
+        /// The member info for the object being serialized.
+        /// </summary>
+        public override MemberInfo MemberInfo => _lazyContext.Value.MemberInfo;
 
         /// <summary>
         /// The parent value in the object graph of the object being serialized.

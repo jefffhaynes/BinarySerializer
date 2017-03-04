@@ -501,7 +501,8 @@ namespace BinarySerialization.Graph.ValueGraph
         private BinarySerializationContext CreateSerializationContext()
         {
             var parent = Parent as ValueNode;
-            return new BinarySerializationContext(Value, parent?.Value, parent?.TypeNode.Type, parent?.CreateSerializationContext());
+            return new BinarySerializationContext(Value, parent?.Value, parent?.TypeNode.Type,
+                parent?.CreateSerializationContext(), TypeNode.MemberInfo);
         }
 
         public LazyBinarySerializationContext CreateLazySerializationContext()

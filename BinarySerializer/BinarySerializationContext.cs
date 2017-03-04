@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 #pragma warning disable 618
 
@@ -21,12 +22,13 @@ namespace BinarySerialization
         /// <param name="parentValue">The parent of this object in the object graph.</param>
         /// <param name="parentType">The type of the parent object.</param>
         /// <param name="parentContext">The parent object serialization context.</param>
-        internal BinarySerializationContext(object value, object parentValue, Type parentType, BinarySerializationContext parentContext)
+        internal BinarySerializationContext(object value, object parentValue, Type parentType, BinarySerializationContext parentContext, MemberInfo memberInfo)
         {
             Value = value;
             ParentValue = parentValue;
             ParentType = parentType;
 			ParentContext = parentContext;
+            MemberInfo = memberInfo;
 
             // Deprecated
             Parent = parentValue;
@@ -51,6 +53,11 @@ namespace BinarySerialization
         /// The parent object serialization context.
         /// </summary>
 		public virtual BinarySerializationContext ParentContext { get; }
+
+        /// <summary>
+        /// The member info for the object being serialized.
+        /// </summary>
+        public virtual MemberInfo MemberInfo { get; }
 
         /// <summary>
         /// Depth of the object graph at this context.

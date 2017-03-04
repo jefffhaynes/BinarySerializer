@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using BinarySerializer.Test.Custom;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Custom
@@ -77,6 +78,17 @@ namespace BinarySerialization.Test.Custom
             var innerActual = (CustomSubtypeCustomClass) actual.Inner;
 
             Assert.AreEqual(innerExpected.Value, innerActual.Value);
+        }
+
+        [TestMethod]
+        public void CustomAttributeTest()
+        {
+            var expected = new CustomWithCustomAttributesContainerClass
+            {
+                Value = new CustomWithCustomAttributes()
+            };
+
+            Roundtrip(expected);
         }
     }
 }
