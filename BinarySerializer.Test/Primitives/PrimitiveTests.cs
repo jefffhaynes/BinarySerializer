@@ -21,63 +21,123 @@ namespace BinarySerialization.Test.Primitives
         }
 
         [TestMethod]
-        public void ByteTest()
+        public void ByteMaxTest()
         {
             RoundtripPrimitive(byte.MaxValue, sizeof(byte));
         }
 
         [TestMethod]
-        public void SByteTest()
+        public void ByteMinTest()
+        {
+            RoundtripPrimitive(byte.MinValue, sizeof(byte));
+        }
+
+        [TestMethod]
+        public void SByteMaxTest()
         {
             RoundtripPrimitive(sbyte.MaxValue, sizeof(sbyte));
         }
 
         [TestMethod]
-        public void CharTest()
+        public void SByteMinTest()
+        {
+            RoundtripPrimitive(sbyte.MinValue, sizeof(sbyte));
+        }
+
+        [TestMethod]
+        public void CharMaxTest()
         {
             RoundtripPrimitive(char.MaxValue, sizeof(char));
         }
 
         [TestMethod]
-        public void ShortTest()
+        public void CharMinTest()
+        {
+            RoundtripPrimitive(char.MinValue, sizeof(char));
+        }
+
+        [TestMethod]
+        public void ShortMaxTest()
         {
             RoundtripPrimitive(short.MaxValue, sizeof(short));
         }
 
         [TestMethod]
-        public void UShortTest()
+        public void ShortMinTest()
+        {
+            RoundtripPrimitive(short.MinValue, sizeof(short));
+        }
+
+        [TestMethod]
+        public void UShortMaxTest()
         {
             RoundtripPrimitive(ushort.MaxValue, sizeof(ushort));
         }
 
         [TestMethod]
-        public void Int32Test()
+        public void UShortMinTest()
+        {
+            RoundtripPrimitive(ushort.MinValue, sizeof(ushort));
+        }
+
+        [TestMethod]
+        public void Int32MaxTest()
         {
             RoundtripPrimitive(int.MaxValue, sizeof(int));
         }
 
         [TestMethod]
-        public void UInt32Test()
+        public void Int32MinTest()
+        {
+            RoundtripPrimitive(int.MinValue, sizeof(int));
+        }
+
+        [TestMethod]
+        public void UInt32MaxTest()
         {
             RoundtripPrimitive(uint.MaxValue, sizeof(uint));
         }
 
         [TestMethod]
-        public void Int64Test()
+        public void UInt32MinTest()
+        {
+            RoundtripPrimitive(uint.MinValue, sizeof(uint));
+        }
+
+        [TestMethod]
+        public void Int64MaxTest()
         {
             RoundtripPrimitive(long.MaxValue, sizeof(long));
         }
 
         [TestMethod]
-        public void UInt64Test()
+        public void Int64MinTest()
+        {
+            RoundtripPrimitive(long.MinValue, sizeof(long));
+        }
+
+        [TestMethod]
+        public void UInt64MaxTest()
         {
             RoundtripPrimitive(ulong.MaxValue, sizeof(ulong));
         }
 
         [TestMethod]
-        public void SingleTest()
+        public void UInt64MinTest()
+        {
+            RoundtripPrimitive(ulong.MinValue, sizeof(ulong));
+        }
+
+        [TestMethod]
+        public void SingleMaxTest()
         {
             RoundtripPrimitive(float.MaxValue, sizeof(float));
+        }
+
+        [TestMethod]
+        public void SingleMinTest()
+        {
+            RoundtripPrimitive(float.MinValue, sizeof(float));
         }
 
         [TestMethod]
@@ -87,9 +147,15 @@ namespace BinarySerialization.Test.Primitives
         }
 
         [TestMethod]
-        public void DoubleTest()
+        public void DoubleMaxTest()
         {
             RoundtripPrimitive(double.MaxValue, sizeof(double));
+        }
+
+        [TestMethod]
+        public void DoubleMinTest()
+        {
+            RoundtripPrimitive(double.MinValue, sizeof(double));
         }
 
         [TestMethod]
@@ -104,8 +170,7 @@ namespace BinarySerialization.Test.Primitives
             const string value = "hello";
             Roundtrip(value, System.Text.Encoding.UTF8.GetBytes(value + "\0"));
         }
-
-
+        
         [TestMethod]
         public void NullTerminatedStringTest()
         {

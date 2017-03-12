@@ -51,8 +51,10 @@ namespace BinarySerialization.Graph.ValueGraph
                         }).ToArray();
 
                         if (targetValues.Any(v => !value.Equals(v)))
+                        {
                             throw new BindingException(
                                 "Multiple bindings to a single source must have equivalent target values.");
+                        }
                     }
 
                     // handle case where we might be binding to a list or array
@@ -61,16 +63,23 @@ namespace BinarySerialization.Graph.ValueGraph
                     if (enumerableValue != null)
                     {
                         // handle special cases
-                        if (TypeNode.Type == typeof (byte[]) || TypeNode.Type == typeof (string))
+                        if (TypeNode.Type == typeof(byte[]) || TypeNode.Type == typeof(string))
                         {
                             var data = enumerableValue.Cast<object>().Select(Convert.ToByte).ToArray();
 
-                            if (TypeNode.Type == typeof (byte[]))
+                            if (TypeNode.Type == typeof(byte[]))
+                            {
                                 value = data;
-                            else if (TypeNode.Type == typeof (string))
+                            }
+                            else if (TypeNode.Type == typeof(string))
+                            {
                                 value = GetFieldEncoding().GetString(data, 0, data.Length);
+                            }
                         }
-                        else value = GetScalar(enumerableValue);
+                        else
+                        {
+                            value = GetScalar(enumerableValue);
+                        }
                     }
                 }
 
@@ -81,7 +90,9 @@ namespace BinarySerialization.Graph.ValueGraph
         public object GetValue(SerializedType serializedType)
         {
             if (_cachedValue != null)
+            {
                 return _cachedValue;
+            }
 
             return GetValue(_value, serializedType);
         }
@@ -91,13 +102,17 @@ namespace BinarySerialization.Graph.ValueGraph
             var childLengths = enumerable.Cast<object>().Select(ConvertToFieldType).ToList();
 
             if (childLengths.Count == 0)
+            {
                 return 0;
+            }
 
             var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
 
             if (childLengthGroups.Count > 1)
+            {
                 throw new InvalidOperationException(
                     "Unable to update scalar binding source because not all enumerable items have equal lengths.");
+            }
 
             var childLengthGroup = childLengthGroups.Single();
 
@@ -115,8 +130,13 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 /* In the special case of sized strings, don't allow nulls */
                 if (serializedType == SerializedType.SizedString)
+                {
                     value = string.Empty;
-                else return;
+                }
+                else
+                {
+                    return;
+                }
             }
 
             // prioritization of field length specifiers
@@ -138,59 +158,63 @@ namespace BinarySerialization.Graph.ValueGraph
             switch (serializedType)
             {
                 case SerializedType.Int1:
-                    stream.WriteByte(Convert.ToByte(convertedValue));
+                {
+                    stream.WriteByte((byte) Convert.ToSByte(convertedValue));
                     break;
+                }
                 case SerializedType.UInt1:
+                {
                     stream.WriteByte(Convert.ToByte(convertedValue));
                     break;
+                }
                 case SerializedType.Int2:
                 {
                     var data = BitConverter.GetBytes(Convert.ToInt16(convertedValue));
                     stream.Write(data, 0, data.Length);
-                }
                     break;
+                }
                 case SerializedType.UInt2:
                 {
                     var data = BitConverter.GetBytes(Convert.ToUInt16(convertedValue));
                     stream.Write(data, 0, data.Length);
-                }
                     break;
+                }
                 case SerializedType.Int4:
                 {
                     var data = BitConverter.GetBytes(Convert.ToInt32(convertedValue));
                     stream.Write(data, 0, data.Length);
-                }
                     break;
+                }
                 case SerializedType.UInt4:
                 {
                     var data = BitConverter.GetBytes(Convert.ToUInt32(convertedValue));
                     stream.Write(data, 0, data.Length);
-                }
                     break;
+                }
                 case SerializedType.Int8:
                 {
                     var data = BitConverter.GetBytes(Convert.ToInt64(convertedValue));
                     stream.Write(data, 0, data.Length);
-                }
                     break;
+                }
                 case SerializedType.UInt8:
                 {
                     var data = BitConverter.GetBytes(Convert.ToUInt64(convertedValue));
                     stream.Write(data, 0, data.Length);
-                }
                     break;
+                }
                 case SerializedType.Float4:
                 {
                     var data = BitConverter.GetBytes(Convert.ToSingle(convertedValue));
                     stream.Write(data, 0, data.Length);
-                }
                     break;
+                }
                 case SerializedType.Float8:
                 {
                     var data = BitConverter.GetBytes(Convert.ToDouble(convertedValue));
                     stream.Write(data, 0, data.Length);
-                }
                     break;
+                }
                 case SerializedType.ByteArray:
                 {
                     var data = (byte[]) value;
@@ -202,10 +226,14 @@ namespace BinarySerialization.Graph.ValueGraph
                     var data = GetFieldEncoding().GetBytes(value.ToString());
 
                     if (constLength != null)
+                    {
                         Array.Resize(ref data, (int) constLength.Value - 1);
+                    }
 
                     if (maxLength != null && data.Length > maxLength)
+                    {
                         Array.Resize(ref data, (int) maxLength.Value - 1);
+                    }
 
                     stream.Write(data, 0, data.Length);
                     stream.WriteByte(0);
@@ -216,10 +244,14 @@ namespace BinarySerialization.Graph.ValueGraph
                     var data = GetFieldEncoding().GetBytes(value.ToString());
 
                     if (constLength != null)
+                    {
                         Array.Resize(ref data, (int) constLength.Value);
+                    }
 
                     if (maxLength != null && data.Length > maxLength)
+                    {
                         Array.Resize(ref data, (int) maxLength.Value);
+                    }
 
                     stream.Write(data, 0, data.Length);
 
@@ -228,7 +260,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 case SerializedType.LengthPrefixedString:
                 {
                     if (constLength != null)
+                    {
                         throw new NotSupportedException("Length-prefixed strings cannot have a const length.");
+                    }
 
                     var writer = new BinaryWriter(stream, GetFieldEncoding());
                     writer.Write(value.ToString());
@@ -246,7 +280,9 @@ namespace BinarySerialization.Graph.ValueGraph
             if (EndOfStream(stream))
             {
                 if (TypeNode.IsNullable)
+                {
                     return;
+                }
 
                 throw new EndOfStreamException();
             }
@@ -369,7 +405,9 @@ namespace BinarySerialization.Graph.ValueGraph
         private object GetValue(object value, SerializedType serializedType)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             // only resolve endianness if it matters
             if (serializedType == SerializedType.Int2 || serializedType == SerializedType.UInt2 ||
@@ -378,7 +416,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 serializedType == SerializedType.Float4 || serializedType == SerializedType.Float8)
             {
                 if (GetFieldEndianness() != Endianness.Big)
+                {
                     return value;
+                }
 
                 switch (serializedType)
                 {
@@ -418,7 +458,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             byte b;
             while (maxLength-- > 0 && (b = reader.ReadByte()) != 0)
+            {
                 buffer.WriteByte(b);
+            }
 
             return buffer.ToArray();
         }
@@ -426,7 +468,9 @@ namespace BinarySerialization.Graph.ValueGraph
         public override string ToString()
         {
             if (Name != null)
+            {
                 return $"{Name}: {Value}";
+            }
 
             return Value?.ToString() ?? base.ToString();
         }
