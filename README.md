@@ -84,6 +84,7 @@ There are a number of attributes that can be used to control the serialization o
 * [FieldCrc32](#fieldcrc32attribute)
 * [FieldOffset](#fieldoffsetattribute)
 * [Subtype](#subtypeattribute)
+* [SubtypeFactory](#subtypefactoryattribute)
 * [SubtypeDefault](#subtypeattribute)
 * [SerializeAs](#serializeasattribute)
 * [SerializeAsEnum](#serializeasenumattribute)
@@ -92,6 +93,8 @@ There are a number of attributes that can be used to control the serialization o
 * [SerializeUntil](#serializeuntilattribute)
 * [ItemLength](#itemlengthattribute)
 * [ItemSubtype](#itemsubtypeattribute)
+* [ItemSubtypeFactory](#itemsubtypeattribute)
+* [ItemSubtypeDefault](#itemsubtypeattribute)
 * [ItemSerializeUntil](#itemserializeuntilattribute)
 
 ### IgnoreAttribute ###
@@ -480,6 +483,74 @@ public class Packet
 It is not necessary that FrameType be correct during serialization; it will be updated with the appropriate value based on the instantiated type.  During deserialization the FrameType field will be used to construct the correct type.
 
 The Subtype attribute can be used with the FieldLength attribute to write forward compatible processors.  Take the example of PNG, which uses "chunks" of data that may be able to be skipped even if they aren't understood.
+
+### SubtypeFactoryAttribute ###
+
+For situations where it is not desirable to statically declare subtypes either for large numbers of or dynamically loaded subtypes, a factory may be specified.  In these instances, any Subtype attributes will always be evaluated first and the factory will be used as fallback followed by the default subtype, if specified.
+
+```c#
+public class Packet
+{
+	[FieldOrder(0)]
+    public FrameType FrameType { get; set; }
+
+    [FieldOrder(1)]
+    [Subtype("FrameType", FrameType.Message, typeof(MessageFrame)]
+    [Subtype("FrameType", FrameType.Control, typeof(ControlFrame)]
+    [Subtype("FrameType", FrameType.Trigger, typeof(TriggerFrame)]
+	[SubtypeFactory("FrameType", typeof(FrameFactory))]
+	[SubtypeDefault(typeof(UnknownFrame))]
+    public Frame Frame { get; set; }
+}
+```
+
+```c#
+public class FrameFactory : ISubtypeFactory
+{
+	 public bool TryGetKey(Type valueType, out object key)
+     {
+          if (valueType == typeof(UpdateFrame))
+          {
+              key = FrameType.Update;
+          }
+          else if (valueType == typeof(PingFrame))
+          {
+              key = FrameType.Ping;
+          }
+          else
+          {
+              key = null;
+              return false;
+          }
+
+          return true;
+     }
+
+	 public bool TryGetType(object key, out Type type)
+     {
+          switch (Convert.ToInt32(key))
+          {
+               case FrameType.Update:
+			   {
+                    type = typeof(UpdateFrame);
+                    break;
+			   }
+               case FrameType.Ping:
+			   {
+                    type = typeof(PingFrame);
+                    break;
+			   }
+               default:
+			   {
+                    type = null;
+                    return false;
+			   }
+          }
+
+          return true;
+     }
+}
+```
 
 Additionally, the SubtypeDefault attribute may be used to specify a fallback subtype to be used in the event that an unknown indicator is encountered during deserialization.  During serialization the default subtype may be included without a corresponding subtype binding.  In this case the source must be set correctly prior to serialization.
 
