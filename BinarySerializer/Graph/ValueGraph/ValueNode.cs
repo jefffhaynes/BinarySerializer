@@ -56,53 +56,23 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (typeNode.SubtypeBinding != null && typeNode.SubtypeBinding.BindingMode == BindingMode.TwoWay)
             {
-                typeNode.SubtypeBinding.Bind(this, () =>
-                {
-                    Type valueType = GetValueTypeOverride();
-                    if (valueType == null)
-                        throw new InvalidOperationException("Binding targets must not be null.");
+                typeNode.SubtypeBinding.Bind(this, () => SubtypeBindingCallback(typeNode));
+            }
 
-                    var objectTypeNode = (ObjectTypeNode)typeNode;
-
-                    object value;
-                    if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
-                        return value;
-                    
-                    // allow default subtypes in order to support round-trip
-                    if (typeNode.SubtypeDefaultAttribute != null)
-                    {
-                        if (valueType == typeNode.SubtypeDefaultAttribute.Subtype)
-                            return UnsetValue;
-                    }
-
-                    throw new InvalidOperationException($"No subtype specified for ${valueType}");
-                });
+            if (typeNode.SubtypeFactoryBinding != null && typeNode.SubtypeFactoryBinding.BindingMode == BindingMode.TwoWay)
+            {
+                typeNode.SubtypeFactoryBinding.Bind(this, () => SubtypeBindingCallback(typeNode));
             }
 
             var parent = (TypeNode)typeNode.Parent;
             if (parent.ItemSubtypeBinding != null && parent.ItemSubtypeBinding.BindingMode == BindingMode.TwoWay)
             {
-                parent.ItemSubtypeBinding.Bind((ValueNode)Parent, () =>
-                {
-                    Type valueType = GetValueTypeOverride();
-                    if (valueType == null)
-                        throw new InvalidOperationException("Binding targets must not be null.");
+                parent.ItemSubtypeBinding.Bind((ValueNode)Parent, () => ItemSubtypeBindingCallback(typeNode));
+            }
 
-                    var objectTypeNode = (ObjectTypeNode)typeNode;
-
-                    object value;
-                    if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
-                        return value;
-
-                    // allow default subtypes in order to support round-trip
-                    if (parent.ItemSubtypeDefaultAttribute != null)
-                    {
-                        if (valueType == parent.ItemSubtypeDefaultAttribute.Subtype)
-                            return UnsetValue;
-                    }
-
-                    throw new InvalidOperationException($"No subtype specified for ${valueType}");
-                });
+            if (parent.ItemSubtypeFactoryBinding != null && parent.ItemSubtypeFactoryBinding.BindingMode == BindingMode.TwoWay)
+            {
+                parent.ItemSubtypeFactoryBinding.Bind((ValueNode)Parent, () => ItemSubtypeBindingCallback(typeNode));
             }
 
             if (typeNode.ItemSerializeUntilBinding != null && typeNode.ItemSerializeUntilBinding.BindingMode == BindingMode.TwoWay)
@@ -132,6 +102,75 @@ namespace BinarySerialization.Graph.ValueGraph
             // recurse to children
             foreach (ValueNode child in Children)
                 child.Bind();
+        }
+
+        private object SubtypeBindingCallback(TypeNode typeNode)
+        {
+            Type valueType = GetValueTypeOverride();
+            if (valueType == null)
+                throw new InvalidOperationException("Binding targets must not be null.");
+
+            var objectTypeNode = (ObjectTypeNode) typeNode;
+
+            object value;
+
+            // first try explicitly specified subtypes
+            if (typeNode.SubtypeBinding != null)
+            {
+                if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
+                    return value;
+            }
+
+            // next try factory
+            if (typeNode.SubtypeFactory != null)
+            {
+                if (typeNode.SubtypeFactory.TryGetKey(valueType, out value))
+                    return value;
+            }
+
+            // allow default subtypes in order to support round-trip
+            if (typeNode.SubtypeDefaultAttribute != null)
+            {
+                if (valueType == typeNode.SubtypeDefaultAttribute.Subtype)
+                    return UnsetValue;
+            }
+
+            throw new InvalidOperationException($"No subtype specified for ${valueType}");
+        }
+
+        private object ItemSubtypeBindingCallback(TypeNode typeNode)
+        {
+            Type valueType = GetValueTypeOverride();
+            if (valueType == null)
+                throw new InvalidOperationException("Binding targets must not be null.");
+
+            var parent = (TypeNode) typeNode.Parent;
+            var objectTypeNode = (ObjectTypeNode)typeNode;
+
+            object value;
+
+            // first try explicitly specified subtypes
+            if (parent.ItemSubtypeBinding != null)
+            {
+                if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
+                    return value;
+            }
+
+            // next try factory
+            if (objectTypeNode.ItemSubtypeFactory != null)
+            {
+                if (objectTypeNode.ItemSubtypeFactory.TryGetKey(valueType, out value))
+                    return value;
+            }
+
+            // allow default subtypes in order to support round-trip
+            if (parent.ItemSubtypeDefaultAttribute != null)
+            {
+                if (valueType == parent.ItemSubtypeDefaultAttribute.Subtype)
+                    return UnsetValue;
+            }
+
+            throw new InvalidOperationException($"No subtype specified for ${valueType}");
         }
 
         protected IEnumerable<ValueNode> GetSerializableChildren()

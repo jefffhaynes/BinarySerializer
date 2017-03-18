@@ -182,6 +182,14 @@ namespace BinarySerialization.Graph.TypeGraph
                     if (!Type.IsAssignableFrom(SubtypeDefaultAttribute.Subtype))
                         throw new InvalidOperationException($"{SubtypeDefaultAttribute.Subtype} is not a subtype of {Type}");
                 }
+                
+                var subtypeFactoryAttribute = attributes.OfType<SubtypeFactoryAttribute>().SingleOrDefault();
+                if (subtypeFactoryAttribute != null)
+                {
+                    SubtypeFactoryBinding = GetBinding(subtypeFactoryAttribute);
+                    SubtypeFactory =
+                        (ISubtypeFactory) subtypeFactoryAttribute.FactoryType.GetConstructor(new Type[0]).Invoke(null);
+                }
             }
 
             var itemSubtypeAttributes = attributes.OfType<ItemSubtypeAttribute>().Cast<SubtypeBaseAttribute>().ToArray();
@@ -213,12 +221,19 @@ namespace BinarySerialization.Graph.TypeGraph
                 ItemSubtypeBinding = GetBinding(itemSubtypeAttributes, itemBaseType);
                 ItemSubtypeDefaultAttribute = attributes.OfType<ItemSubtypeDefaultAttribute>().SingleOrDefault();
             }
+            
+            var itemSubtypeFactoryAttribute = attributes.OfType<ItemSubtypeFactoryAttribute>().SingleOrDefault();
+            if (itemSubtypeFactoryAttribute != null)
+            {
+                ItemSubtypeFactoryBinding = GetBinding(itemSubtypeFactoryAttribute);
+                ItemSubtypeFactory =
+                    (ISubtypeFactory)itemSubtypeFactoryAttribute.FactoryType.GetConstructor(new Type[0]).Invoke(null);
+            }
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             if (SerializeUntilAttribute != null)
             {
-                SerializeUntilBinding = new Binding(SerializeUntilAttribute,
-                    GetBindingLevel(SerializeUntilAttribute.Binding));
+                SerializeUntilBinding = GetBinding(SerializeUntilAttribute);
             }
 
             ItemLengthBindings = GetBindings<ItemLengthAttribute>(attributes);
@@ -227,9 +242,13 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (ItemSerializeUntilAttribute != null)
             {
-                ItemSerializeUntilBinding = new Binding(ItemSerializeUntilAttribute,
-                    GetBindingLevel(ItemSerializeUntilAttribute.Binding));
+                ItemSerializeUntilBinding = GetBinding(ItemSerializeUntilAttribute);
             }
+        }
+
+        private Binding GetBinding(FieldBindingBaseAttribute attribute)
+        {
+            return new Binding(attribute, GetBindingLevel(attribute.Binding));
         }
 
         private BindingCollection GetBindings<TAttribute>(IEnumerable<object> attributes) 
@@ -308,12 +327,16 @@ namespace BinarySerialization.Graph.TypeGraph
         public Binding ItemSerializeUntilBinding { get; }
         public Binding SubtypeBinding { get; }
         public Binding ItemSubtypeBinding { get; }
+        public Binding SubtypeFactoryBinding { get; }
+        public Binding ItemSubtypeFactoryBinding { get; }
 
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenBindings { get; }
         public ReadOnlyCollection<ConditionalBinding> SerializeWhenNotBindings { get; }
         public ReadOnlyCollection<FieldValueAttributeBase> FieldValueAttributes { get; }
         public ReadOnlyCollection<SubtypeBaseAttribute> SubtypeAttributes { get; }
         public SubtypeDefaultAttribute SubtypeDefaultAttribute { get; }
+        public ISubtypeFactory SubtypeFactory { get; }
+        public ISubtypeFactory ItemSubtypeFactory { get; }
         public ReadOnlyCollection<SubtypeBaseAttribute> ItemSubtypeAttributes { get; }
         public ItemSubtypeDefaultAttribute ItemSubtypeDefaultAttribute { get; }
         public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; }

@@ -158,7 +158,10 @@ namespace BinarySerialization.Graph.ValueGraph
             // treating all object members as object nodes.  In the case of sub-types we could later discover we
             // are actually a custom node because the specified subtype implements IBinarySerializable.
             var parent = (TypeNode) TypeNode.Parent;
-            if (_valueType != null && (TypeNode.SubtypeBinding != null || parent.ItemSubtypeBinding != null))
+
+            if (_valueType != null &&
+                (TypeNode.SubtypeBinding != null || parent.ItemSubtypeBinding != null ||
+                 TypeNode.SubtypeFactoryBinding != null || parent.ItemSubtypeFactoryBinding != null))
             {
                 var typeNode = (ObjectTypeNode) TypeNode;
                 var subType = typeNode.GetSubTypeNode(_valueType);
@@ -199,24 +202,27 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var parent = (TypeNode) TypeNode.Parent;
 
-            // resolve value type for deserialization
-            if (TypeNode.SubtypeBinding != null)
+            // first check for any immediate subtype information
+            if (TypeNode.SubtypeBinding != null || TypeNode.SubtypeFactoryBinding != null)
             {
-                SetValueType(TypeNode.SubtypeBinding, this, TypeNode.SubtypeAttributes, TypeNode.SubtypeDefaultAttribute);
+                SetValueType(TypeNode.SubtypeBinding, this, TypeNode.SubtypeAttributes,
+                    TypeNode.SubtypeFactoryBinding, TypeNode.SubtypeFactory,
+                    TypeNode.SubtypeDefaultAttribute);
             }
-            else if (parent.ItemSubtypeBinding != null)
+
+            // failing that, check for parent subtype information
+            if (_valueType == null && (parent.ItemSubtypeBinding != null || parent.ItemSubtypeFactoryBinding != null))
             {
                 SetValueType(parent.ItemSubtypeBinding, (ValueNode) Parent, parent.ItemSubtypeAttributes,
+                    parent.ItemSubtypeFactoryBinding, parent.ItemSubtypeFactory,
                     parent.ItemSubtypeDefaultAttribute);
             }
-            else
+
+            // no subtype information
+            if(_valueType == null)
             {
                 // trivial case with no subtypes
                 _valueType = TypeNode.Type;
-
-                if (_valueType.GetTypeInfo().IsAbstract)
-                    throw new InvalidOperationException(
-                        "Abstract types must have at least one subtype binding to be deserialized.");
             }
 
             // skip over if null (this may happen if subtypes are unknown during deserialization)
@@ -255,16 +261,32 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void SetValueType(Binding binding, ValueNode bindingTarget,
             ReadOnlyCollection<SubtypeBaseAttribute> attributes,
+            Binding subtypeFactoryBinding,
+            ISubtypeFactory subtypeFactory,
             SubtypeDefaultBaseAttribute defaultAttribute)
         {
-            // try to resolve value type using subtype mapping
-            var subTypeValue = binding.GetValue(bindingTarget);
+            if (binding != null)
+            {
+                // try to resolve value type using subtype mapping
+                var subTypeValue = binding.GetValue(bindingTarget);
 
-            // find matching subtype, if available
-            var matchingAttribute = attributes.SingleOrDefault(
-                attribute => subTypeValue.Equals(Convert.ChangeType(attribute.Value, subTypeValue.GetType(), null)));
+                // find matching subtype, if available
+                var matchingAttribute = attributes.SingleOrDefault(
+                    attribute => subTypeValue.Equals(Convert.ChangeType(attribute.Value, subTypeValue.GetType(), null)));
 
-            _valueType = matchingAttribute?.Subtype;
+                _valueType = matchingAttribute?.Subtype;
+            }
+
+            if (_valueType == null && subtypeFactoryBinding != null)
+            {
+                var subTypeFactoryValue = subtypeFactoryBinding.GetValue(bindingTarget);
+
+                Type valueType;
+                if (subtypeFactory.TryGetType(subTypeFactoryValue, out valueType))
+                {
+                    _valueType = valueType;
+                }
+            }
 
             // we couldn't match so use default if specified
             if (_valueType == null && defaultAttribute != null)

@@ -179,12 +179,5 @@ namespace BinarySerialization.Test.Subtype
             var expected = new NonUniqueSubtypeValuesClass();
             Roundtrip(expected);
         }
-
-        [TestMethod]
-        [ExpectedException(typeof (InvalidOperationException))]
-        public void ThrowOnAbstractTypeWithNoSubtypeTest()
-        {
-            Roundtrip(new ThrowOnAbstractTypeWithNoSubtypeClass {Superclass = new SubclassA()});
-        }
     }
 }
