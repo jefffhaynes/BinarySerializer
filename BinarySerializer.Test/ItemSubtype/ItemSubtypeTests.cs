@@ -61,5 +61,39 @@ namespace BinarySerialization.Test.ItemSubtype
             Assert.AreEqual(2, actual.Items.Count);
             Assert.AreEqual(typeof(ItemTypeA), actual.Items[0].GetType());
         }
+
+        [TestMethod]
+        public void ItemSubtypeFactoryTest()
+        {
+            var expected = new ItemSubtypeFactoryClass
+            {
+                Value = new List<IItemSubtype>
+                {
+                    new ItemTypeB(),
+                    new ItemTypeB()
+                }
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(3, actual.Key);
+        }
+
+        [TestMethod]
+        public void ItemSubtypeMixedTest()
+        {
+            var expected = new ItemSubtypeMixedClass
+            {
+                Value = new List<IItemSubtype>
+                {
+                    new ItemTypeB(),
+                    new ItemTypeB()
+                }
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(2, actual.Key);
+        }
     }
 }

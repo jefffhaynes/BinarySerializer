@@ -1,22 +1,18 @@
 ﻿using System;
 
-namespace BinarySerialization.Test.Subtype
+namespace BinarySerialization.Test.ItemSubtype
 {
-    public class SubtypeFactory : ISubtypeFactory
+    public class ItemSubtypeFactory : ISubtypeFactory
     {
         public bool TryGetKey(Type valueType, out object key)
         {
-            if (valueType == typeof(SubclassA))
+            if (valueType == typeof(ItemTypeA))
             {
                 key = 1;
             }
-            else if (valueType == typeof(SubclassB))
+            else if (valueType == typeof(ItemTypeB))
             {
-                key = 2;
-            }
-            else if (valueType == typeof(SubSubclassC))
-            {
-                key = 4;
+                key = 3;
             }
             else
             {
@@ -29,16 +25,13 @@ namespace BinarySerialization.Test.Subtype
 
         public bool TryGetType(object key, out Type type)
         {
-            switch ((int) key)
+            switch ((byte)key)
             {
                 case 1:
-                    type = typeof(SubclassA);
+                    type = typeof(ItemTypeA);
                     break;
-                case 2:
-                    type = typeof(SubclassB);
-                    break;
-                case 4:
-                    type = typeof(SubSubclassC);
+                case 3:
+                    type = typeof(ItemTypeB);
                     break;
                 default:
                     type = null;

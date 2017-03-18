@@ -157,9 +157,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             // next try factory
-            if (objectTypeNode.ItemSubtypeFactory != null)
+            if (parent.ItemSubtypeFactory != null)
             {
-                if (objectTypeNode.ItemSubtypeFactory.TryGetKey(valueType, out value))
+                if (parent.ItemSubtypeFactory.TryGetKey(valueType, out value))
                     return value;
             }
 
