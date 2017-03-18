@@ -219,7 +219,6 @@ namespace BinarySerialization.Graph.TypeGraph
                 }
 
                 ItemSubtypeBinding = GetBinding(itemSubtypeAttributes, itemBaseType);
-                ItemSubtypeDefaultAttribute = attributes.OfType<ItemSubtypeDefaultAttribute>().SingleOrDefault();
             }
             
             var itemSubtypeFactoryAttribute = attributes.OfType<ItemSubtypeFactoryAttribute>().SingleOrDefault();
@@ -229,6 +228,8 @@ namespace BinarySerialization.Graph.TypeGraph
                 ItemSubtypeFactory =
                     (ISubtypeFactory)itemSubtypeFactoryAttribute.FactoryType.GetConstructor(new Type[0]).Invoke(null);
             }
+
+            ItemSubtypeDefaultAttribute = attributes.OfType<ItemSubtypeDefaultAttribute>().SingleOrDefault();
 
             SerializeUntilAttribute = attributes.OfType<SerializeUntilAttribute>().SingleOrDefault();
             if (SerializeUntilAttribute != null)

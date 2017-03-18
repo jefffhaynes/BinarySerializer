@@ -203,7 +203,8 @@ namespace BinarySerialization.Graph.ValueGraph
             var parent = (TypeNode) TypeNode.Parent;
 
             // first check for any immediate subtype information
-            if (TypeNode.SubtypeBinding != null || TypeNode.SubtypeFactoryBinding != null)
+            if (TypeNode.SubtypeBinding != null || TypeNode.SubtypeFactoryBinding != null ||
+                TypeNode.SubtypeDefaultAttribute != null)
             {
                 SetValueType(TypeNode.SubtypeBinding, this, TypeNode.SubtypeAttributes,
                     TypeNode.SubtypeFactoryBinding, TypeNode.SubtypeFactory,
@@ -211,7 +212,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             // failing that, check for parent subtype information
-            if (_valueType == null && (parent.ItemSubtypeBinding != null || parent.ItemSubtypeFactoryBinding != null))
+            if (_valueType == null &&
+                (parent.ItemSubtypeBinding != null || parent.ItemSubtypeFactoryBinding != null ||
+                 parent.ItemSubtypeDefaultAttribute != null))
             {
                 SetValueType(parent.ItemSubtypeBinding, (ValueNode) Parent, parent.ItemSubtypeAttributes,
                     parent.ItemSubtypeFactoryBinding, parent.ItemSubtypeFactory,

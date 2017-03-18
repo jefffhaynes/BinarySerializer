@@ -179,5 +179,13 @@ namespace BinarySerialization.Test.Subtype
             var expected = new NonUniqueSubtypeValuesClass();
             Roundtrip(expected);
         }
+
+        [TestMethod]
+        public void DefaultSubtypeOnlyTest()
+        {
+            var actual = Deserialize<SubtypeDefaultOnlyClass>(new byte[] {0x4, 0x1, 0x2, 0x3, 0x4, 05});
+            Assert.AreEqual(0x4, actual.Key);
+            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
+        }
     }
 }

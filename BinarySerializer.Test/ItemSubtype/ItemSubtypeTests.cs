@@ -58,8 +58,8 @@ namespace BinarySerialization.Test.ItemSubtype
             var actual = Deserialize<ItemSubtypeClass>(data);
 
             Assert.AreEqual(4, actual.Indicator);
-            Assert.AreEqual(2, actual.Items.Count);
-            Assert.AreEqual(typeof(ItemTypeA), actual.Items[0].GetType());
+            Assert.AreEqual(1, actual.Items.Count);
+            Assert.AreEqual(typeof(DefaultItemType), actual.Items[0].GetType());
         }
 
         [TestMethod]
@@ -94,6 +94,17 @@ namespace BinarySerialization.Test.ItemSubtype
             var actual = Roundtrip(expected);
 
             Assert.AreEqual(2, actual.Key);
+        }
+
+        [TestMethod]
+        public void ItemSubtypeFactoryWithDefaultTest()
+        {
+            var data = new byte[] { 4, 0, 1, 2, 3 };
+            var actual = Deserialize<ItemSubtypeFactoryWithDefaultClass>(data);
+
+            Assert.AreEqual(4, actual.Key);
+            Assert.AreEqual(1, actual.Items.Count);
+            Assert.AreEqual(typeof(DefaultItemType), actual.Items[0].GetType());
         }
     }
 }

@@ -51,5 +51,13 @@ namespace BinarySerialization.Test.Subtype
             var actual = Deserialize<SubtypeFactoryWithDefaultClass>(data);
             Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
         }
+
+        [TestMethod]
+        public void SubtypeMixedWithDefaultTest()
+        {
+            var data = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5 };
+            var actual = Deserialize<SubtypeMixedWithDefaultClass>(data);
+            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
+        }
     }
 }
