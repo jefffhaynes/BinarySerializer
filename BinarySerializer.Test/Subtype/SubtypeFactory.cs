@@ -29,7 +29,7 @@ namespace BinarySerialization.Test.Subtype
 
         public bool TryGetType(object key, out Type type)
         {
-            switch ((int) key)
+            switch (Convert.ToInt32(key))
             {
                 case 1:
                     type = typeof(SubclassA);

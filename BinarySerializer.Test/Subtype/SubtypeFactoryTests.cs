@@ -43,5 +43,13 @@ namespace BinarySerialization.Test.Subtype
             Assert.AreEqual(3, actual.Key);
             Assert.AreEqual(expected.Value.GetType(), actual.Value.GetType());
         }
+
+        [TestMethod]
+        public void SubtypeFactoryWithDefaultTest()
+        {
+            var data = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5 };
+            var actual = Deserialize<SubtypeFactoryWithDefaultClass>(data);
+            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
+        }
     }
 }
