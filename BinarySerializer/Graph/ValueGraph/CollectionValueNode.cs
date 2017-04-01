@@ -39,10 +39,8 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 if (stream.IsAtLimit)
                     break;
-
-                var childStream = GetConstFieldItemLength() == null
-                    ? stream
-                    : new BoundedStream(stream, GetConstFieldItemLength);
+                
+                var childStream = new BoundedStream(stream, GetConstFieldItemLength);
 
                 child.Serialize(childStream, eventShuttle);
             }
@@ -115,7 +113,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     // TODO this doesn't allow for deferred eval of endianness in the case of jagged arrays
                     // probably extremely rare but still...
                     var itemLength = itemLengthEnumerator?.Current;
-                    var childStream = itemLength == null ? stream : new BoundedStream(stream, () => itemLength);
+                    var childStream = itemLength == null ? new BoundedStream(stream) : new BoundedStream(stream, () => itemLength);
                     
                     using (var streamResetter = new StreamResetter(childStream))
                     {
@@ -128,6 +126,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
                             var convertedItemTerminationValue =
                                 itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
+
+                            if (itemTerminationChild.Value == null)
+                                break;
 
                             if (itemTerminationChild.Value.Equals(convertedItemTerminationValue))
                             {

@@ -1,10 +1,11 @@
 using System.IO;
+using BinarySerializer.Test.Issues.Issue55;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Issues.Issue55
+namespace BinarySerialization.Test.Issues.Issue55
 {
     [TestClass]
-    public class Issue55Tests
+    public class Issue55Tests : TestBase
     {
         [TestMethod]
         public void Test()
@@ -28,6 +29,8 @@ namespace BinarySerializer.Test.Issues.Issue55
                     }
                 }
             };
+
+            Roundtrip(source);
 
             var serializer = new BinarySerialization.BinarySerializer();
             var outputStream = new MemoryStream();

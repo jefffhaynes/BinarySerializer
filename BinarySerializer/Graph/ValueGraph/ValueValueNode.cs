@@ -218,6 +218,17 @@ namespace BinarySerialization.Graph.ValueGraph
                 case SerializedType.ByteArray:
                 {
                     var data = (byte[]) value;
+
+                    if (constLength != null)
+                    {
+                        Array.Resize(ref data, (int) constLength.Value);
+                    }
+
+                    if (maxLength != null && data.Length > maxLength)
+                    {
+                        Array.Resize(ref data, (int) maxLength.Value);
+                    }
+
                     stream.Write(data, 0, data.Length);
                     break;
                 }

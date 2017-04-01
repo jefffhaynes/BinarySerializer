@@ -1,21 +1,19 @@
 using System;
 using System.IO;
-using BinarySerialization;
 
-namespace BinarySerializer.Test.Issues.Issue55
+namespace BinarySerialization.Test.Issues.Issue55
 {
     public class CustomSerializable : IBinarySerializable
     {
-
-        [BinarySerialization.Ignore]
+        [Ignore]
         public byte Value;
 
-        public void Serialize(Stream stream, Endianness endianness, BinarySerializationContext serializationContext)
+        public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)
         {
             stream.WriteByte(Value);
         }
 
-        public void Deserialize(Stream stream, Endianness endianness, BinarySerializationContext serializationContext)
+        public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext serializationContext)
         {
             var readByte = stream.ReadByte();
             if (readByte == -1) throw new EndOfStreamException();

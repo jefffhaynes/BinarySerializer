@@ -101,7 +101,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             // recurse to children
             foreach (ValueNode child in Children)
+            {
                 child.Bind();
+            }
         }
 
         private object SubtypeBindingCallback(TypeNode typeNode)
@@ -243,8 +245,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void SerializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
         {
-            if (maxLengthDelegate() != null)
-                stream = new BoundedStream(stream, maxLengthDelegate);
+            stream = new BoundedStream(stream, maxLengthDelegate);
 
             if (TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Count > 0)
             {
@@ -261,8 +262,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
             SerializeOverride(stream, eventShuttle);
 
-            if(TypeNode.FieldValueAttributes != null)
+            if (TypeNode.FieldValueAttributes != null)
+            {
                 stream.Flush();
+            }
         }
 
         // this is internal only because of the weird custom subtype case.  If I can figure out a better
@@ -329,13 +332,17 @@ namespace BinarySerialization.Graph.ValueGraph
         private void Align(BoundedStream stream, long? alignment, bool pad = false)
         {
             if (alignment == null)
+            {
                 throw new ArgumentNullException(nameof(alignment));
+            }
 
             var position = stream.RelativePosition;
             var delta = (alignment.Value - position % alignment.Value)%alignment.Value;
 
             if (delta == 0)
+            {
                 return;
+            }
 
             if (pad)
             {
@@ -355,9 +362,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void DeserializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
         {
-            if (maxLengthDelegate() != null)
-                stream = new BoundedStream(stream, maxLengthDelegate);
-            
+            stream = new BoundedStream(stream, maxLengthDelegate);
             DeserializeOverride(stream, eventShuttle);
         }
 
@@ -580,10 +585,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected static bool EndOfStream(BoundedStream stream)
         {
-            if (stream.IsAtLimit)
-                return true;
-
-            return stream.CanSeek && stream.Position >= stream.Length;
+            return stream.IsAtLimit || stream.AvailableForReading == 0;
         }
     }
 }

@@ -191,10 +191,13 @@ namespace BinarySerialization
         {
             get
             {
-                if (MaxLength == null)
-                    return false;
+                if (MaxLength != null)
+                {
+                    return Position >= MaxLength;
+                }
 
-                return Position >= MaxLength;
+                var source = Source as BoundedStream;
+                return source != null && source.IsAtLimit;
             }
         }
         
@@ -202,7 +205,22 @@ namespace BinarySerialization
         {
             get
             {
-                var maxLength = MaxLength ?? long.MaxValue;
+                long maxLength;
+
+                if (MaxLength == null)
+                {
+                    var source = Source as BoundedStream;
+                    if (source != null)
+                    {
+                        return source.AvailableForReading;
+                    }
+
+                    maxLength = long.MaxValue;
+                }
+                else
+                {
+                    maxLength = MaxLength.Value;
+                }
 
                 if (!_canSeek)
                     return maxLength - Position;
@@ -215,10 +233,13 @@ namespace BinarySerialization
         {
             get
             {
-                if (MaxLength == null)
-                    return long.MaxValue;
+                if (MaxLength != null)
+                {
+                    return MaxLength.Value - Position;
+                }
 
-                return MaxLength.Value - Position;
+                var source = Source as BoundedStream;
+                return source?.AvailableForWriting ?? long.MaxValue;
             }
         }
     }
