@@ -398,7 +398,7 @@ public class Packet
 
     [FieldOrder(1)]
     [FieldLength("Length")]
-    [FieldCrc16("Checksum", Mode = ChecksumMode.Xor)]
+    [FieldChecksum("Checksum", Mode = ChecksumMode.Xor)]
     public byte[] Data { get; set; }
 
     [FieldOrder(2)]

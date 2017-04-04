@@ -12,7 +12,7 @@ namespace BinarySerialization
         /// <summary>
         /// Initializes a new instance of the FieldChecksum class.
         /// </summary>
-        public FieldChecksumAttribute(string valuePath) : base(valuePath)
+        public FieldChecksumAttribute(string checksumPath) : base(checksumPath)
         {
         }
 
