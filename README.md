@@ -484,6 +484,7 @@ It is not necessary that FrameType be correct during serialization; it will be u
 
 The Subtype attribute can be used with the FieldLength attribute to write forward compatible processors.  Take the example of PNG, which uses "chunks" of data that may be able to be skipped even if they aren't understood.
 
+
 ### SubtypeFactoryAttribute ###
 
 For situations where it is not desirable to statically declare subtypes either for large numbers of or dynamically loaded subtypes, a factory may be specified.  In these instances, any Subtype attributes will always be evaluated first and the factory will be used as fallback followed by the default subtype, if specified.
