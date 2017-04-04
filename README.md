@@ -491,15 +491,15 @@ For situations where it is not desirable to statically declare subtypes either f
 ```c#
 public class Packet
 {
-	[FieldOrder(0)]
+    [FieldOrder(0)]
     public FrameType FrameType { get; set; }
 
     [FieldOrder(1)]
     [Subtype("FrameType", FrameType.Message, typeof(MessageFrame)]
     [Subtype("FrameType", FrameType.Control, typeof(ControlFrame)]
     [Subtype("FrameType", FrameType.Trigger, typeof(TriggerFrame)]
-	[SubtypeFactory("FrameType", typeof(FrameFactory))]
-	[SubtypeDefault(typeof(UnknownFrame))]
+    [SubtypeFactory("FrameType", typeof(FrameFactory))]
+    [SubtypeDefault(typeof(UnknownFrame))]
     public Frame Frame { get; set; }
 }
 ```
@@ -507,48 +507,48 @@ public class Packet
 ```c#
 public class FrameFactory : ISubtypeFactory
 {
-	 public bool TryGetKey(Type valueType, out object key)
-     {
-          if (valueType == typeof(UpdateFrame))
-          {
-              key = FrameType.Update;
-          }
-          else if (valueType == typeof(PingFrame))
-          {
-              key = FrameType.Ping;
-          }
-          else
-          {
-              key = null;
-              return false;
-          }
+    public bool TryGetKey(Type valueType, out object key)
+    {
+        if (valueType == typeof(UpdateFrame))
+        {
+            key = FrameType.Update;
+        }
+        else if (valueType == typeof(PingFrame))
+        {
+            key = FrameType.Ping;
+        }
+        else
+        {
+            key = null;
+            return false;
+        }
 
-          return true;
-     }
+        return true;
+    }
 
-	 public bool TryGetType(object key, out Type type)
-     {
-          switch (Convert.ToInt32(key))
-          {
-               case FrameType.Update:
-			   {
-                    type = typeof(UpdateFrame);
-                    break;
-			   }
-               case FrameType.Ping:
-			   {
-                    type = typeof(PingFrame);
-                    break;
-			   }
-               default:
-			   {
-                    type = null;
-                    return false;
-			   }
-          }
+	public bool TryGetType(object key, out Type type)
+    {
+        switch (Convert.ToInt32(key))
+        {
+            case FrameType.Update:
+			{
+                type = typeof(UpdateFrame);
+                break;
+			}
+            case FrameType.Ping:
+			{
+                type = typeof(PingFrame);
+                break;
+			}
+            default:
+			{
+                type = null;
+                return false;
+			}
+        }
 
-          return true;
-     }
+        return true;
+    }
 }
 ```
 
