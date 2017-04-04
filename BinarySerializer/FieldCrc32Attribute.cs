@@ -14,7 +14,7 @@
         /// <summary>
         /// Initializes a new instance of the FieldCrc32 class.
         /// </summary>
-        public FieldCrc32Attribute(string valuePath) : base(valuePath)
+        public FieldCrc32Attribute(string crcPath) : base(crcPath)
         {
         }
 

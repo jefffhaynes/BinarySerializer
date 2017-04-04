@@ -13,7 +13,7 @@
         /// <summary>
         /// Initializes a new instance of the FieldCrc16 class.
         /// </summary>
-        public FieldCrc16Attribute(string valuePath) : base(valuePath)
+        public FieldCrc16Attribute(string crcPath) : base(crcPath)
         {
         }
 
