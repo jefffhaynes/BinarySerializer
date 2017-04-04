@@ -526,25 +526,25 @@ public class FrameFactory : ISubtypeFactory
         return true;
     }
 
-	public bool TryGetType(object key, out Type type)
+    public bool TryGetType(object key, out Type type)
     {
         switch (Convert.ToInt32(key))
         {
             case FrameType.Update:
-			{
+            {
                 type = typeof(UpdateFrame);
                 break;
-			}
+            }
             case FrameType.Ping:
-			{
+            {
                 type = typeof(PingFrame);
                 break;
-			}
+            }
             default:
-			{
+            {
                 type = null;
                 return false;
-			}
+            }
         }
 
         return true;
