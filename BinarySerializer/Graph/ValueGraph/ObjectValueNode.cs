@@ -137,19 +137,6 @@ namespace BinarySerialization.Graph.ValueGraph
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             ObjectSerializeOverride(stream, eventShuttle);
-
-            var length = GetConstFieldLength();
-
-            /* Check if we need to pad out object */
-            if (length != null)
-            {
-                if (length > stream.RelativePosition)
-                {
-                    var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int) padLength];
-                    stream.Write(pad, 0, pad.Length);
-                }
-            }
         }
 
         protected virtual void ObjectSerializeOverride(BoundedStream stream, EventShuttle eventShuttle)

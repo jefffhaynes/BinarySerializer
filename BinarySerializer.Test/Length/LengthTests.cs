@@ -228,7 +228,37 @@ namespace BinarySerialization.Test.Length
                 }
             };
 
-            var actual = Roundtrip(expected);
+            Roundtrip(expected);
+        }
+
+        [TestMethod]
+        public void PrimitiveNullByteArrayLengthTest()
+        {
+            PrimitiveNullArrayLengthTest<byte>();
+        }
+
+        [TestMethod]
+        public void PrimitiveNullSByteArrayLengthTest()
+        {
+            PrimitiveNullArrayLengthTest<sbyte>();
+        }
+
+        [TestMethod]
+        public void PrimitiveNullShortArrayLengthTest()
+        {
+            PrimitiveNullArrayLengthTest<short>();
+        }
+
+        [TestMethod]
+        public void PrimitiveNullUShortArrayLengthTest()
+        {
+            PrimitiveNullArrayLengthTest<ushort>();
+        }
+
+        private void PrimitiveNullArrayLengthTest<TValue>()
+        {
+            var expected = new PrimitiveArrayClass<TValue>();
+            var actual = Roundtrip(5);
         }
     }
 }

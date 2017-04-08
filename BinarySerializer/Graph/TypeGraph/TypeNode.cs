@@ -31,6 +31,26 @@ namespace BinarySerialization.Graph.TypeGraph
                 {typeof (byte[]), SerializedType.ByteArray}
             };
 
+        public static readonly Dictionary<SerializedType, object> SerializedTypeDefault =
+            new Dictionary<SerializedType, object>
+            {
+                {SerializedType.Default, null},
+                {SerializedType.Int1, default(sbyte)},
+                {SerializedType.UInt1, default(byte)},
+                {SerializedType.Int2, default(short)},
+                {SerializedType.UInt2, default(ushort)},
+                {SerializedType.Int4, default(int)},
+                {SerializedType.UInt4, default(uint)},
+                {SerializedType.Int8, default(long)},
+                {SerializedType.UInt8, default(ulong)},
+                {SerializedType.Float4, default(float)},
+                {SerializedType.Float8, default(double)},
+                {SerializedType.NullTerminatedString, default(string)},
+                {SerializedType.SizedString, default(string)},
+                {SerializedType.LengthPrefixedString, default(string)},
+                {SerializedType.ByteArray, default(byte[])}
+            };
+
         private readonly SerializedType? _serializedType;
 
         protected TypeNode(TypeNode parent)
@@ -380,6 +400,15 @@ namespace BinarySerialization.Graph.TypeGraph
             }
 
             return serializedType;
+        }
+
+        public static object GetDefaultValue(SerializedType serializedType)
+        {
+            object value;
+            if (SerializedTypeDefault.TryGetValue(serializedType, out value))
+                return value;
+
+            return null;
         }
 
         public ValueNode CreateSerializer(ValueNode parent)

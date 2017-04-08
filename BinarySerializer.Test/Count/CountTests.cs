@@ -114,5 +114,65 @@ namespace BinarySerialization.Test.Count
             Assert.AreEqual(2, actual.Count);
             Assert.AreEqual(2, actual.Count2);
         }
+
+        [TestMethod]
+        public void PrimitiveNullByteArrayTest()
+        {
+            PrimitiveNullArrayLengthTest<byte>(sizeof(byte));
+        }
+
+        [TestMethod]
+        public void PrimitiveNullSByteArrayTest()
+        {
+            PrimitiveNullArrayLengthTest<sbyte>(sizeof(sbyte));
+        }
+
+        [TestMethod]
+        public void PrimitiveNullShortArrayTest()
+        {
+            PrimitiveNullArrayLengthTest<short>(sizeof(short));
+        }
+
+        [TestMethod]
+        public void PrimitiveNullUShortArrayTest()
+        {
+            PrimitiveNullArrayLengthTest<ushort>(sizeof(ushort));
+        }
+
+        [TestMethod]
+        public void PrimitiveNullIntArrayTest()
+        {
+            PrimitiveNullArrayLengthTest<int>(sizeof(int));
+        }
+
+        [TestMethod]
+        public void PrimitiveNullUIntArrayTest()
+        {
+            PrimitiveNullArrayLengthTest<uint>(sizeof(uint));
+        }
+
+        [TestMethod]
+        public void PrimitiveNullLongArrayTest()
+        {
+            PrimitiveNullArrayLengthTest<uint>(sizeof(uint));
+        }
+
+        [TestMethod]
+        public void PrimitiveNullULongArrayTest()
+        {
+            PrimitiveNullArrayLengthTest<uint>(sizeof(uint));
+        }
+
+        [TestMethod]
+        public void PrimitiveNullStringArrayTest()
+        {
+            PrimitiveNullArrayLengthTest<string>(0);
+        }
+
+        private void PrimitiveNullArrayLengthTest<TValue>(int expectedChildLength)
+        {
+            var expected = new PrimitiveArrayConstClass<TValue>();
+            var actual = Roundtrip(expectedChildLength * 5);
+        }
     }
 }

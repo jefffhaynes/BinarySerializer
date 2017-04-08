@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace BinarySerialization.Test
 {
     [TestClass]
-    public class BinarySerializerTests
+    public class BinarySerializerTests : TestBase
     {
         private const string Disclaimer = "This isn't really cereal";
         private readonly BinarySerializer _serializer = new BinarySerializer();
@@ -71,7 +72,7 @@ namespace BinarySerialization.Test
         }
 
         [TestMethod]
-        public void Roundtrip()
+        public void CerealTest()
         {
             var cereal = Cerealize();
 
@@ -141,7 +142,7 @@ namespace BinarySerialization.Test
                     _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
 
-            Console.WriteLine("write {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
+            Debug.WriteLine("write {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
         }
 
         private void SerializerMemberDeserialized(object sender, MemberSerializedEventArgs e)
@@ -153,7 +154,7 @@ namespace BinarySerialization.Test
                     _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
 
-            Console.WriteLine("read {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
+            Debug.WriteLine("read {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
         }
 
         [TestMethod]

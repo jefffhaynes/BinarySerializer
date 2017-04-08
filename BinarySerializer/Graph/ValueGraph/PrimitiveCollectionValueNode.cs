@@ -64,10 +64,30 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var count = GetConstFieldCount();
 
-            PrimitiveCollectionSerializeOverride(stream, itemLength, count);
+            var typeNode = (CollectionTypeNode)TypeNode;
+            var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
 
-            var typeNode = (CollectionTypeNode) TypeNode;
+            var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
+            var boundValue = BoundValue;
+
+            // handle null value case
+            if (boundValue == null)
+            {
+                if (count != null)
+                {
+                    var defaultValue = TypeNode.GetDefaultValue(childSerializedType);
+                    for (int i = 0; i < count.Value; i++)
+                    {
+                        childSerializer.Serialize(stream, defaultValue, childSerializedType, itemLength);
+                    }
+                }
+
+                return;
+            }
+
+            PrimitiveCollectionSerializeOverride(stream, boundValue, childSerializer, childSerializedType, itemLength, count);
+            
             /* Add termination */
             if (typeNode.TerminationChild != null)
             {
@@ -133,7 +153,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, long? length, long? itemCount);
+        protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, object boundValue, ValueValueNode childSerializer, SerializedType childSerializedType, long? length, long? itemCount);
         protected abstract object CreateCollection(long size);
         protected abstract object CreateCollection(IEnumerable enumerable);
         protected abstract void SetCollectionValue(object item, long index);

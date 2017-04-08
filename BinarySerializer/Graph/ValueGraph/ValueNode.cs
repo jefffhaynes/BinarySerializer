@@ -262,6 +262,19 @@ namespace BinarySerialization.Graph.ValueGraph
 
             SerializeOverride(stream, eventShuttle);
 
+            /* Check if we need to pad out object */
+            var length = GetConstFieldLength();
+
+            if (length != null)
+            {
+                if (length > stream.RelativePosition)
+                {
+                    var padLength = length - stream.RelativePosition;
+                    var pad = new byte[(int)padLength];
+                    stream.Write(pad, 0, pad.Length);
+                }
+            }
+
             if (TypeNode.FieldValueAttributes != null)
             {
                 stream.Flush();
@@ -364,6 +377,19 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             stream = new BoundedStream(stream, maxLengthDelegate);
             DeserializeOverride(stream, eventShuttle);
+            
+            /* Check if we need to seek past padding */
+            var length = GetConstFieldLength();
+
+            if (length != null)
+            {
+                if (length > stream.RelativePosition)
+                {
+                    var padLength = length - stream.RelativePosition;
+                    var pad = new byte[(int)padLength];
+                    stream.Read(pad, 0, pad.Length);
+                }
+            }
         }
 
         internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);

@@ -11,23 +11,16 @@ namespace BinarySerialization.Graph.ValueGraph
         {
         }
 
-        protected override void PrimitiveCollectionSerializeOverride(BoundedStream stream, long? itemLength, long? itemCount)
+        protected override void PrimitiveCollectionSerializeOverride(BoundedStream stream, object boundValue,
+            ValueValueNode childSerializer, SerializedType childSerializedType, long? itemLength, long? itemCount)
         {
-            var typeNode = (ListTypeNode)TypeNode;
-            var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
-            
-            var childSerializedType = childSerializer.TypeNode.GetSerializedType();
-
-            var list = BoundValue as IList;
-
-            if (list == null)
-                return;
+            var list = (IList) boundValue;
 
             // Handle const-sized mismatched collections
             if (itemCount != null && list.Count != itemCount)
             {
                 var tempList = list;
-                list = (IList)CreateCollection(itemCount.Value);
+                list = (IList) CreateCollection(itemCount.Value);
 
                 for (int i = 0; i < Math.Min(tempList.Count, list.Count); i++)
                     list[i] = tempList[i];

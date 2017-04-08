@@ -126,6 +126,11 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public void Serialize(BoundedStream stream, object value, SerializedType serializedType, long? length = null)
         {
+            // prioritization of field length specifiers
+            var constLength = length ?? // explicit length passed from parent
+                              GetConstFieldLength() ?? // calculated length from this field
+                              GetConstFieldCount(); // explicit field count (used for byte arrays and strings)
+
             if (value == null)
             {
                 /* In the special case of sized strings, don't allow nulls */
@@ -135,14 +140,18 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 else
                 {
+                    if (constLength != null)
+                    {
+                        if (serializedType == SerializedType.ByteArray ||
+                            serializedType == SerializedType.NullTerminatedString)
+                        {
+                            stream.Write(new byte[constLength.Value], 0, (int) constLength.Value);
+                        }
+                    }
+
                     return;
                 }
             }
-
-            // prioritization of field length specifiers
-            var constLength = length ?? // explicit length passed from parent
-                              GetConstFieldLength() ?? // calculated length from this field
-                              GetConstFieldCount(); // explicit field count (used for byte arrays and strings)
 
             long? maxLength = null;
 
