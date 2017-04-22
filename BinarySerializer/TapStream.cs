@@ -41,12 +41,8 @@ namespace BinarySerialization
 
         public override long Position
         {
-            get { return base.Position; }
-
-            set
-            {
-                throw new InvalidOperationException(TappingErrorMessage);
-            }
+            get => base.Position;
+            set => throw new InvalidOperationException(TappingErrorMessage);
         }
 
         public override void Flush()

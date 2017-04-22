@@ -33,10 +33,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value
         {
-            get
-            {
-                return Child?.Value;
-            }
+            get => Child?.Value;
 
             set
             {

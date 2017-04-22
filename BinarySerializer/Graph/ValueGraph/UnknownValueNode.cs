@@ -13,7 +13,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value
         {
-            get { return _cachedValue; }
+            get => _cachedValue;
 
             set
             {

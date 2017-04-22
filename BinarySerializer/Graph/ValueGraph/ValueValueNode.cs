@@ -19,8 +19,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value
         {
-            get { return GetValue(TypeNode.GetSerializedType()); }
-            set { _cachedValue = value; }
+            get => GetValue(TypeNode.GetSerializedType());
+            set => _cachedValue = value;
         }
 
         public override object BoundValue
@@ -45,10 +45,11 @@ namespace BinarySerialization.Graph.ValueGraph
                     if (Bindings.Count != 1)
                     {
                         var targetValues = Bindings.Select(binding =>
-                        {
-                            var bindingValue = binding();
-                            return bindingValue == UnsetValue ? Value : bindingValue;
-                        }).ToArray();
+                            {
+                                var bindingValue = binding();
+                                return bindingValue == UnsetValue ? Value : bindingValue;
+                            })
+                            .ToArray();
 
                         if (targetValues.Any(v => !value.Equals(v)))
                         {
@@ -335,6 +336,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
             }
 
+            var effectiveLengthValue = effectiveLength ?? 0;
+
             object value;
             switch (serializedType)
             {
@@ -370,18 +373,18 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 case SerializedType.ByteArray:
                 {
-                    value = reader.ReadBytes((int) effectiveLength.Value);
+                    value = reader.ReadBytes((int) effectiveLengthValue);
                     break;
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    var data = ReadNullTerminated(reader, (int) effectiveLength.Value).ToArray();
+                    var data = ReadNullTerminated(reader, (int) effectiveLengthValue).ToArray();
                     value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
                 }
                 case SerializedType.SizedString:
                 {
-                    var data = reader.ReadBytes((int) effectiveLength.Value);
+                    var data = reader.ReadBytes((int) effectiveLengthValue);
                     var untrimmed = GetFieldEncoding().GetString(data, 0, data.Length);
                     if (TypeNode.AreStringsNullTerminated)
                     {

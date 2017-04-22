@@ -199,13 +199,13 @@ namespace BinarySerialization.Graph.ValueGraph
             var terminationItemChild = (ValueValueNode)lastItem.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
             return terminationItemChild.BoundValue;
         }
-        
+
+        // ReSharper disable IteratorNeverReturns
         private static IEnumerable<long> GetInfiniteSequence(long value)
         {
             while (true)
                 yield return value;
-            // ReSharper disable FunctionNeverReturns
         }
-        // ReSharper restore FunctionNeverReturns
+        // ReSharper restore IteratorNeverReturns
     }
 }

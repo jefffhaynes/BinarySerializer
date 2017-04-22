@@ -55,8 +55,8 @@ namespace BinarySerialization
         /// </summary>
         public event EventHandler<MemberSerializedEventArgs> MemberSerialized
         {
-            add { _eventShuttle.MemberSerialized += value; }
-            remove { _eventShuttle.MemberSerialized -= value; }
+            add => _eventShuttle.MemberSerialized += value;
+            remove => _eventShuttle.MemberSerialized -= value;
         }
 
         /// <summary>
@@ -64,8 +64,8 @@ namespace BinarySerialization
         /// </summary>
         public event EventHandler<MemberSerializedEventArgs> MemberDeserialized
         {
-            add { _eventShuttle.MemberDeserialized += value; }
-            remove { _eventShuttle.MemberDeserialized -= value; }
+            add => _eventShuttle.MemberDeserialized += value;
+            remove => _eventShuttle.MemberDeserialized -= value;
         }
 
         /// <summary>
@@ -73,8 +73,8 @@ namespace BinarySerialization
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberSerializing
         {
-            add { _eventShuttle.MemberSerializing += value; }
-            remove { _eventShuttle.MemberSerializing -= value; }
+            add => _eventShuttle.MemberSerializing += value;
+            remove => _eventShuttle.MemberSerializing -= value;
         }
 
         /// <summary>
@@ -82,8 +82,8 @@ namespace BinarySerialization
         /// </summary>
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing
         {
-            add { _eventShuttle.MemberDeserializing += value; }
-            remove { _eventShuttle.MemberDeserializing -= value; }
+            add => _eventShuttle.MemberDeserializing += value;
+            remove => _eventShuttle.MemberDeserializing -= value;
         }
         
         private readonly EventShuttle _eventShuttle = new EventShuttle();

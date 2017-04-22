@@ -35,7 +35,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public virtual bool Visited
         {
-            get { return _visited; }
+            get => _visited;
 
             set
             {

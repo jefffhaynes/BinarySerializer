@@ -33,8 +33,9 @@ namespace BinarySerialization
             Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)method.CreateDelegate(typeof(Func<TTarget, TReturn>));
 
             // Now create a more weakly typed delegate which will call the strongly typed one
-            Func<object, object> ret = target => func((TTarget)target);
-            return ret;
+            object Func(object target) => func((TTarget) target);
+
+            return Func;
         }
         // ReSharper restore UnusedMember.Local
 
@@ -62,12 +63,13 @@ namespace BinarySerialization
             Action<TTarget, TValue> action = (Action<TTarget, TValue>)method.CreateDelegate(typeof(Action<TTarget, TValue>));
 
             // Now create a more weakly typed delegate which will call the strongly typed one
-            Action<object, object> ret = (target, value) =>
+            void Func(object target, object value)
             {
                 if (value != null)
                     action((TTarget) target, (TValue) value);
-            };
-            return ret;
+            }
+
+            return Func;
         }
         // ReSharper restore UnusedMember.Local
     }

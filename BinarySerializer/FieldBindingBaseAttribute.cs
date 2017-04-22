@@ -37,8 +37,8 @@ namespace BinarySerialization
         /// </summary>
         public string Path
         {
-            get { return Binding.Path; }
-            set { Binding.Path = value; }
+            get => Binding.Path;
+            set => Binding.Path = value;
         }
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace BinarySerialization
         /// </summary>
         public BindingMode BindingMode
         {
-            get { return Binding.BindingMode; }
-            set { Binding.BindingMode = value; }
+            get => Binding.BindingMode;
+            set => Binding.BindingMode = value;
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace BinarySerialization
         /// </summary>
         public int AncestorLevel
         {
-            get { return Binding.AncestorLevel; }
-            set { Binding.AncestorLevel = value; }
+            get => Binding.AncestorLevel;
+            set => Binding.AncestorLevel = value;
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace BinarySerialization
         /// </summary>
         public Type AncestorType
         {
-            get { return Binding.AncestorType; }
-            set { Binding.AncestorType = value; }
+            get => Binding.AncestorType;
+            set => Binding.AncestorType = value;
         }
 
         /// <summary>
@@ -74,8 +74,8 @@ namespace BinarySerialization
         /// </summary>
         public RelativeSourceMode RelativeSourceMode
         {
-            get { return Binding.RelativeSourceMode; }
-            set { Binding.RelativeSourceMode = value; }
+            get => Binding.RelativeSourceMode;
+            set => Binding.RelativeSourceMode = value;
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace BinarySerialization
         /// </summary>
         public Type ConverterType
         {
-            get { return Binding.ConverterType; }
-            set { Binding.ConverterType = value; }
+            get => Binding.ConverterType;
+            set => Binding.ConverterType = value;
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace BinarySerialization
         /// </summary>
         public object ConverterParameter
         {
-            get { return Binding.ConverterParameter; }
-            set { Binding.ConverterParameter = value; }
+            get => Binding.ConverterParameter;
+            set => Binding.ConverterParameter = value;
         }
 	}
 }

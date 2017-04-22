@@ -15,10 +15,8 @@ namespace BinarySerialization
         
         internal BoundedStream(Stream source, Func<long?> maxLengthDelegate = null)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            
-            Source = source;
+            Source = source ?? throw new ArgumentNullException(nameof(source));
+
             _maxLengthDelegate = maxLengthDelegate;
 
             /* Store for performance */
@@ -75,7 +73,7 @@ namespace BinarySerialization
         /// </summary>
         public override long Position
         {
-            get { return RelativePosition; }
+            get => RelativePosition;
 
             set
             {
