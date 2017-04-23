@@ -29,7 +29,9 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 /* For creating serialization contexts quickly */
                 if (_cachedValue != null)
+                {
                     return _cachedValue;
+                }
 
                 return GetValue(child => child.Value);
             }
@@ -37,7 +39,9 @@ namespace BinarySerialization.Graph.ValueGraph
             set
             {
                 if (value == null)
+                {
                     return;
+                }
 
                 var typeNode = (ObjectTypeNode) TypeNode;
 
@@ -52,13 +56,105 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 // initialize all children from the corresponding set value fields
                 foreach (var child in Children)
+                {
                     child.Value = child.TypeNode.ValueGetter(value);
+                }
 
                 _valueType = value.GetType();
 
                 // cache the value for creating serialization contexts quickly
                 _cachedValue = value;
             }
+        }
+
+        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            ObjectSerializeOverride(stream, eventShuttle);
+        }
+
+        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            ResolveValueType();
+
+            // skip over if null (this may happen if subtypes are unknown during deserialization)
+            if (_valueType != null)
+            {
+                GenerateChildren();
+
+                try
+                {
+                    ObjectDeserializeOverride(stream, eventShuttle);
+                }
+                catch (EndOfStreamException)
+                {
+                    // this is ok but we can't consider this object fully formed.
+                    _valueType = null;
+                }
+            }
+
+            SkipPadding(stream);
+        }
+
+        protected virtual void ObjectSerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            // check to see if we are actually supposed to be a custom serialization.  This is a side-effect of
+            // treating all object members as object nodes.  In the case of sub-types we could later discover we
+            // are actually a custom node because the specified subtype implements IBinarySerializable.
+
+            if (IsCustomNode(out ValueNode customValueNode))
+            {
+                // this is a little bit of a cheat, but another side-effect of this weird corner case
+                customValueNode.Value = _cachedValue;
+
+                customValueNode.SerializeOverride(stream, eventShuttle);
+
+                return;
+            }
+
+            var serializableChildren = GetSerializableChildren();
+
+            var lazyContext = CreateLazySerializationContext();
+
+            foreach (var child in serializableChildren)
+            {
+                EmitBeginSerialization(stream, child, lazyContext, eventShuttle);
+
+                child.Serialize(stream, eventShuttle);
+
+                EmitEndSerialization(stream, child, lazyContext, eventShuttle);
+            }
+        }
+
+        protected virtual void ObjectDeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            // check to see if we are actually supposed to be a custom deserialization.  This is a side-effect of
+            // treating all object members as object nodes.  In the case of sub-types we could later discover we
+            // are actually a custom node because the specified subtype implements IBinarySerializable.
+            if (IsCustomNode(out ValueNode customValueNode))
+            {
+                customValueNode.DeserializeOverride(stream, eventShuttle);
+
+                // this is a cheat, but another side-effect of this weird corner case
+                _cachedValue = customValueNode.Value;
+
+                return;
+            }
+
+            var lazyContext = CreateLazySerializationContext();
+
+            foreach (var child in GetSerializableChildren())
+            {
+                EmitBeginDeserialization(stream, child, lazyContext, eventShuttle);
+
+                child.Deserialize(stream, eventShuttle);
+
+                EmitEndDeserialization(stream, child, lazyContext, eventShuttle);
+            }
+        }
+
+        protected override Type GetValueTypeOverride()
+        {
+            return _valueType;
         }
 
         /// <summary>
@@ -69,24 +165,32 @@ namespace BinarySerialization.Graph.ValueGraph
         private object GetValue(Func<ValueNode, object> childValueSelector)
         {
             if (_valueType == null)
+            {
                 return null;
+            }
 
             // can't do anything if this type is abstract
             if (_valueType.GetTypeInfo().IsAbstract)
+            {
                 return null;
+            }
 
             var objectTypeNode = (ObjectTypeNode) TypeNode;
 
             // if ignored, the best we can do is return set value
             if (objectTypeNode.IsIgnored)
+            {
                 return _cachedValue;
+            }
 
             // make sure we're operating on the correct (possibly sub-) type.
             var node = objectTypeNode.GetSubTypeNode(_valueType);
 
             // see if it's possible to construct at all
             if (node.Constructor == null)
+            {
                 throw new InvalidOperationException("No public constructors.");
+            }
 
             // let's figure out the actual value now
             object value;
@@ -106,9 +210,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 // find children that can be initialized or partially initialized with construction based on matching name
                 var parameterizedChildren = node.ConstructorParameterNames.Join(serializableChildren,
-                    parameter => parameter.ToLower(),
-                    serializableChild => serializableChild.Name.ToLower(),
-                    (parameter, serializableChild) => serializableChild).ToList();
+                        parameter => parameter.ToLower(),
+                        serializableChild => serializableChild.Name.ToLower(),
+                        (parameter, serializableChild) => serializableChild)
+                    .ToList();
 
                 // get constructor arguments based on child selector
                 var parameterValues = parameterizedChildren.Select(childValueSelector).ToArray();
@@ -126,7 +231,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 var setter = child.TypeNode.ValueSetter;
 
                 if (setter == null && !child.TypeNode.IsIgnored)
+                {
                     throw new InvalidOperationException("No public setter.");
+                }
 
                 setter?.Invoke(value, childValueSelector(child));
             }
@@ -134,17 +241,9 @@ namespace BinarySerialization.Graph.ValueGraph
             return value;
         }
 
-        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        private bool IsCustomNode(out ValueNode customValueNode)
         {
-            ObjectSerializeOverride(stream, eventShuttle);
-        }
-
-        protected virtual void ObjectSerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
-        {
-            // check to see if we are actually supposed to be a custom serialization.  This is a side-effect of
-            // treating all object members as object nodes.  In the case of sub-types we could later discover we
-            // are actually a custom node because the specified subtype implements IBinarySerializable.
-            var parent = (TypeNode) TypeNode.Parent;
+            var parent = (TypeNode)TypeNode.Parent;
 
             if (_valueType != null &&
                 (TypeNode.SubtypeBinding != null || parent.ItemSubtypeBinding != null ||
@@ -155,37 +254,63 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (subType is CustomTypeNode)
                 {
-                    var customValueNode = subType.CreateSerializer((ValueNode) Parent);
-
-                    // this is a little bit of a cheat, but another side-effect of this weird corner case
-                    customValueNode.Value = _cachedValue;
-                    customValueNode.SerializeOverride(stream, eventShuttle);
-                    return;
+                    customValueNode = subType.CreateSerializer((ValueNode) Parent);
+                    return true;
                 }
             }
 
-            var serializableChildren = GetSerializableChildren();
+            customValueNode = null;
 
-            var lazyContext = CreateLazySerializationContext();
+            return false;
+        }
 
-            foreach (var child in serializableChildren)
+        private void EmitEndSerialization(BoundedStream stream, ValueNode child,
+            LazyBinarySerializationContext lazyContext,
+            EventShuttle eventShuttle)
+        {
+            if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
             {
-                // report on serialization start if subscribed
-                if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
-                    eventShuttle.OnMemberSerializing(this, child.Name, lazyContext,
-                        stream.GlobalPosition);
-
-                // serialize child
-                child.Serialize(stream, eventShuttle);
-
-                // report on serialization complete if subscribed
-                if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
-                    eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, lazyContext,
-                        stream.GlobalPosition);
+                eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, lazyContext,
+                    stream.GlobalPosition);
             }
         }
 
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        private void EmitBeginSerialization(BoundedStream stream, ValueNode child,
+            LazyBinarySerializationContext lazyContext,
+            EventShuttle eventShuttle)
+        {
+            if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
+            {
+                eventShuttle.OnMemberSerializing(this, child.Name, lazyContext,
+                    stream.GlobalPosition);
+            }
+        }
+
+        private void GenerateChildren()
+        {
+            var typeNode = (ObjectTypeNode) TypeNode;
+
+            // generate correct children for this subtype
+            var subType = typeNode.GetSubTypeNode(_valueType);
+            Children = new List<ValueNode>(subType.Children.Select(child => child.CreateSerializer(this)));
+        }
+
+        private void SkipPadding(BoundedStream stream)
+        {
+            var length = GetFieldLength();
+
+            if (length != null)
+            {
+                if (length > stream.RelativePosition)
+                {
+                    var padLength = length - stream.RelativePosition;
+                    var pad = new byte[(int) padLength];
+                    stream.Read(pad, 0, pad.Length);
+                }
+            }
+        }
+
+        private void ResolveValueType()
         {
             var parent = (TypeNode) TypeNode.Parent;
 
@@ -209,43 +334,10 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             // no subtype information
-            if(_valueType == null)
+            if (_valueType == null)
             {
                 // trivial case with no subtypes
                 _valueType = TypeNode.Type;
-            }
-
-            // skip over if null (this may happen if subtypes are unknown during deserialization)
-            if (_valueType != null)
-            {
-                var typeNode = (ObjectTypeNode) TypeNode;
-
-                // generate correct children for this subtype
-                var subType = typeNode.GetSubTypeNode(_valueType);
-                Children = new List<ValueNode>(subType.Children.Select(child => child.CreateSerializer(this)));
-
-                try
-                {
-                    ObjectDeserializeOverride(stream, eventShuttle);
-                }
-                catch (EndOfStreamException)
-                {
-                    // this is ok but we can't consider this object fully formed.
-                    _valueType = null;
-                }
-            }
-            
-            var length = GetFieldLength();
-
-            // Check if we need to read past padding
-            if (length != null)
-            {
-                if (length > stream.RelativePosition)
-                {
-                    var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int) padLength];
-                    stream.Read(pad, 0, pad.Length);
-                }
             }
         }
 
@@ -262,7 +354,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 // find matching subtype, if available
                 var matchingAttribute = attributes.SingleOrDefault(
-                    attribute => subTypeValue.Equals(Convert.ChangeType(attribute.Value, subTypeValue.GetType(), null)));
+                    attribute => subTypeValue.Equals(
+                        Convert.ChangeType(attribute.Value, subTypeValue.GetType(), null)));
 
                 _valueType = matchingAttribute?.Subtype;
             }
@@ -285,50 +378,26 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected virtual void ObjectDeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        private void EmitEndDeserialization(BoundedStream stream, ValueNode child,
+            LazyBinarySerializationContext lazyContext,
+            EventShuttle eventShuttle)
         {
-            // check to see if we are actually supposed to be a custom deserialization.  This is a side-effect of
-            // treating all object members as object nodes.  In the case of sub-types we could later discover we
-            // are actually a custom node because the specified subtype implements IBinarySerializable.
-            var parent = (TypeNode) TypeNode.Parent;
-            if (_valueType != null && (TypeNode.SubtypeBinding != null || parent.ItemSubtypeBinding != null))
+            if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
             {
-                var typeNode = (ObjectTypeNode) TypeNode;
-                var subType = typeNode.GetSubTypeNode(_valueType);
-
-                if (subType is CustomTypeNode)
-                {
-                    var customValueNode = subType.CreateSerializer((ValueNode) Parent);
-                    customValueNode.DeserializeOverride(stream, eventShuttle);
-
-                    // this is a cheat, but another side-effect of this weird corner case
-                    _cachedValue = customValueNode.Value;
-                    return;
-                }
-            }
-
-            var lazyContext = CreateLazySerializationContext();
-
-            foreach (var child in GetSerializableChildren())
-            {
-                // report on deserialization start if subscribed
-                if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
-                    eventShuttle.OnMemberDeserializing(this, child.Name, lazyContext,
-                        stream.GlobalPosition);
-
-                // deserialize child
-                child.Deserialize(stream, eventShuttle);
-
-                // report on deserialization complete if subscribed
-                if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
-                    eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, lazyContext,
-                        stream.GlobalPosition);
+                eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, lazyContext,
+                    stream.GlobalPosition);
             }
         }
 
-        protected override Type GetValueTypeOverride()
+        private void EmitBeginDeserialization(BoundedStream stream, ValueNode child,
+            LazyBinarySerializationContext lazyContext,
+            EventShuttle eventShuttle)
         {
-            return _valueType;
+            if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
+            {
+                eventShuttle.OnMemberDeserializing(this, child.Name, lazyContext,
+                    stream.GlobalPosition);
+            }
         }
     }
 }
