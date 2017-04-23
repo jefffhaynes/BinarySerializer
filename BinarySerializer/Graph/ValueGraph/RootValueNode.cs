@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -83,6 +84,12 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             Child = ((RootTypeNode)TypeNode).Child.CreateSerializer(this);
             Child.Deserialize(stream, eventShuttle);
+        }
+
+        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            Child = ((RootTypeNode)TypeNode).Child.CreateSerializer(this);
+            return Child.DeserializeAsync(stream, eventShuttle);
         }
 
         protected override Endianness GetFieldEndianness()

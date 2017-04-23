@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -239,6 +240,12 @@ namespace BinarySerialization.Graph.ValueGraph
             Deserialize(reader, serializedType, length);
         }
 
+        public async Task DeserializeAsync(BoundedStream stream, SerializedType serializedType, long? length = null)
+        {
+            var reader = new AsyncBinaryReader(stream);
+            await DeserializeAsync(reader, serializedType, length);
+        }
+
         public void Deserialize(BinaryReader reader, SerializedType serializedType, long? length = null)
         {
             var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
@@ -283,13 +290,81 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    var data = ReadNullTerminated(reader, (int) effectiveLengthValue).ToArray();
+                    var data = ReadNullTerminated(reader, (int) effectiveLengthValue);
                     value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
                 }
                 case SerializedType.SizedString:
                 {
                     var data = reader.ReadBytes((int) effectiveLengthValue);
+                    value = GetString(data);
+
+                    break;
+                }
+                case SerializedType.LengthPrefixedString:
+                {
+                    value = reader.ReadString();
+                    break;
+                }
+
+                default:
+                    throw new NotSupportedException();
+            }
+
+            _value = ConvertToFieldType(value);
+        }
+
+        public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, long? length = null)
+        {
+            var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
+
+            object value;
+            switch (serializedType)
+            {
+                case SerializedType.Int1:
+                    value = await reader.ReadSByteAsync();
+                    break;
+                case SerializedType.UInt1:
+                    value = await reader.ReadByteAsync();
+                    break;
+                case SerializedType.Int2:
+                    value = await reader.ReadInt16Async();
+                    break;
+                case SerializedType.UInt2:
+                    value = await reader.ReadUInt16Async();
+                    break;
+                case SerializedType.Int4:
+                    value = await reader.ReadInt32Async();
+                    break;
+                case SerializedType.UInt4:
+                    value = await reader.ReadUInt32Async();
+                    break;
+                case SerializedType.Int8:
+                    value = await reader.ReadInt64Async();
+                    break;
+                case SerializedType.UInt8:
+                    value = await reader.ReadUInt64Async();
+                    break;
+                case SerializedType.Float4:
+                    value = await reader.ReadSingleAsync();
+                    break;
+                case SerializedType.Float8:
+                    value = await reader.ReadDoubleAsync();
+                    break;
+                case SerializedType.ByteArray:
+                {
+                    value = await reader.ReadBytesAsync((int)effectiveLengthValue);
+                    break;
+                }
+                case SerializedType.NullTerminatedString:
+                {
+                    var data = await ReadNullTerminatedAsync(reader, (int)effectiveLengthValue);
+                    value = GetFieldEncoding().GetString(data, 0, data.Length);
+                    break;
+                }
+                case SerializedType.SizedString:
+                {
+                    var data = await reader.ReadBytesAsync((int)effectiveLengthValue);
                     value = GetString(data);
 
                     break;
@@ -335,6 +410,21 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             Deserialize(stream, TypeNode.GetSerializedType());
+        }
+
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            if (EndOfStream(stream))
+            {
+                if (TypeNode.IsNullable)
+                {
+                    return;
+                }
+
+                throw new EndOfStreamException();
+            }
+
+            await DeserializeAsync(stream, TypeNode.GetSerializedType());
         }
 
         protected override long CountOverride()
@@ -510,12 +600,25 @@ namespace BinarySerialization.Graph.ValueGraph
             return value.ConvertTo(TypeNode.Type);
         }
 
-        private static IEnumerable<byte> ReadNullTerminated(BinaryReader reader, int maxLength)
+        private static byte[] ReadNullTerminated(BinaryReader reader, int maxLength)
         {
             var buffer = new MemoryStream();
 
             byte b;
             while (maxLength-- > 0 && (b = reader.ReadByte()) != 0)
+            {
+                buffer.WriteByte(b);
+            }
+
+            return buffer.ToArray();
+        }
+
+        private static async Task<byte[]> ReadNullTerminatedAsync(AsyncBinaryReader reader, int maxLength)
+        {
+            var buffer = new MemoryStream();
+
+            byte b;
+            while (maxLength-- > 0 && (b = await reader.ReadByteAsync()) != 0)
             {
                 buffer.WriteByte(b);
             }

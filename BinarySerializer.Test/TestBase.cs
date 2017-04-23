@@ -36,7 +36,7 @@ namespace BinarySerialization.Test
             stream.Position = 0;
 
             PrintDeserialize(typeof(T));
-            return Serializer.Deserialize<T>(stream);
+            return Deserialize<T>(stream);
         }
 
         protected T Roundtrip<T>(T o, long expectedLength)
@@ -51,7 +51,7 @@ namespace BinarySerialization.Test
             Assert.AreEqual(expectedLength, data.Length);
 
             PrintDeserialize(typeof(T));
-            return Serializer.Deserialize<T>(stream);
+            return Deserialize<T>(stream);
         }
 
 
@@ -82,7 +82,7 @@ namespace BinarySerialization.Test
             AssertEqual(expectedValue, data);
 
             PrintDeserialize(typeof(T));
-            return Serializer.Deserialize<T>(stream);
+            return Deserialize<T>(stream);
         }
 
         private void AssertEqual(byte[] expected, byte[] actual)
@@ -125,7 +125,7 @@ namespace BinarySerialization.Test
             using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
             {
                 PrintDeserialize(typeof(T));
-                return Serializer.Deserialize<T>(stream);
+                return Deserialize<T>(stream);
             }
         }
 
@@ -133,6 +133,15 @@ namespace BinarySerialization.Test
         {
             PrintDeserialize(typeof(T));
             return Serializer.Deserialize<T>(data);
+        }
+
+        protected T Deserialize<T>(Stream stream)
+        {
+            var task = Serializer.DeserializeAsync<T>(stream);
+            task.Wait();
+            return task.Result;
+
+            //return Serializer.Deserialize<T>(stream);
         }
 
         private static void PrintIndent(int depth)

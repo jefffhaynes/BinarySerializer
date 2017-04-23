@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -95,6 +96,29 @@ namespace BinarySerialization.Graph.ValueGraph
             SkipPadding(stream);
         }
 
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            ResolveValueType();
+
+            // skip over if null (this may happen if subtypes are unknown during deserialization)
+            if (_valueType != null)
+            {
+                GenerateChildren();
+
+                try
+                {
+                    await ObjectDeserializeOverrideAsync(stream, eventShuttle);
+                }
+                catch (EndOfStreamException)
+                {
+                    // this is ok but we can't consider this object fully formed.
+                    _valueType = null;
+                }
+            }
+
+            SkipPadding(stream);
+        }
+
         protected virtual void ObjectSerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             // check to see if we are actually supposed to be a custom serialization.  This is a side-effect of
@@ -147,6 +171,33 @@ namespace BinarySerialization.Graph.ValueGraph
                 EmitBeginDeserialization(stream, child, lazyContext, eventShuttle);
 
                 child.Deserialize(stream, eventShuttle);
+
+                EmitEndDeserialization(stream, child, lazyContext, eventShuttle);
+            }
+        }
+
+        protected virtual async Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            // check to see if we are actually supposed to be a custom deserialization.  This is a side-effect of
+            // treating all object members as object nodes.  In the case of sub-types we could later discover we
+            // are actually a custom node because the specified subtype implements IBinarySerializable.
+            if (IsCustomNode(out ValueNode customValueNode))
+            {
+                customValueNode.DeserializeOverride(stream, eventShuttle);
+
+                // this is a cheat, but another side-effect of this weird corner case
+                _cachedValue = customValueNode.Value;
+
+                return;
+            }
+
+            var lazyContext = CreateLazySerializationContext();
+
+            foreach (var child in GetSerializableChildren())
+            {
+                EmitBeginDeserialization(stream, child, lazyContext, eventShuttle);
+
+                await child.DeserializeAsync(stream, eventShuttle);
 
                 EmitEndDeserialization(stream, child, lazyContext, eventShuttle);
             }

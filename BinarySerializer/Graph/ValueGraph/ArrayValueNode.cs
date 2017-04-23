@@ -51,7 +51,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var children = array.Cast<object>().Select(childValue =>
                 {
-                    var child = typeNode.Child.CreateSerializer(this);
+                    var child = CreateChildSerializer();
                     child.Value = childValue;
                     return child;
                 });
