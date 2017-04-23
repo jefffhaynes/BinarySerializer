@@ -98,39 +98,9 @@ namespace BinarySerialization.Graph.ValueGraph
             return GetValue(_value, serializedType);
         }
 
-        private object GetScalar(IEnumerable enumerable)
-        {
-            var childLengths = enumerable.Cast<object>().Select(ConvertToFieldType).ToList();
-
-            if (childLengths.Count == 0)
-            {
-                return 0;
-            }
-
-            var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
-
-            if (childLengthGroups.Count > 1)
-            {
-                throw new InvalidOperationException(
-                    "Unable to update scalar binding source because not all enumerable items have equal lengths.");
-            }
-
-            var childLengthGroup = childLengthGroups.Single();
-
-            return childLengthGroup.Key;
-        }
-
-        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
-        {
-            Serialize(stream, BoundValue, TypeNode.GetSerializedType());
-        }
-
         public void Serialize(BoundedStream stream, object value, SerializedType serializedType, long? length = null)
         {
-            // prioritization of field length specifiers
-            var constLength = length ?? // explicit length passed from parent
-                              GetConstFieldLength() ?? // calculated length from this field
-                              GetConstFieldCount(); // explicit field count (used for byte arrays and strings)
+            var constLength = GetConstLength(length);
 
             if (value == null)
             {
@@ -154,14 +124,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
             }
 
-            long? maxLength = null;
-
-            if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
-                serializedType == SerializedType.NullTerminatedString)
-            {
-                // try to get bounded length
-                maxLength = stream.AvailableForWriting;
-            }
+            var maxLength = GetMaxLength(stream, serializedType);
 
             var convertedValue = GetValue(value, serializedType);
 
@@ -229,15 +192,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     var data = (byte[]) value;
 
-                    if (constLength != null)
-                    {
-                        Array.Resize(ref data, (int) constLength.Value);
-                    }
-
-                    if (maxLength != null && data.Length > maxLength)
-                    {
-                        Array.Resize(ref data, (int) maxLength.Value);
-                    }
+                    AdjustArrayLength(ref data, constLength, maxLength);
 
                     stream.Write(data, 0, data.Length);
                     break;
@@ -246,15 +201,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
 
-                    if (constLength != null)
-                    {
-                        Array.Resize(ref data, (int) constLength.Value - 1);
-                    }
-
-                    if (maxLength != null && data.Length > maxLength)
-                    {
-                        Array.Resize(ref data, (int) maxLength.Value - 1);
-                    }
+                    AdjustNullTerminatedArrayLength(ref data, constLength, maxLength);
 
                     stream.Write(data, 0, data.Length);
                     stream.WriteByte(0);
@@ -264,18 +211,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
 
-                    if (constLength != null)
-                    {
-                        Array.Resize(ref data, (int) constLength.Value);
-                    }
-
-                    if (maxLength != null && data.Length > maxLength)
-                    {
-                        Array.Resize(ref data, (int) maxLength.Value);
-                    }
+                    AdjustArrayLength(ref data, constLength, maxLength);
 
                     stream.Write(data, 0, data.Length);
-
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
@@ -295,22 +233,6 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
-        {
-            if (EndOfStream(stream))
-            {
-                if (TypeNode.IsNullable)
-                {
-                    return;
-                }
-
-                throw new EndOfStreamException();
-            }
-
-            Deserialize(stream, TypeNode.GetSerializedType());
-        }
-
         public void Deserialize(BoundedStream stream, SerializedType serializedType, long? length = null)
         {
             var reader = new BinaryReader(stream);
@@ -319,24 +241,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public void Deserialize(BinaryReader reader, SerializedType serializedType, long? length = null)
         {
-            var effectiveLength = length ?? GetFieldLength() ?? GetFieldCount();
-
-            if (effectiveLength == null)
-            {
-                if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
-                    serializedType == SerializedType.NullTerminatedString)
-                {
-                    // try to get bounded length
-                    var baseStream = (BoundedStream) reader.BaseStream;
-
-                    checked
-                    {
-                        effectiveLength = (int) baseStream.AvailableForReading;
-                    }
-                }
-            }
-
-            var effectiveLengthValue = effectiveLength ?? 0;
+            var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
 
             object value;
             switch (serializedType)
@@ -385,16 +290,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 case SerializedType.SizedString:
                 {
                     var data = reader.ReadBytes((int) effectiveLengthValue);
-                    var untrimmed = GetFieldEncoding().GetString(data, 0, data.Length);
-                    if (TypeNode.AreStringsNullTerminated)
-                    {
-                        var nullIndex = untrimmed.IndexOf((char) 0);
-                        value = nullIndex != -1 ? untrimmed.Substring(0, nullIndex) : untrimmed;
-                    }
-                    else
-                    {
-                        value = untrimmed;
-                    }
+                    value = GetString(data);
 
                     break;
                 }
@@ -411,6 +307,36 @@ namespace BinarySerialization.Graph.ValueGraph
             _value = ConvertToFieldType(value);
         }
 
+        public override string ToString()
+        {
+            if (Name != null)
+            {
+                return $"{Name}: {Value}";
+            }
+
+            return Value?.ToString() ?? base.ToString();
+        }
+
+        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            Serialize(stream, BoundValue, TypeNode.GetSerializedType());
+        }
+        
+        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            if (EndOfStream(stream))
+            {
+                if (TypeNode.IsNullable)
+                {
+                    return;
+                }
+
+                throw new EndOfStreamException();
+            }
+
+            Deserialize(stream, TypeNode.GetSerializedType());
+        }
+
         protected override long CountOverride()
         {
             // handle special case of byte[]
@@ -423,6 +349,115 @@ namespace BinarySerialization.Graph.ValueGraph
             // handle special case of byte[]
             var boundValue = BoundValue as byte[];
             return boundValue?.Length ?? base.MeasureOverride();
+        }
+
+        private long? GetConstLength(long? length)
+        {
+            // prioritization of field length specifiers
+            var constLength = length ?? // explicit length passed from parent
+                              GetConstFieldLength() ?? // calculated length from this field
+                              GetConstFieldCount(); // explicit field count (used for byte arrays and strings)
+            return constLength;
+        }
+
+        private static long? GetMaxLength(BoundedStream stream, SerializedType serializedType)
+        {
+            long? maxLength = null;
+
+            if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
+                serializedType == SerializedType.NullTerminatedString)
+            {
+                // try to get bounded length
+                maxLength = stream.AvailableForWriting;
+            }
+            return maxLength;
+        }
+
+        private static void AdjustArrayLength(ref byte[] data, long? constLength, long? maxLength)
+        {
+            if (constLength != null)
+            {
+                Array.Resize(ref data, (int) constLength.Value);
+            }
+
+            if (maxLength != null && data.Length > maxLength)
+            {
+                Array.Resize(ref data, (int) maxLength.Value);
+            }
+        }
+
+        private static void AdjustNullTerminatedArrayLength(ref byte[] data, long? constLength, long? maxLength)
+        {
+            if (constLength != null)
+            {
+                Array.Resize(ref data, (int)constLength.Value - 1);
+            }
+
+            if (maxLength != null && data.Length > maxLength)
+            {
+                Array.Resize(ref data, (int)maxLength.Value - 1);
+            }
+        }
+
+        private object GetScalar(IEnumerable enumerable)
+        {
+            var childLengths = enumerable.Cast<object>().Select(ConvertToFieldType).ToList();
+
+            if (childLengths.Count == 0)
+            {
+                return 0;
+            }
+
+            var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
+
+            if (childLengthGroups.Count > 1)
+            {
+                throw new InvalidOperationException(
+                    "Unable to update scalar binding source because not all enumerable items have equal lengths.");
+            }
+
+            var childLengthGroup = childLengthGroups.Single();
+
+            return childLengthGroup.Key;
+        }
+
+        private object GetString(byte[] data)
+        {
+            object value;
+            var untrimmed = GetFieldEncoding().GetString(data, 0, data.Length);
+            if (TypeNode.AreStringsNullTerminated)
+            {
+                var nullIndex = untrimmed.IndexOf((char) 0);
+                value = nullIndex != -1 ? untrimmed.Substring(0, nullIndex) : untrimmed;
+            }
+            else
+            {
+                value = untrimmed;
+            }
+            return value;
+        }
+
+        private long GetEffectiveLengthValue(BinaryReader reader, SerializedType serializedType, long? length)
+        {
+            var effectiveLength = length ?? GetFieldLength() ?? GetFieldCount();
+
+            if (effectiveLength == null)
+            {
+                if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
+                    serializedType == SerializedType.NullTerminatedString)
+                {
+                    // try to get bounded length
+                    var baseStream = (BoundedStream) reader.BaseStream;
+
+                    checked
+                    {
+                        effectiveLength = (int) baseStream.AvailableForReading;
+                    }
+                }
+            }
+
+            var effectiveLengthValue = effectiveLength ?? 0;
+            return effectiveLengthValue;
         }
 
         private object GetValue(object value, SerializedType serializedType)
@@ -486,16 +521,6 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             return buffer.ToArray();
-        }
-
-        public override string ToString()
-        {
-            if (Name != null)
-            {
-                return $"{Name}: {Value}";
-            }
-
-            return Value?.ToString() ?? base.ToString();
         }
     }
 }

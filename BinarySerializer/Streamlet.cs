@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BinarySerialization
 {
@@ -134,10 +136,7 @@ namespace BinarySerialization
         /// </returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (count > Length - Position)
-            {
-                count = Math.Max(0, (int) (Length - Position));
-            }
+            count = FixCount(count);
 
             if (count == 0)
             {
@@ -150,6 +149,32 @@ namespace BinarySerialization
             Position += read;
 
             return read;
+        }
+
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            count = FixCount(count);
+
+            if (count == 0)
+            {
+                return 0;
+            }
+
+            Source.Position = Offset + Position;
+
+            var read = await Source.ReadAsync(buffer, offset, count, cancellationToken);
+            Position += read;
+
+            return read;
+        }
+
+        private int FixCount(int count)
+        {
+            if (count > Length - Position)
+            {
+                count = Math.Max(0, (int) (Length - Position));
+            }
+            return count;
         }
 
         /// <summary>

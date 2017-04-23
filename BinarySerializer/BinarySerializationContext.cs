@@ -22,6 +22,7 @@ namespace BinarySerialization
         /// <param name="parentValue">The parent of this object in the object graph.</param>
         /// <param name="parentType">The type of the parent object.</param>
         /// <param name="parentContext">The parent object serialization context.</param>
+        /// <param name="memberInfo">Member info for this field.</param>
         internal BinarySerializationContext(object value, object parentValue, Type parentType, BinarySerializationContext parentContext, MemberInfo memberInfo)
         {
             Value = value;
