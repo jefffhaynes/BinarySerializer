@@ -27,19 +27,29 @@ namespace BinarySerialization
         public Streamlet(Stream source, long offset, long length)
         {
             if (source == null)
+            {
                 throw new ArgumentNullException(nameof(source));
+            }
 
             if (offset < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(offset), "The offset cannot be negative");
+            }
 
             if (length < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(length), "The length cannot be negative");
+            }
 
             if (offset + length > source.Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(length), "The length cannot exceed the source stream");
+            }
 
             if (!source.CanSeek)
+            {
                 throw new ArgumentException("The source stream must support seeking", nameof(source));
+            }
 
             Source = source;
             Offset = offset;
@@ -58,7 +68,8 @@ namespace BinarySerialization
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Streamlet" /> class with a source stream.
-        ///     Offset is assumed to be the current position of the source stream.  Length is assumed to be the remainder of the source stream.
+        ///     Offset is assumed to be the current position of the source stream.  Length is assumed to be the remainder of the
+        ///     source stream.
         /// </summary>
         /// <param name="source"></param>
         public Streamlet(Stream source) : this(source, source.Position)
@@ -118,7 +129,8 @@ namespace BinarySerialization
         /// <param name="count">The maximum number of bytes to read.</param>
         /// <returns>
         ///     The total number of bytes written into the buffer. This can be less than the number of bytes requested
-        ///     if that number of bytes are not currently available, or zero if the end of the stream is reached before any bytes are read.
+        ///     if that number of bytes are not currently available, or zero if the end of the stream is reached before any bytes
+        ///     are read.
         /// </returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
@@ -128,11 +140,13 @@ namespace BinarySerialization
             }
 
             if (count == 0)
+            {
                 return 0;
+            }
 
             Source.Position = Offset + Position;
 
-            int read = Source.Read(buffer, offset, count);
+            var read = Source.Read(buffer, offset, count);
             Position += read;
 
             return read;
@@ -141,7 +155,10 @@ namespace BinarySerialization
         /// <summary>
         ///     Sets the position within the current stream to the specified value.
         /// </summary>
-        /// <param name="offset">The new position within the stream. This is relative to the origin parameter, and can be positive or negative.</param>
+        /// <param name="offset">
+        ///     The new position within the stream. This is relative to the origin parameter, and can be positive
+        ///     or negative.
+        /// </param>
         /// <param name="origin">A value of type SeekOrigin, which acts as the seek reference point.</param>
         /// <returns>The new position within the stream, calculated by combining the initial reference point and the offset.</returns>
         public override long Seek(long offset, SeekOrigin origin)
@@ -163,7 +180,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Sets the length of the current stream to the specified value.
+        ///     Sets the length of the current stream to the specified value.
         /// </summary>
         /// <param name="value">The value at which to set the length.</param>
         public override void SetLength(long value)
@@ -172,7 +189,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// This method always throws a <see cref="NotSupportedException" />.
+        ///     This method always throws a <see cref="NotSupportedException" />.
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
@@ -183,7 +200,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Closes the <see cref="Streamlet" /> object.
+        ///     Closes the <see cref="Streamlet" /> object.
         /// </summary>
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)

@@ -6,7 +6,7 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal abstract class CollectionValueNode : ValueNode
+    internal abstract class CollectionValueNode : CollectionValueNodeBase
     {
         protected CollectionValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
@@ -35,10 +35,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            var typeNode = (CollectionTypeNode) TypeNode;
-
-            var childNode = typeNode.Child;
-            var terminationValue = typeNode.TerminationValue;
+            var terminationValue = GetTerminationValue();
             var terminationChild = GetTerminationChild();
             var itemTerminationValue = GetItemTerminationValue();
             var itemLengths = GetItemLengths();
@@ -63,7 +60,7 @@ namespace BinarySerialization.Graph.ValueGraph
                         ? new BoundedStream(stream)
                         : new BoundedStream(stream, () => itemLength);
 
-                    var child = childNode.CreateSerializer(this);
+                    var child = CreateChildSerializer();
 
                     using (var streamResetter = new StreamResetter(childStream))
                     {
@@ -116,18 +113,6 @@ namespace BinarySerialization.Graph.ValueGraph
             return terminationItemChild.BoundValue;
         }
 
-        private void SerializeTermination(BoundedStream stream, EventShuttle eventShuttle)
-        {
-            var typeNode = (CollectionTypeNode) TypeNode;
-
-            if (typeNode.TerminationChild != null)
-            {
-                var terminationChild = typeNode.TerminationChild.CreateSerializer(this);
-                terminationChild.Value = typeNode.TerminationValue;
-                terminationChild.Serialize(stream, eventShuttle);
-            }
-        }
-
         private void SetTerminationValue(List<ValueNode> serializableChildren)
         {
             var typeNode = (CollectionTypeNode) TypeNode;
@@ -152,13 +137,6 @@ namespace BinarySerialization.Graph.ValueGraph
                 itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
 
             itemTerminationChild.Value = convertedItemTerminationValue;
-        }
-
-        private ValueNode GetTerminationChild()
-        {
-            var typeNode = (CollectionTypeNode) TypeNode;
-            var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
-            return terminationChild;
         }
 
         private object GetItemTerminationValue()
@@ -186,25 +164,6 @@ namespace BinarySerialization.Graph.ValueGraph
                     // stream will reset
                     break;
             }
-        }
-
-        private static bool IsTerminated(BoundedStream stream, ValueNode terminationChild, object terminationValue,
-            EventShuttle eventShuttle)
-        {
-            if (terminationChild != null)
-            {
-                using (var streamResetter = new StreamResetter(stream))
-                {
-                    terminationChild.Deserialize(stream, eventShuttle);
-
-                    if (terminationChild.Value.Equals(terminationValue))
-                    {
-                        streamResetter.CancelReset();
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         private IEnumerable<long> GetItemLengths()

@@ -17,19 +17,14 @@ namespace BinarySerialization.Graph.ValueGraph
             var list = (IList) boundValue;
 
             // Handle const-sized mismatched collections
-            if (itemCount != null && list.Count != itemCount)
-            {
-                var tempList = list;
-                list = (IList) CreateCollection(itemCount.Value);
-
-                for (int i = 0; i < Math.Min(tempList.Count, list.Count); i++)
-                    list[i] = tempList[i];
-            }
+            PadList(ref list, itemCount);
 
             foreach (var value in list)
             {
                 if (stream.IsAtLimit)
+                {
                     break;
+                }
 
                 childSerializer.Serialize(stream, value, childSerializedType, itemLength);
             }
@@ -37,8 +32,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected override object CreateCollection(long size)
         {
-            var typeNode = (ListTypeNode)TypeNode;
-            var array = Array.CreateInstance(typeNode.ChildType, (int)size);
+            var typeNode = (ListTypeNode) TypeNode;
+            var array = Array.CreateInstance(typeNode.ChildType, (int) size);
             return Activator.CreateInstance(typeNode.Type, array);
         }
 
@@ -46,15 +41,15 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             // don't think this can ever actually happen b/c it would signify a "jagged list", which isn't a real thing
             // TODO probably remove at some point once I verify that
-            var typeNode = (ListTypeNode)TypeNode;
+            var typeNode = (ListTypeNode) TypeNode;
             return enumerable.Cast<object>().Select(item => item.ConvertTo(typeNode.ChildType)).ToList();
         }
 
         protected override void SetCollectionValue(object item, long index)
         {
             var list = (IList) Value;
-            var typeNode = (ListTypeNode)TypeNode;
-            list[(int)index] = item.ConvertTo(typeNode.ChildType);
+            var typeNode = (ListTypeNode) TypeNode;
+            list[(int) index] = item.ConvertTo(typeNode.ChildType);
         }
 
         protected override long CountOverride()
@@ -62,9 +57,25 @@ namespace BinarySerialization.Graph.ValueGraph
             var list = (IList) Value;
 
             if (list == null)
+            {
                 return 0;
+            }
 
             return list.Count;
+        }
+
+        private void PadList(ref IList list, long? itemCount)
+        {
+            if (itemCount != null && list.Count != itemCount)
+            {
+                var tempList = list;
+                list = (IList) CreateCollection(itemCount.Value);
+
+                for (var i = 0; i < Math.Min(tempList.Count, list.Count); i++)
+                {
+                    list[i] = tempList[i];
+                }
+            }
         }
     }
 }

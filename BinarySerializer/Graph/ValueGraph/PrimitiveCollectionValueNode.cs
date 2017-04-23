@@ -7,7 +7,7 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal abstract class PrimitiveCollectionValueNode : ValueNode
+    internal abstract class PrimitiveCollectionValueNode : CollectionValueNodeBase
     {
         protected PrimitiveCollectionValueNode(Node parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
@@ -29,15 +29,20 @@ namespace BinarySerialization.Graph.ValueGraph
                     var enumerableValue = value as IEnumerable;
 
                     if (enumerableValue == null)
-                        throw new InvalidOperationException("Complex types cannot be binding sources for scalar values.");
+                    {
+                        throw new InvalidOperationException(
+                            "Complex types cannot be binding sources for scalar values.");
+                    }
 
                     if (Bindings.Count != 1)
                     {
                         var bindingValues = Bindings.Select(binding => binding() as IEnumerable).ToList();
 
                         if (bindingValues.Any(o => o == null))
+                        {
                             throw new InvalidOperationException(
                                 "Complex types cannot be binding sources for scalar values.");
+                        }
 
                         if (bindingValues.Select(enumerable => enumerable.Cast<object>())
                             .Any(enumerable => !enumerable.SequenceEqual(enumerableValue.Cast<object>())))
@@ -60,16 +65,14 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            long? itemLength = GetConstFieldItemLength();
-
-            var count = GetConstFieldCount();
-
-            var typeNode = (CollectionTypeNode)TypeNode;
-            var childSerializer = (ValueValueNode)typeNode.Child.CreateSerializer(this);
-
+            var childSerializer = (ValueValueNode) CreateChildSerializer();
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
+            var itemLength = GetConstFieldItemLength();
+
             var boundValue = BoundValue;
+
+            var count = GetConstFieldCount();
 
             // handle null value case
             if (boundValue == null)
@@ -77,7 +80,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (count != null)
                 {
                     var defaultValue = TypeNode.GetDefaultValue(childSerializedType);
-                    for (int i = 0; i < count.Value; i++)
+                    for (var i = 0; i < count.Value; i++)
                     {
                         childSerializer.Serialize(stream, defaultValue, childSerializedType, itemLength);
                     }
@@ -86,81 +89,67 @@ namespace BinarySerialization.Graph.ValueGraph
                 return;
             }
 
-            PrimitiveCollectionSerializeOverride(stream, boundValue, childSerializer, childSerializedType, itemLength, count);
-            
-            /* Add termination */
-            if (typeNode.TerminationChild != null)
-            {
-                var terminationChild = typeNode.TerminationChild.CreateSerializer(this);
-                terminationChild.Value = typeNode.TerminationValue;
-                terminationChild.Serialize(stream, eventShuttle);
-            }
+            PrimitiveCollectionSerializeOverride(stream, boundValue, childSerializer, childSerializedType, itemLength,
+                count);
+
+            SerializeTermination(stream, eventShuttle);
         }
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             var items = DeserializeCollection(stream, eventShuttle).ToList();
+            CreateFinalCollection(items);
+        }
 
+        private void CreateFinalCollection(List<object> items)
+        {
             var itemCount = items.Count;
-
-            /* Create final collection */
+            
             Value = CreateCollection(itemCount);
 
             /* Copy temp list into final collection */
             for (var i = 0; i < itemCount; i++)
-                SetCollectionValue(items[i], i);
-        }
-
-        private IEnumerable<object> DeserializeCollection(BoundedStream stream, EventShuttle eventShuttle)
-        {
-            var typeNode = (CollectionTypeNode) TypeNode;
-
-            /* Create single serializer to do all the work */
-            var childSerializer = (ValueValueNode) typeNode.Child.CreateSerializer(this);
-
-            var reader = new BinaryReader(stream);
-            var childSerializedType = childSerializer.TypeNode.GetSerializedType();
-
-            var count = GetFieldCount() ?? long.MaxValue;
-
-            long? itemLength = GetFieldItemLength();
-
-            var terminationValue = typeNode.TerminationValue;
-            var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
-
-            for (long i = 0; i < count; i++)
             {
-                if (EndOfStream(stream))
-                    break;
-
-                /* Check termination case */
-                if (terminationChild != null)
-                {
-                    using (var streamResetter = new StreamResetter(stream))
-                    {
-                        terminationChild.Deserialize(stream, eventShuttle);
-
-                        if (terminationChild.Value.Equals(terminationValue))
-                        {
-                            streamResetter.CancelReset();
-                            break;
-                        }
-                    }
-                }
-
-                childSerializer.Deserialize(reader, childSerializedType, itemLength);
-                yield return childSerializer.GetValue(childSerializedType);
+                SetCollectionValue(items[i], i);
             }
         }
 
-        protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, object boundValue, ValueValueNode childSerializer, SerializedType childSerializedType, long? length, long? itemCount);
+        protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, object boundValue,
+            ValueValueNode childSerializer, SerializedType childSerializedType, long? length, long? itemCount);
+
         protected abstract object CreateCollection(long size);
         protected abstract object CreateCollection(IEnumerable enumerable);
         protected abstract void SetCollectionValue(object item, long index);
 
         protected override object GetLastItemValueOverride()
         {
-            throw new InvalidOperationException("Not supported on primitive collections.  Use SerializeUntil attribute.");
+            throw new InvalidOperationException(
+                "Not supported on primitive collections.  Use SerializeUntil attribute.");
+        }
+
+        private IEnumerable<object> DeserializeCollection(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            /* Create single serializer to do all the work */
+            var childSerializer = (ValueValueNode) CreateChildSerializer();
+            var childSerializedType = childSerializer.TypeNode.GetSerializedType();
+
+            var terminationValue = GetTerminationValue();
+            var terminationChild = GetTerminationChild();
+            var itemLength = GetFieldItemLength();
+
+            var reader = new BinaryReader(stream);
+            var count = GetFieldCount() ?? long.MaxValue;
+
+            for (long i = 0; i < count && !EndOfStream(stream); i++)
+            {
+                if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
+                {
+                    break;
+                }
+
+                childSerializer.Deserialize(reader, childSerializedType, itemLength);
+                yield return childSerializer.GetValue(childSerializedType);
+            }
         }
     }
 }
