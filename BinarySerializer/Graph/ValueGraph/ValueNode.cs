@@ -317,23 +317,12 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (TypeNode.SerializeWhenBindings != null &&
-                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+                if (!ShouldSerialize)
                 {
                     return;
                 }
 
-                if (TypeNode.SerializeWhenNotBindings != null &&
-                    TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
-                {
-                    return;
-                }
-
-                var leftAlignment = GetLeftFieldAlignment();
-                if (leftAlignment != null)
-                {
-                    Align(stream, leftAlignment);
-                }
+                AlignLeft(stream);
 
                 var offset = GetFieldOffset();
 
@@ -350,11 +339,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     DeserializeInternal(stream, GetFieldLength, eventShuttle);
                 }
 
-                var rightAlignment = GetRightFieldAlignment();
-                if (rightAlignment != null)
-                {
-                    Align(stream, rightAlignment);
-                }
+                AlignRight(stream);
             }
             catch (IOException)
             {
@@ -371,6 +356,44 @@ namespace BinarySerialization.Graph.ValueGraph
             finally
             {
                 Visited = true;
+            }
+        }
+
+        private void AlignRight(BoundedStream stream)
+        {
+            var rightAlignment = GetRightFieldAlignment();
+            if (rightAlignment != null)
+            {
+                Align(stream, rightAlignment);
+            }
+        }
+
+        private void AlignLeft(BoundedStream stream)
+        {
+            var leftAlignment = GetLeftFieldAlignment();
+            if (leftAlignment != null)
+            {
+                Align(stream, leftAlignment);
+            }
+        }
+
+        private bool ShouldSerialize
+        {
+            get
+            {
+                if (TypeNode.SerializeWhenBindings != null &&
+                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+                {
+                    return false;
+                }
+
+                if (TypeNode.SerializeWhenNotBindings != null &&
+                    TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+                {
+                    return false;
+                }
+
+                return true;
             }
         }
 
@@ -409,9 +432,14 @@ namespace BinarySerialization.Graph.ValueGraph
         private void DeserializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
         {
             stream = new BoundedStream(stream, maxLengthDelegate);
+
             DeserializeOverride(stream, eventShuttle);
 
-            /* Check if we need to seek past padding */
+            SkipPadding(stream);
+        }
+
+        private void SkipPadding(BoundedStream stream)
+        {
             var length = GetConstFieldLength();
 
             if (length != null)

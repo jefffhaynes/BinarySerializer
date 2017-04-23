@@ -16,146 +16,63 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var serializableChildren = GetSerializableChildren().ToList();
 
-            var typeNode = (CollectionTypeNode)TypeNode;
+            SetTerminationValue(serializableChildren);
 
-            if (typeNode.ItemSerializeUntilAttribute != null &&
-                typeNode.ItemSerializeUntilAttribute.LastItemMode == LastItemMode.Include)
-            {
-                var lastChild = serializableChildren.LastOrDefault();
-
-                if (lastChild != null)
-                {
-                    var itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetBoundValue(this);
-                    var itemTerminationChild = lastChild.GetChild(typeNode.ItemSerializeUntilAttribute.ItemValuePath);
-
-                    var convertedItemTerminationValue =
-                        itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
-
-                    itemTerminationChild.Value = convertedItemTerminationValue;
-                }
-            }
-            
             foreach (var child in serializableChildren)
             {
                 if (stream.IsAtLimit)
+                {
                     break;
-                
+                }
+
                 var childStream = new BoundedStream(stream, GetConstFieldItemLength);
 
                 child.Serialize(childStream, eventShuttle);
             }
 
-            if (typeNode.TerminationChild != null)
-            {
-                var terminationChild = typeNode.TerminationChild.CreateSerializer(this);
-                terminationChild.Value = typeNode.TerminationValue;
-                terminationChild.Serialize(stream, eventShuttle);
-            }
+            SerializeTermination(stream, eventShuttle);
         }
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            var typeNode = (CollectionTypeNode)TypeNode;
+            var typeNode = (CollectionTypeNode) TypeNode;
 
-            var count = GetFieldCount() ?? long.MaxValue;
-
+            var childNode = typeNode.Child;
             var terminationValue = typeNode.TerminationValue;
-            var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
+            var terminationChild = GetTerminationChild();
+            var itemTerminationValue = GetItemTerminationValue();
+            var itemLengths = GetItemLengths();
 
-            object itemTerminationValue = null;
-            if (TypeNode.ItemSerializeUntilBinding != null)
+            using (var itemLengthEnumerator = itemLengths?.GetEnumerator())
             {
-                itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
-            }
+                var count = GetFieldCount() ?? long.MaxValue;
 
-            IEnumerable<long> itemLengths = null;
-            if (TypeNode.ItemLengthBindings != null)
-            {
-                var itemLengthValue = TypeNode.ItemLengthBindings.GetValue(this);
-
-                var enumerableItemLengthValue = itemLengthValue as IEnumerable;
-
-                itemLengths = enumerableItemLengthValue?.Cast<object>().Select(Convert.ToInt64) ?? 
-                    GetInfiniteSequence(Convert.ToInt64(itemLengthValue));
-            }
-                      
-            IEnumerator<long> itemLengthEnumerator = null;
-
-            try
-            {
-                if (itemLengths != null)
-                    itemLengthEnumerator = itemLengths.GetEnumerator();
-
-                for (long i = 0; i < count; i++)
+                for (long i = 0; i < count && !EndOfStream(stream); i++)
                 {
-                    if (EndOfStream(stream))
-                        break;
-
-                    /* Check termination case */
-                    if (terminationChild != null)
+                    if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
                     {
-                        using (var streamResetter = new StreamResetter(stream))
-                        {
-                            terminationChild.Deserialize(stream, eventShuttle);
-
-                            if (terminationChild.Value.Equals(terminationValue))
-                            {
-                                streamResetter.CancelReset();
-                                break;
-                            }
-                        }
+                        break;
                     }
-
-                    var child = typeNode.Child.CreateSerializer(this);
 
                     itemLengthEnumerator?.MoveNext();
 
                     // TODO this doesn't allow for deferred eval of endianness in the case of jagged arrays
                     // probably extremely rare but still...
                     var itemLength = itemLengthEnumerator?.Current;
-                    var childStream = itemLength == null ? new BoundedStream(stream) : new BoundedStream(stream, () => itemLength);
-                    
+                    var childStream = itemLength == null
+                        ? new BoundedStream(stream)
+                        : new BoundedStream(stream, () => itemLength);
+
+                    var child = childNode.CreateSerializer(this);
+
                     using (var streamResetter = new StreamResetter(childStream))
                     {
                         child.Deserialize(childStream, eventShuttle);
 
-                        /* Check child termination case */
-                        if (TypeNode.ItemSerializeUntilBinding != null)
+                        if (IsTerminated(child, itemTerminationValue))
                         {
-                            var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
-
-                            var convertedItemTerminationValue =
-                                itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
-
-                            if (itemTerminationChild.Value == null)
-                                break;
-
-                            if (itemTerminationChild.Value.Equals(convertedItemTerminationValue))
-                            {
-#pragma warning disable 618
-                                if (TypeNode.ItemSerializeUntilAttribute.ExcludeLastItem)
-#pragma warning restore 618
-                                {
-                                    streamResetter.CancelReset();
-                                    break;
-                                }
-
-                                switch (TypeNode.ItemSerializeUntilAttribute.LastItemMode)
-                                {
-                                    case LastItemMode.Include:
-                                        streamResetter.CancelReset();
-                                        Children.Add(child);
-                                        break;
-                                    case LastItemMode.Discard:
-                                        streamResetter.CancelReset();
-                                        break;
-                                    case LastItemMode.Defer:
-                                        // stream will reset
-                                        break;
-                                }
-
-                                break;
-                            }
+                            ProcessLastItem(streamResetter, child);
+                            break;
                         }
 
                         streamResetter.CancelReset();
@@ -163,10 +80,6 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     Children.Add(child);
                 }
-            }
-            finally
-            {
-                itemLengthEnumerator?.Dispose();
             }
         }
 
@@ -193,18 +106,145 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override object GetLastItemValueOverride()
         {
             var lastItem = Children.LastOrDefault();
-            if(lastItem == null)
+            if (lastItem == null)
+            {
                 throw new InvalidOperationException("Unable to determine last item value because collection is empty.");
+            }
 
-            var terminationItemChild = (ValueValueNode)lastItem.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
+            var terminationItemChild =
+                (ValueValueNode) lastItem.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
             return terminationItemChild.BoundValue;
+        }
+
+        private void SerializeTermination(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            var typeNode = (CollectionTypeNode) TypeNode;
+
+            if (typeNode.TerminationChild != null)
+            {
+                var terminationChild = typeNode.TerminationChild.CreateSerializer(this);
+                terminationChild.Value = typeNode.TerminationValue;
+                terminationChild.Serialize(stream, eventShuttle);
+            }
+        }
+
+        private void SetTerminationValue(List<ValueNode> serializableChildren)
+        {
+            var typeNode = (CollectionTypeNode) TypeNode;
+
+            if (typeNode.ItemSerializeUntilAttribute == null ||
+                typeNode.ItemSerializeUntilAttribute.LastItemMode != LastItemMode.Include)
+            {
+                return;
+            }
+
+            var lastChild = serializableChildren.LastOrDefault();
+
+            if (lastChild == null)
+            {
+                return;
+            }
+
+            var itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetBoundValue(this);
+            var itemTerminationChild = lastChild.GetChild(typeNode.ItemSerializeUntilAttribute.ItemValuePath);
+
+            var convertedItemTerminationValue =
+                itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
+
+            itemTerminationChild.Value = convertedItemTerminationValue;
+        }
+
+        private ValueNode GetTerminationChild()
+        {
+            var typeNode = (CollectionTypeNode) TypeNode;
+            var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
+            return terminationChild;
+        }
+
+        private object GetItemTerminationValue()
+        {
+            object itemTerminationValue = null;
+            if (TypeNode.ItemSerializeUntilBinding != null)
+            {
+                itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
+            }
+            return itemTerminationValue;
+        }
+
+        private void ProcessLastItem(StreamResetter streamResetter, ValueNode child)
+        {
+            switch (TypeNode.ItemSerializeUntilAttribute.LastItemMode)
+            {
+                case LastItemMode.Include:
+                    streamResetter.CancelReset();
+                    Children.Add(child);
+                    break;
+                case LastItemMode.Discard:
+                    streamResetter.CancelReset();
+                    break;
+                case LastItemMode.Defer:
+                    // stream will reset
+                    break;
+            }
+        }
+
+        private static bool IsTerminated(BoundedStream stream, ValueNode terminationChild, object terminationValue,
+            EventShuttle eventShuttle)
+        {
+            if (terminationChild != null)
+            {
+                using (var streamResetter = new StreamResetter(stream))
+                {
+                    terminationChild.Deserialize(stream, eventShuttle);
+
+                    if (terminationChild.Value.Equals(terminationValue))
+                    {
+                        streamResetter.CancelReset();
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private IEnumerable<long> GetItemLengths()
+        {
+            IEnumerable<long> itemLengths = null;
+            if (TypeNode.ItemLengthBindings != null)
+            {
+                var itemLengthValue = TypeNode.ItemLengthBindings.GetValue(this);
+
+                var enumerableItemLengthValue = itemLengthValue as IEnumerable;
+
+                itemLengths = enumerableItemLengthValue?.Cast<object>().Select(Convert.ToInt64) ??
+                              GetInfiniteSequence(Convert.ToInt64(itemLengthValue));
+            }
+            return itemLengths;
+        }
+
+        private bool IsTerminated(ValueNode child, object itemTerminationValue)
+        {
+            if (TypeNode.ItemSerializeUntilBinding == null)
+            {
+                return false;
+            }
+
+            var itemTerminationChild = child.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
+
+            var convertedItemTerminationValue =
+                itemTerminationValue.ConvertTo(itemTerminationChild.TypeNode.Type);
+
+            return itemTerminationChild.Value == null ||
+                   itemTerminationChild.Value.Equals(convertedItemTerminationValue);
         }
 
         // ReSharper disable IteratorNeverReturns
         private static IEnumerable<long> GetInfiniteSequence(long value)
         {
             while (true)
+            {
                 yield return value;
+            }
         }
         // ReSharper restore IteratorNeverReturns
     }

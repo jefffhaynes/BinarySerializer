@@ -31,13 +31,7 @@ namespace BinarySerialization
         /// matches this value, serialization of the collection will be terminated.
         /// </summary>
         public object ConstValue { get; set; }
-
-        /// <summary>
-        /// Used to specify whether the terminating item should be included in the collection.
-        /// </summary>
-        [Obsolete("Use LastItemMode")]
-        public bool ExcludeLastItem { get; set; }
-
+        
         /// <summary>
         /// Used to specify whether the terminating item should be included in the collection, discarded, 
         /// or whether processing of the underlying data should be deferred.
