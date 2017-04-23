@@ -10,10 +10,10 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal abstract class ValueNode : Node
     {
+        private const char PathSeparator = '.';
         public static readonly object UnsetValue = new object();
 
         private bool _visited;
-        private const char PathSeparator = '.';
 
         protected ValueNode(Node parent, string name, TypeNode typeNode) : base(parent)
         {
@@ -40,7 +40,9 @@ namespace BinarySerialization.Graph.ValueGraph
             set
             {
                 foreach (var child in Children)
+                {
                     child.Visited = value;
+                }
 
                 _visited = value;
             }
@@ -59,23 +61,26 @@ namespace BinarySerialization.Graph.ValueGraph
                 typeNode.SubtypeBinding.Bind(this, () => SubtypeBindingCallback(typeNode));
             }
 
-            if (typeNode.SubtypeFactoryBinding != null && typeNode.SubtypeFactoryBinding.BindingMode == BindingMode.TwoWay)
+            if (typeNode.SubtypeFactoryBinding != null && typeNode.SubtypeFactoryBinding.BindingMode ==
+                BindingMode.TwoWay)
             {
                 typeNode.SubtypeFactoryBinding.Bind(this, () => SubtypeBindingCallback(typeNode));
             }
 
-            var parent = (TypeNode)typeNode.Parent;
+            var parent = (TypeNode) typeNode.Parent;
             if (parent.ItemSubtypeBinding != null && parent.ItemSubtypeBinding.BindingMode == BindingMode.TwoWay)
             {
-                parent.ItemSubtypeBinding.Bind((ValueNode)Parent, () => ItemSubtypeBindingCallback(typeNode));
+                parent.ItemSubtypeBinding.Bind((ValueNode) Parent, () => ItemSubtypeBindingCallback(typeNode));
             }
 
-            if (parent.ItemSubtypeFactoryBinding != null && parent.ItemSubtypeFactoryBinding.BindingMode == BindingMode.TwoWay)
+            if (parent.ItemSubtypeFactoryBinding != null &&
+                parent.ItemSubtypeFactoryBinding.BindingMode == BindingMode.TwoWay)
             {
-                parent.ItemSubtypeFactoryBinding.Bind((ValueNode)Parent, () => ItemSubtypeBindingCallback(typeNode));
+                parent.ItemSubtypeFactoryBinding.Bind((ValueNode) Parent, () => ItemSubtypeBindingCallback(typeNode));
             }
 
-            if (typeNode.ItemSerializeUntilBinding != null && typeNode.ItemSerializeUntilBinding.BindingMode == BindingMode.TwoWay)
+            if (typeNode.ItemSerializeUntilBinding != null &&
+                typeNode.ItemSerializeUntilBinding.BindingMode == BindingMode.TwoWay)
             {
                 typeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
             }
@@ -83,7 +88,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (typeNode.FieldValueBindings != null)
             {
                 // for each field value binding, create an anonymous function to get the final value from the corresponding attribute.
-                for (int index = 0; index < typeNode.FieldValueBindings.Count; index++)
+                for (var index = 0; index < typeNode.FieldValueBindings.Count; index++)
                 {
                     var fieldValueBinding = typeNode.FieldValueBindings[index];
 
@@ -91,8 +96,10 @@ namespace BinarySerialization.Graph.ValueGraph
                     fieldValueBinding.Bind(this, () =>
                     {
                         if (!Visited)
+                        {
                             throw new InvalidOperationException(
                                 "Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
+                        }
 
                         return TypeNode.FieldValueAttributes[attributeIndex].ComputeFinalInternal();
                     });
@@ -100,7 +107,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             // recurse to children
-            foreach (ValueNode child in Children)
+            foreach (var child in Children)
             {
                 child.Bind();
             }
@@ -108,9 +115,11 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private object SubtypeBindingCallback(TypeNode typeNode)
         {
-            Type valueType = GetValueTypeOverride();
+            var valueType = GetValueTypeOverride();
             if (valueType == null)
+            {
                 throw new InvalidOperationException("Binding targets must not be null.");
+            }
 
             var objectTypeNode = (ObjectTypeNode) typeNode;
 
@@ -120,21 +129,27 @@ namespace BinarySerialization.Graph.ValueGraph
             if (typeNode.SubtypeBinding != null)
             {
                 if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
+                {
                     return value;
+                }
             }
 
             // next try factory
             if (typeNode.SubtypeFactory != null)
             {
                 if (typeNode.SubtypeFactory.TryGetKey(valueType, out value))
+                {
                     return value;
+                }
             }
 
             // allow default subtypes in order to support round-trip
             if (typeNode.SubtypeDefaultAttribute != null)
             {
                 if (valueType == typeNode.SubtypeDefaultAttribute.Subtype)
+                {
                     return UnsetValue;
+                }
             }
 
             throw new InvalidOperationException($"No subtype specified for ${valueType}");
@@ -142,12 +157,14 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private object ItemSubtypeBindingCallback(TypeNode typeNode)
         {
-            Type valueType = GetValueTypeOverride();
+            var valueType = GetValueTypeOverride();
             if (valueType == null)
+            {
                 throw new InvalidOperationException("Binding targets must not be null.");
+            }
 
             var parent = (TypeNode) typeNode.Parent;
-            var objectTypeNode = (ObjectTypeNode)typeNode;
+            var objectTypeNode = (ObjectTypeNode) typeNode;
 
             object value;
 
@@ -155,21 +172,27 @@ namespace BinarySerialization.Graph.ValueGraph
             if (parent.ItemSubtypeBinding != null)
             {
                 if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
+                {
                     return value;
+                }
             }
 
             // next try factory
             if (parent.ItemSubtypeFactory != null)
             {
                 if (parent.ItemSubtypeFactory.TryGetKey(valueType, out value))
+                {
                     return value;
+                }
             }
 
             // allow default subtypes in order to support round-trip
             if (parent.ItemSubtypeDefaultAttribute != null)
             {
                 if (valueType == parent.ItemSubtypeDefaultAttribute.Subtype)
+                {
                     return UnsetValue;
+                }
             }
 
             throw new InvalidOperationException($"No subtype specified for ${valueType}");
@@ -186,21 +209,26 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 if (TypeNode.SerializeWhenBindings != null &&
                     !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
+                {
                     return;
+                }
 
                 if (TypeNode.SerializeWhenNotBindings != null &&
-                    TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
+                    TypeNode.SerializeWhenNotBindings.All(
+                        binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
+                {
                     return;
+                }
 
                 if (align)
                 {
-                    long? leftAlignment = GetLeftFieldAlignment();
+                    var leftAlignment = GetLeftFieldAlignment();
                     if (leftAlignment != null)
                     {
                         Align(stream, leftAlignment, true);
                     }
                 }
-                
+
                 var offset = GetFieldOffset();
 
                 if (offset != null)
@@ -218,7 +246,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (align)
                 {
-                    long? rightAlignment = GetRightFieldAlignment();
+                    var rightAlignment = GetRightFieldAlignment();
                     if (rightAlignment != null)
                     {
                         Align(stream, rightAlignment, true);
@@ -231,10 +259,10 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (Exception e)
             {
-                string reference = Name == null
+                var reference = Name == null
                     ? $"type '{TypeNode.Type}'"
                     : $"member '{Name}'";
-                string message = $"Error serializing {reference}.  See inner exception for detail.";
+                var message = $"Error serializing {reference}.  See inner exception for detail.";
                 throw new InvalidOperationException(message, e);
             }
             finally
@@ -270,7 +298,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (length > stream.RelativePosition)
                 {
                     var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int)padLength];
+                    var pad = new byte[(int) padLength];
                     stream.Write(pad, 0, pad.Length);
                 }
             }
@@ -291,13 +319,17 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 if (TypeNode.SerializeWhenBindings != null &&
                     !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+                {
                     return;
+                }
 
                 if (TypeNode.SerializeWhenNotBindings != null &&
                     TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+                {
                     return;
+                }
 
-                long? leftAlignment = GetLeftFieldAlignment();
+                var leftAlignment = GetLeftFieldAlignment();
                 if (leftAlignment != null)
                 {
                     Align(stream, leftAlignment);
@@ -318,7 +350,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     DeserializeInternal(stream, GetFieldLength, eventShuttle);
                 }
 
-                long? rightAlignment = GetRightFieldAlignment();
+                var rightAlignment = GetRightFieldAlignment();
                 if (rightAlignment != null)
                 {
                     Align(stream, rightAlignment);
@@ -330,10 +362,10 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (Exception e)
             {
-                string reference = Name == null
+                var reference = Name == null
                     ? $"type '{TypeNode.Type}'"
                     : $"member '{Name}'";
-                string message = $"Error deserializing '{reference}'.  See inner exception for detail.";
+                var message = $"Error deserializing '{reference}'.  See inner exception for detail.";
                 throw new InvalidOperationException(message, e);
             }
             finally
@@ -350,7 +382,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var position = stream.RelativePosition;
-            var delta = (alignment.Value - position % alignment.Value)%alignment.Value;
+            var delta = (alignment.Value - position % alignment.Value) % alignment.Value;
 
             if (delta == 0)
             {
@@ -364,20 +396,21 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             else
             {
-                for (int i = 0; i < delta; i++)
+                for (var i = 0; i < delta; i++)
                 {
                     if (stream.ReadByte() < 0)
+                    {
                         break;
+                    }
                 }
             }
-
         }
 
         private void DeserializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
         {
             stream = new BoundedStream(stream, maxLengthDelegate);
             DeserializeOverride(stream, eventShuttle);
-            
+
             /* Check if we need to seek past padding */
             var length = GetConstFieldLength();
 
@@ -386,7 +419,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (length > stream.RelativePosition)
                 {
                     var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int)padLength];
+                    var pad = new byte[(int) padLength];
                     stream.Read(pad, 0, pad.Length);
                 }
             }
@@ -398,14 +431,18 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var length = GetNumericValue(TypeNode.FieldLengthBindings);
             if (length != null)
+            {
                 return length;
+            }
 
-            var parent = (ValueNode)Parent;
+            var parent = (ValueNode) Parent;
             if (parent?.TypeNode.ItemLengthBindings != null)
             {
                 var parentItemLength = parent.TypeNode.ItemLengthBindings.GetValue(parent);
-                if(parentItemLength.GetType().GetTypeInfo().IsPrimitive)
+                if (parentItemLength.GetType().GetTypeInfo().IsPrimitive)
+                {
                     return Convert.ToInt64(parentItemLength);
+                }
             }
 
             return null;
@@ -423,7 +460,9 @@ namespace BinarySerialization.Graph.ValueGraph
             // so always go to a const or bound value
             var value = TypeNode.LeftFieldAlignmentBindings?.GetBoundValue(this);
             if (value == null)
+            {
                 return null;
+            }
 
             return Convert.ToInt64(value);
         }
@@ -434,7 +473,9 @@ namespace BinarySerialization.Graph.ValueGraph
             // so always go to a const or bound value
             var value = TypeNode.RightFieldAlignmentBindings?.GetBoundValue(this);
             if (value == null)
+            {
                 return null;
+            }
 
             return Convert.ToInt64(value);
         }
@@ -471,7 +512,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected virtual Endianness GetFieldEndianness()
         {
-            Endianness endianness = TypeNode.Endianness ?? Endianness.Inherit;
+            var endianness = TypeNode.Endianness ?? Endianness.Inherit;
 
             if (endianness == Endianness.Inherit)
             {
@@ -481,11 +522,12 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     if (value is Endianness)
                     {
-                        endianness = (Endianness) Enum.ToObject(typeof (Endianness), value);
+                        endianness = (Endianness) Enum.ToObject(typeof(Endianness), value);
                     }
                     else
                     {
-                        throw new InvalidOperationException("FieldEndianness converters must return a valid Endianness.");
+                        throw new InvalidOperationException(
+                            "FieldEndianness converters must return a valid Endianness.");
                     }
                 }
             }
@@ -501,7 +543,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected virtual Encoding GetFieldEncoding()
         {
-            Encoding encoding = TypeNode.Encoding;
+            var encoding = TypeNode.Encoding;
 
             if (encoding == null)
             {
@@ -522,18 +564,20 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (encoding == null && Parent != null)
             {
-                var parent = (ValueNode)Parent;
+                var parent = (ValueNode) Parent;
                 encoding = parent.GetFieldEncoding();
             }
 
             return encoding;
         }
-        
+
         private long? GetNumericValue(IBinding binding)
         {
             var value = binding?.GetValue(this);
             if (value == null)
+            {
                 return null;
+            }
 
             return Convert.ToInt64(value);
         }
@@ -541,28 +585,36 @@ namespace BinarySerialization.Graph.ValueGraph
         private long? GetConstNumericValue(IBinding binding)
         {
             if (binding == null)
+            {
                 return null;
+            }
 
             if (!binding.IsConst)
+            {
                 return null;
+            }
 
             return Convert.ToInt64(binding.ConstValue);
         }
 
         public ValueNode GetChild(string path)
         {
-            string[] memberNames = path.Split(PathSeparator);
+            var memberNames = path.Split(PathSeparator);
 
             if (memberNames.Length == 0)
+            {
                 throw new BindingException("Path cannot be empty.");
+            }
 
-            ValueNode child = this;
-            foreach (string name in memberNames)
+            var child = this;
+            foreach (var name in memberNames)
             {
                 child = child.Children.SingleOrDefault(c => c.Name == name);
 
                 if (child == null)
+                {
                     throw new BindingException($"No field found at '{path}'.");
+                }
             }
 
             return child;
