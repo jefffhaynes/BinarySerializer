@@ -255,6 +255,12 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (IOException)
             {
+                // since this isn't really a serialization exception, no sense in hiding it
+                throw;
+            }
+            catch (TimeoutException)
+            {
+                // since this isn't really a serialization exception, no sense in hiding it
                 throw;
             }
             catch (Exception e)
@@ -343,6 +349,12 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (IOException)
             {
+                // since this isn't really a serialization exception, no sense in hiding it
+                throw;
+            }
+            catch (TimeoutException)
+            {
+                // since this isn't really a serialization exception, no sense in hiding it
                 throw;
             }
             catch (Exception e)
