@@ -16,9 +16,7 @@
         public string TypeId { get; set; }
 
         [FieldOrder(1)]
-#pragma warning disable 618
-        [SerializeAs(Endianness = BinarySerialization.Endianness.Big)]
-#pragma warning restore 618
+        [FieldEndianness(BinarySerialization.Endianness.Big)]
         public int ChunkLength { get; set; }
 
         [FieldOrder(2)]

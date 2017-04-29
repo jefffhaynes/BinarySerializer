@@ -2,9 +2,8 @@
 {
     public class EncodingClass
     {
-#pragma warning disable 618
-        [SerializeAs(SerializedType.NullTerminatedString, Encoding = "windows-1256")]
-#pragma warning restore 618
+        [FieldEncoding("windows-1256")]
+        [SerializeAs(SerializedType.NullTerminatedString)]
         public string Name { get; set; }
     }
 }

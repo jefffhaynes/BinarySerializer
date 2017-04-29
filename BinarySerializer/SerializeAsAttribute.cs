@@ -27,17 +27,5 @@ namespace BinarySerialization
         /// Specifies the type to which to serialize the member.
         /// </summary>
         public SerializedType SerializedType { get; set; }
-
-        /// <summary>
-        /// Specifies the encoding to use when serializing strings.
-        /// </summary>
-        [Obsolete("Use the FieldEncoding attribute")]
-        public string Encoding { get; set; }
-
-        /// <summary>
-        /// Specifies the endianness to use when serializing the decorated member.
-        /// </summary>
-        [Obsolete("Use the FieldEndianness attribute")]
-        public Endianness Endianness { get; set; }
     }
 }

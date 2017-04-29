@@ -9,7 +9,7 @@ namespace BinarySerialization
     public sealed class FieldOffsetAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>
-        /// Initializes a new instance of the FieldOffset class with a fixed offset.
+        /// Initializes a new instance of the FieldOffset attribute with a fixed offset.
         /// </summary>
         /// <param name="offset"></param>
         public FieldOffsetAttribute(ulong offset)
@@ -18,7 +18,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Initializes a new instance of the FieldOffset class with a path pointing to a source binding member.
+        /// Initializes a new instance of the FieldOffset attribute with a path pointing to a source binding member.
         /// </summary>
         /// <param name="path">A path to the source member.</param>
         public FieldOffsetAttribute(string path) : base(path)

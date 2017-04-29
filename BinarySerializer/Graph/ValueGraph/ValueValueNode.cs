@@ -126,7 +126,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var maxLength = GetMaxLength(stream, serializedType);
 
-            var convertedValue = GetValue(value, serializedType);
+            var scaledValue = ScaleValue(value);
+            var convertedValue = GetValue(scaledValue, serializedType);
 
             switch (serializedType)
             {
@@ -304,7 +305,8 @@ namespace BinarySerialization.Graph.ValueGraph
                     throw new NotSupportedException();
             }
 
-            _value = ConvertToFieldType(value);
+            var convertedValue = ConvertToFieldType(value);
+            _value = UnscaleValue(convertedValue);
         }
 
         public override string ToString()
@@ -321,7 +323,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }
-        
+
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             if (EndOfStream(stream))
@@ -349,6 +351,30 @@ namespace BinarySerialization.Graph.ValueGraph
             // handle special case of byte[]
             var boundValue = BoundValue as byte[];
             return boundValue?.Length ?? base.MeasureOverride();
+        }
+
+        private object ScaleValue(object value)
+        {
+            if (TypeNode.FieldScaleBindings == null)
+            {
+                return value;
+            }
+
+            var scale = TypeNode.FieldScaleBindings.GetValue(this);
+
+            return Convert.ToDouble(value) * Convert.ToDouble(scale);
+        }
+
+        private object UnscaleValue(object value)
+        {
+            if (TypeNode.FieldScaleBindings == null)
+            {
+                return value;
+            }
+
+            var scale = TypeNode.FieldScaleBindings.GetValue(this);
+
+            return Convert.ToDouble(value) / Convert.ToDouble(scale);
         }
 
         private long? GetConstLength(long? length)
@@ -390,12 +416,12 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             if (constLength != null)
             {
-                Array.Resize(ref data, (int)constLength.Value - 1);
+                Array.Resize(ref data, (int) constLength.Value - 1);
             }
 
             if (maxLength != null && data.Length > maxLength)
             {
-                Array.Resize(ref data, (int)maxLength.Value - 1);
+                Array.Resize(ref data, (int) maxLength.Value - 1);
             }
         }
 

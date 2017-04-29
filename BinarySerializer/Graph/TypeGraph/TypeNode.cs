@@ -117,15 +117,6 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 _serializedType = serializeAsAttribute.SerializedType;
 
-#pragma warning disable 618
-                Endianness = serializeAsAttribute.Endianness;
-#pragma warning restore 618
-
-#pragma warning disable 618
-                if (!string.IsNullOrEmpty(serializeAsAttribute.Encoding))
-                    Encoding = Encoding.GetEncoding(serializeAsAttribute.Encoding);
-#pragma warning restore 618
-
                 if (_serializedType.Value == SerializedType.NullTerminatedString)
                     AreStringsNullTerminated = true;
             }
@@ -144,6 +135,7 @@ namespace BinarySerialization.Graph.TypeGraph
             FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
             FieldCountBindings = GetBindings<FieldCountAttribute>(attributes);
             FieldOffsetBindings = GetBindings<FieldOffsetAttribute>(attributes);
+            FieldScaleBindings = GetBindings<FieldScaleAttribute>(attributes);
             FieldEndiannessBindings = GetBindings<FieldEndiannessAttribute>(attributes);
             FieldEncodingBindings = GetBindings<FieldEncodingAttribute>(attributes);
 
@@ -338,6 +330,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public BindingCollection ItemLengthBindings { get; }
         public BindingCollection FieldCountBindings { get; }
         public BindingCollection FieldOffsetBindings { get; }
+        public BindingCollection FieldScaleBindings { get; }
         public BindingCollection LeftFieldAlignmentBindings { get; }
         public BindingCollection RightFieldAlignmentBindings { get; }
         public BindingCollection FieldEndiannessBindings { get; }
