@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -101,6 +102,12 @@ namespace BinarySerialization.Graph.ValueGraph
             CreateFinalCollection(items);
         }
 
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            var items = await DeserializeCollectionAsync(stream, eventShuttle);
+            CreateFinalCollection(items);
+        }
+
         private void CreateFinalCollection(List<object> items)
         {
             var itemCount = items.Count;
@@ -150,6 +157,36 @@ namespace BinarySerialization.Graph.ValueGraph
                 childSerializer.Deserialize(reader, childSerializedType, itemLength);
                 yield return childSerializer.GetValue(childSerializedType);
             }
+        }
+
+        private async Task<List<object>> DeserializeCollectionAsync(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            var list = new List<object>();
+
+            /* Create single serializer to do all the work */
+            var childSerializer = (ValueValueNode)CreateChildSerializer();
+            var childSerializedType = childSerializer.TypeNode.GetSerializedType();
+
+            var terminationValue = GetTerminationValue();
+            var terminationChild = GetTerminationChild();
+            var itemLength = GetFieldItemLength();
+
+            var reader = new AsyncBinaryReader(stream);
+            var count = GetFieldCount() ?? long.MaxValue;
+
+            for (long i = 0; i < count && !EndOfStream(stream); i++)
+            {
+                if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
+                {
+                    break;
+                }
+
+                await childSerializer.DeserializeAsync(reader, childSerializedType, itemLength);
+                var value = childSerializer.GetValue(childSerializedType);
+                list.Add(value);
+            }
+
+            return list;
         }
     }
 }

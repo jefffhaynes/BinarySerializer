@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -371,6 +372,52 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
+        public async Task DeserializeAsync(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            try
+            {
+                if (!ShouldSerialize)
+                {
+                    return;
+                }
+
+                AlignLeft(stream);
+
+                var offset = GetFieldOffset();
+
+                if (offset != null)
+                {
+                    using (new StreamResetter(stream))
+                    {
+                        stream.Position = offset.Value;
+                        await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle);
+                    }
+                }
+                else
+                {
+                    await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle);
+                }
+
+                AlignRight(stream);
+            }
+            catch (IOException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                var reference = Name == null
+                    ? $"type '{TypeNode.Type}'"
+                    : $"member '{Name}'";
+                var message = $"Error deserializing '{reference}'.  See inner exception for detail.";
+                throw new InvalidOperationException(message, e);
+            }
+            finally
+            {
+                Visited = true;
+            }
+        }
+
         private void AlignRight(BoundedStream stream)
         {
             var rightAlignment = GetRightFieldAlignment();
@@ -450,6 +497,15 @@ namespace BinarySerialization.Graph.ValueGraph
             SkipPadding(stream);
         }
 
+        private async Task DeserializeInternalAsync(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
+        {
+            stream = new BoundedStream(stream, maxLengthDelegate);
+
+            await DeserializeOverrideAsync(stream, eventShuttle);
+
+            SkipPadding(stream);
+        }
+
         private void SkipPadding(BoundedStream stream)
         {
             var length = GetConstFieldLength();
@@ -466,6 +522,8 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
         internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);
+
+        internal abstract Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle);
 
         protected long? GetFieldLength()
         {

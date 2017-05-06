@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -47,6 +48,12 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 stream.Seek(0, SeekOrigin.End);
             }
+        }
+
+        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            DeserializeOverride(stream, eventShuttle);
+            return Task.FromResult(0);
         }
 
         protected override long MeasureOverride()

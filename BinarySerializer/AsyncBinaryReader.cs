@@ -88,5 +88,12 @@ namespace BinarySerialization
             await BaseStream.ReadAsync(b, 0, b.Length);
             return BitConverter.ToDouble(b, 0);
         }
+
+        public async Task<byte[]> ReadBytesAsync(int count)
+        {
+            var b = new byte[count];
+            await BaseStream.ReadAsync(b, 0, b.Length);
+            return b;
+        }
     }
 }

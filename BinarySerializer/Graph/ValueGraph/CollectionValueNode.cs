@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -65,6 +66,53 @@ namespace BinarySerialization.Graph.ValueGraph
                     using (var streamResetter = new StreamResetter(childStream))
                     {
                         child.Deserialize(childStream, eventShuttle);
+
+                        if (IsTerminated(child, itemTerminationValue))
+                        {
+                            ProcessLastItem(streamResetter, child);
+                            break;
+                        }
+
+                        streamResetter.CancelReset();
+                    }
+
+                    Children.Add(child);
+                }
+            }
+        }
+
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            var terminationValue = GetTerminationValue();
+            var terminationChild = GetTerminationChild();
+            var itemTerminationValue = GetItemTerminationValue();
+            var itemLengths = GetItemLengths();
+
+            using (var itemLengthEnumerator = itemLengths?.GetEnumerator())
+            {
+                var count = GetFieldCount() ?? long.MaxValue;
+
+                for (long i = 0; i < count && !EndOfStream(stream); i++)
+                {
+                    if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
+                    {
+                        break;
+                    }
+
+                    itemLengthEnumerator?.MoveNext();
+
+                    // TODO this doesn't allow for deferred eval of endianness in the case of jagged arrays
+                    // probably extremely rare but still...
+                    var itemLength = itemLengthEnumerator?.Current;
+                    var childStream = itemLength == null
+                        ? new BoundedStream(stream)
+                        : new BoundedStream(stream, () => itemLength);
+
+                    var child = CreateChildSerializer();
+
+                    using (var streamResetter = new StreamResetter(childStream))
+                    {
+                        await child.DeserializeAsync(childStream, eventShuttle);
 
                         if (IsTerminated(child, itemTerminationValue))
                         {

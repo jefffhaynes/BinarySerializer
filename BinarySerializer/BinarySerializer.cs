@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 using BinarySerialization.Graph.ValueGraph;
 
@@ -155,6 +156,26 @@ namespace BinarySerialization
         /// <summary>
         ///     Deserializes the specified stream into an object graph.
         /// </summary>
+        /// <param name="stream">The stream from which to deserialize the object graph.</param>
+        /// <param name="type">The type of the root of the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public async Task<object> DeserializeAsync(Stream stream, Type type, object context = null)
+        {
+            RootTypeNode graph = GetGraph(type);
+
+            var serializer = (RootValueNode)graph.CreateSerializer(null);
+            serializer.EndiannessCallback = () => Endianness;
+            serializer.EncodingCallback = () => Encoding;
+            serializer.Context = context;
+            await serializer.DeserializeAsync(new BoundedStream(stream), _eventShuttle);
+
+            return serializer.Value;
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
         /// <param name="data">The byte array from which to deserialize the object graph.</param>
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
@@ -174,6 +195,18 @@ namespace BinarySerialization
         public T Deserialize<T>(Stream stream, object context = null)
         {
             return (T) Deserialize(stream, typeof(T), context);
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
+        /// <typeparam name="T">The type of the root of the object graph.</typeparam>
+        /// <param name="stream">The stream from which to deserialize the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public async Task<T> DeserializeAsync<T>(Stream stream, object context = null)
+        {
+            return (T) await DeserializeAsync(stream, typeof(T), context);
         }
 
         /// <summary>
