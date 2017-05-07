@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -16,12 +18,16 @@ namespace BinarySerialization.Graph.ValueGraph
             var value = BoundValue;
 
             if (value == null)
+            {
                 return;
+            }
 
             var binarySerializable = value as IBinarySerializable;
 
             if (binarySerializable == null)
+            {
                 throw new InvalidOperationException("Must implement IBinarySerializable");
+            }
 
             binarySerializable.Serialize(stream, GetFieldEndianness(), serializationContext);
         }
@@ -29,9 +35,21 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override void ObjectDeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             var serializationContext = CreateLazySerializationContext();
-            var binarySerializable = (IBinarySerializable)Activator.CreateInstance(TypeNode.Type);
+            var binarySerializable = CreateBinarySerializable();
             binarySerializable.Deserialize(stream, GetFieldEndianness(), serializationContext);
             Value = binarySerializable;
+        }
+
+        protected override Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            ObjectDeserializeOverride(stream, eventShuttle);
+            return Task.CompletedTask;
+        }
+
+        private IBinarySerializable CreateBinarySerializable()
+        {
+            var binarySerializable = (IBinarySerializable) Activator.CreateInstance(TypeNode.Type);
+            return binarySerializable;
         }
     }
 }

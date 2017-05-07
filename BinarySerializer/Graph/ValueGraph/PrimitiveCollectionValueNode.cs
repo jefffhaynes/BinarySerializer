@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -102,9 +103,9 @@ namespace BinarySerialization.Graph.ValueGraph
             CreateFinalCollection(items);
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
-            var items = await DeserializeCollectionAsync(stream, eventShuttle);
+            var items = await DeserializeCollectionAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
             CreateFinalCollection(items);
         }
 
@@ -159,7 +160,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private async Task<List<object>> DeserializeCollectionAsync(BoundedStream stream, EventShuttle eventShuttle)
+        private async Task<List<object>> DeserializeCollectionAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             var list = new List<object>();
 
@@ -181,7 +182,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 }
 
-                await childSerializer.DeserializeAsync(reader, childSerializedType, itemLength);
+                await childSerializer.DeserializeAsync(reader, childSerializedType, itemLength, cancellationToken);
                 var value = childSerializer.GetValue(childSerializedType);
                 list.Add(value);
             }

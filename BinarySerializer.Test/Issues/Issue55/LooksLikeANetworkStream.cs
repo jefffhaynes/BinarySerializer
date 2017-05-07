@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
-namespace BinarySerializer.Test.Issues.Issue55
+namespace BinarySerialization.Test.Issues.Issue55
 {
     /// <summary>
     /// Wraps a stream to look like a NetworkStream
@@ -48,14 +45,12 @@ namespace BinarySerializer.Test.Issues.Issue55
         public override bool CanSeek => false;
         public override bool CanWrite => true;
 
-        public override long Length
-        {
-            get { throw new NotSupportedException(); }
-        }
+        public override long Length => throw new NotSupportedException();
+
         public override long Position
         {
-            get { return UnderlyingStream.Position; }
-            set { UnderlyingStream.Position = value; }
+            get => UnderlyingStream.Position;
+            set => UnderlyingStream.Position = value;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -372,7 +373,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public async Task DeserializeAsync(BoundedStream stream, EventShuttle eventShuttle)
+        public async Task DeserializeAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             try
             {
@@ -390,12 +391,12 @@ namespace BinarySerialization.Graph.ValueGraph
                     using (new StreamResetter(stream))
                     {
                         stream.Position = offset.Value;
-                        await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle);
+                        await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken).ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle);
+                    await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken).ConfigureAwait(false);
                 }
 
                 AlignRight(stream);
@@ -497,11 +498,11 @@ namespace BinarySerialization.Graph.ValueGraph
             SkipPadding(stream);
         }
 
-        private async Task DeserializeInternalAsync(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
+        private async Task DeserializeInternalAsync(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             stream = new BoundedStream(stream, maxLengthDelegate);
 
-            await DeserializeOverrideAsync(stream, eventShuttle);
+            await DeserializeOverrideAsync(stream, eventShuttle, cancellationToken);
 
             SkipPadding(stream);
         }
@@ -523,7 +524,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);
 
-        internal abstract Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle);
+        internal abstract Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken);
 
         protected long? GetFieldLength()
         {

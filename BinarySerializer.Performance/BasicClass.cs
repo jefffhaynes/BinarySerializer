@@ -1,6 +1,7 @@
 ﻿using System;
+using BinarySerialization;
 
-namespace BinarySerialization.Performance
+namespace BinarySerializer.Performance
 {
     [Serializable]
     public class BasicClass

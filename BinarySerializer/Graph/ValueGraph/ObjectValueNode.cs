@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -96,7 +97,7 @@ namespace BinarySerialization.Graph.ValueGraph
             SkipPadding(stream);
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             ResolveValueType();
 
@@ -107,7 +108,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 try
                 {
-                    await ObjectDeserializeOverrideAsync(stream, eventShuttle);
+                    await ObjectDeserializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
                 }
                 catch (EndOfStreamException)
                 {
@@ -176,14 +177,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected virtual async Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        protected virtual async Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             // check to see if we are actually supposed to be a custom deserialization.  This is a side-effect of
             // treating all object members as object nodes.  In the case of sub-types we could later discover we
             // are actually a custom node because the specified subtype implements IBinarySerializable.
             if (IsCustomNode(out ValueNode customValueNode))
             {
-                customValueNode.DeserializeOverride(stream, eventShuttle);
+                await customValueNode.DeserializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
 
                 // this is a cheat, but another side-effect of this weird corner case
                 _cachedValue = customValueNode.Value;
@@ -197,7 +198,7 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 EmitBeginDeserialization(stream, child, lazyContext, eventShuttle);
 
-                await child.DeserializeAsync(stream, eventShuttle);
+                await child.DeserializeAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
 
                 EmitEndDeserialization(stream, child, lazyContext, eventShuttle);
             }

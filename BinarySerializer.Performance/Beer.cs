@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using BinarySerialization;
 
-namespace BinarySerialization.Performance
+namespace BinarySerializer.Performance
 {
     [Serializable]
     public class Beer

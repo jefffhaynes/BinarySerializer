@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -49,10 +50,10 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new InvalidOperationException("Deserializing object fields not supported.");
         }
 
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             DeserializeOverride(stream, eventShuttle);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

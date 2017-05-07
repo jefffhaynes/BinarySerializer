@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+
 //using System.Runtime.Serialization.Formatters.Binary;
 
-namespace BinarySerialization.Performance
+namespace BinarySerializer.Performance
 {
     class Program
     {
@@ -24,8 +26,10 @@ namespace BinarySerialization.Performance
                 Brewery = "Brasserie Grain d'Orge"
             };
 
-            //DoBS(beer, 100000);
-            DoBSParallel(beer, 100000);
+            DoBS(beer, 100000);
+            var task = DoBSAsync(beer, 100000);
+            task.Wait();
+            //DoBSParallel(beer, 100000);
             //DoBF(beer, 100000);
             Console.ReadKey();
         }
@@ -34,7 +38,7 @@ namespace BinarySerialization.Performance
         {
             var stopwatch = new Stopwatch();
 
-            var ser = new BinarySerializer();
+            var ser = new BinarySerialization.BinarySerializer();
 
             using (var ms = new MemoryStream())
             {
@@ -65,12 +69,48 @@ namespace BinarySerialization.Performance
                 stopwatch.Reset();
             }
         }
-        
+
+        private static async Task DoBSAsync<T>(T obj, int iterations)
+        {
+            var stopwatch = new Stopwatch();
+
+            var ser = new BinarySerialization.BinarySerializer();
+
+            using (var ms = new MemoryStream())
+            {
+                stopwatch.Start();
+                for (int i = 0; i < iterations; i++)
+                {
+                    ser.Serialize(ms, obj);
+                }
+                stopwatch.Stop();
+                Console.WriteLine("BSA SER: {0}", stopwatch.Elapsed);
+                stopwatch.Reset();
+            }
+
+            var dataStream = new MemoryStream();
+            ser.Serialize(dataStream, obj);
+            byte[] data = dataStream.ToArray();
+
+            using (var ms = new MemoryStream(data))
+            {
+                stopwatch.Start();
+                for (int i = 0; i < iterations; i++)
+                {
+                    await ser.DeserializeAsync<T>(ms);
+                    ms.Position = 0;
+                }
+                stopwatch.Stop();
+                Console.WriteLine("BSA DESER: {0}", stopwatch.Elapsed);
+                stopwatch.Reset();
+            }
+        }
+
         private static void DoBSParallel<T>(T obj, int iterations)
         {
             var stopwatch = new Stopwatch();
 
-            var ser = new BinarySerializer();
+            var ser = new BinarySerialization.BinarySerializer();
 
             stopwatch.Start();
             var data = Enumerable.Range(0, iterations).AsParallel().Select(i =>

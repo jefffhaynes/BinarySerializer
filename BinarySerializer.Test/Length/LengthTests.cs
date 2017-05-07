@@ -192,7 +192,11 @@ namespace BinarySerialization.Test.Length
         }
 
         [TestMethod]
+#if TESTASYNC
+        [ExpectedException(typeof(AggregateException))]
+#else
         [ExpectedException(typeof(InvalidOperationException))]
+#endif
         public void InvalidForwardBindingTest()
         {
             Roundtrip(new InvalidForwardBindingClass());

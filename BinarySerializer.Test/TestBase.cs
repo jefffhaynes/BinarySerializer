@@ -137,11 +137,13 @@ namespace BinarySerialization.Test
 
         protected T Deserialize<T>(Stream stream)
         {
+#if TESTASYNC
             var task = Serializer.DeserializeAsync<T>(stream);
             task.Wait();
             return task.Result;
-
-            //return Serializer.Deserialize<T>(stream);
+#else
+            return Serializer.Deserialize<T>(stream);
+#endif
         }
 
         private static void PrintIndent(int depth)

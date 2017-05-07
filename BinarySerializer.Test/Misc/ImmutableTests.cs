@@ -9,7 +9,11 @@ namespace BinarySerialization.Test.Misc
     public class ImmutableTests : TestBase
     {
         [TestMethod]
+#if TESTASYNC
+        [ExpectedException(typeof(AggregateException))]
+#else
         [ExpectedException(typeof (InvalidOperationException))]
+#endif
         public void PrivateSetterTest()
         {
             var expected = new PrivateSetterClass();

@@ -1,5 +1,4 @@
 using System.IO;
-using BinarySerializer.Test.Issues.Issue55;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue55

@@ -1,4 +1,6 @@
-namespace BinarySerialization.Performance
+using BinarySerialization;
+
+namespace BinarySerializer.Performance
 {
     public class TwiceConverter : IValueConverter
     {

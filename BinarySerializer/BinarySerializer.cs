@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 using BinarySerialization.Graph.ValueGraph;
@@ -154,13 +155,38 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        ///     Deserializes the specified stream into an object graph.
+        ///     Deserializes the specified stream into an object graph using the stream async methods.
         /// </summary>
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public async Task<object> DeserializeAsync(Stream stream, Type type, object context = null)
+        public Task<object> DeserializeAsync(Stream stream, Type type, object context = null)
+        {
+            return DeserializeAsync(stream, type, context, CancellationToken.None);
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph using the stream async methods.
+        /// </summary>
+        /// <param name="stream">The stream from which to deserialize the object graph.</param>
+        /// <param name="type">The type of the root of the object graph.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public Task<object> DeserializeAsync(Stream stream, Type type, CancellationToken cancellationToken)
+        {
+            return DeserializeAsync(stream, type, null, cancellationToken);
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph using the stream async methods.
+        /// </summary>
+        /// <param name="stream">The stream from which to deserialize the object graph.</param>
+        /// <param name="type">The type of the root of the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public async Task<object> DeserializeAsync(Stream stream, Type type, object context, CancellationToken cancellationToken)
         {
             RootTypeNode graph = GetGraph(type);
 
@@ -168,7 +194,7 @@ namespace BinarySerialization
             serializer.EndiannessCallback = () => Endianness;
             serializer.EncodingCallback = () => Encoding;
             serializer.Context = context;
-            await serializer.DeserializeAsync(new BoundedStream(stream), _eventShuttle);
+            await serializer.DeserializeAsync(new BoundedStream(stream), _eventShuttle, cancellationToken).ConfigureAwait(false);
 
             return serializer.Value;
         }
@@ -198,7 +224,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        ///     Deserializes the specified stream into an object graph.
+        ///     Deserializes the specified stream into an object graph using the stream async methods.
         /// </summary>
         /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="stream">The stream from which to deserialize the object graph.</param>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -17,13 +18,15 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public ValueNode Child { get; private set; }
 
-        private RootTypeNode GetContextGraph(Type valueType)
+        private static RootTypeNode GetContextGraph(Type valueType)
         {
             lock (ContextCacheLock)
             {
                 RootTypeNode graph;
                 if (ContextCache.TryGetValue(valueType, out graph))
+                {
                     return graph;
+                }
 
                 graph = new RootTypeNode(valueType);
                 ContextCache.Add(valueType, graph);
@@ -86,10 +89,10 @@ namespace BinarySerialization.Graph.ValueGraph
             Child.Deserialize(stream, eventShuttle);
         }
 
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle)
+        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             Child = ((RootTypeNode)TypeNode).Child.CreateSerializer(this);
-            return Child.DeserializeAsync(stream, eventShuttle);
+            return Child.DeserializeAsync(stream, eventShuttle, cancellationToken);
         }
 
         protected override Endianness GetFieldEndianness()
