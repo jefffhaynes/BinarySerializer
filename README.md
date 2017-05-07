@@ -380,15 +380,15 @@ FieldEndianness is one of the stranger attributes in that in some instances the 
 public class Header
 {
     [FieldOrder(0)]
-	[Endianness("ByteOrderIndicator", Converter = typeof(EndiannessConverter)]
-	public int Length { get; set; }
+    [Endianness("ByteOrderIndicator", Converter = typeof(EndiannessConverter)]
+    public int Length { get; set; }
 	
     [FieldOrder(1)]
-	public int ByteOrderIndicator { get; set; }
+    public int ByteOrderIndicator { get; set; }
 	
     [FieldOrder(2)]
-	[FieldLength("Length")]
-	public string Value { get; set; }
+    [FieldLength("Length")]
+    public string Value { get; set; }
 }
 ```
 
@@ -493,7 +493,7 @@ public class Packet
     [Subtype("FrameType", FrameType.Message, typeof(MessageFrame)]
     [Subtype("FrameType", FrameType.Control, typeof(ControlFrame)]
     [Subtype("FrameType", FrameType.Trigger, typeof(TriggerFrame)]
-	[SubtypeDefault(typeof(UnknownFrame))]
+    [SubtypeDefault(typeof(UnknownFrame))]
     public Frame Frame { get; set; }
 }
 ```
@@ -775,13 +775,13 @@ public class Section
     public Block Header { get; set; }
 	
     [FieldOrder(1)]
-	[ItemSerializeUntil("Type", BlockType.Header, LastItemMode = LastItemMode.Defer)]
-	public List<Block> Blocks { get; set; }
+    [ItemSerializeUntil("Type", BlockType.Header, LastItemMode = LastItemMode.Defer)]
+    public List<Block> Blocks { get; set; }
 }
 
 public class Document
 {
-	public List<Section> Sections { get; set; }
+    public List<Section> Sections { get; set; }
 }
 ```
 
