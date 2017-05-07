@@ -357,12 +357,12 @@ public class EndiannessConverter : IValueConverter
 
         if (indicator == LittleEndiannessMagic)
         {
-		    return BinarySerialization.Endianness.Little;
-	    }
+            return BinarySerialization.Endianness.Little;
+        }
         else if (indicator == BigEndiannessMagic)
         {
-		    return BinarySerialization.Endianness.Big;
-	    }
+            return BinarySerialization.Endianness.Big;
+        }
 
         throw new InvalidOperationException("Invalid endian magic");
     }
