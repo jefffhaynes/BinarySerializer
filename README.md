@@ -76,6 +76,7 @@ There are a number of attributes that can be used to control the serialization o
 * [FieldLength](#fieldlengthattribute)
 * [FieldCount](#fieldcountattribute)
 * [FieldAlignment](#fieldalignmentattribute)
+* [FieldScale](#fieldscaleattribute)
 * [FieldEndianness](#fieldendiannessattribute)
 * [FieldEncoding](#fieldencodingattribute)
 * [FieldValue](#fieldvalueattribute)
@@ -304,6 +305,27 @@ public class Entry
 ```
 
 In this example the Value field will always start on a modulo 4 byte boundary but terminate on a modulo 2 byte boundary with respect to the parent.
+
+### FieldScaleAttribute ###
+
+The FieldScale attribute can be used to specify value-type fields that encode some scaled representation of the actual value.  For example, what would normally be a floating point value could be stored as an integer.
+
+```c#
+public class Coordinates
+{
+    [FieldOrder(0)]
+    [FieldScale(10000000)]
+    [SerializeAs(SerializedType.Int4)]
+    public double Longitude { get; set; }
+
+    [FieldOrder(1)]
+    [FieldScale(10000000)]
+    [SerializeAs(SerializedType.Int4)]
+    public double Latitude { get; set; }
+}
+```
+
+Note that the definition includes SerializeAs attributes specifying that the underlying values be represented as signed integers.
 
 ### FieldEndiannessAttribute ###
 
