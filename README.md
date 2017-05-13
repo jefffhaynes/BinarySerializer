@@ -396,7 +396,7 @@ In this example the value of the Length field will not be evaluated until after 
 
 ### FieldEncodingAttribute ###
 
-Similar to the FieldEndianness attribute, the FieldEncoding attribute can be used to specify the string encoding for a field.  This attribute will be inherited by all child fields unless overwritten.
+Similar to the FieldEndianness attribute, the FieldEncoding attribute can be used to specify the string encoding for a field.  This attribute will be inherited by all child fields unless overridden.
 
 ### FieldValueAttributeBase ###
 
