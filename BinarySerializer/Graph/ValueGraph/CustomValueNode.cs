@@ -40,7 +40,8 @@ namespace BinarySerialization.Graph.ValueGraph
             Value = binarySerializable;
         }
 
-        protected override Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        protected override Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             ObjectDeserializeOverride(stream, eventShuttle);
             return Task.CompletedTask;

@@ -12,12 +12,13 @@ namespace BinarySerialization.Graph.TypeGraph
             Construct();
         }
 
-        protected CollectionTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
+        protected CollectionTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+            memberInfo)
         {
             Construct();
         }
 
-        public Func<object> CompiledConstructor { get; private set; } 
+        public Func<object> CompiledConstructor { get; private set; }
 
         public Type ChildType { get; set; }
 
@@ -28,7 +29,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public TypeNode TerminationChild { get; private set; }
 
         public object TerminationValue { get; private set; }
-        
+
         protected abstract Type GetChildType();
 
         private void Construct()
@@ -55,7 +56,9 @@ namespace BinarySerialization.Graph.TypeGraph
 
             TypeNode terminationChild = null;
             if (terminationValue != null)
+            {
                 terminationChild = GenerateChild(terminationValue.GetType());
+            }
 
             return terminationChild;
         }

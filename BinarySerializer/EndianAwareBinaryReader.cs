@@ -5,41 +5,45 @@ using System.Text;
 namespace BinarySerialization
 {
     /// <summary>
-    /// An extension of the <see cref="BinaryReader"/> class that supports big- and little-endian byte ordering.
+    ///     An extension of the <see cref="BinaryReader" /> class that supports big- and little-endian byte ordering.
     /// </summary>
     [Obsolete("This class is no longer used internally and may be removed in the future.")]
     public class EndianAwareBinaryReader : BinaryReader
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EndianAwareBinaryReader"/> class based on the specified
-        /// stream and using UTF-8 encoding.
+        ///     Initializes a new instance of the <see cref="EndianAwareBinaryReader" /> class based on the specified
+        ///     stream and using UTF-8 encoding.
         /// </summary>
         /// <param name="input">The input stream.</param>
-        public EndianAwareBinaryReader(Stream input) : base(input) { }
+        public EndianAwareBinaryReader(Stream input) : base(input)
+        {
+        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EndianAwareBinaryReader"/> class based on the specified 
-        /// stream and character encoding.
+        ///     Initializes a new instance of the <see cref="EndianAwareBinaryReader" /> class based on the specified
+        ///     stream and character encoding.
         /// </summary>
         /// <param name="input">The input stream.</param>
         /// <param name="encoding">The character encoding to use.</param>
-        public EndianAwareBinaryReader(Stream input, Encoding encoding) : base(input, encoding) { }
+        public EndianAwareBinaryReader(Stream input, Encoding encoding) : base(input, encoding)
+        {
+        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EndianAwareBinaryReader"/> class based on the specified 
-        /// stream, character encoding, and endianness.
+        ///     Initializes a new instance of the <see cref="EndianAwareBinaryReader" /> class based on the specified
+        ///     stream, character encoding, and endianness.
         /// </summary>
         /// <param name="input">The input stream.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <param name="endianness">The byte ordering to use.</param>
-        public EndianAwareBinaryReader(Stream input, Encoding encoding, Endianness endianness) : base(input, encoding) 
+        public EndianAwareBinaryReader(Stream input, Encoding encoding, Endianness endianness) : base(input, encoding)
         {
             Endianness = endianness;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EndianAwareBinaryReader"/> class based on the specified 
-        /// stream and endianness using UTF-8 encoding.
+        ///     Initializes a new instance of the <see cref="EndianAwareBinaryReader" /> class based on the specified
+        ///     stream and endianness using UTF-8 encoding.
         /// </summary>
         /// <param name="input">The input stream.</param>
         /// <param name="endianness">The byte ordering to use.</param>
@@ -49,12 +53,13 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// The byte ordering to use.
+        ///     The byte ordering to use.
         /// </summary>
         public Endianness Endianness { get; set; }
 
         /// <summary>
-        /// Reads a two-byte signed integer from the current stream and advances the current position of the stream by two bytes.
+        ///     Reads a two-byte signed integer from the current stream and advances the current position of the stream by two
+        ///     bytes.
         /// </summary>
         public override short ReadInt16()
         {
@@ -63,7 +68,8 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Reads a two-byte unsigned integer from the current stream and advances the current position of the stream by two bytes.
+        ///     Reads a two-byte unsigned integer from the current stream and advances the current position of the stream by two
+        ///     bytes.
         /// </summary>
         public override ushort ReadUInt16()
         {
@@ -72,7 +78,8 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Reads a four-byte signed integer from the current stream and advances the current position of the stream by four bytes.
+        ///     Reads a four-byte signed integer from the current stream and advances the current position of the stream by four
+        ///     bytes.
         /// </summary>
         public override int ReadInt32()
         {
@@ -81,7 +88,8 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Reads a four-byte unsigned integer from the current stream and advances the current position of the stream by four bytes.
+        ///     Reads a four-byte unsigned integer from the current stream and advances the current position of the stream by four
+        ///     bytes.
         /// </summary>
         public override uint ReadUInt32()
         {
@@ -90,7 +98,8 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Reads an eight-byte signed integer from the current stream and advances the current position of the stream by eight bytes.
+        ///     Reads an eight-byte signed integer from the current stream and advances the current position of the stream by eight
+        ///     bytes.
         /// </summary>
         public override long ReadInt64()
         {
@@ -99,7 +108,8 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Reads an eight-byte unsigned integer from the current stream and advances the current position of the stream by eight bytes.
+        ///     Reads an eight-byte unsigned integer from the current stream and advances the current position of the stream by
+        ///     eight bytes.
         /// </summary>
         public override ulong ReadUInt64()
         {
@@ -108,7 +118,8 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Reads a four-byte floating-point value from the current stream and advances the current position of the stream by four bytes.
+        ///     Reads a four-byte floating-point value from the current stream and advances the current position of the stream by
+        ///     four bytes.
         /// </summary>
         public override float ReadSingle()
         {
@@ -117,7 +128,8 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Reads an eight-byte floating-point value from the current stream and advances the current position of the stream by eight bytes.
+        ///     Reads an eight-byte floating-point value from the current stream and advances the current position of the stream by
+        ///     eight bytes.
         /// </summary>
         public override double ReadDouble()
         {

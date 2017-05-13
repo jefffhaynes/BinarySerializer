@@ -82,7 +82,8 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             var terminationValue = GetTerminationValue();
             var terminationChild = GetTerminationChild();
@@ -113,7 +114,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     using (var streamResetter = new StreamResetter(childStream))
                     {
-                        await child.DeserializeAsync(childStream, eventShuttle, cancellationToken).ConfigureAwait(false);
+                        await child.DeserializeAsync(childStream, eventShuttle, cancellationToken)
+                            .ConfigureAwait(false);
 
                         if (IsTerminated(child, itemTerminationValue))
                         {

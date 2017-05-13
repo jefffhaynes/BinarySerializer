@@ -20,16 +20,20 @@ namespace BinarySerialization.Graph.ValueGraph
             set
             {
                 if (value == null)
+                {
                     return;
+                }
 
                 var valueType = value.GetType();
 
-                if(valueType == typeof(object))
+                if (valueType == typeof(object))
+                {
                     throw new InvalidOperationException("Unable to serialize object.");
+                }
 
                 /* Create graph as if parent were creating it */
-                var unknownTypeGraph = new RootTypeNode((TypeNode)TypeNode.Parent, valueType);
-                var unknownSerializer = (RootValueNode)unknownTypeGraph.CreateSerializer((ValueNode)Parent);
+                var unknownTypeGraph = new RootTypeNode((TypeNode) TypeNode.Parent, valueType);
+                var unknownSerializer = (RootValueNode) unknownTypeGraph.CreateSerializer((ValueNode) Parent);
                 unknownSerializer.EndiannessCallback = GetFieldEndianness;
                 unknownSerializer.EncodingCallback = GetFieldEncoding;
                 unknownSerializer.Value = value;
@@ -41,8 +45,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            foreach(var child in Children)
+            foreach (var child in Children)
+            {
                 child.Serialize(stream, eventShuttle);
+            }
         }
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
@@ -50,7 +56,8 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new InvalidOperationException("Deserializing object fields not supported.");
         }
 
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             DeserializeOverride(stream, eventShuttle);
             return Task.CompletedTask;

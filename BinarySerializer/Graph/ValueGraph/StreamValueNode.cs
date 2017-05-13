@@ -51,7 +51,8 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             DeserializeOverride(stream, eventShuttle);
             return Task.CompletedTask;

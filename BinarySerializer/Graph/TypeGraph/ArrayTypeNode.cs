@@ -17,9 +17,13 @@ namespace BinarySerialization.Graph.TypeGraph
             Construct();
         }
 
-        private void Construct()
+        public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            CompiledChildConstructor = CreateCompiledConstructor(GetChildType());
+            if (ChildType.GetTypeInfo().IsPrimitive)
+            {
+                return new PrimitveArrayValueNode(parent, Name, this);
+            }
+            return new ArrayValueNode(parent, Name, this);
         }
 
         protected override Type GetChildType()
@@ -27,11 +31,9 @@ namespace BinarySerialization.Graph.TypeGraph
             return Type.GetElementType();
         }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        private void Construct()
         {
-            if (ChildType.GetTypeInfo().IsPrimitive)
-                return new PrimitveArrayValueNode(parent, Name, this);
-            return new ArrayValueNode(parent, Name, this);
+            CompiledChildConstructor = CreateCompiledConstructor(GetChildType());
         }
     }
 }

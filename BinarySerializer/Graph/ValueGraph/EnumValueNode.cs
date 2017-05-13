@@ -26,10 +26,12 @@ namespace BinarySerialization.Graph.ValueGraph
             SetValueFromEnum();
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             var enumInfo = GetEnumInfo();
-            await DeserializeAsync(stream, enumInfo.SerializedType, enumInfo.EnumValueLength, cancellationToken).ConfigureAwait(false);
+            await DeserializeAsync(stream, enumInfo.SerializedType, enumInfo.EnumValueLength, cancellationToken)
+                .ConfigureAwait(false);
             SetValueFromEnum();
         }
 

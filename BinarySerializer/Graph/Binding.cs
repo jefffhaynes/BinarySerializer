@@ -39,19 +39,6 @@ namespace BinarySerialization.Graph
             SupportsDeferredEvaluation = attribute.SupportsDeferredBinding;
         }
 
-        public bool IsConst { get; }
-
-        public object ConstValue
-        {
-            get
-            {
-                if (!IsConst)
-                    throw new InvalidOperationException("Not const.");
-
-                return _constValue;
-            }
-        }
-
         public string Path { get; }
         public BindingMode BindingMode { get; }
         public IValueConverter ValueConverter { get; }
@@ -60,27 +47,48 @@ namespace BinarySerialization.Graph
         public int Level { get; set; }
         public bool SupportsDeferredEvaluation { get; }
 
+        public bool IsConst { get; }
+
+        public object ConstValue
+        {
+            get
+            {
+                if (!IsConst)
+                {
+                    throw new InvalidOperationException("Not const.");
+                }
+
+                return _constValue;
+            }
+        }
+
         public object GetValue(ValueNode target)
         {
             if (IsConst)
+            {
                 return _constValue;
+            }
 
             if (BindingMode == BindingMode.OneWayToSource)
+            {
                 return null;
+            }
 
             var source = GetSource(target);
 
             CheckSource(source);
 
             return ValueConverter == null
-                ? source.Value 
+                ? source.Value
                 : Convert(source.Value, target.CreateLazySerializationContext());
         }
 
         public object GetBoundValue(ValueNode target)
         {
             if (IsConst)
+            {
                 return _constValue;
+            }
 
             var source = GetSource(target);
 
@@ -89,6 +97,22 @@ namespace BinarySerialization.Graph
             return ValueConverter == null
                 ? source.BoundValue
                 : Convert(source.BoundValue, target.CreateLazySerializationContext());
+        }
+
+        public void Bind(ValueNode target, Func<object> callback)
+        {
+            if (IsConst)
+            {
+                return;
+            }
+
+            var source = GetSource(target);
+
+            var finalCallback = ValueConverter == null
+                ? callback
+                : () => ConvertBack(callback(), target.CreateLazySerializationContext());
+
+            source.Bindings.Add(finalCallback);
         }
 
         public ValueNode GetSource(ValueNode target)
@@ -122,32 +146,24 @@ namespace BinarySerialization.Graph
             while (parent != null)
             {
                 if (level == Level)
+                {
                     return parent;
+                }
 
                 if (parent.Parent == null && RelativeSourceMode == RelativeSourceMode.SerializationContext)
+                {
                     return parent;
+                }
 
                 parent = parent.Parent;
 
                 if (!(parent is RootValueNode))
+                {
                     level++;
+                }
             }
 
             return null;
-        }
-
-        public void Bind(ValueNode target, Func<object> callback)
-        {
-            if (IsConst)
-                return;
-
-            ValueNode source = GetSource(target);
-            
-            var finalCallback = ValueConverter == null
-                ? callback
-                : () => ConvertBack(callback(), target.CreateLazySerializationContext());
-
-            source.Bindings.Add(finalCallback);
         }
 
         private object Convert(object value, BinarySerializationContext context)
@@ -164,7 +180,10 @@ namespace BinarySerialization.Graph
         private void CheckSource(ValueNode source)
         {
             if (!source.Visited && !SupportsDeferredEvaluation)
-                throw new InvalidOperationException("This attribute does not support forward binding.  Consider specifying a BindingMode of OneWayToSource.");
+            {
+                throw new InvalidOperationException(
+                    "This attribute does not support forward binding.  Consider specifying a BindingMode of OneWayToSource.");
+            }
         }
         // ReSharper restore UnusedParameter.Local
     }

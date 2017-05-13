@@ -7,16 +7,16 @@ namespace BinarySerialization.Graph.ValueGraph
         protected CollectionValueNodeBase(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
-        
+
         protected ValueNode CreateChildSerializer()
         {
-            var typeNode = (CollectionTypeNode)TypeNode;
+            var typeNode = (CollectionTypeNode) TypeNode;
             return typeNode.Child.CreateSerializer(this);
         }
-        
+
         protected object GetTerminationValue()
         {
-            CollectionTypeNode typeNode = (CollectionTypeNode)TypeNode;
+            var typeNode = (CollectionTypeNode) TypeNode;
             return typeNode.TerminationValue;
         }
 
@@ -41,7 +41,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected void SerializeTermination(BoundedStream stream, EventShuttle eventShuttle)
         {
-            var typeNode = (CollectionTypeNode)TypeNode;
+            var typeNode = (CollectionTypeNode) TypeNode;
 
             if (typeNode.TerminationChild != null)
             {
@@ -50,10 +50,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 terminationChild.Serialize(stream, eventShuttle);
             }
         }
-        
+
         protected ValueNode GetTerminationChild()
         {
-            var typeNode = (CollectionTypeNode)TypeNode;
+            var typeNode = (CollectionTypeNode) TypeNode;
             var terminationChild = typeNode.TerminationChild?.CreateSerializer(this);
             return terminationChild;
         }

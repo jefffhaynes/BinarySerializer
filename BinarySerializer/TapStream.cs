@@ -6,12 +6,20 @@ namespace BinarySerialization
     internal class TapStream : BoundedStream
     {
         private const string TappingErrorMessage = "Not supported while tapping.";
-        
+
         private readonly Stream _tap;
 
         public TapStream(Stream source, Stream tap) : base(source)
         {
             _tap = tap;
+        }
+
+        public override bool CanSeek => false;
+
+        public override long Position
+        {
+            get => base.Position;
+            set => throw new InvalidOperationException(TappingErrorMessage);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -35,14 +43,6 @@ namespace BinarySerialization
         {
             _tap.Write(buffer, offset, count);
             base.Write(buffer, offset, count);
-        }
-        
-        public override bool CanSeek => false;
-
-        public override long Position
-        {
-            get => base.Position;
-            set => throw new InvalidOperationException(TappingErrorMessage);
         }
 
         public override void Flush()

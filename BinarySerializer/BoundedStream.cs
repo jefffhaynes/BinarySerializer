@@ -8,11 +8,11 @@ namespace BinarySerialization
     /// </summary>
     public class BoundedStream : Stream
     {
-        private readonly BoundedStream _root;
         private readonly bool _canSeek;
         private readonly long _length;
-        private readonly Func<long?> _maxLengthDelegate; 
-        
+        private readonly Func<long?> _maxLengthDelegate;
+        private readonly BoundedStream _root;
+
         internal BoundedStream(Stream source, Func<long?> maxLengthDelegate = null)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
@@ -23,7 +23,9 @@ namespace BinarySerialization
             _canSeek = source.CanSeek;
 
             if (_canSeek)
+            {
                 _length = source.Length;
+            }
 
             _root = this;
 
@@ -80,6 +82,66 @@ namespace BinarySerialization
                 var delta = value - RelativePosition;
                 Source.Position += delta;
                 RelativePosition = value;
+            }
+        }
+
+        internal long RelativePosition { get; set; }
+
+        internal bool IsAtLimit
+        {
+            get
+            {
+                if (MaxLength != null)
+                {
+                    return Position >= MaxLength;
+                }
+
+                var source = Source as BoundedStream;
+                return source != null && source.IsAtLimit;
+            }
+        }
+
+        internal long AvailableForReading
+        {
+            get
+            {
+                long maxLength;
+
+                if (MaxLength == null)
+                {
+                    var source = Source as BoundedStream;
+                    if (source != null)
+                    {
+                        return source.AvailableForReading;
+                    }
+
+                    maxLength = long.MaxValue;
+                }
+                else
+                {
+                    maxLength = MaxLength.Value;
+                }
+
+                if (!_canSeek)
+                {
+                    return maxLength - Position;
+                }
+
+                return Math.Min(maxLength, Length) - Position;
+            }
+        }
+
+        internal long AvailableForWriting
+        {
+            get
+            {
+                if (MaxLength != null)
+                {
+                    return MaxLength.Value - Position;
+                }
+
+                var source = Source as BoundedStream;
+                return source?.AvailableForWriting ?? long.MaxValue;
             }
         }
 
@@ -153,7 +215,9 @@ namespace BinarySerialization
             }
 
             if (count == 0)
+            {
                 return 0;
+            }
 
             var read = Source.Read(buffer, offset, count);
             RelativePosition += read;
@@ -172,7 +236,9 @@ namespace BinarySerialization
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (count == 0)
+            {
                 return;
+            }
 
             if (MaxLength != null && count > MaxLength - Position)
             {
@@ -181,64 +247,6 @@ namespace BinarySerialization
 
             Source.Write(buffer, offset, count);
             RelativePosition += count;
-        }
-        
-        internal long RelativePosition { get; set; }
-        
-        internal bool IsAtLimit
-        {
-            get
-            {
-                if (MaxLength != null)
-                {
-                    return Position >= MaxLength;
-                }
-
-                var source = Source as BoundedStream;
-                return source != null && source.IsAtLimit;
-            }
-        }
-        
-        internal long AvailableForReading
-        {
-            get
-            {
-                long maxLength;
-
-                if (MaxLength == null)
-                {
-                    var source = Source as BoundedStream;
-                    if (source != null)
-                    {
-                        return source.AvailableForReading;
-                    }
-
-                    maxLength = long.MaxValue;
-                }
-                else
-                {
-                    maxLength = MaxLength.Value;
-                }
-
-                if (!_canSeek)
-                    return maxLength - Position;
-
-                return Math.Min(maxLength, Length) - Position;
-            }
-        }
-
-        internal long AvailableForWriting
-        {
-            get
-            {
-                if (MaxLength != null)
-                {
-                    return MaxLength.Value - Position;
-                }
-
-                var source = Source as BoundedStream;
-                return source?.AvailableForWriting ?? long.MaxValue;
-            }
         }
     }
 }

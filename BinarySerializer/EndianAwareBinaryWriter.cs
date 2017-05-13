@@ -1,33 +1,37 @@
 ﻿using System;
-using System.Text;
 using System.IO;
+using System.Text;
 
 namespace BinarySerialization
 {
     /// <summary>
-    /// An extension of the <see cref="BinaryWriter"/> class that supports big- and little-endian byte ordering.
+    ///     An extension of the <see cref="BinaryWriter" /> class that supports big- and little-endian byte ordering.
     /// </summary>
     [Obsolete("This class is no longer used internally and may be removed in the future.")]
     public class EndianAwareBinaryWriter : BinaryWriter
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EndianAwareBinaryWriter"/> class based on the specified
-        /// stream and using UTF-8 encoding.
+        ///     Initializes a new instance of the <see cref="EndianAwareBinaryWriter" /> class based on the specified
+        ///     stream and using UTF-8 encoding.
         /// </summary>
         /// <param name="output">The output stream.</param>
-        public EndianAwareBinaryWriter(Stream output): base(output) {}
+        public EndianAwareBinaryWriter(Stream output) : base(output)
+        {
+        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EndianAwareBinaryWriter"/> class based on the specified 
-        /// stream and character encoding.
+        ///     Initializes a new instance of the <see cref="EndianAwareBinaryWriter" /> class based on the specified
+        ///     stream and character encoding.
         /// </summary>
         /// <param name="output">The output stream.</param>
         /// <param name="encoding">The character encoding to use.</param>
-        public EndianAwareBinaryWriter(Stream output, Encoding encoding) : base(output, encoding) { }
+        public EndianAwareBinaryWriter(Stream output, Encoding encoding) : base(output, encoding)
+        {
+        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EndianAwareBinaryWriter"/> class based on the specified 
-        /// stream, character encoding, and endianness.
+        ///     Initializes a new instance of the <see cref="EndianAwareBinaryWriter" /> class based on the specified
+        ///     stream, character encoding, and endianness.
         /// </summary>
         /// <param name="output">The output stream.</param>
         /// <param name="encoding">The character encoding to use.</param>
@@ -38,8 +42,8 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EndianAwareBinaryWriter"/> class based on the specified 
-        /// stream and endianness using UTF-8 encoding.
+        ///     Initializes a new instance of the <see cref="EndianAwareBinaryWriter" /> class based on the specified
+        ///     stream and endianness using UTF-8 encoding.
         /// </summary>
         /// <param name="output">The input stream.</param>
         /// <param name="endianness">The byte ordering to use.</param>
@@ -49,12 +53,12 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// The byte ordering to use.
+        ///     The byte ordering to use.
         /// </summary>
         public Endianness Endianness { get; set; }
 
         /// <summary>
-        /// Writes a two-byte signed integer to the current stream and advances the stream position by two bytes.
+        ///     Writes a two-byte signed integer to the current stream and advances the stream position by two bytes.
         /// </summary>
         /// <param name="value"></param>
         public override void Write(short value)
@@ -64,7 +68,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Writes a two-byte unsigned integer to the current stream and advances the stream position by two bytes.
+        ///     Writes a two-byte unsigned integer to the current stream and advances the stream position by two bytes.
         /// </summary>
         /// <param name="value"></param>
         public override void Write(ushort value)
@@ -74,7 +78,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Writes a four-byte signed integer to the current stream and advances the stream position by four bytes.
+        ///     Writes a four-byte signed integer to the current stream and advances the stream position by four bytes.
         /// </summary>
         /// <param name="value"></param>
         public override void Write(int value)
@@ -84,7 +88,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Writes a four-byte unsigned integer to the current stream and advances the stream position by four bytes.
+        ///     Writes a four-byte unsigned integer to the current stream and advances the stream position by four bytes.
         /// </summary>
         /// <param name="value"></param>
         public override void Write(uint value)
@@ -94,7 +98,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Writes an eight-byte signed integer to the current stream and advances the stream position by eight bytes.
+        ///     Writes an eight-byte signed integer to the current stream and advances the stream position by eight bytes.
         /// </summary>
         /// <param name="value"></param>
         public override void Write(long value)
@@ -104,7 +108,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Writes an eight-byte unsigned integer to the current stream and advances the stream position by eight bytes.
+        ///     Writes an eight-byte unsigned integer to the current stream and advances the stream position by eight bytes.
         /// </summary>
         /// <param name="value"></param>
         public override void Write(ulong value)
@@ -114,7 +118,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Writes a four-byte floating-point value to the current stream and advances the stream position by four bytes.
+        ///     Writes a four-byte floating-point value to the current stream and advances the stream position by four bytes.
         /// </summary>
         /// <param name="value"></param>
         public override void Write(float value)
@@ -124,7 +128,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Writes an eight-byte floating-point value to the current stream and advances the stream position by eight bytes.
+        ///     Writes an eight-byte floating-point value to the current stream and advances the stream position by eight bytes.
         /// </summary>
         /// <param name="value"></param>
         public override void Write(double value)

@@ -11,20 +11,23 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        public ListTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
+        public ListTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+            memberInfo)
         {
         }
-        
+
+        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        {
+            if (ChildType.GetTypeInfo().IsPrimitive)
+            {
+                return new PrimitiveListValueNode(parent, Name, this);
+            }
+            return new ListValueNode(parent, Name, this);
+        }
+
         protected override Type GetChildType()
         {
             return Type.GetGenericArguments().Single();
-        }
-        
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
-        {
-            if(ChildType.GetTypeInfo().IsPrimitive)
-                return new PrimitiveListValueNode(parent, Name, this);
-            return new ListValueNode(parent, Name, this);
         }
     }
 }

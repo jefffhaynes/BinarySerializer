@@ -3,13 +3,13 @@
 namespace BinarySerialization
 {
     /// <summary>
-    /// Used to specify multiple possible derived types as part of a generic collection.
+    ///     Used to specify multiple possible derived types as part of a generic collection.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple=true)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
     public sealed class ItemSubtypeAttribute : SubtypeBaseAttribute
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="ItemSubtypeAttribute"/>.
+        ///     Initializes a new instance of <see cref="ItemSubtypeAttribute" />.
         /// </summary>
         /// <param name="valuePath">The path to the binding source.</param>
         /// <param name="value">The value to be used in determining if the subtype should be used.</param>

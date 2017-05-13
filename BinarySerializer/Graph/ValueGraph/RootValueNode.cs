@@ -40,7 +40,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     return;
                 }
 
-                /* We have to dynamically generate a type graph for this new type */
+                // We have to dynamically generate a type graph for this new type
                 var contextGraph = GetContextGraph(value.GetType());
                 var contextSerializer = (RootValueNode) contextGraph.CreateSerializer(this);
                 contextSerializer.EncodingCallback = EncodingCallback;

@@ -17,13 +17,15 @@ namespace BinarySerialization
         protected Crc(T polynomial, T initialValue)
         {
             _initialValue = initialValue;
-            
+
             Reset();
 
             lock (TableLock)
             {
                 if (Tables.TryGetValue(polynomial, out _table))
+                {
                     return;
+                }
 
                 _table = BuildTable(polynomial);
 
@@ -51,26 +53,34 @@ namespace BinarySerialization
                 var b = buffer[i];
 
                 if (IsDataReflected)
+                {
                     b = (byte) Reflect(b, 8);
+                }
 
                 var data = (byte) (b ^ (remainder >> (Width - 8)));
-                
+
                 remainder = ToUInt32(_table[data]) ^ (remainder << 8);
             }
 
             _crc = FromUInt32(remainder);
         }
 
-       
+
         public T ComputeFinal()
         {
             var crc = _crc;
 
             if (IsRemainderReflected)
+            {
                 crc = FromUInt32(Reflect(ToUInt32(crc), Width));
+            }
 
             return FromUInt32(ToUInt32(crc) ^ ToUInt32(FinalXor));
         }
+
+
+        protected abstract uint ToUInt32(T value);
+        protected abstract T FromUInt32(uint value);
 
         private T[] BuildTable(T polynomial)
         {
@@ -81,7 +91,7 @@ namespace BinarySerialization
             var padWidth = Width - 8;
 
             var topBit = 1 << (Width - 1);
-            
+
             /*
              * Compute the remainder of each possible dividend.
              */
@@ -122,7 +132,7 @@ namespace BinarySerialization
         private static uint Reflect(uint value, int bitCount)
         {
             uint reflection = 0;
-            
+
             /*
              * Reflect the data about the center bit.
              */
@@ -133,7 +143,7 @@ namespace BinarySerialization
                  */
                 if ((value & 0x01) != 0)
                 {
-                    reflection |= (uint)(1 << (bitCount - 1 - bit));
+                    reflection |= (uint) (1 << (bitCount - 1 - bit));
                 }
 
                 value = value >> 1;
@@ -141,9 +151,5 @@ namespace BinarySerialization
 
             return reflection;
         }
-
-
-        protected abstract uint ToUInt32(T value);
-        protected abstract T FromUInt32(uint value);
     }
 }

@@ -3,7 +3,7 @@
 namespace BinarySerialization
 {
     /// <summary>
-    /// Used as the abstract base for deriving field value attributes.
+    ///     Used as the abstract base for deriving field value attributes.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
     public abstract class FieldValueAttributeBase : FieldBindingBaseAttribute
@@ -17,29 +17,9 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Override to indicate to the framework the expected input block size for this attribute.
+        ///     Override to indicate to the framework the expected input block size for this attribute.
         /// </summary>
-        public virtual int BlockSize => 4096;
-
-        /// <summary>
-        /// This is called by the framework to indicate a new operation.
-        /// </summary>
-        /// <param name="context"></param>
-        protected abstract void Reset(BinarySerializationContext context);
-
-        /// <summary>
-        /// This is called one or more times by the framework to add data to the computation.
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
-        protected abstract void Compute(byte[] buffer, int offset, int count);
-
-        /// <summary>
-        /// This is called by the framework to retrieve the final value from computation.
-        /// </summary>
-        /// <returns></returns>
-        protected abstract object ComputeFinal();
+        public virtual int BlockSize => 81920;
 
         internal virtual void ResetInternal(BinarySerializationContext context)
         {
@@ -55,5 +35,25 @@ namespace BinarySerialization
         {
             return ComputeFinal();
         }
+
+        /// <summary>
+        ///     This is called by the framework to indicate a new operation.
+        /// </summary>
+        /// <param name="context"></param>
+        protected abstract void Reset(BinarySerializationContext context);
+
+        /// <summary>
+        ///     This is called one or more times by the framework to add data to the computation.
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        protected abstract void Compute(byte[] buffer, int offset, int count);
+
+        /// <summary>
+        ///     This is called by the framework to retrieve the final value from computation.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract object ComputeFinal();
     }
 }

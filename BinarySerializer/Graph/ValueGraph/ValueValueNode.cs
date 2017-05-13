@@ -241,7 +241,8 @@ namespace BinarySerialization.Graph.ValueGraph
             Deserialize(reader, serializedType, length);
         }
 
-        public Task DeserializeAsync(BoundedStream stream, SerializedType serializedType, long? length, CancellationToken cancellationToken)
+        public Task DeserializeAsync(BoundedStream stream, SerializedType serializedType, long? length,
+            CancellationToken cancellationToken)
         {
             var reader = new AsyncBinaryReader(stream);
             return DeserializeAsync(reader, serializedType, length, cancellationToken);
@@ -316,7 +317,8 @@ namespace BinarySerialization.Graph.ValueGraph
             _value = UnscaleValue(convertedValue);
         }
 
-        public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, long? length, CancellationToken cancellationToken)
+        public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, long? length,
+            CancellationToken cancellationToken)
         {
             var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
 
@@ -355,18 +357,21 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 case SerializedType.ByteArray:
                 {
-                    value = await reader.ReadBytesAsync((int)effectiveLengthValue, cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadBytesAsync((int) effectiveLengthValue, cancellationToken)
+                        .ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.NullTerminatedString:
                 {
-                    var data = await ReadNullTerminatedAsync(reader, (int)effectiveLengthValue, cancellationToken).ConfigureAwait(false);
+                    var data = await ReadNullTerminatedAsync(reader, (int) effectiveLengthValue, cancellationToken)
+                        .ConfigureAwait(false);
                     value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
                 }
                 case SerializedType.SizedString:
                 {
-                    var data = await reader.ReadBytesAsync((int)effectiveLengthValue, cancellationToken).ConfigureAwait(false);
+                    var data = await reader.ReadBytesAsync((int) effectiveLengthValue, cancellationToken)
+                        .ConfigureAwait(false);
                     value = GetString(data);
 
                     break;
@@ -415,7 +420,8 @@ namespace BinarySerialization.Graph.ValueGraph
             Deserialize(stream, TypeNode.GetSerializedType());
         }
 
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             if (EndOfStream(stream))
             {
@@ -640,7 +646,8 @@ namespace BinarySerialization.Graph.ValueGraph
             return buffer.ToArray();
         }
 
-        private static async Task<byte[]> ReadNullTerminatedAsync(AsyncBinaryReader reader, int maxLength, CancellationToken cancellationToken)
+        private static async Task<byte[]> ReadNullTerminatedAsync(AsyncBinaryReader reader, int maxLength,
+            CancellationToken cancellationToken)
         {
             var buffer = new MemoryStream();
 

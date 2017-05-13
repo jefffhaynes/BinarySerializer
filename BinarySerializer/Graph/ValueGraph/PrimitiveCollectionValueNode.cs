@@ -103,23 +103,11 @@ namespace BinarySerialization.Graph.ValueGraph
             CreateFinalCollection(items);
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             var items = await DeserializeCollectionAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
             CreateFinalCollection(items);
-        }
-
-        private void CreateFinalCollection(List<object> items)
-        {
-            var itemCount = items.Count;
-            
-            Value = CreateCollection(itemCount);
-
-            /* Copy temp list into final collection */
-            for (var i = 0; i < itemCount; i++)
-            {
-                SetCollectionValue(items[i], i);
-            }
         }
 
         protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, object boundValue,
@@ -133,6 +121,19 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             throw new InvalidOperationException(
                 "Not supported on primitive collections.  Use SerializeUntil attribute.");
+        }
+
+        private void CreateFinalCollection(List<object> items)
+        {
+            var itemCount = items.Count;
+
+            Value = CreateCollection(itemCount);
+
+            /* Copy temp list into final collection */
+            for (var i = 0; i < itemCount; i++)
+            {
+                SetCollectionValue(items[i], i);
+            }
         }
 
         private IEnumerable<object> DeserializeCollection(BoundedStream stream, EventShuttle eventShuttle)
@@ -160,12 +161,13 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private async Task<List<object>> DeserializeCollectionAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        private async Task<List<object>> DeserializeCollectionAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             var list = new List<object>();
 
             /* Create single serializer to do all the work */
-            var childSerializer = (ValueValueNode)CreateChildSerializer();
+            var childSerializer = (ValueValueNode) CreateChildSerializer();
             var childSerializedType = childSerializer.TypeNode.GetSerializedType();
 
             var terminationValue = GetTerminationValue();

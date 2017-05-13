@@ -12,17 +12,18 @@ namespace BinarySerialization.Graph.TypeGraph
             InitializeEnumValues();
         }
 
-        public EnumTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
+        public EnumTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+            memberInfo)
         {
             InitializeEnumValues();
         }
+
+        public EnumInfo EnumInfo { get; private set; }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new EnumValueNode(parent, Name, this);
         }
-
-        public EnumInfo EnumInfo { get; private set; }
 
         private void InitializeEnumValues()
         {
@@ -35,7 +36,7 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 var memberInfo = BaseSerializedType.GetMember(value.ToString()).Single();
                 return (SerializeAsEnumAttribute) memberInfo.GetCustomAttributes(
-                    typeof (SerializeAsEnumAttribute),
+                    typeof(SerializeAsEnumAttribute),
                     false).FirstOrDefault();
             });
 
@@ -72,7 +73,10 @@ namespace BinarySerialization.Graph.TypeGraph
                         EnumInfo.SerializedType = SerializedType.SizedString;
                         EnumInfo.EnumValueLength = lengthGroups[0].Key;
                     }
-                    else EnumInfo.SerializedType = SerializedType.NullTerminatedString;
+                    else
+                    {
+                        EnumInfo.SerializedType = SerializedType.NullTerminatedString;
+                    }
                 }
                 else if (serializedType == SerializedType.SizedString)
                 {

@@ -31,7 +31,7 @@ namespace BinarySerialization
         {
             var b = new byte[sizeof(sbyte)];
             await BaseStream.ReadAsync(b, 0, b.Length, cancellationToken);
-            return (sbyte)b[0];
+            return (sbyte) b[0];
         }
 
         public async Task<ushort> ReadUInt16Async(CancellationToken cancellationToken)

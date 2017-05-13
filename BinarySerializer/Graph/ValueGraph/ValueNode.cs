@@ -50,6 +50,26 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
+        private bool ShouldSerialize
+        {
+            get
+            {
+                if (TypeNode.SerializeWhenBindings != null &&
+                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+                {
+                    return false;
+                }
+
+                if (TypeNode.SerializeWhenNotBindings != null &&
+                    TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
         public virtual void Bind()
         {
             var typeNode = TypeNode;
@@ -113,6 +133,395 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 child.Bind();
             }
+        }
+
+        public void Serialize(BoundedStream stream, EventShuttle eventShuttle, bool align = true)
+        {
+            try
+            {
+                if (TypeNode.SerializeWhenBindings != null &&
+                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
+                {
+                    return;
+                }
+
+                if (TypeNode.SerializeWhenNotBindings != null &&
+                    TypeNode.SerializeWhenNotBindings.All(
+                        binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
+                {
+                    return;
+                }
+
+                if (align)
+                {
+                    var leftAlignment = GetLeftFieldAlignment();
+                    if (leftAlignment != null)
+                    {
+                        Align(stream, leftAlignment, true);
+                    }
+                }
+
+                var offset = GetFieldOffset();
+
+                if (offset != null)
+                {
+                    using (new StreamResetter(stream))
+                    {
+                        stream.Position = offset.Value;
+                        SerializeInternal(stream, GetConstFieldLength, eventShuttle);
+                    }
+                }
+                else
+                {
+                    SerializeInternal(stream, GetConstFieldLength, eventShuttle);
+                }
+
+                if (align)
+                {
+                    var rightAlignment = GetRightFieldAlignment();
+                    if (rightAlignment != null)
+                    {
+                        Align(stream, rightAlignment, true);
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                // since this isn't really a serialization exception, no sense in hiding it
+                throw;
+            }
+            catch (TimeoutException)
+            {
+                // since this isn't really a serialization exception, no sense in hiding it
+                throw;
+            }
+            catch (Exception e)
+            {
+                var reference = Name == null
+                    ? $"type '{TypeNode.Type}'"
+                    : $"member '{Name}'";
+                var message = $"Error serializing {reference}.  See inner exception for detail.";
+                throw new InvalidOperationException(message, e);
+            }
+            finally
+            {
+                Visited = true;
+            }
+        }
+
+        public void Deserialize(BoundedStream stream, EventShuttle eventShuttle)
+        {
+            try
+            {
+                if (!ShouldSerialize)
+                {
+                    return;
+                }
+
+                AlignLeft(stream);
+
+                var offset = GetFieldOffset();
+
+                if (offset != null)
+                {
+                    using (new StreamResetter(stream))
+                    {
+                        stream.Position = offset.Value;
+                        DeserializeInternal(stream, GetFieldLength, eventShuttle);
+                    }
+                }
+                else
+                {
+                    DeserializeInternal(stream, GetFieldLength, eventShuttle);
+                }
+
+                AlignRight(stream);
+            }
+            catch (IOException)
+            {
+                // since this isn't really a serialization exception, no sense in hiding it
+                throw;
+            }
+            catch (TimeoutException)
+            {
+                // since this isn't really a serialization exception, no sense in hiding it
+                throw;
+            }
+            catch (Exception e)
+            {
+                var reference = Name == null
+                    ? $"type '{TypeNode.Type}'"
+                    : $"member '{Name}'";
+                var message = $"Error deserializing '{reference}'.  See inner exception for detail.";
+                throw new InvalidOperationException(message, e);
+            }
+            finally
+            {
+                Visited = true;
+            }
+        }
+
+        public async Task DeserializeAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (!ShouldSerialize)
+                {
+                    return;
+                }
+
+                AlignLeft(stream);
+
+                var offset = GetFieldOffset();
+
+                if (offset != null)
+                {
+                    using (new StreamResetter(stream))
+                    {
+                        stream.Position = offset.Value;
+                        await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+
+                AlignRight(stream);
+            }
+            catch (IOException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                var reference = Name == null
+                    ? $"type '{TypeNode.Type}'"
+                    : $"member '{Name}'";
+                var message = $"Error deserializing '{reference}'.  See inner exception for detail.";
+                throw new InvalidOperationException(message, e);
+            }
+            finally
+            {
+                Visited = true;
+            }
+        }
+
+        public ValueNode GetChild(string path)
+        {
+            var memberNames = path.Split(PathSeparator);
+
+            if (memberNames.Length == 0)
+            {
+                throw new BindingException("Path cannot be empty.");
+            }
+
+            var child = this;
+            foreach (var name in memberNames)
+            {
+                child = child.Children.SingleOrDefault(c => c.Name == name);
+
+                if (child == null)
+                {
+                    throw new BindingException($"No field found at '{path}'.");
+                }
+            }
+
+            return child;
+        }
+
+        public LazyBinarySerializationContext CreateLazySerializationContext()
+        {
+            var lazyContext = new Lazy<BinarySerializationContext>(CreateSerializationContext);
+            return new LazyBinarySerializationContext(lazyContext);
+        }
+
+        // this is internal only because of the weird custom subtype case.  If I can figure out a better
+        // way to handle that case, this can be protected.
+        internal abstract void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle);
+
+        internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);
+
+        internal abstract Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken);
+
+        protected IEnumerable<ValueNode> GetSerializableChildren()
+        {
+            return Children.Where(child => !child.TypeNode.IsIgnored);
+        }
+
+        protected long? GetFieldLength()
+        {
+            var length = GetNumericValue(TypeNode.FieldLengthBindings);
+            if (length != null)
+            {
+                return length;
+            }
+
+            var parent = (ValueNode) Parent;
+            if (parent?.TypeNode.ItemLengthBindings != null)
+            {
+                var parentItemLength = parent.TypeNode.ItemLengthBindings.GetValue(parent);
+                if (parentItemLength.GetType().GetTypeInfo().IsPrimitive)
+                {
+                    return Convert.ToInt64(parentItemLength);
+                }
+            }
+
+            return null;
+        }
+
+        protected long? GetConstFieldLength()
+        {
+            return GetConstNumericValue(TypeNode.FieldLengthBindings) ??
+                   (Parent as ValueNode)?.GetConstFieldItemLength();
+        }
+
+        protected long? GetLeftFieldAlignment()
+        {
+            // Field alignment cannot be determined from graph
+            // so always go to a const or bound value
+            var value = TypeNode.LeftFieldAlignmentBindings?.GetBoundValue(this);
+            if (value == null)
+            {
+                return null;
+            }
+
+            return Convert.ToInt64(value);
+        }
+
+        protected long? GetRightFieldAlignment()
+        {
+            // Field alignment cannot be determined from graph
+            // so always go to a const or bound value
+            var value = TypeNode.RightFieldAlignmentBindings?.GetBoundValue(this);
+            if (value == null)
+            {
+                return null;
+            }
+
+            return Convert.ToInt64(value);
+        }
+
+        protected long? GetFieldCount()
+        {
+            return GetNumericValue(TypeNode.FieldCountBindings);
+        }
+
+        protected long? GetConstFieldCount()
+        {
+            return GetConstNumericValue(TypeNode.FieldCountBindings);
+        }
+
+        protected long? GetFieldItemLength()
+        {
+            return GetNumericValue(TypeNode.ItemLengthBindings);
+        }
+
+        protected long? GetConstFieldItemLength()
+        {
+            return GetConstNumericValue(TypeNode.ItemLengthBindings);
+        }
+
+        protected long? GetFieldOffset()
+        {
+            return GetNumericValue(TypeNode.FieldOffsetBindings);
+        }
+
+        protected long? GetConstFieldOffset()
+        {
+            return GetConstNumericValue(TypeNode.FieldOffsetBindings);
+        }
+
+        protected virtual Endianness GetFieldEndianness()
+        {
+            var endianness = Endianness.Inherit;
+
+            var value = TypeNode.FieldEndiannessBindings?.GetBoundValue(this);
+
+            if (value != null)
+            {
+                if (value is Endianness)
+                {
+                    endianness = (Endianness) Enum.ToObject(typeof(Endianness), value);
+                }
+                else
+                {
+                    throw new InvalidOperationException(
+                        "FieldEndianness converters must return a valid Endianness.");
+                }
+            }
+
+            if (endianness == Endianness.Inherit && Parent != null)
+            {
+                var parent = (ValueNode) Parent;
+                endianness = parent.GetFieldEndianness();
+            }
+
+            return endianness;
+        }
+
+        protected virtual Encoding GetFieldEncoding()
+        {
+            Encoding encoding = null;
+
+            var value = TypeNode.FieldEncodingBindings?.GetBoundValue(this);
+
+            if (value != null)
+            {
+                if (value is Encoding)
+                {
+                    encoding = value as Encoding;
+                }
+                else
+                {
+                    throw new InvalidOperationException("FieldEncoding converters must return a valid Encoding.");
+                }
+            }
+
+            if (encoding == null && Parent != null)
+            {
+                var parent = (ValueNode) Parent;
+                encoding = parent.GetFieldEncoding();
+            }
+
+            return encoding;
+        }
+
+        protected virtual long MeasureOverride()
+        {
+            var nullStream = new NullStream();
+            var boundedStream = new BoundedStream(nullStream);
+            Serialize(boundedStream, null, false);
+            return boundedStream.RelativePosition;
+        }
+
+        protected virtual IEnumerable<long> MeasureItemsOverride()
+        {
+            throw new InvalidOperationException("Not a collection field.");
+        }
+
+        protected virtual long CountOverride()
+        {
+            throw new InvalidOperationException("Not a collection field.");
+        }
+
+        protected virtual Type GetValueTypeOverride()
+        {
+            throw new InvalidOperationException("Can't set subtypes on this field.");
+        }
+
+        protected virtual object GetLastItemValueOverride()
+        {
+            throw new InvalidOperationException("Not a collection field.");
+        }
+
+        protected static bool EndOfStream(BoundedStream stream)
+        {
+            return stream.IsAtLimit || stream.AvailableForReading == 0;
         }
 
         private object SubtypeBindingCallback(TypeNode typeNode)
@@ -200,85 +609,6 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new InvalidOperationException($"No subtype specified for ${valueType}");
         }
 
-        protected IEnumerable<ValueNode> GetSerializableChildren()
-        {
-            return Children.Where(child => !child.TypeNode.IsIgnored);
-        }
-
-        public void Serialize(BoundedStream stream, EventShuttle eventShuttle, bool align = true)
-        {
-            try
-            {
-                if (TypeNode.SerializeWhenBindings != null &&
-                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
-                {
-                    return;
-                }
-
-                if (TypeNode.SerializeWhenNotBindings != null &&
-                    TypeNode.SerializeWhenNotBindings.All(
-                        binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
-                {
-                    return;
-                }
-
-                if (align)
-                {
-                    var leftAlignment = GetLeftFieldAlignment();
-                    if (leftAlignment != null)
-                    {
-                        Align(stream, leftAlignment, true);
-                    }
-                }
-
-                var offset = GetFieldOffset();
-
-                if (offset != null)
-                {
-                    using (new StreamResetter(stream))
-                    {
-                        stream.Position = offset.Value;
-                        SerializeInternal(stream, GetConstFieldLength, eventShuttle);
-                    }
-                }
-                else
-                {
-                    SerializeInternal(stream, GetConstFieldLength, eventShuttle);
-                }
-
-                if (align)
-                {
-                    var rightAlignment = GetRightFieldAlignment();
-                    if (rightAlignment != null)
-                    {
-                        Align(stream, rightAlignment, true);
-                    }
-                }
-            }
-            catch (IOException)
-            {
-                // since this isn't really a serialization exception, no sense in hiding it
-                throw;
-            }
-            catch (TimeoutException)
-            {
-                // since this isn't really a serialization exception, no sense in hiding it
-                throw;
-            }
-            catch (Exception e)
-            {
-                var reference = Name == null
-                    ? $"type '{TypeNode.Type}'"
-                    : $"member '{Name}'";
-                var message = $"Error serializing {reference}.  See inner exception for detail.";
-                throw new InvalidOperationException(message, e);
-            }
-            finally
-            {
-                Visited = true;
-            }
-        }
-
         private void SerializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
         {
             stream = new BoundedStream(stream, maxLengthDelegate);
@@ -317,108 +647,6 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        // this is internal only because of the weird custom subtype case.  If I can figure out a better
-        // way to handle that case, this can be protected.
-        internal abstract void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle);
-
-        public void Deserialize(BoundedStream stream, EventShuttle eventShuttle)
-        {
-            try
-            {
-                if (!ShouldSerialize)
-                {
-                    return;
-                }
-
-                AlignLeft(stream);
-
-                var offset = GetFieldOffset();
-
-                if (offset != null)
-                {
-                    using (new StreamResetter(stream))
-                    {
-                        stream.Position = offset.Value;
-                        DeserializeInternal(stream, GetFieldLength, eventShuttle);
-                    }
-                }
-                else
-                {
-                    DeserializeInternal(stream, GetFieldLength, eventShuttle);
-                }
-
-                AlignRight(stream);
-            }
-            catch (IOException)
-            {
-                // since this isn't really a serialization exception, no sense in hiding it
-                throw;
-            }
-            catch (TimeoutException)
-            {
-                // since this isn't really a serialization exception, no sense in hiding it
-                throw;
-            }
-            catch (Exception e)
-            {
-                var reference = Name == null
-                    ? $"type '{TypeNode.Type}'"
-                    : $"member '{Name}'";
-                var message = $"Error deserializing '{reference}'.  See inner exception for detail.";
-                throw new InvalidOperationException(message, e);
-            }
-            finally
-            {
-                Visited = true;
-            }
-        }
-
-        public async Task DeserializeAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
-        {
-            try
-            {
-                if (!ShouldSerialize)
-                {
-                    return;
-                }
-
-                AlignLeft(stream);
-
-                var offset = GetFieldOffset();
-
-                if (offset != null)
-                {
-                    using (new StreamResetter(stream))
-                    {
-                        stream.Position = offset.Value;
-                        await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken).ConfigureAwait(false);
-                    }
-                }
-                else
-                {
-                    await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken).ConfigureAwait(false);
-                }
-
-                AlignRight(stream);
-            }
-            catch (IOException)
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                var reference = Name == null
-                    ? $"type '{TypeNode.Type}'"
-                    : $"member '{Name}'";
-                var message = $"Error deserializing '{reference}'.  See inner exception for detail.";
-                throw new InvalidOperationException(message, e);
-            }
-            finally
-            {
-                Visited = true;
-            }
-        }
-
         private void AlignRight(BoundedStream stream)
         {
             var rightAlignment = GetRightFieldAlignment();
@@ -434,26 +662,6 @@ namespace BinarySerialization.Graph.ValueGraph
             if (leftAlignment != null)
             {
                 Align(stream, leftAlignment);
-            }
-        }
-
-        private bool ShouldSerialize
-        {
-            get
-            {
-                if (TypeNode.SerializeWhenBindings != null &&
-                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
-                {
-                    return false;
-                }
-
-                if (TypeNode.SerializeWhenNotBindings != null &&
-                    TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
-                {
-                    return false;
-                }
-
-                return true;
             }
         }
 
@@ -498,7 +706,8 @@ namespace BinarySerialization.Graph.ValueGraph
             SkipPadding(stream);
         }
 
-        private async Task DeserializeInternalAsync(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        private async Task DeserializeInternalAsync(BoundedStream stream, Func<long?> maxLengthDelegate,
+            EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             stream = new BoundedStream(stream, maxLengthDelegate);
 
@@ -520,154 +729,6 @@ namespace BinarySerialization.Graph.ValueGraph
                     stream.Read(pad, 0, pad.Length);
                 }
             }
-        }
-
-        internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);
-
-        internal abstract Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken);
-
-        protected long? GetFieldLength()
-        {
-            var length = GetNumericValue(TypeNode.FieldLengthBindings);
-            if (length != null)
-            {
-                return length;
-            }
-
-            var parent = (ValueNode) Parent;
-            if (parent?.TypeNode.ItemLengthBindings != null)
-            {
-                var parentItemLength = parent.TypeNode.ItemLengthBindings.GetValue(parent);
-                if (parentItemLength.GetType().GetTypeInfo().IsPrimitive)
-                {
-                    return Convert.ToInt64(parentItemLength);
-                }
-            }
-
-            return null;
-        }
-
-        protected long? GetConstFieldLength()
-        {
-            return GetConstNumericValue(TypeNode.FieldLengthBindings) ??
-                   (Parent as ValueNode)?.GetConstFieldItemLength();
-        }
-
-        protected long? GetLeftFieldAlignment()
-        {
-            // Field alignment cannot be determined from graph
-            // so always go to a const or bound value
-            var value = TypeNode.LeftFieldAlignmentBindings?.GetBoundValue(this);
-            if (value == null)
-            {
-                return null;
-            }
-
-            return Convert.ToInt64(value);
-        }
-
-        protected long? GetRightFieldAlignment()
-        {
-            // Field alignment cannot be determined from graph
-            // so always go to a const or bound value
-            var value = TypeNode.RightFieldAlignmentBindings?.GetBoundValue(this);
-            if (value == null)
-            {
-                return null;
-            }
-
-            return Convert.ToInt64(value);
-        }
-
-        protected long? GetFieldCount()
-        {
-            return GetNumericValue(TypeNode.FieldCountBindings);
-        }
-
-        protected long? GetConstFieldCount()
-        {
-            return GetConstNumericValue(TypeNode.FieldCountBindings);
-        }
-
-        protected long? GetFieldItemLength()
-        {
-            return GetNumericValue(TypeNode.ItemLengthBindings);
-        }
-
-        protected long? GetConstFieldItemLength()
-        {
-            return GetConstNumericValue(TypeNode.ItemLengthBindings);
-        }
-
-        protected long? GetFieldOffset()
-        {
-            return GetNumericValue(TypeNode.FieldOffsetBindings);
-        }
-
-        protected long? GetConstFieldOffset()
-        {
-            return GetConstNumericValue(TypeNode.FieldOffsetBindings);
-        }
-
-        protected virtual Endianness GetFieldEndianness()
-        {
-            var endianness = TypeNode.Endianness ?? Endianness.Inherit;
-
-            if (endianness == Endianness.Inherit)
-            {
-                var value = TypeNode.FieldEndiannessBindings?.GetBoundValue(this);
-
-                if (value != null)
-                {
-                    if (value is Endianness)
-                    {
-                        endianness = (Endianness) Enum.ToObject(typeof(Endianness), value);
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException(
-                            "FieldEndianness converters must return a valid Endianness.");
-                    }
-                }
-            }
-
-            if (endianness == Endianness.Inherit && Parent != null)
-            {
-                var parent = (ValueNode) Parent;
-                endianness = parent.GetFieldEndianness();
-            }
-
-            return endianness;
-        }
-
-        protected virtual Encoding GetFieldEncoding()
-        {
-            var encoding = TypeNode.Encoding;
-
-            if (encoding == null)
-            {
-                var value = TypeNode.FieldEncodingBindings?.GetBoundValue(this);
-
-                if (value != null)
-                {
-                    if (value is Encoding)
-                    {
-                        encoding = value as Encoding;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("FieldEncoding converters must return a valid Encoding.");
-                    }
-                }
-            }
-
-            if (encoding == null && Parent != null)
-            {
-                var parent = (ValueNode) Parent;
-                encoding = parent.GetFieldEncoding();
-            }
-
-            return encoding;
         }
 
         private long? GetNumericValue(IBinding binding)
@@ -696,73 +757,11 @@ namespace BinarySerialization.Graph.ValueGraph
             return Convert.ToInt64(binding.ConstValue);
         }
 
-        public ValueNode GetChild(string path)
-        {
-            var memberNames = path.Split(PathSeparator);
-
-            if (memberNames.Length == 0)
-            {
-                throw new BindingException("Path cannot be empty.");
-            }
-
-            var child = this;
-            foreach (var name in memberNames)
-            {
-                child = child.Children.SingleOrDefault(c => c.Name == name);
-
-                if (child == null)
-                {
-                    throw new BindingException($"No field found at '{path}'.");
-                }
-            }
-
-            return child;
-        }
-
         private BinarySerializationContext CreateSerializationContext()
         {
             var parent = Parent as ValueNode;
             return new BinarySerializationContext(Value, parent?.Value, parent?.TypeNode.Type,
                 parent?.CreateSerializationContext(), TypeNode.MemberInfo);
-        }
-
-        public LazyBinarySerializationContext CreateLazySerializationContext()
-        {
-            var lazyContext = new Lazy<BinarySerializationContext>(CreateSerializationContext);
-            return new LazyBinarySerializationContext(lazyContext);
-        }
-
-        protected virtual long MeasureOverride()
-        {
-            var nullStream = new NullStream();
-            var boundedStream = new BoundedStream(nullStream);
-            Serialize(boundedStream, null, false);
-            return boundedStream.RelativePosition;
-        }
-
-        protected virtual IEnumerable<long> MeasureItemsOverride()
-        {
-            throw new InvalidOperationException("Not a collection field.");
-        }
-
-        protected virtual long CountOverride()
-        {
-            throw new InvalidOperationException("Not a collection field.");
-        }
-
-        protected virtual Type GetValueTypeOverride()
-        {
-            throw new InvalidOperationException("Can't set subtypes on this field.");
-        }
-
-        protected virtual object GetLastItemValueOverride()
-        {
-            throw new InvalidOperationException("Not a collection field.");
-        }
-
-        protected static bool EndOfStream(BoundedStream stream)
-        {
-            return stream.IsAtLimit || stream.AvailableForReading == 0;
         }
     }
 }

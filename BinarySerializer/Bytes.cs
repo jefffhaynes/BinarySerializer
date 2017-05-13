@@ -5,32 +5,32 @@ namespace BinarySerialization
     internal static class Bytes
     {
         /// <summary>
-        /// Flip the bytes in an UInt16.
+        ///     Flip the bytes in an UInt16.
         /// </summary>
         /// <param name="value">The value to flip.</param>
         /// <returns>An UInt16 with flipped bytes.</returns>
-        public static UInt16 Reverse(UInt16 value)
+        public static ushort Reverse(ushort value)
         {
-            return (UInt16) (((value & 0xFF00) >> 8) |
+            return (ushort) (((value & 0xFF00) >> 8) |
                              ((value & 0x00FF) << 8));
         }
 
         /// <summary>
-        /// Flip the bytes in an Int16.
+        ///     Flip the bytes in an Int16.
         /// </summary>
         /// <param name="value">The value to flip.</param>
         /// <returns>An Int16 with flipped bytes.</returns>
-        public static Int16 Reverse(Int16 value)
+        public static short Reverse(short value)
         {
-            return (Int16)Reverse((UInt16)value);
+            return (short) Reverse((ushort) value);
         }
 
         /// <summary>
-        /// Reverse the bytes in an UInt32.
+        ///     Reverse the bytes in an UInt32.
         /// </summary>
         /// <param name="value">The value to reverse.</param>
         /// <returns>An UInt32 with reversed bytes.</returns>
-        public static UInt32 Reverse(UInt32 value)
+        public static uint Reverse(uint value)
         {
             return
                 ((value & 0xff000000) >> 24) |
@@ -40,21 +40,21 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Reverse the bytes in an Int32.
+        ///     Reverse the bytes in an Int32.
         /// </summary>
         /// <param name="value">The value to reverse.</param>
         /// <returns>An Int32 with reversed bytes.</returns>
-        public static Int32 Reverse(Int32 value)
+        public static int Reverse(int value)
         {
-            return (Int32) Reverse((UInt32) value);
+            return (int) Reverse((uint) value);
         }
 
         /// <summary>
-        /// Reverse the bytes in an UInt64.
+        ///     Reverse the bytes in an UInt64.
         /// </summary>
         /// <param name="value">The value to reverse.</param>
         /// <returns>An UInt64 with reversed bytes.</returns>
-        public static UInt64 Reverse(UInt64 value)
+        public static ulong Reverse(ulong value)
         {
             return
                 ((value & 0xFF00000000000000) >> 56) |
@@ -68,35 +68,35 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        /// Reverse the bytes in an Int64.
+        ///     Reverse the bytes in an Int64.
         /// </summary>
         /// <param name="value">The value to reverse.</param>
         /// <returns>An Int64 with reversed bytes.</returns>
-        public static Int64 Reverse(Int64 value)
+        public static long Reverse(long value)
         {
-            return (Int64) Reverse((UInt64) value);
+            return (long) Reverse((ulong) value);
         }
 
         /// <summary>
-        /// Reverse the bytes in a Single.
+        ///     Reverse the bytes in a Single.
         /// </summary>
         /// <param name="value">The value to reverse.</param>
         /// <returns>A Single with reversed bytes.</returns>
-        public static Single Reverse(Single value)
+        public static float Reverse(float value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
+            var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
             return BitConverter.ToSingle(bytes, 0);
         }
 
         /// <summary>
-        /// Reverse the bytes in a Double.
+        ///     Reverse the bytes in a Double.
         /// </summary>
         /// <param name="value">The value to reverse.</param>
         /// <returns>A Double with reversed bytes.</returns>
-        public static Double Reverse(Double value)
+        public static double Reverse(double value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
+            var bytes = BitConverter.GetBytes(value);
             Array.Reverse(bytes);
             return BitConverter.ToDouble(bytes, 0);
         }

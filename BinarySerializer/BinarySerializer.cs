@@ -13,14 +13,29 @@ namespace BinarySerialization
     ///     Declaratively serializes and deserializes an object, or a graph of connected objects, in binary format.
     ///     <seealso cref="IgnoreAttribute" />
     ///     <seealso cref="FieldOrderAttribute" />
-    ///     <seealso cref="SerializeAsEnumAttribute" />
-    ///     <seealso cref="FieldOffsetAttribute" />
     ///     <seealso cref="FieldLengthAttribute" />
     ///     <seealso cref="FieldCountAttribute" />
+    ///     <seealso cref="FieldAlignmentAttribute" />
+    ///     <seealso cref="FieldScaleAttribute" />
+    ///     <seealso cref="FieldEndiannessAttribute" />
+    ///     <seealso cref="FieldEncodingAttribute" />
+    ///     <seealso cref="FieldValueAttribute" />
+    ///     <seealso cref="FieldChecksumAttribute" />
+    ///     <seealso cref="FieldCrc16Attribute" />
+    ///     <seealso cref="FieldCrc32Attribute" />
+    ///     <seealso cref="FieldOffsetAttribute" />
     ///     <seealso cref="SubtypeAttribute" />
+    ///     <seealso cref="SubtypeFactoryAttribute" />
+    ///     <seealso cref="SubtypeDefaultAttribute" />
+    ///     <seealso cref="SerializeAsAttribute" />
+    ///     <seealso cref="SerializeAsEnumAttribute" />
     ///     <seealso cref="SerializeWhenAttribute" />
+    ///     <seealso cref="SerializeWhenNotAttribute" />
     ///     <seealso cref="SerializeUntilAttribute" />
     ///     <seealso cref="ItemLengthAttribute" />
+    ///     <seealso cref="ItemSubtypeAttribute" />
+    ///     <seealso cref="ItemSubtypeFactoryAttribute" />
+    ///     <seealso cref="ItemSubtypeDefaultAttribute" />
     ///     <seealso cref="ItemSerializeUntilAttribute" />
     ///     <seealso cref="IBinarySerializable" />
     /// </summary>

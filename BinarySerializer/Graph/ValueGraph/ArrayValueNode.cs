@@ -18,9 +18,11 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 /* For creating serialization contexts quickly */
                 if (_cachedValue != null)
+                {
                     return _cachedValue;
+                }
 
-                var typeNode = (ArrayTypeNode)TypeNode;
+                var typeNode = (ArrayTypeNode) TypeNode;
                 var array = Array.CreateInstance(typeNode.ChildType, Children.Count);
                 var childValues = Children.Select(child => child.Value).ToArray();
                 Array.Copy(childValues, array, childValues.Length);
@@ -29,22 +31,26 @@ namespace BinarySerialization.Graph.ValueGraph
 
             set
             {
-                if(Children.Count > 0)
+                if (Children.Count > 0)
+                {
                     throw new InvalidOperationException("Value already set.");
+                }
 
                 if (value == null)
+                {
                     return;
+                }
 
-                var typeNode = (ArrayTypeNode)TypeNode;
+                var typeNode = (ArrayTypeNode) TypeNode;
 
-                var array = (Array)value;
+                var array = (Array) value;
 
                 var count = GetConstFieldCount();
 
                 if (count != null)
                 {
                     /* Pad out const-sized array */
-                    var valueArray = Array.CreateInstance(typeNode.ChildType, (int)count);
+                    var valueArray = Array.CreateInstance(typeNode.ChildType, (int) count);
                     Array.Copy(array, valueArray, array.Length);
                     array = valueArray;
                 }

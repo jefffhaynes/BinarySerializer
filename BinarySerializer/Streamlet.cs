@@ -151,7 +151,8 @@ namespace BinarySerialization
             return read;
         }
 
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
+            CancellationToken cancellationToken)
         {
             count = FixCount(count);
 
@@ -166,15 +167,6 @@ namespace BinarySerialization
             Position += read;
 
             return read;
-        }
-
-        private int FixCount(int count)
-        {
-            if (count > Length - Position)
-            {
-                count = Math.Max(0, (int) (Length - Position));
-            }
-            return count;
         }
 
         /// <summary>
@@ -232,6 +224,15 @@ namespace BinarySerialization
         {
             base.Dispose(disposing);
             Source.Dispose();
+        }
+
+        private int FixCount(int count)
+        {
+            if (count > Length - Position)
+            {
+                count = Math.Max(0, (int) (Length - Position));
+            }
+            return count;
         }
     }
 }

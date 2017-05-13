@@ -15,20 +15,20 @@ namespace BinarySerialization.Graph.TypeGraph
         public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
             new Dictionary<Type, SerializedType>
             {
-                {typeof (bool), SerializedType.Int1},
-                {typeof (sbyte), SerializedType.Int1},
-                {typeof (byte), SerializedType.UInt1},
-                {typeof (char), SerializedType.UInt2},
-                {typeof (short), SerializedType.Int2},
-                {typeof (ushort), SerializedType.UInt2},
-                {typeof (int), SerializedType.Int4},
-                {typeof (uint), SerializedType.UInt4},
-                {typeof (long), SerializedType.Int8},
-                {typeof (ulong), SerializedType.UInt8},
-                {typeof (float), SerializedType.Float4},
-                {typeof (double), SerializedType.Float8},
-                {typeof (string), SerializedType.NullTerminatedString},
-                {typeof (byte[]), SerializedType.ByteArray}
+                {typeof(bool), SerializedType.Int1},
+                {typeof(sbyte), SerializedType.Int1},
+                {typeof(byte), SerializedType.UInt1},
+                {typeof(char), SerializedType.UInt2},
+                {typeof(short), SerializedType.Int2},
+                {typeof(ushort), SerializedType.UInt2},
+                {typeof(int), SerializedType.Int4},
+                {typeof(uint), SerializedType.UInt4},
+                {typeof(long), SerializedType.Int8},
+                {typeof(ulong), SerializedType.UInt8},
+                {typeof(float), SerializedType.Float4},
+                {typeof(double), SerializedType.Float8},
+                {typeof(string), SerializedType.NullTerminatedString},
+                {typeof(byte[]), SerializedType.ByteArray}
             };
 
         public static readonly Dictionary<SerializedType, object> SerializedTypeDefault =
@@ -69,7 +69,9 @@ namespace BinarySerialization.Graph.TypeGraph
             : this(parent)
         {
             if (memberInfo == null)
+            {
                 return;
+            }
 
             MemberInfo = memberInfo;
 
@@ -87,7 +89,9 @@ namespace BinarySerialization.Graph.TypeGraph
                 var setMethod = propertyInfo.GetSetMethod();
 
                 if (setMethod != null)
+                {
                     ValueSetter = MagicMethods.MagicAction(parentType, setMethod);
+                }
             }
             else if (fieldInfo != null)
             {
@@ -96,7 +100,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 ValueGetter = fieldInfo.GetValue;
                 ValueSetter = fieldInfo.SetValue;
             }
-            else throw new NotSupportedException($"{memberInfo.GetType().Name} not supported");
+            else
+            {
+                throw new NotSupportedException($"{memberInfo.GetType().Name} not supported");
+            }
 
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
@@ -106,11 +113,15 @@ namespace BinarySerialization.Graph.TypeGraph
 
             /* Don't go any further if we're ignoring this. */
             if (IsIgnored)
+            {
                 return;
+            }
 
             var fieldOrderAttribute = attributes.OfType<FieldOrderAttribute>().SingleOrDefault();
             if (fieldOrderAttribute != null)
+            {
                 Order = fieldOrderAttribute.Order;
+            }
 
             var serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
             if (serializeAsAttribute != null)
@@ -118,7 +129,9 @@ namespace BinarySerialization.Graph.TypeGraph
                 _serializedType = serializeAsAttribute.SerializedType;
 
                 if (_serializedType.Value == SerializedType.NullTerminatedString)
+                {
                     AreStringsNullTerminated = true;
+                }
             }
 
             IsNullable = NullableUnderlyingType != null;
@@ -139,7 +152,8 @@ namespace BinarySerialization.Graph.TypeGraph
             FieldEndiannessBindings = GetBindings<FieldEndiannessAttribute>(attributes);
             FieldEncodingBindings = GetBindings<FieldEncodingAttribute>(attributes);
 
-            var fieldAlignmentAttributes = attributes.OfType<FieldAlignmentAttribute>().ToLookup(attribute => attribute.Mode);
+            var fieldAlignmentAttributes = attributes.OfType<FieldAlignmentAttribute>()
+                .ToLookup(attribute => attribute.Mode);
             var leftAlignmentAttributes =
                 fieldAlignmentAttributes[FieldAlignmentMode.LeftAndRight].Concat(
                     fieldAlignmentAttributes[FieldAlignmentMode.LeftOnly]);
@@ -148,8 +162,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 fieldAlignmentAttributes[FieldAlignmentMode.LeftAndRight].Concat(
                     fieldAlignmentAttributes[FieldAlignmentMode.RightOnly]);
 
-            LeftFieldAlignmentBindings = GetBindings<FieldAlignmentAttribute>(leftAlignmentAttributes.Cast<object>().ToArray());
-            RightFieldAlignmentBindings = GetBindings<FieldAlignmentAttribute>(rightAlignmentAttributes.Cast<object>().ToArray());
+            LeftFieldAlignmentBindings =
+                GetBindings<FieldAlignmentAttribute>(leftAlignmentAttributes.Cast<object>().ToArray());
+            RightFieldAlignmentBindings =
+                GetBindings<FieldAlignmentAttribute>(rightAlignmentAttributes.Cast<object>().ToArray());
 
             var fieldValueAttributes = attributes.OfType<FieldValueAttributeBase>().ToArray();
             FieldValueAttributes = new ReadOnlyCollection<FieldValueAttributeBase>(fieldValueAttributes);
@@ -192,9 +208,12 @@ namespace BinarySerialization.Graph.TypeGraph
                 if (SubtypeDefaultAttribute != null)
                 {
                     if (!Type.IsAssignableFrom(SubtypeDefaultAttribute.Subtype))
-                        throw new InvalidOperationException($"{SubtypeDefaultAttribute.Subtype} is not a subtype of {Type}");
+                    {
+                        throw new InvalidOperationException(
+                            $"{SubtypeDefaultAttribute.Subtype} is not a subtype of {Type}");
+                    }
                 }
-                
+
                 var subtypeFactoryAttribute = attributes.OfType<SubtypeFactoryAttribute>().SingleOrDefault();
                 if (subtypeFactoryAttribute != null)
                 {
@@ -204,7 +223,8 @@ namespace BinarySerialization.Graph.TypeGraph
                 }
             }
 
-            var itemSubtypeAttributes = attributes.OfType<ItemSubtypeAttribute>().Cast<SubtypeBaseAttribute>().ToArray();
+            var itemSubtypeAttributes = attributes.OfType<ItemSubtypeAttribute>().Cast<SubtypeBaseAttribute>()
+                .ToArray();
             ItemSubtypeAttributes = new ReadOnlyCollection<SubtypeBaseAttribute>(itemSubtypeAttributes);
 
             if (itemSubtypeAttributes.Length > 0)
@@ -215,7 +235,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 {
                     itemBaseType = Type.GetElementType();
                 }
-                else if (typeof (IList).IsAssignableFrom(Type))
+                else if (typeof(IList).IsAssignableFrom(Type))
                 {
                     var genericArguments = Type.GetGenericArguments();
                     if (genericArguments.Length > 1)
@@ -232,13 +252,13 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 ItemSubtypeBinding = GetBinding(itemSubtypeAttributes, itemBaseType);
             }
-            
+
             var itemSubtypeFactoryAttribute = attributes.OfType<ItemSubtypeFactoryAttribute>().SingleOrDefault();
             if (itemSubtypeFactoryAttribute != null)
             {
                 ItemSubtypeFactoryBinding = GetBinding(itemSubtypeFactoryAttribute);
                 ItemSubtypeFactory =
-                    (ISubtypeFactory)itemSubtypeFactoryAttribute.FactoryType.GetConstructor(new Type[0]).Invoke(null);
+                    (ISubtypeFactory) itemSubtypeFactoryAttribute.FactoryType.GetConstructor(new Type[0]).Invoke(null);
             }
 
             ItemSubtypeDefaultAttribute = attributes.OfType<ItemSubtypeDefaultAttribute>().SingleOrDefault();
@@ -258,63 +278,6 @@ namespace BinarySerialization.Graph.TypeGraph
                 ItemSerializeUntilBinding = GetBinding(ItemSerializeUntilAttribute);
             }
         }
-
-        private Binding GetBinding(FieldBindingBaseAttribute attribute)
-        {
-            return new Binding(attribute, GetBindingLevel(attribute.Binding));
-        }
-
-        private BindingCollection GetBindings<TAttribute>(IEnumerable<object> attributes) 
-            where TAttribute : FieldBindingBaseAttribute
-        {
-            var typeAttributes = attributes.OfType<TAttribute>().ToList();
-
-            if (!typeAttributes.Any())
-                return null;
-
-            var bindings =
-                typeAttributes.Select(
-                    attribute =>
-                        new Binding(attribute, GetBindingLevel(attribute.Binding)));
-
-            return new BindingCollection(bindings);
-        }
-
-        private Binding GetBinding(SubtypeBaseAttribute[] attributes, Type checkType)
-        {
-            if (attributes.Length == 0)
-                return null;
-
-            var bindingGroups =
-                attributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
-
-            if (bindingGroups.Count() > 1)
-                throw new BindingException("Subtypes must all specify the same binding configuration.");
-
-            var firstBinding = attributes[0];
-            var binding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
-
-            var valueGroups = attributes.GroupBy(attribute => attribute.Value);
-            if (valueGroups.Count() < attributes.Length)
-                throw new InvalidOperationException("Subtype values must be unique.");
-
-            if (binding.BindingMode == BindingMode.TwoWay)
-            {
-                var subTypeGroups = attributes.GroupBy(attribute => attribute.Subtype);
-                if (subTypeGroups.Count() < attributes.Length)
-                    throw new InvalidOperationException(
-                        "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
-            }
-
-            var invalidSubtype =
-                attributes.FirstOrDefault(attribute => !checkType.IsAssignableFrom(attribute.Subtype));
-
-            if (invalidSubtype != null)
-                throw new InvalidOperationException($"{invalidSubtype.Subtype} is not a subtype of {checkType}");
-
-            return binding;
-        }
-
 
 
         public MemberInfo MemberInfo { get; }
@@ -357,8 +320,6 @@ namespace BinarySerialization.Graph.TypeGraph
         public ReadOnlyCollection<SerializeWhenNotAttribute> SerializeWhenNotAttributes { get; }
         public SerializeUntilAttribute SerializeUntilAttribute { get; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; }
-        public Endianness? Endianness { get; }
-        public Encoding Encoding { get; }
 
         public bool IsIgnored { get; }
 
@@ -371,25 +332,35 @@ namespace BinarySerialization.Graph.TypeGraph
         public SerializedType GetSerializedType(Type referenceType = null)
         {
             if (referenceType == null)
+            {
                 referenceType = BaseSerializedType;
+            }
 
             SerializedType serializedType;
             if (_serializedType != null && _serializedType.Value != SerializedType.Default)
+            {
                 serializedType = _serializedType.Value;
+            }
             else if (!DefaultSerializedTypes.TryGetValue(referenceType, out serializedType))
+            {
                 return SerializedType.Default;
+            }
 
             // handle special cases within null terminated strings
             if (serializedType == SerializedType.NullTerminatedString)
             {
                 // If null terminated string is specified but field length is present, override
                 if (FieldLengthBindings != null)
+                {
                     serializedType = SerializedType.SizedString;
+                }
 
                 // If null terminated string is specified but item field length is present, override
-                var parent = (TypeNode)Parent;
+                var parent = (TypeNode) Parent;
                 if (parent.ItemLengthBindings != null)
+                {
                     serializedType = SerializedType.SizedString;
+                }
             }
 
             return serializedType;
@@ -399,7 +370,9 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             object value;
             if (SerializedTypeDefault.TryGetValue(serializedType, out value))
+            {
                 return value;
+            }
 
             return null;
         }
@@ -442,7 +415,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public static bool IsValueType(Type type)
         {
-            return type.GetTypeInfo().IsPrimitive || type == typeof (string) || type == typeof (byte[]);
+            return type.GetTypeInfo().IsPrimitive || type == typeof(string) || type == typeof(byte[]);
         }
 
         protected Func<object> CreateCompiledConstructor()
@@ -452,8 +425,10 @@ namespace BinarySerialization.Graph.TypeGraph
 
         protected static Func<object> CreateCompiledConstructor(Type type)
         {
-            if (type == typeof (string))
+            if (type == typeof(string))
+            {
                 return () => string.Empty;
+            }
 
             var constructor = type.GetConstructor(new Type[0]);
             return CreateCompiledConstructor(constructor);
@@ -462,9 +437,79 @@ namespace BinarySerialization.Graph.TypeGraph
         protected static Func<object> CreateCompiledConstructor(ConstructorInfo constructor)
         {
             if (constructor == null)
+            {
                 return null;
+            }
 
             return Expression.Lambda<Func<object>>(Expression.New(constructor)).Compile();
+        }
+
+        private Binding GetBinding(FieldBindingBaseAttribute attribute)
+        {
+            return new Binding(attribute, GetBindingLevel(attribute.Binding));
+        }
+
+        private BindingCollection GetBindings<TAttribute>(IEnumerable<object> attributes)
+            where TAttribute : FieldBindingBaseAttribute
+        {
+            var typeAttributes = attributes.OfType<TAttribute>().ToList();
+
+            if (!typeAttributes.Any())
+            {
+                return null;
+            }
+
+            var bindings =
+                typeAttributes.Select(
+                    attribute =>
+                        new Binding(attribute, GetBindingLevel(attribute.Binding)));
+
+            return new BindingCollection(bindings);
+        }
+
+        private Binding GetBinding(SubtypeBaseAttribute[] attributes, Type checkType)
+        {
+            if (attributes.Length == 0)
+            {
+                return null;
+            }
+
+            var bindingGroups =
+                attributes.GroupBy(subtypeAttribute => subtypeAttribute.Binding);
+
+            if (bindingGroups.Count() > 1)
+            {
+                throw new BindingException("Subtypes must all specify the same binding configuration.");
+            }
+
+            var firstBinding = attributes[0];
+            var binding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
+
+            var valueGroups = attributes.GroupBy(attribute => attribute.Value);
+            if (valueGroups.Count() < attributes.Length)
+            {
+                throw new InvalidOperationException("Subtype values must be unique.");
+            }
+
+            if (binding.BindingMode == BindingMode.TwoWay)
+            {
+                var subTypeGroups = attributes.GroupBy(attribute => attribute.Subtype);
+                if (subTypeGroups.Count() < attributes.Length)
+                {
+                    throw new InvalidOperationException(
+                        "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
+                }
+            }
+
+            var invalidSubtype =
+                attributes.FirstOrDefault(attribute => !checkType.IsAssignableFrom(attribute.Subtype));
+
+            if (invalidSubtype != null)
+            {
+                throw new InvalidOperationException($"{invalidSubtype.Subtype} is not a subtype of {checkType}");
+            }
+
+            return binding;
         }
 
         private int FindAncestorLevel(BindingInfo binding)
@@ -480,7 +525,7 @@ namespace BinarySerialization.Graph.TypeGraph
                         return level;
                     }
 
-                    if(binding.AncestorType != null && parent.Type != null && 
+                    if (binding.AncestorType != null && parent.Type != null &&
                         binding.AncestorType.IsAssignableFrom(parent.Type))
                     {
                         return level;
@@ -492,7 +537,9 @@ namespace BinarySerialization.Graph.TypeGraph
             }
 
             if (binding != null && binding.RelativeSourceMode == RelativeSourceMode.SerializationContext)
+            {
                 return level;
+            }
 
             throw new BindingException("No ancestor found.");
         }

@@ -97,7 +97,8 @@ namespace BinarySerialization.Graph.ValueGraph
             SkipPadding(stream);
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             ResolveValueType();
 
@@ -177,14 +178,16 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        protected virtual async Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        protected virtual async Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             // check to see if we are actually supposed to be a custom deserialization.  This is a side-effect of
             // treating all object members as object nodes.  In the case of sub-types we could later discover we
             // are actually a custom node because the specified subtype implements IBinarySerializable.
             if (IsCustomNode(out ValueNode customValueNode))
             {
-                await customValueNode.DeserializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
+                await customValueNode.DeserializeOverrideAsync(stream, eventShuttle, cancellationToken)
+                    .ConfigureAwait(false);
 
                 // this is a cheat, but another side-effect of this weird corner case
                 _cachedValue = customValueNode.Value;
@@ -295,7 +298,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private bool IsCustomNode(out ValueNode customValueNode)
         {
-            var parent = (TypeNode)TypeNode.Parent;
+            var parent = (TypeNode) TypeNode.Parent;
 
             if (_valueType != null &&
                 (TypeNode.SubtypeBinding != null || parent.ItemSubtypeBinding != null ||

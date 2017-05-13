@@ -3,7 +3,7 @@
 namespace BinarySerialization
 {
     /// <summary>
-    /// Represents an binding exception.
+    ///     Represents an binding exception.
     /// </summary>
     public class BindingException : Exception
     {
