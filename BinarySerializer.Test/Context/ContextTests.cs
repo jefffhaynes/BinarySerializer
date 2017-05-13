@@ -7,7 +7,7 @@ namespace BinarySerialization.Test.Context
     public class ContextTests
     {
         [TestMethod]
-        public void TestContext()
+        public void ContextTest()
         {
             var contextClass = new ContextClass();
             var serializer = new BinarySerializer();

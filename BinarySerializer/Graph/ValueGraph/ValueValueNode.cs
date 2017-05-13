@@ -324,7 +324,7 @@ namespace BinarySerialization.Graph.ValueGraph
             switch (serializedType)
             {
                 case SerializedType.Int1:
-                    value = reader.ReadSByteAsync(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadSByteAsync(cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.UInt1:
                     value = await reader.ReadByteAsync(cancellationToken).ConfigureAwait(false);
