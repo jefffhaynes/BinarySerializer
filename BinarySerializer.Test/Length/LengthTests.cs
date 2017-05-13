@@ -50,14 +50,6 @@ namespace BinarySerialization.Test.Length
             Assert.IsTrue(expected.Field.SequenceEqual(actual.Field));
         }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(InvalidOperationException))]
-        //public void CollectionConstLengthMismatchTest()
-        //{
-        //    var expected = new ConstCollectionLengthClass { Field = new List<string>(TestSequence.Take(2)) };
-        //    Roundtrip(expected);
-        //}
-
         [TestMethod]
         public void CollectionLengthTest()
         {
@@ -262,7 +254,7 @@ namespace BinarySerialization.Test.Length
         private void PrimitiveNullArrayLengthTest<TValue>()
         {
             var expected = new PrimitiveArrayClass<TValue>();
-            var actual = Roundtrip(5);
+            Roundtrip(expected, 5);
         }
     }
 }
