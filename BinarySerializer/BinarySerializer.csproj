@@ -9,9 +9,9 @@
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>http://binaryserializer.net</RepositoryUrl>
-    <AssemblyVersion>7.4.1.0</AssemblyVersion>
-    <FileVersion>7.4.1.0</FileVersion>
-    <Version>7.4.1</Version>
+    <AssemblyVersion>7.4.2.0</AssemblyVersion>
+    <FileVersion>7.4.2.0</FileVersion>
+    <Version>7.4.2</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />
