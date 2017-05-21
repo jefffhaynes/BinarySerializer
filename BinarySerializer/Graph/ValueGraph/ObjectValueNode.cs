@@ -118,7 +118,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
             }
 
-            SkipPadding(stream);
+            await SkipPaddingAsync(stream, cancellationToken).ConfigureAwait(false);
         }
 
         protected virtual void ObjectSerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
@@ -363,6 +363,23 @@ namespace BinarySerialization.Graph.ValueGraph
                     stream.Read(pad, 0, pad.Length);
                 }
             }
+        }
+
+        private Task SkipPaddingAsync(BoundedStream stream, CancellationToken cancellationToken)
+        {
+            var length = GetFieldLength();
+
+            if (length != null)
+            {
+                if (length > stream.RelativePosition)
+                {
+                    var padLength = length - stream.RelativePosition;
+                    var pad = new byte[(int)padLength];
+                    return stream.ReadAsync(pad, 0, pad.Length, cancellationToken);
+                }
+            }
+
+            return Task.CompletedTask;
         }
 
         private void ResolveValueType()
