@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BinarySerialization
 {
@@ -25,6 +27,13 @@ namespace BinarySerialization
         public override int Read(byte[] buffer, int offset, int count)
         {
             var read = base.Read(buffer, offset, count);
+            _tap.Write(buffer, offset, read);
+            return read;
+        }
+
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            var read = await base.ReadAsync(buffer, offset, count, cancellationToken);
             _tap.Write(buffer, offset, read);
             return read;
         }

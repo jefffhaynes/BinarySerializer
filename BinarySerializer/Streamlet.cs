@@ -136,7 +136,7 @@ namespace BinarySerialization
         /// </returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            count = FixCount(count);
+            count = ClampCount(count);
 
             if (count == 0)
             {
@@ -154,7 +154,7 @@ namespace BinarySerialization
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
             CancellationToken cancellationToken)
         {
-            count = FixCount(count);
+            count = ClampCount(count);
 
             if (count == 0)
             {
@@ -226,7 +226,7 @@ namespace BinarySerialization
             Source.Dispose();
         }
 
-        private int FixCount(int count)
+        private int ClampCount(int count)
         {
             if (count > Length - Position)
             {
