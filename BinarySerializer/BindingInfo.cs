@@ -117,7 +117,7 @@ namespace BinarySerialization
         /// <returns></returns>
         protected bool Equals(BindingInfo other)
         {
-            return string.Equals(Path, other.Path) && BindingMode == other.BindingMode &&
+            return string.Equals(Path, other.Path) &&
                    AncestorLevel == other.AncestorLevel &&
                    AncestorType == other.AncestorType && ConverterType == other.ConverterType &&
                    RelativeSourceMode == other.RelativeSourceMode &&

@@ -78,31 +78,31 @@ namespace BinarySerialization.Graph.ValueGraph
             typeNode.ItemLengthBindings?.Bind(this, MeasureItemsOverride);
             typeNode.FieldCountBindings?.Bind(this, () => CountOverride());
 
-            if (typeNode.SubtypeBinding != null && typeNode.SubtypeBinding.BindingMode == BindingMode.TwoWay)
+            if (typeNode.SubtypeBinding != null && typeNode.SubtypeBinding.BindingMode != BindingMode.OneWay)
             {
                 typeNode.SubtypeBinding.Bind(this, () => SubtypeBindingCallback(typeNode));
             }
 
-            if (typeNode.SubtypeFactoryBinding != null && typeNode.SubtypeFactoryBinding.BindingMode ==
-                BindingMode.TwoWay)
+            if (typeNode.SubtypeFactoryBinding != null && typeNode.SubtypeFactoryBinding.BindingMode !=
+                BindingMode.OneWay)
             {
                 typeNode.SubtypeFactoryBinding.Bind(this, () => SubtypeBindingCallback(typeNode));
             }
 
             var parent = (TypeNode) typeNode.Parent;
-            if (parent.ItemSubtypeBinding != null && parent.ItemSubtypeBinding.BindingMode == BindingMode.TwoWay)
+            if (parent.ItemSubtypeBinding != null && parent.ItemSubtypeBinding.BindingMode != BindingMode.OneWay)
             {
                 parent.ItemSubtypeBinding.Bind((ValueNode) Parent, () => ItemSubtypeBindingCallback(typeNode));
             }
 
             if (parent.ItemSubtypeFactoryBinding != null &&
-                parent.ItemSubtypeFactoryBinding.BindingMode == BindingMode.TwoWay)
+                parent.ItemSubtypeFactoryBinding.BindingMode != BindingMode.OneWay)
             {
                 parent.ItemSubtypeFactoryBinding.Bind((ValueNode) Parent, () => ItemSubtypeBindingCallback(typeNode));
             }
 
             if (typeNode.ItemSerializeUntilBinding != null &&
-                typeNode.ItemSerializeUntilBinding.BindingMode == BindingMode.TwoWay)
+                typeNode.ItemSerializeUntilBinding.BindingMode != BindingMode.OneWay)
             {
                 typeNode.ItemSerializeUntilBinding.Bind(this, GetLastItemValueOverride);
             }

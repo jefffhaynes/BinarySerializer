@@ -187,5 +187,16 @@ namespace BinarySerialization.Test.Subtype
             Assert.AreEqual(0x4, actual.Key);
             Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
         }
+
+        [TestMethod]
+        public void MultipleBindingModesTest()
+        {
+            var forward = new MultipleBindingModesClass
+            {
+                Value = new SubclassB()
+            };
+
+            var actual = Roundtrip(forward);
+        }
     }
 }
