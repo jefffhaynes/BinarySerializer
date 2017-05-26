@@ -17,6 +17,8 @@ namespace BinarySerialization.Graph.TypeGraph
         private readonly Lazy<IDictionary<Type, ObjectTypeNode>> _subTypesLazy =
             new Lazy<IDictionary<Type, ObjectTypeNode>>(() => new Dictionary<Type, ObjectTypeNode>());
 
+        private bool _isConstructed;
+
         public ObjectTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
         }
@@ -41,8 +43,6 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public IDictionary<Type, object> SubTypeKeys { get; private set; }
 
-        private bool _isConstructed;
-
         public ObjectTypeNode GetSubTypeNode(Type type)
         {
             // make sure we're constructed first
@@ -50,7 +50,9 @@ namespace BinarySerialization.Graph.TypeGraph
 
             // trivial case, nothing to do
             if (type == Type)
+            {
                 return this;
+            }
 
             // we need to check to see if we know about this type either because it was a listed subtype
             // or because we've already encountered it previously.
@@ -66,15 +68,24 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
+        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        {
+            return new ObjectValueNode(parent, Name, this);
+        }
+
         private void Construct()
         {
             if (_isConstructed)
+            {
                 return;
+            }
 
             lock (_initializationLock)
             {
                 if (_isConstructed)
+                {
                     return;
+                }
 
                 ConstructSubtypes();
 
@@ -89,7 +100,9 @@ namespace BinarySerialization.Graph.TypeGraph
         private void GenerateSubtype(Type type)
         {
             if (_subTypesLazy.Value.ContainsKey(type))
+            {
                 return;
+            }
 
             ObjectTypeNode typeNode;
 
@@ -97,14 +110,14 @@ namespace BinarySerialization.Graph.TypeGraph
             if (MemberInfo != null)
             {
                 // check for custom subtype
-                typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
+                typeNode = typeof(IBinarySerializable).IsAssignableFrom(type)
                     ? new CustomTypeNode(parent, parent.Type, MemberInfo, type)
                     : new ObjectTypeNode(parent, parent.Type, MemberInfo, type);
             }
             else // handle collection case
             {
                 // check for custom subtype
-                typeNode = typeof (IBinarySerializable).IsAssignableFrom(type)
+                typeNode = typeof(IBinarySerializable).IsAssignableFrom(type)
                     ? new CustomTypeNode(parent, type)
                     : new ObjectTypeNode(parent, type);
             }
@@ -117,7 +130,7 @@ namespace BinarySerialization.Graph.TypeGraph
         /// </summary>
         private void ConstructSubtypes()
         {
-            var parent = (TypeNode)Parent;
+            var parent = (TypeNode) Parent;
 
             if (SubtypeAttributes != null && SubtypeAttributes.Count > 0)
             {
@@ -133,14 +146,18 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             // Get subtype keys 
             if (binding.BindingMode == BindingMode.TwoWay)
+            {
                 SubTypeKeys = attributes.ToDictionary(attribute => attribute.Subtype,
                     attribute => attribute.Value);
+            }
 
             // Generate subtype children 
             var subTypes = attributes.Select(attribute => attribute.Subtype);
 
             foreach (var subType in subTypes)
+            {
                 GenerateSubtype(subType);
+            }
         }
 
         /// <summary>
@@ -151,7 +168,9 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             // if abstract we will never be constructed, nothing to do
             if (Type.GetTypeInfo().IsAbstract)
+            {
                 return;
+            }
 
             // we're going to start finding valid constructors.  start by getting all constructors.
             var constructors = Type.GetConstructors(ConstructorBindingFlags);
@@ -174,7 +193,7 @@ namespace BinarySerialization.Graph.TypeGraph
                             child => new {Name = child.Name.ToLower(), child.Type},
                             (parameter, children) => new {parameter, children})
                         .SelectMany(result => result.children.DefaultIfEmpty())
-                );
+            );
 
             // eliminate any constructors that aren't complete in terms of required parameters
             var completeConstructors =
@@ -183,7 +202,9 @@ namespace BinarySerialization.Graph.TypeGraph
 
             // see if there are any constructors left that can be used at all
             if (!completeConstructors.Any())
+            {
                 return;
+            }
 
             // choose best match in terms of greatest number of valid parameters
             var bestConstructor =
@@ -199,12 +220,9 @@ namespace BinarySerialization.Graph.TypeGraph
             // if this is a parameterless constructor, go ahead and compile it.  
             // we can't compile constructors with parameters since we don't have them yet.
             if (ConstructorParameterNames.Length == 0)
+            {
                 CompiledConstructor = CreateCompiledConstructor(Constructor);
-        }
-
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
-        {
-            return new ObjectValueNode(parent, Name, this);
+            }
         }
 
         private IEnumerable<TypeNode> GenerateChildren(Type parentType)
@@ -223,14 +241,18 @@ namespace BinarySerialization.Graph.TypeGraph
                 var unorderedChild = serializableChildren.FirstOrDefault(child => child.Order == null);
 
                 if (unorderedChild != null)
+                {
                     throw new InvalidOperationException(
                         $"'{unorderedChild.Name}' does not have a FieldOrder attribute.  " +
                         "All serializable fields or properties in a class with more than one member must specify a FieldOrder attribute.");
+                }
 
                 var orderGroups = serializableChildren.GroupBy(child => child.Order);
 
                 if (orderGroups.Count() != serializableChildren.Count)
+                {
                     throw new InvalidOperationException("All fields must have a unique order number.");
+                }
             }
 
             if (parentType.GetTypeInfo().BaseType != null)
