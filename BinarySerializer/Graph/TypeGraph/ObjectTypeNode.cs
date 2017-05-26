@@ -145,14 +145,15 @@ namespace BinarySerialization.Graph.TypeGraph
         private void ConstructSubtypes(Binding binding, ReadOnlyCollection<SubtypeBaseAttribute> attributes)
         {
             // Get subtype keys 
-            if (binding.BindingMode == BindingMode.TwoWay)
+            if (binding.BindingMode != BindingMode.OneWay)
             {
                 SubTypeKeys = attributes.ToDictionary(attribute => attribute.Subtype,
                     attribute => attribute.Value);
             }
 
             // Generate subtype children 
-            var subTypes = attributes.Select(attribute => attribute.Subtype);
+            var subTypes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay)
+                .Select(attribute => attribute.Subtype);
 
             foreach (var subType in subTypes)
             {

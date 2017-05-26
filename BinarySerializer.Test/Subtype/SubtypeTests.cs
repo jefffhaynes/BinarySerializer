@@ -197,6 +197,7 @@ namespace BinarySerialization.Test.Subtype
             };
 
             var actual = Roundtrip(forward);
+            Assert.AreEqual(typeof(SubclassA), actual.Value.GetType());
         }
     }
 }

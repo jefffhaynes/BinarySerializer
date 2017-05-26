@@ -485,8 +485,11 @@ namespace BinarySerialization.Graph.TypeGraph
             var firstBinding = attributes[0];
             var binding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
 
-            var valueGroups = attributes.GroupBy(attribute => attribute.Value);
-            if (valueGroups.Count() < attributes.Length)
+            var toSourceAttributes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay)
+                .ToList();
+            var valueGroups = toSourceAttributes.GroupBy(attribute => attribute.Value);
+
+            if (valueGroups.Count() < toSourceAttributes.Count)
             {
                 throw new InvalidOperationException("Subtype values must be unique.");
             }
