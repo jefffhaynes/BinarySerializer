@@ -191,7 +191,7 @@ namespace BinarySerialization.Test.Subtype
         [TestMethod]
         public void MultipleBindingModesTest()
         {
-            var forward = new MultipleBindingModesClass
+            var forward = new MixedBindingModesClass
             {
                 Value = new SubclassB()
             };

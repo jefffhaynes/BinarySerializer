@@ -301,7 +301,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var parent = (TypeNode) TypeNode.Parent;
 
             if (_valueType != null &&
-                (TypeNode.SubtypeBinding != null || parent.ItemSubtypeBinding != null ||
+                (TypeNode.SubtypeBindings != null || parent.ItemSubtypeBindings != null ||
                  TypeNode.SubtypeFactoryBinding != null || parent.ItemSubtypeFactoryBinding != null))
             {
                 var typeNode = (ObjectTypeNode) TypeNode;
@@ -387,20 +387,20 @@ namespace BinarySerialization.Graph.ValueGraph
             var parent = (TypeNode) TypeNode.Parent;
 
             // first check for any immediate subtype information
-            if (TypeNode.SubtypeBinding != null || TypeNode.SubtypeFactoryBinding != null ||
+            if (TypeNode.SubtypeBindings != null || TypeNode.SubtypeFactoryBinding != null ||
                 TypeNode.SubtypeDefaultAttribute != null)
             {
-                SetValueType(TypeNode.SubtypeBinding, this, TypeNode.SubtypeAttributes,
+                SetValueType(TypeNode.SubtypeBindings, this, TypeNode.SubtypeAttributes,
                     TypeNode.SubtypeFactoryBinding, TypeNode.SubtypeFactory,
                     TypeNode.SubtypeDefaultAttribute);
             }
 
             // failing that, check for parent subtype information
             if (_valueType == null &&
-                (parent.ItemSubtypeBinding != null || parent.ItemSubtypeFactoryBinding != null ||
+                (parent.ItemSubtypeBindings != null || parent.ItemSubtypeFactoryBinding != null ||
                  parent.ItemSubtypeDefaultAttribute != null))
             {
-                SetValueType(parent.ItemSubtypeBinding, (ValueNode) Parent, parent.ItemSubtypeAttributes,
+                SetValueType(parent.ItemSubtypeBindings, (ValueNode) Parent, parent.ItemSubtypeAttributes,
                     parent.ItemSubtypeFactoryBinding, parent.ItemSubtypeFactory,
                     parent.ItemSubtypeDefaultAttribute);
             }
@@ -413,16 +413,16 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private void SetValueType(Binding binding, ValueNode bindingTarget,
+        private void SetValueType(BindingCollection bindings, ValueNode bindingTarget,
             ReadOnlyCollection<SubtypeBaseAttribute> attributes,
             Binding subtypeFactoryBinding,
             ISubtypeFactory subtypeFactory,
             SubtypeDefaultBaseAttribute defaultAttribute)
         {
-            if (binding != null)
+            if (bindings != null)
             {
                 // try to resolve value type using subtype mapping
-                var subTypeValue = binding.GetValue(bindingTarget);
+                var subTypeValue = bindings.GetValue(bindingTarget);
 
                 var toSourceAttributes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay);
 

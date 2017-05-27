@@ -78,10 +78,7 @@ namespace BinarySerialization.Graph.ValueGraph
             typeNode.ItemLengthBindings?.Bind(this, MeasureItemsOverride);
             typeNode.FieldCountBindings?.Bind(this, () => CountOverride());
 
-            if (typeNode.SubtypeBinding != null && typeNode.SubtypeBinding.BindingMode != BindingMode.OneWay)
-            {
-                typeNode.SubtypeBinding.Bind(this, () => SubtypeBindingCallback(typeNode));
-            }
+            typeNode.SubtypeBindings?.Bind(this, () => SubtypeBindingCallback(typeNode));
 
             if (typeNode.SubtypeFactoryBinding != null && typeNode.SubtypeFactoryBinding.BindingMode !=
                 BindingMode.OneWay)
@@ -90,10 +87,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var parent = (TypeNode) typeNode.Parent;
-            if (parent.ItemSubtypeBinding != null && parent.ItemSubtypeBinding.BindingMode != BindingMode.OneWay)
-            {
-                parent.ItemSubtypeBinding.Bind((ValueNode) Parent, () => ItemSubtypeBindingCallback(typeNode));
-            }
+            parent.ItemSubtypeBindings?.Bind((ValueNode) Parent, () => ItemSubtypeBindingCallback(typeNode));
 
             if (parent.ItemSubtypeFactoryBinding != null &&
                 parent.ItemSubtypeFactoryBinding.BindingMode != BindingMode.OneWay)
@@ -537,7 +531,7 @@ namespace BinarySerialization.Graph.ValueGraph
             object value;
 
             // first try explicitly specified subtypes
-            if (typeNode.SubtypeBinding != null)
+            if (typeNode.SubtypeBindings != null)
             {
                 if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
                 {
@@ -580,7 +574,7 @@ namespace BinarySerialization.Graph.ValueGraph
             object value;
 
             // first try explicitly specified subtypes
-            if (parent.ItemSubtypeBinding != null)
+            if (parent.ItemSubtypeBindings != null)
             {
                 if (objectTypeNode.SubTypeKeys.TryGetValue(valueType, out value))
                 {

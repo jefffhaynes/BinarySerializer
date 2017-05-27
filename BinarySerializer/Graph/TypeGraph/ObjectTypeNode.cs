@@ -134,22 +134,19 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (SubtypeAttributes != null && SubtypeAttributes.Count > 0)
             {
-                ConstructSubtypes(SubtypeBinding, SubtypeAttributes);
+                ConstructSubtypes(SubtypeAttributes);
             }
             else if (parent.ItemSubtypeAttributes != null && parent.ItemSubtypeAttributes.Count > 0)
             {
-                ConstructSubtypes(parent.ItemSubtypeBinding, parent.ItemSubtypeAttributes);
+                ConstructSubtypes(parent.ItemSubtypeAttributes);
             }
         }
 
-        private void ConstructSubtypes(Binding binding, ReadOnlyCollection<SubtypeBaseAttribute> attributes)
+        private void ConstructSubtypes(ReadOnlyCollection<SubtypeBaseAttribute> attributes)
         {
             // Get subtype keys 
-            if (binding.BindingMode != BindingMode.OneWay)
-            {
-                SubTypeKeys = attributes.ToDictionary(attribute => attribute.Subtype,
-                    attribute => attribute.Value);
-            }
+            SubTypeKeys = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWayToSource)
+                .ToDictionary(attribute => attribute.Subtype, attribute => attribute.Value);
 
             // Generate subtype children 
             var subTypes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay)
