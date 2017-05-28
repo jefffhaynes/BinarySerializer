@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
@@ -482,15 +481,12 @@ namespace BinarySerialization.Graph.TypeGraph
                 throw new BindingException("Subtypes must all specify the same binding configuration.");
             }
 
-            var firstBinding = attributes[0];
             var bindings =
                 attributes.Select(
                     attribute =>
                         new Binding(attribute, GetBindingLevel(attribute.Binding)));
 
-            //var binding = new Binding(firstBinding, GetBindingLevel(firstBinding.Binding));
-
-            var toSourceAttributes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay)
+            var toSourceAttributes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWayToSource)
                 .ToList();
             var valueGroups = toSourceAttributes.GroupBy(attribute => attribute.Value);
 
@@ -499,17 +495,15 @@ namespace BinarySerialization.Graph.TypeGraph
                 throw new InvalidOperationException("Subtype values must be unique.");
             }
 
-            var toTargetAttributes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWayToSource)
+            var toTargetAttributes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay)
                 .ToList();
 
-            //if (binding.BindingMode == BindingMode.TwoWay)
+            var subTypeGroups = toTargetAttributes.GroupBy(attribute => attribute.Subtype);
+            var subTypeGroupCount = subTypeGroups.Count();
+            if (subTypeGroupCount < toTargetAttributes.Count)
             {
-                var subTypeGroups = toTargetAttributes.GroupBy(attribute => attribute.Subtype);
-                if (toTargetAttributes.Count() < toTargetAttributes.Count)
-                {
-                    throw new InvalidOperationException(
-                        "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
-                }
+                throw new InvalidOperationException(
+                    "Subtypes must be unique for two-way subtype bindings.  Set BindingMode to OneWay to disable updates to the binding source during serialization.");
             }
 
             var invalidSubtype =

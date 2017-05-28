@@ -145,7 +145,7 @@ namespace BinarySerialization.Graph.TypeGraph
         private void ConstructSubtypes(ReadOnlyCollection<SubtypeBaseAttribute> attributes)
         {
             // Get subtype keys 
-            SubTypeKeys = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWayToSource)
+            SubTypeKeys = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay)
                 .ToDictionary(attribute => attribute.Subtype, attribute => attribute.Value);
 
             // Generate subtype children 

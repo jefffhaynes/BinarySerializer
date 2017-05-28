@@ -424,10 +424,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 // try to resolve value type using subtype mapping
                 var subTypeValue = bindings.GetValue(bindingTarget);
 
-                var toSourceAttributes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay);
+                var toTargetAttributes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWayToSource);
 
                 // find matching subtype, if available
-                var matchingAttribute = toSourceAttributes.SingleOrDefault(
+                var matchingAttribute = toTargetAttributes.SingleOrDefault(
                     attribute => subTypeValue.Equals(
                         Convert.ChangeType(attribute.Value, subTypeValue.GetType(), null)));
 

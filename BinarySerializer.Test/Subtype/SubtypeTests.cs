@@ -196,7 +196,7 @@ namespace BinarySerialization.Test.Subtype
                 Value = new SubclassB()
             };
 
-            var actual = Roundtrip(forward);
+            var actual = Roundtrip(forward, new byte[]{0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0});
             Assert.AreEqual(typeof(SubclassA), actual.Value.GetType());
         }
     }
