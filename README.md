@@ -506,7 +506,7 @@ It is not necessary that FrameType be correct during serialization; it will be u
 
 The Subtype attribute can be used with the FieldLength attribute to write forward compatible processors.  Take the example of PNG, which uses "chunks" of data that may be able to be skipped even if they aren't understood.
 
-Another useful trick is to specify different types for forward and backward bindings.  Take this example from the u-blox protocol:
+It is also possible to specify different subtypes for target and source bindings.  This is an example from the u-blox protocol:
 
 ```c#
 [Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvt))]
@@ -514,7 +514,7 @@ Another useful trick is to specify different types for forward and backward bind
 public PacketPayload Payload { get; set; }
 ```
 
-Although both subtypes have an identifier of MessageId.NAV_PVT, the NavPvt message is only ever used from device to host whereas the NavPvtPoll message is only used from the host to device.  Because the NavPvtPoll subtype binding specifies OneWay, deserialization of a NAV_PVT value is not ambigious.
+The NavPvt message is only ever used from device to host whereas the NavPvtPoll message is used from the host to device.  Both subtypes have an identifier of MessageId.NAV_PVT, which would normally cause abmiguity during deserialization.  However, because the NavPvtPoll subtype binding specifies OneWay, only the NavPvt subtype is available during deserialization.
 
 ### SubtypeFactoryAttribute ###
 
