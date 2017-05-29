@@ -509,11 +509,9 @@ The Subtype attribute can be used with the FieldLength attribute to write forwar
 Another useful trick is to specify different types for forward and backward bindings.  Take this example from the u-blox protocol:
 
 ```c#
-...
-    [Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvt))]
-    [Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvtPoll), BindingMode = BindingMode.OneWay)]
-    public PacketPayload Payload { get; set; }
-...
+[Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvt))]
+[Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvtPoll), BindingMode = BindingMode.OneWay)]
+public PacketPayload Payload { get; set; }
 ```
 
 Although both subtypes have an identifier of MessageId.NAV_PVT, the NavPvt message is only ever used from device to host whereas the NavPvtPoll message is only used from the host to device.  Because the NavPvtPoll subtype binding specifies OneWay, deserialization of a NAV_PVT value is not ambigious.
