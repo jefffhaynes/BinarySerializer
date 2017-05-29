@@ -518,7 +518,7 @@ Although both subtypes have an identifier of MessageId.NAV_PVT, the NavPvt messa
 
 ### SubtypeFactoryAttribute ###
 
-For situations where it is not desirable to statically declare subtypes either for large numbers of or dynamically loaded subtypes, a factory may be specified.  In these instances, any Subtype attributes will always be evaluated first and the factory will be used as fallback followed by the default subtype, if specified.
+For situations where it is not desirable to statically declare subtypes either for large numbers of or dynamically loaded subtypes, a factory may be specified.  In these instances any Subtype attributes will always be evaluated first and the factory will be used as fallback, followed by the default subtype, if specified.
 
 ```c#
 public class Packet
