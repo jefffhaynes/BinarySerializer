@@ -11,7 +11,7 @@ namespace BinarySerialization.Test.Misc
 #if TESTASYNC
             Assert.Throws<AggregateException>(() => Roundtrip(new InvalidForwardBindingClass()));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(new InvalidForwardBindingClass());
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(new InvalidForwardBindingClass()));
 #endif
         }
     }
