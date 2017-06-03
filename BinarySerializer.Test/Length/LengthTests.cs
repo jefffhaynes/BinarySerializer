@@ -255,7 +255,7 @@ namespace BinarySerialization.Test.Length
         public void OneWayLengthBindingTest()
         {
             var expected = new OneWayLengthBindingClass {Value = "hi"};
-            var actual = Roundtrip(expected, new byte[] {2, (byte) 'h', (byte) 'i'});
+            Roundtrip(expected, new byte[] {0, (byte) 'h', (byte) 'i'});
         }
 
         private void PrimitiveNullArrayLengthTest<TValue>()
