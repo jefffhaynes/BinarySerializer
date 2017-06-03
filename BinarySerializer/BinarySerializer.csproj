@@ -4,14 +4,14 @@
     <Description>A declarative serialization framework for controlling formatting of data at the byte level.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Fixes bug with mixed binding modes in subtypes</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixes bug with padded lists</PackageReleaseNotes>
     <PackageProjectUrl>http://binaryserializer.net</PackageProjectUrl>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>http://binaryserializer.net</RepositoryUrl>
-    <AssemblyVersion>7.5.2.0</AssemblyVersion>
-    <FileVersion>7.5.2.0</FileVersion>
-    <Version>7.5.2</Version>
+    <AssemblyVersion>7.5.3.0</AssemblyVersion>
+    <FileVersion>7.5.3.0</FileVersion>
+    <Version>7.5.3</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />
