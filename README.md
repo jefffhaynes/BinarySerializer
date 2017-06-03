@@ -510,11 +510,21 @@ It is also possible to specify different subtypes for target and source bindings
 
 ```c#
 [Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvt))]
-[Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvtPoll), BindingMode = BindingMode.OneWay)]
+[Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvtPoll), BindingMode = BindingMode.OneWayToSource)]
 public PacketPayload Payload { get; set; }
 ```
 
-The NavPvt message is only ever used from device to host whereas the NavPvtPoll message is used from the host to device.  Both subtypes have an identifier of MessageId.NAV_PVT, which would normally cause abmiguity during deserialization.  However, because the NavPvtPoll subtype binding specifies OneWay, only the NavPvt subtype is available during deserialization.
+The NavPvt message is only ever used from device to host whereas the NavPvtPoll message is used from the host to device.  Both subtypes have an identifier of MessageId.NAV_PVT, which would normally cause abmiguity during deserialization.  However, because the NavPvtPoll subtype binding specifies OneWayToSource, only the NavPvt subtype is available during deserialization.
+
+Similarly, types can be reused during deserialization if the same subtypes will never be used during serialization.  This is an example taken from the XBee control protocol:
+
+```c#
+[Subtype("AtCommand", "D0", typeof(InputOutputResponseData), BindingMode = BindingMode.OneWay)]
+[Subtype("AtCommand", "D1", typeof(InputOutputResponseData), BindingMode = BindingMode.OneWay)]
+public AtCommandResponseFrameData Data { get; set; }
+```
+
+In this case note that the same type is specified for both subtypes.  If this object was used during serialization, it would cause problems since there is no way to know if 'D0' or 'D1' should be used.  However, since this object is only used during deserialization we can declare these bindings as OneWay and avoid any confusion.
 
 ### SubtypeFactoryAttribute ###
 

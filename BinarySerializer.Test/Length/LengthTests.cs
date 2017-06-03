@@ -251,6 +251,13 @@ namespace BinarySerialization.Test.Length
             PrimitiveNullArrayLengthTest<ushort>();
         }
 
+        [Fact]
+        public void OneWayLengthBindingTest()
+        {
+            var expected = new OneWayLengthBindingClass {Value = "hi"};
+            var actual = Roundtrip(expected, new byte[] {2, (byte) 'h', (byte) 'i'});
+        }
+
         private void PrimitiveNullArrayLengthTest<TValue>()
         {
             var expected = new PrimitiveArrayClass<TValue>();
