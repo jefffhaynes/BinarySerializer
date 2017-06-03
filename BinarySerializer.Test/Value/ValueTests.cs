@@ -2,24 +2,24 @@
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Value
 {
-    [TestClass]
+    
     public class ValueTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void FieldValueTest()
         {
             var expected = new FieldValueClass {Value = 33};
             var actual = Roundtrip(expected);
 
-            Assert.AreEqual(expected.Value, actual.Value);
-            Assert.AreEqual(actual.Value, actual.ValueCopy);
+            Assert.Equal(expected.Value, actual.Value);
+            Assert.Equal(actual.Value, actual.ValueCopy);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc16Test()
         {
             var expected = new FieldCrc16Class
@@ -44,10 +44,10 @@ namespace BinarySerialization.Test.Value
             };
 
             var actual = Roundtrip(expected, expectedData);
-            Assert.AreEqual(0xcd79, actual.Crc);
+            Assert.Equal(0xcd79, actual.Crc);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc32Test()
         {
             var expected = new FieldCrc32Class
@@ -72,10 +72,10 @@ namespace BinarySerialization.Test.Value
             };
 
             var actual = Roundtrip(expected, expectedData);
-            Assert.AreEqual(0xF8344DDF, actual.Crc);
+            Assert.Equal(0xF8344DDF, actual.Crc);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc16StreamTest()
         {
             var expected = new StreamValueClass
@@ -84,10 +84,10 @@ namespace BinarySerialization.Test.Value
             };
 
             var actual = Roundtrip(expected);
-            Assert.AreEqual(0xdb9, actual.Crc);
+            Assert.Equal(0xdb9, actual.Crc);
         }
 
-        [TestMethod]
+        [Fact]
         public void FieldValueExtensionTest()
         {
             var expected = new FieldSha256Class
@@ -100,17 +100,16 @@ namespace BinarySerialization.Test.Value
             var expectedHash =
                 SHA256.Create().ComputeHash(new MemoryStream(System.Text.Encoding.ASCII.GetBytes(expected.Value)));
 
-            Assert.IsTrue(expectedHash.SequenceEqual(actual.Hash));
+            Assert.True(expectedHash.SequenceEqual(actual.Hash));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void EasyMistakeCrcTest()
         {
-            Roundtrip(new EasyMistakeCrcClass());
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(new EasyMistakeCrcClass()));
         }
 
-        [TestMethod]
+        [Fact]
         public void ChecksumTest()
         {
             var expected = new FieldChecksumClass
@@ -120,9 +119,9 @@ namespace BinarySerialization.Test.Value
 
             var actual = Roundtrip(expected);
 
-            Assert.AreEqual(0xEC, actual.Checksum);
-            Assert.AreEqual(0x14, actual.ModuloChecksum);
-            Assert.AreEqual(0x62, actual.XorChecksum);
+            Assert.Equal(0xEC, actual.Checksum);
+            Assert.Equal(0x14, actual.ModuloChecksum);
+            Assert.Equal(0x62, actual.XorChecksum);
         }
     }
 }

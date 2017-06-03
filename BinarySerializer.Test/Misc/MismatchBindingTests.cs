@@ -1,17 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Misc
 {
-    [TestClass]
+    
     public class MismatchBindingTests : TestBase
     {
-        [TestMethod]
-        [ExpectedException(typeof (InvalidOperationException))]
+        [Fact]
         public void MismatchBindingTest()
         {
             var expected = new MismatchBindingClass {Name1 = "Alice", Name2 = "Bob"};
-            Roundtrip(expected);
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
         }
     }
 }

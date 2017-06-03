@@ -1,24 +1,24 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Offset
 {
-    [TestClass]
+    
     public class OffsetTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void ConstOffsetTest()
         {
             var expected = new ConstOffsetClass {Field = "FieldValue"};
             var actual = Roundtrip(expected, 100 + expected.Field.Length + 1);
-            Assert.AreEqual(expected.Field, actual.Field);
+            Assert.Equal(expected.Field, actual.Field);
         }
 
-        [TestMethod]
+        [Fact]
         public void BoundOffsetTest()
         {
             var expected = new BoundOffsetClass {FieldOffsetField = 1000, Field = "FieldValue"};
             var actual = Roundtrip(expected, expected.FieldOffsetField + expected.Field.Length + 1);
-            Assert.AreEqual(expected.Field, actual.Field);
+            Assert.Equal(expected.Field, actual.Field);
         }
     }
 }

@@ -8,13 +8,11 @@ namespace BinarySerialization.Graph.TypeGraph
     {
         public ArrayTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
-            Construct();
         }
 
         public ArrayTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
             : base(parent, parentType, memberInfo)
         {
-            Construct();
         }
 
         public override ValueNode CreateSerializerOverride(ValueNode parent)
@@ -29,11 +27,6 @@ namespace BinarySerialization.Graph.TypeGraph
         protected override Type GetChildType()
         {
             return Type.GetElementType();
-        }
-
-        private void Construct()
-        {
-            CompiledChildConstructor = CreateCompiledConstructor(GetChildType());
         }
     }
 }

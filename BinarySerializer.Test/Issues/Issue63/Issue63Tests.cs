@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue63
 {
-    [TestClass]
+    
     public class Issue63Tests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void PaddingTest()
         {
             var testingClass = new TestingClass()

@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Subtype
 {
-    [TestClass]
+    
     public class SubtypeFactoryTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void SubtypeFactoryTest()
         {
             var expected = new SubtypeFactoryClass
@@ -14,11 +14,11 @@ namespace BinarySerialization.Test.Subtype
             };
 
             var actual = Roundtrip(expected);
-            Assert.AreEqual(2, actual.Key);
-            Assert.AreEqual(expected.Value.GetType(), actual.Value.GetType());
+            Assert.Equal(2, actual.Key);
+            Assert.Equal(expected.Value.GetType(), actual.Value.GetType());
         }
 
-        [TestMethod]
+        [Fact]
         public void SubtypeMixedTest()
         {
             var expected = new SubtypeMixedClass
@@ -27,11 +27,11 @@ namespace BinarySerialization.Test.Subtype
             };
 
             var actual = Roundtrip(expected);
-            Assert.AreEqual(2, actual.Key);
-            Assert.AreEqual(expected.Value.GetType(), actual.Value.GetType());
+            Assert.Equal(2, actual.Key);
+            Assert.Equal(expected.Value.GetType(), actual.Value.GetType());
         }
 
-        [TestMethod]
+        [Fact]
         public void SubtypeMixedTest2()
         {
             var expected = new SubtypeMixedClass
@@ -40,24 +40,24 @@ namespace BinarySerialization.Test.Subtype
             };
 
             var actual = Roundtrip(expected);
-            Assert.AreEqual(3, actual.Key);
-            Assert.AreEqual(expected.Value.GetType(), actual.Value.GetType());
+            Assert.Equal(3, actual.Key);
+            Assert.Equal(expected.Value.GetType(), actual.Value.GetType());
         }
 
-        [TestMethod]
+        [Fact]
         public void SubtypeFactoryWithDefaultTest()
         {
             var data = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5 };
             var actual = Deserialize<SubtypeFactoryWithDefaultClass>(data);
-            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
+            Assert.Equal(typeof(DefaultSubtypeClass), actual.Value.GetType());
         }
 
-        [TestMethod]
+        [Fact]
         public void SubtypeMixedWithDefaultTest()
         {
             var data = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5 };
             var actual = Deserialize<SubtypeMixedWithDefaultClass>(data);
-            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
+            Assert.Equal(typeof(DefaultSubtypeClass), actual.Value.GetType());
         }
     }
 }

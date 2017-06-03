@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Misc
 {
-    [TestClass]
+    
     public class InvalidButIgnoredTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void InvalidButIgnoredTest()
         {
             Roundtrip(new InvalidButIgnoredContainerClass

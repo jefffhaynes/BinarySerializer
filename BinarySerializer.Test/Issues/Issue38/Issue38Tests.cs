@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue38
 {
-    [TestClass]
+    
     public class Issue38Tests : TestBase
     {
-        //[TestMethod]
+        //[Fact]
         public void ConstructOnceTest()
         {
             var expected = new ConstructOnceClass();
             Roundtrip(expected);
 
-            Assert.AreEqual(1, ConstructOnceClass.Count);
+            Assert.Equal(1, ConstructOnceClass.Count);
         }
 
-        //[TestMethod]
+        //[Fact]
         public void DeserializeMessageTest()
         {
             var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Little};
@@ -37,7 +37,7 @@ namespace BinarySerialization.Test.Issues.Issue38
             using (var stream = new MemoryStream(inBytes))
             {
                 var actualObj = serializer.Deserialize<MachineState1>(stream);
-                Assert.AreEqual(null, actualObj, "Deserialization done with invalid Stream.");
+                Assert.Equal(null, actualObj);//, "Deserialization done with invalid Stream.");
             }
         }
     }

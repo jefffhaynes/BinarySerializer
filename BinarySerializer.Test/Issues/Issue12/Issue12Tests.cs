@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue12
 {
-    [TestClass]
+    
     public class Issue12Tests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void Roundtrip12()
         {
             var expected = new ChunkContainer

@@ -35,7 +35,9 @@ namespace BinarySerialization.Graph.TypeGraph
         private void Construct()
         {
             CompiledConstructor = CreateCompiledConstructor();
+
             ChildType = GetChildType();
+            CompiledChildConstructor = CreateCompiledConstructor(ChildType);
 
             object terminationValue;
             TerminationChild = GetTerminationChild(out terminationValue);

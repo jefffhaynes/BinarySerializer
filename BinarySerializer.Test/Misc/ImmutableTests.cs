@@ -1,67 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Misc
 {
-    [TestClass]
+    
     public class ImmutableTests : TestBase
     {
-        [TestMethod]
-#if TESTASYNC
-        [ExpectedException(typeof(AggregateException))]
-#else
-        [ExpectedException(typeof (InvalidOperationException))]
-#endif
+        [Fact]
+
         public void PrivateSetterTest()
         {
             var expected = new PrivateSetterClass();
-            Roundtrip(expected);
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+#else
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+#endif
         }
 
-        [TestMethod]
+        [Fact]
         public void ImmutableTest()
         {
             var expected = new ImmutableClass(3, 4);
             var actual = Roundtrip(expected);
-            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.Equal(expected.Value, actual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void ImmutableTest2()
         {
             var expected = new ImmutableClass2(3, 4);
             var actual = Roundtrip(expected);
-            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.Equal(expected.Value, actual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void ImmutableWithNullableParametersTest()
         {
             var expected = new ImmutableClass3(33);
             var actual = Roundtrip(expected);
-            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.Equal(expected.Value, actual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void ImmutableWithNullableParametersAndIgnoreTest()
         {
             var expected = new ImmutableClass4(4, 5);
             var actual = Roundtrip(expected);
-            Assert.AreEqual(expected.Header, actual.Header);
-            Assert.IsNull(actual.ResponseId);
+            Assert.Equal(expected.Header, actual.Header);
+            Assert.Null(actual.ResponseId);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof (InvalidOperationException))]
+        [Fact]
         public void ImmutableNoPublicConstructorTest()
         {
             var stream = new MemoryStream(new[] {(byte) 0x1});
-            Serializer.Deserialize<ImmutableNoPublicConstructorClass>(stream);
+            Assert.Throws<InvalidOperationException>(() => Serializer.Deserialize<ImmutableNoPublicConstructorClass>(stream));
         }
 
-        [TestMethod]
+        [Fact]
         public void ImmutableItemsList()
         {
             var expected = new List<ImmutableClass>
@@ -72,10 +71,10 @@ namespace BinarySerialization.Test.Misc
 
             var actual = Roundtrip(expected);
 
-            Assert.AreEqual(expected[0].Value, actual[0].Value);
-            Assert.AreEqual(expected[0].Value2, actual[0].Value2);
-            Assert.AreEqual(expected[1].Value, actual[1].Value);
-            Assert.AreEqual(expected[1].Value2, actual[1].Value2);
+            Assert.Equal(expected[0].Value, actual[0].Value);
+            Assert.Equal(expected[0].Value2, actual[0].Value2);
+            Assert.Equal(expected[1].Value, actual[1].Value);
+            Assert.Equal(expected[1].Value2, actual[1].Value2);
         }
     }
 }

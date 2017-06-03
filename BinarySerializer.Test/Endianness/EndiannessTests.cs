@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Endianness
 {
-    [TestClass]
+    
     public class EndiannessTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void SerializerEndiannessTest()
         {
             var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Big};
@@ -18,10 +18,10 @@ namespace BinarySerialization.Test.Endianness
 
             var data = stream.ToArray();
 
-            Assert.AreEqual(0x1, data[1]);
+            Assert.Equal(0x1, data[1]);
         }
 
-        [TestMethod]
+        [Fact]
         public void FieldEndiannessBeTest()
         {
             var stream = new MemoryStream();
@@ -36,10 +36,10 @@ namespace BinarySerialization.Test.Endianness
 
             var actual = RoundtripReverse<FieldEndiannessClass>(data);
 
-            Assert.AreEqual(1, actual.Value);
+            Assert.Equal(1, actual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void FieldEndiannessLeTest()
         {
             var stream = new MemoryStream();
@@ -54,18 +54,18 @@ namespace BinarySerialization.Test.Endianness
 
             var actual = RoundtripReverse<FieldEndiannessClass>(data);
 
-            Assert.AreEqual(1, actual.Value);
+            Assert.Equal(1, actual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void FieldEndiannessConstTest()
         {
             var expected = new FieldEndiannessConstClass {Value = 1};
             var actual = Roundtrip(expected, new byte[] {0x0, 0x0, 0x0, 0x1});
-            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.Equal(expected.Value, actual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void DeferredFieldEndiannessBeTest()
         {
             var stream = new MemoryStream();
@@ -80,14 +80,13 @@ namespace BinarySerialization.Test.Endianness
 
             var actual = RoundtripReverse<DeferredEndiannessEvaluationClass>(data);
 
-            Assert.AreEqual(1, actual.Value);
+            Assert.Equal(1, actual.Value);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void InvalidFieldEndiannessConverterTest()
         {
-            Roundtrip(typeof (FieldEndiannessInvalidConverterClass));
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(typeof(FieldEndiannessInvalidConverterClass)));
         }
     }
 }

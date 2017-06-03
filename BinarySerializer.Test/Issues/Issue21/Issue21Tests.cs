@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue21
 {
-    [TestClass]
+    
     public class Issue21Tests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void TestIssue21()
         {
             Roundtrip(new FailingClass());

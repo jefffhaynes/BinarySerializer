@@ -1,12 +1,12 @@
 ﻿using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Context
 {
-    [TestClass]
+    
     public class ContextTests
     {
-        [TestMethod]
+        [Fact]
         public void ContextTest()
         {
             var contextClass = new ContextClass();
@@ -22,7 +22,7 @@ namespace BinarySerialization.Test.Context
             stream = new MemoryStream();
             serializer.Serialize(stream, contextClass, context);
 
-            Assert.AreEqual(sizeof (int), stream.Length);
+            Assert.Equal(sizeof (int), stream.Length);
         }
     }
 }

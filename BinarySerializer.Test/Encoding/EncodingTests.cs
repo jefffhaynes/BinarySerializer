@@ -1,29 +1,33 @@
 ﻿using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Encoding
 {
-    [TestClass]
+    
     public class EncodingTests : TestBase
     {
-        [TestInitialize]
-        public void Initialize()
+        //[TestInitialize]
+        //public void Initialize()
+        //{
+        //    System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        //}
+        public EncodingTests()
         {
-            System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 
-        [TestMethod]
+        [Fact]
         public void EncodingTest()
         {
             var expected = new EncodingClass {Name = "السلام عليكم" };
             var expectedData = System.Text.Encoding.GetEncoding("windows-1256").GetBytes(expected.Name + "\0");
             var actual = Roundtrip(expected, expectedData);
 
-            Assert.AreEqual(expected.Name, actual.Name);
+            Assert.Equal(expected.Name, actual.Name);
         }
 
-        [TestMethod]
+        [Fact]
         public void FieldEncodingTest()
         {
             var expected = new FieldEncodingClass {Value = "السلام عليكم", Encoding = "windows-1256"};
@@ -34,18 +38,18 @@ namespace BinarySerialization.Test.Encoding
 
             var actual = Roundtrip(expected, expectedData);
 
-            Assert.AreEqual(expected.Encoding, actual.Encoding);
-            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.Equal(expected.Encoding, actual.Encoding);
+            Assert.Equal(expected.Value, actual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void ConstFieldEncodingTest()
         {
             var expected = new ConstEncodingClass {Value = "السلام عليكم"};
             var expectedData = System.Text.Encoding.GetEncoding("windows-1256").GetBytes(expected.Value + "\0");
             var actual = Roundtrip(expected, expectedData);
 
-            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.Equal(expected.Value, actual.Value);
         }
     }
 }

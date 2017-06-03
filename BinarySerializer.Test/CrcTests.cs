@@ -1,52 +1,52 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test
 {
-    [TestClass]
+    
     public class CrcTests
     {
         private static readonly ushort Crc16Polynomial = 0x1021;
         private static readonly uint Crc32Polynomial = 0xedb88320;
 
-        [TestMethod]
+        [Fact]
         public void Crc16Test()
         {
             var crc = new Crc16(Crc16Polynomial, 0xffff);
             TestCrc16(crc, "hello world", 0xefeb);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc16RemainderReflectedTest()
         {
             var crc = new Crc16(Crc16Polynomial, 0xffff) {IsRemainderReflected = true};
             TestCrc16(crc, "hello world", 0xd7f7);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc16DataReflectedTest()
         {
             var crc = new Crc16(Crc16Polynomial, 0xffff) {IsDataReflected = true};
             TestCrc16(crc, "hello world", 0x9f8a);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc16DataReflectedRemainderReflectedTest()
         {
             var crc = new Crc16(Crc16Polynomial, 0xffff) { IsDataReflected = true, IsRemainderReflected = true };
             TestCrc16(crc, "hello world", 0x51f9);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc32Test()
         {
             var crc = new Crc32(Crc32Polynomial, 0xffffffff);
             var messageData = System.Text.Encoding.ASCII.GetBytes("hello world");
             crc.Compute(messageData, 0, messageData.Length);
             var final = crc.ComputeFinal();
-            Assert.AreEqual(0xfd11ac49, final);
+            Assert.Equal(0xfd11ac49, final);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc32MultipleCallsTest()
         {
             var crc = new Crc32(Crc32Polynomial, 0xffffffff);
@@ -57,39 +57,39 @@ namespace BinarySerialization.Test
             messageData = System.Text.Encoding.ASCII.GetBytes("world");
             crc.Compute(messageData, 0, messageData.Length);
             var final = crc.ComputeFinal();
-            Assert.AreEqual(0xfd11ac49, final);
+            Assert.Equal(0xfd11ac49, final);
             final = crc.ComputeFinal();
-            Assert.AreEqual(0xfd11ac49, final);
+            Assert.Equal(0xfd11ac49, final);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc32NoDataReflectTest()
         {
             var crc = new Crc32(Crc32Polynomial, 0xffffffff) {IsDataReflected = false};
             var messageData = System.Text.Encoding.ASCII.GetBytes("hello world");
             crc.Compute(messageData, 0, messageData.Length);
             var final = crc.ComputeFinal();
-            Assert.AreEqual(0xf8485336, final);
+            Assert.Equal(0xf8485336, final);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc32NoRemainderReflectTest()
         {
             var crc = new Crc32(Crc32Polynomial, 0xffffffff) { IsRemainderReflected = false };
             var messageData = System.Text.Encoding.ASCII.GetBytes("hello world");
             crc.Compute(messageData, 0, messageData.Length);
             var final = crc.ComputeFinal();
-            Assert.AreEqual(0x923588bf, final);
+            Assert.Equal(0x923588bf, final);
         }
 
-        [TestMethod]
+        [Fact]
         public void Crc32NoDataReflectNoRemainderReflectTest()
         {
             var crc = new Crc32(Crc32Polynomial, 0xffffffff) { IsDataReflected = false, IsRemainderReflected = false };
             var messageData = System.Text.Encoding.ASCII.GetBytes("hello world");
             crc.Compute(messageData, 0, messageData.Length);
             var final = crc.ComputeFinal();
-            Assert.AreEqual((uint)0x6cca121f, final);
+            Assert.Equal((uint)0x6cca121f, final);
         }
 
         private void TestCrc16(Crc16 crc, string value, ushort expected)
@@ -97,7 +97,7 @@ namespace BinarySerialization.Test
             var messageData = System.Text.Encoding.ASCII.GetBytes(value);
             crc.Compute(messageData, 0, messageData.Length);
             var final = crc.ComputeFinal();
-            Assert.AreEqual(expected, final);
+            Assert.Equal(expected, final);
         }
     }
 }

@@ -1,31 +1,31 @@
 ﻿using System;
 using System.IO;
 using BinarySerializer.Test.Custom;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Custom
 {
-    [TestClass]
+    
     public class CustomTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void TestVaruint()
         {
             var expected = new Varuint {Value = ushort.MaxValue};
             var actual = Roundtrip(expected, 3);
 
-            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.Equal(expected.Value, actual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestCustomDateTime()
         {
             var expected = new CustomDateTime {Value = new DateTime(1776, 7, 4)};
             var actual = Roundtrip(expected);
-            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.Equal(expected.Value, actual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void CustomWithContextTest()
         {
             var expected = new CustomWithContextContainerClass {Value = new CustomWithContextClass()};
@@ -38,16 +38,16 @@ namespace BinarySerialization.Test.Custom
             serializer.Deserialize<CustomWithContextContainerClass>(stream);
         }
 
-        [TestMethod]
+        [Fact]
         public void CustomSourceBindingTest()
         {
             var expected = new CustomSourceBinding {NameLength = new Varuint(), Name = "Alice"};
             var nameLength = System.Text.Encoding.UTF8.GetByteCount(expected.Name);
             var actual = Roundtrip(expected, nameLength + 1);
-            Assert.AreEqual(expected.Name, actual.Name);
+            Assert.Equal(expected.Name, actual.Name);
         }
 
-        [TestMethod]
+        [Fact]
         public void CustomSourceBindingTest2()
         {
             var expected = new CustomSourceBinding
@@ -58,10 +58,10 @@ namespace BinarySerialization.Test.Custom
             };
             var nameLength = System.Text.Encoding.UTF8.GetByteCount(expected.Name);
             var actual = Roundtrip(expected, nameLength + 2);
-            Assert.AreEqual(expected.Name, actual.Name);
+            Assert.Equal(expected.Name, actual.Name);
         }
 
-        [TestMethod]
+        [Fact]
         public void CustomSubtypeTest()
         {
             var expected = new CustomSubtypeContainerClass
@@ -77,10 +77,10 @@ namespace BinarySerialization.Test.Custom
             var innerExpected = (CustomSubtypeCustomClass) expected.Inner;
             var innerActual = (CustomSubtypeCustomClass) actual.Inner;
 
-            Assert.AreEqual(innerExpected.Value, innerActual.Value);
+            Assert.Equal(innerExpected.Value, innerActual.Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void CustomAttributeTest()
         {
             var expected = new CustomWithCustomAttributesContainerClass

@@ -1,20 +1,18 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Misc
 {
-    [TestClass]
     public class BindingTests : TestBase
     {
-        [TestMethod]
-#if TESTASYNC
-        [ExpectedException(typeof(AggregateException))]
-#else
-        [ExpectedException(typeof (InvalidOperationException))]
-#endif
+        [Fact]
         public void InvalidForwardBindingTest()
         {
-            Roundtrip(new InvalidForwardBindingClass());
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(new InvalidForwardBindingClass()));
+#else
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(new InvalidForwardBindingClass());
+#endif
         }
     }
 }

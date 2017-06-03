@@ -1,12 +1,12 @@
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue55
 {
-    [TestClass]
+    
     public class Issue55Tests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void Test()
         {
 

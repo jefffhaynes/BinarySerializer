@@ -1,12 +1,12 @@
 ﻿using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Misc
 {
-    [TestClass]
+    
     public class LargeArrayTests
     {
-        [TestMethod]
+        [Fact]
         public void LargeArrayTest()
         {
             var ser = new BinarySerializer();

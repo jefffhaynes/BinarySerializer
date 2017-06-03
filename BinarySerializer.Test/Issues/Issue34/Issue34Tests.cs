@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue34
 {
-    [TestClass]
+    
     public class Issue34Tests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void Roundtrip()
         {
             var expected = new S7String {Value = new InternalS7String("hello")};

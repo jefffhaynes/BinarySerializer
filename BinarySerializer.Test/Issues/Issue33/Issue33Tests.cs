@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue33
 {
-    [TestClass]
+    
     public class Issue33Tests
     {
-        [TestMethod]
+        [Fact]
         public void DeserializeMessage()
         {
             var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Little};
@@ -31,7 +31,7 @@ namespace BinarySerialization.Test.Issues.Issue33
                 serializer.Serialize(stream, expected);
             }
 
-            //Assert.AreEqual(inBytes, actualBytes, "Objects are not equal");
+            //Assert.Equal(inBytes, actualBytes, "Objects are not equal");
 
             Bin3Data actual;
             using (var stream = new MemoryStream(inBytes))
@@ -39,10 +39,10 @@ namespace BinarySerialization.Test.Issues.Issue33
                 actual = serializer.Deserialize<Bin3Data>(stream);
             }
 
-            Assert.AreEqual(expected.BinType, actual.BinType);
-            Assert.AreEqual(expected.Ident, actual.Ident);
-            Assert.AreEqual(expected.Occupancy, actual.Occupancy);
-            Assert.AreEqual(expected.OccupancyString, actual.OccupancyString);
+            Assert.Equal(expected.BinType, actual.BinType);
+            Assert.Equal(expected.Ident, actual.Ident);
+            Assert.Equal(expected.Occupancy, actual.Occupancy);
+            Assert.Equal(expected.OccupancyString, actual.OccupancyString);
         }
     }
 }
