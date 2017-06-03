@@ -5,7 +5,6 @@ using Xunit;
 
 namespace BinarySerialization.Test.Subtype
 {
-    
     public class SubtypeTests : TestBase
     {
         [Fact]

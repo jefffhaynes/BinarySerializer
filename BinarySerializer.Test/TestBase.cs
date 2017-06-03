@@ -94,10 +94,10 @@ namespace BinarySerialization.Test
                 var e = expected[i];
                 var a = actual[i];
 
-                Assert.Equal(e, a);//, $"Value at position {i} does not match expected value.");
+                Assert.True(e == a, $"Value at position {i} does not match expected value.  Expected {e}, got {a}");
             }
 
-            Assert.Equal(expected.Length, actual.Length);//, "Sequence lengths do not match");
+            Assert.True(expected.Length == actual.Length, "Sequence lengths do not match");
         }
 
         protected T RoundtripReverse<T>(byte[] data)
