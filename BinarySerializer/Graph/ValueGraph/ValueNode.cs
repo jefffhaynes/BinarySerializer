@@ -635,7 +635,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
             }
 
-            if (TypeNode.FieldValueAttributes != null)
+            if (TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Any())
             {
                 stream.Flush();
             }

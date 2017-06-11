@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using Xunit;
 
 namespace BinarySerialization.Test.Misc
 {
-    public class CountTests : TestBase
+    public class MiscTests : TestBase
     {
         [Fact]
-        public void ThrowIfMemberImplementsIDictionary()
+        public void DontFlushTooMuchTest()
         {
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(new DictionaryMemberClass()));
-        }
-
-        [Fact]
-        public void ThrowIfImplementsIDictionary()
-        {
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(new Dictionary<string, string>()));
+            var serializer = new BinarySerializer();
+            var expected = new DontFlushTooMuchTestClass();
+            var stream = new UnflushableStream();
+            
+            serializer.Serialize(stream, expected);
         }
     }
 }
