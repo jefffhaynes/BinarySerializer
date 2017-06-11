@@ -9,7 +9,7 @@ namespace BinarySerialization.Test.Misc
         public void DontFlushTooMuchTest()
         {
             var serializer = new BinarySerializer();
-            var expected = new DontFlushTooMuchTestClass();
+            var expected = new DontFlushTooMuchClass();
             var stream = new UnflushableStream();
             
             serializer.Serialize(stream, expected);
