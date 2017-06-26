@@ -13,8 +13,9 @@
         /// <param name="value">The value of the member.</param>
         /// <param name="context">The current serialization context.</param>
         /// <param name="offset">The current offset in the stream relative to the start of the overall operation.</param>
+        /// <param name="localOffset">The current ojbect-local offset in the stream.</param>
         public MemberSerializedEventArgs(string memberName, object value, BinarySerializationContext context,
-            long offset) : base(memberName, context, offset)
+            long offset, long localOffset) : base(memberName, context, offset, localOffset)
         {
             Value = value;
         }

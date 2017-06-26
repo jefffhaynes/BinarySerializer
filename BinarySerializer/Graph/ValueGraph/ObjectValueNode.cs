@@ -326,7 +326,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
             {
                 eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, lazyContext,
-                    stream.GlobalPosition);
+                    stream.GlobalPosition, stream.RelativePosition);
             }
         }
 
@@ -337,7 +337,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
             {
                 eventShuttle.OnMemberSerializing(this, child.Name, lazyContext,
-                    stream.GlobalPosition);
+                    stream.GlobalPosition, stream.RelativePosition);
             }
         }
 
@@ -459,7 +459,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
             {
                 eventShuttle.OnMemberDeserialized(this, child.Name, child.Value, lazyContext,
-                    stream.GlobalPosition);
+                    stream.GlobalPosition, stream.RelativePosition);
             }
         }
 
@@ -470,7 +470,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (eventShuttle != null && eventShuttle.HasDeserializationSubscribers)
             {
                 eventShuttle.OnMemberDeserializing(this, child.Name, lazyContext,
-                    stream.GlobalPosition);
+                    stream.GlobalPosition, stream.RelativePosition);
             }
         }
     }

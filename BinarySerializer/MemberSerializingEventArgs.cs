@@ -14,11 +14,13 @@ namespace BinarySerialization
         /// <param name="memberName">The name of the member.</param>
         /// <param name="context">The current serialization context.</param>
         /// <param name="offset">The current offset in the stream relative to the start of the overall operation.</param>
-        public MemberSerializingEventArgs(string memberName, BinarySerializationContext context, long offset)
+        /// <param name="localOffset">The current ojbect-local offset in the stream.</param>
+        public MemberSerializingEventArgs(string memberName, BinarySerializationContext context, long offset, long localOffset)
         {
             MemberName = memberName;
             Context = context;
             Offset = offset;
+            LocalOffset = localOffset;
         }
 
         /// <summary>
@@ -35,5 +37,10 @@ namespace BinarySerialization
         ///     The global location in the stream relative to the initial operation.
         /// </summary>
         public long Offset { get; }
+
+        /// <summary>
+        /// The object-local location in the stream relative to the parent object.
+        /// </summary>
+        public long LocalOffset { get; }
     }
 }
