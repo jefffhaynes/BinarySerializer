@@ -597,26 +597,33 @@ public class FrameFactory : ISubtypeFactory
 Additionally, the SubtypeDefault attribute may be used to specify a fallback subtype to be used in the event that an unknown indicator is encountered during deserialization.  During serialization the default subtype may be included without a corresponding subtype binding.  In this case the source must be set correctly prior to serialization.
 
 ```c#
-public class ChunkContainer
+public class ChunkPayload
 {
     [FieldOrder(0)]
-    [SerializeAs(Endianness = Endianness.Big)]
-    public int Length { get; set; }
-
-    [FieldOrder(1)]
     [FieldLength(4)]
     public string ChunkType { get; set; }
 
-    [FieldOrder(2)]
+    [FieldOrder(1)]
     [FieldLength("Length")]
     [Subtype("ChunkType", "IHDR", typeof(ImageHeaderChunk))]
     [Subtype("ChunkType", "PLTE", typeof(PaletteChunk))]
     [Subtype("ChunkType", "IDAT", typeof(ImageDataChunk))]
     // etc
     public Chunk Chunk { get; set; }
+}
+public class ChunkContainer
+{
+    [FieldOrder(0)]
+    [FieldEndianness(Endianness.Big)]
+    public int Length { get; set; }
 
-    [FieldOrder(3)]
-    [SerializeAs(Endianness = Endianness.Big)]
+	[FieldOrder(1)]
+	[FieldCrc32("Crc")]
+    [FieldEndianness(Endianness.Big)]
+	public ChunkPayload Payload { get; set; }
+
+    [FieldOrder(2)]
+    [FieldEndianness(Endianness.Big)]
     public int Crc { get; set; }
 }
 ```
