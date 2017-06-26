@@ -597,42 +597,52 @@ public class FrameFactory : ISubtypeFactory
 Additionally, the SubtypeDefault attribute may be used to specify a fallback subtype to be used in the event that an unknown indicator is encountered during deserialization.  During serialization the default subtype may be included without a corresponding subtype binding.  In this case the source must be set correctly prior to serialization.
 
 ```c#
-public class ChunkPayload
+public class PngChunkPayload
 {
     [FieldOrder(0)]
     [FieldLength(4)]
     public string ChunkType { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("Length")]
-    [Subtype("ChunkType", "IHDR", typeof(ImageHeaderChunk))]
-    [Subtype("ChunkType", "PLTE", typeof(PaletteChunk))]
-    [Subtype("ChunkType", "IDAT", typeof(ImageDataChunk))]
-    // etc
-    public Chunk Chunk { get; set; }
+    [FieldLength("Length", RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
+    [Subtype("ChunkType", "IHDR", typeof(PngImageHeaderChunk))]
+    [Subtype("ChunkType", "PLTE", typeof(PngPaletteChunk))]
+    [Subtype("ChunkType", "IDAT", typeof(PngImageDataChunk))]
+    [SubtypeDefault(typeof(PngUnknownChunk))]
+    public PngChunk Chunk { get; set; }
 }
-public class ChunkContainer
+```
+```c#
+public class PngChunkContainer
 {
     [FieldOrder(0)]
-    [FieldEndianness(Endianness.Big)]
+    [FieldEndianness(BinarySerialization.Endianness.Big)]
     public int Length { get; set; }
 
-	[FieldOrder(1)]
-	[FieldCrc32("Crc")]
-    [FieldEndianness(Endianness.Big)]
-	public ChunkPayload Payload { get; set; }
+    [FieldOrder(1)]
+    [FieldCrc32("Crc", Polynomial = 0x04c11db7)]
+    [FieldEndianness(BinarySerialization.Endianness.Big)]
+    public PngChunkPayload Payload { get; set; }
 
     [FieldOrder(2)]
-    [FieldEndianness(Endianness.Big)]
-    public int Crc { get; set; }
+    [FieldEndianness(BinarySerialization.Endianness.Big)]
+    public uint Crc { get; set; }
 }
 ```
 
 ```c#
-List<ChunkContainer> Chunks { get; set; }
+public class Png
+{
+    [FieldOrder(0)]
+    [FieldLength(8)]
+    public byte[] FileHeader { get; set; }
+
+    [FieldOrder(1)]
+    public List<PngChunkContainer> Chunks { get; set; }
+}
 ```
 
-Note that the Chunk field is bound to both the Length field and the ChunkType field.  If the serializer can resolve a known chunk type, it will instantiate and deserialize it.  However, if it encounters an unknown value in the ChunkType field it is still able to skip past it using the Length binding.  Also note that the CRC is included for completeness but will not be updated by the framework during serialization nor checked during deserialization.
+Note that the Chunk field is bound to both the Length field and the ChunkType field.  If the serializer can resolve a known chunk type, it will instantiate and deserialize it.  However, if it encounters an unknown value in the ChunkType field it is still able to skip past it using the Length binding.
 
 
 ### SerializeAsAttribute ###
