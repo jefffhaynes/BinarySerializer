@@ -158,6 +158,33 @@ namespace BinarySerialization.Test
         }
 
         [Fact]
+        public void DeserializeFromReadOnlyListUsingGenericsTest() {
+            var expected = new Iron();
+
+            using (var memoryStream = new MemoryStream())
+            {
+                Serializer.Serialize(memoryStream, expected);
+                var list = memoryStream.ToArray() as IReadOnlyList<byte>;
+
+                var result = Serializer.Deserialize<Iron>(list);
+                Assert.Equal(expected.Formula, result.Formula);
+            }
+        }
+
+        [Fact]
+        public void DeserializeFromReadOnlyListUsingTypeArgument() {
+            var expected = new Iron();
+
+            using (var memoryStream = new MemoryStream()) {
+                Serializer.Serialize(memoryStream, expected);
+                var list = memoryStream.ToArray() as IReadOnlyList<byte>;
+
+                var result = (Iron)Serializer.Deserialize(list, typeof(Iron));
+                Assert.Equal(expected.Formula, result.Formula);
+            }
+        }
+
+        [Fact]
         public void NonSeekableStreamSerializationTest()
         {
             var stream = new NonSeekableStream();
