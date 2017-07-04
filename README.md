@@ -9,7 +9,7 @@ BinarySerializer is not a competitor to protobuf, MessagePack, or any other numb
 
 ### Field Ordering ###
 
-In order to ensure the correct order of serialization, FieldOrder attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following <code>DerivedClass</code> will serialize in the order A, B, C.
+In order to ensure the correct order of serialization, FieldOrder attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the fields in DerivedClass will serialize in order A, B, C.
 
 ```c#
 public class BaseClass
