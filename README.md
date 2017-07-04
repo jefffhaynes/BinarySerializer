@@ -9,7 +9,7 @@ BinarySerializer is not a competitor to protobuf, MessagePack, or any other numb
 
 ### Field Ordering ###
 
-There is no completely reliable way to get member ordering from the CLR so <code>FieldOrder</code> attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following <code>DerivedClass</code> will serialize in the order A, B, C.
+In order to ensure the correct order of serialization, FieldOrder attributes are required on all classes with more than one field or property.  By convention, base classes are serialized first followed by any derived classes.  For example, the following <code>DerivedClass</code> will serialize in the order A, B, C.
 
 ```c#
 public class BaseClass
@@ -34,11 +34,11 @@ var derivedClass = new DerivedClass();
 serializer.Serialize(stream, derivedClass);
 ```
 
-Note that we're using properties and fields interchangeably as they are treated equivalently by the serializer.
+Note that properties and fields are used interchangeably as they are treated as equivalent by the serializer.
 
 ### Binding ###
 
-The most powerful feature of BinarySerializer is the ability to bind attributes to other fields in the object graph.  Using the available attributes this approach can allow for interop with complex formats and protocols.  One of the simplest examples of this is field length binding.
+The most powerful feature of BinarySerializer is the ability to bind attributes to other fields in the object graph.  Using the available attributes this approach can support complex formats and protocols.  One of the simplest examples of binding is field length binding.
 
 ```c#
 public class Person
