@@ -29,7 +29,7 @@ namespace BinarySerializer.Performance
             DoBS(beer, 100000);
             var task = DoBSAsync(beer, 100000);
             task.Wait();
-            //DoBSParallel(beer, 100000);
+            DoBSParallel(beer, 100000);
             //DoBF(beer, 100000);
             Console.ReadKey();
         }
