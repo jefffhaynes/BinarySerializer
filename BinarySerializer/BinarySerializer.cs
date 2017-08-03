@@ -39,7 +39,7 @@ namespace BinarySerialization
     ///     <seealso cref="ItemSerializeUntilAttribute" />
     ///     <seealso cref="IBinarySerializable" />
     /// </summary>
-    public class BinarySerializer
+    public class BinarySerializer : IBinarySerializer
     {
         private const Endianness DefaultEndianness = Endianness.Little;
         private static readonly Encoding DefaultEncoding = Encoding.UTF8;
