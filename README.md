@@ -664,7 +664,7 @@ public enum Waypoints
 
 ### SerializeWhenAttribute ###
 
-The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  If multiple SerializeWhen attributes are specified they will be or'd together.
+The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  If multiple SerializeWhen attributes are specified only one must be satisfied for the field to be serialized or deserialized.
 
 ```c#
 [SerializeWhen("Version", HardwareVersion.XBeeSeries1)]
@@ -678,7 +678,7 @@ public ReceivedSignalStrengthIndicator RSSI { get; set; }
 
 ### SerializeWhenNotAttribute ###
 
-Identitcal to the SerializeWhen attribute for negative conditions. 
+Identitcal to the SerializeWhen attribute for negative conditions except that if multiple attributes are specified, only one must be satisified to prevent the serialization or deserialization of the field. 
 
 ### SerializeUntilAttribute ###
 
