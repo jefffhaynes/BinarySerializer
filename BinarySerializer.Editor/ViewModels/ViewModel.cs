@@ -18,7 +18,8 @@ namespace BinarySerializer.Editor.ViewModels
                         {
                             new FieldViewModel("ChunkType"),
                             new ObjectViewModel("Chunk", Enumerable.Empty<FieldViewModel>())
-                        }), 
+                        }),
+                        new FieldViewModel("Crc"), 
                     }), 
                 })
             });
