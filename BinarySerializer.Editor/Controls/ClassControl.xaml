@@ -4,11 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:BinarySerializer.Editor.Controls"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid Background="LightGray">
+    <Grid Background="LightGray" Margin="6">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
@@ -20,13 +21,58 @@
         </Grid.RowDefinitions>
 
         <Border Background="Black"  Grid.ColumnSpan="2" >
-            <TextBlock Text="Test alkj glkj " Foreground="White" Margin="6" />
+            <TextBlock Text="{Binding Name}" Foreground="White" Margin="6" />
         </Border>
         
         <Border Grid.Column="0" Grid.Row="1" Background="Black" VerticalAlignment="Stretch"  Width="6"></Border>
-        
-        <ListView Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            
+
+        <ListView Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                  ItemsSource="{Binding Fields}" >
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Padding" Value="6"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplateSelector>
+                <controls:FieldTemplateSelector>
+                    <controls:FieldTemplateSelector.ValueTemplate>
+                        <DataTemplate>
+                            <Grid BorderBrush="Black" BorderThickness="1" Background="White">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="6" Text="{Binding Name}"/>
+                                <controls:FieldControl Grid.Column="1" />
+                            </Grid>
+                        </DataTemplate>
+                    </controls:FieldTemplateSelector.ValueTemplate>
+                    <controls:FieldTemplateSelector.CollectionTemplate>
+                        <DataTemplate>
+                            <Grid BorderBrush="Black" BorderThickness="1" Background="White">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="6" Text="{Binding Name}"/>
+                                <controls:CollectionControl Grid.Column="1" />
+                            </Grid>
+                        </DataTemplate>
+                    </controls:FieldTemplateSelector.CollectionTemplate>
+                    <controls:FieldTemplateSelector.ClassTemplate>
+                        <DataTemplate>
+                            <Grid BorderBrush="Black" BorderThickness="1" Background="White">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="6" Text="{Binding Name}"/>
+                                <controls:ClassControl Grid.Column="1" />
+                            </Grid>
+                        </DataTemplate>
+                    </controls:FieldTemplateSelector.ClassTemplate>
+                </controls:FieldTemplateSelector>
+            </ListView.ItemTemplateSelector>
         </ListView>
     </Grid>
 </UserControl>

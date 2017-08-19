@@ -2,6 +2,11 @@
 {
     public class FieldViewModel : ViewModelBase
     {
+        public FieldViewModel(string name)
+        {
+            Name = name;
+        }
+
         private string _name;
 
         public string Name

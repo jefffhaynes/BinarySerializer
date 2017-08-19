@@ -98,15 +98,24 @@
     <Compile Include="Controls\ClassControl.xaml.cs">
       <DependentUpon>ClassControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\CollectionControl.xaml.cs">
+      <DependentUpon>CollectionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FieldControl.xaml.cs">
       <DependentUpon>FieldControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\FieldTemplateSelector.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\ObjectViewModel.cs" />
+    <Compile Include="ViewModels\CollectionViewModel.cs" />
+    <Compile Include="ViewModels\CollectionViewModelBase.cs" />
     <Compile Include="ViewModels\FieldViewModel.cs" />
+    <Compile Include="ViewModels\PrimitiveCollectionViewModelBase.cs" />
+    <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +140,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Controls\ClassControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CollectionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

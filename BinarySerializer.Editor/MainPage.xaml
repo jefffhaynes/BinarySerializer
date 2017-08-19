@@ -5,9 +5,10 @@
     xmlns:local="using:BinarySerializer.Editor"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:BinarySerializer.Editor.Controls"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <controls:ClassControl DataContext="{Binding Root}"/>
     </Grid>
 </Page>
