@@ -20,8 +20,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!--<Border Grid.Column="0" Grid.Row="1" Background="Black" VerticalAlignment="Stretch"  Width="6"/>-->
-
         <ListView Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                   ItemsSource="{Binding Fields}" >
             <ListView.ItemContainerStyle>
