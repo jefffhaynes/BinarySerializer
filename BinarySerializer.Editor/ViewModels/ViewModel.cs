@@ -6,25 +6,35 @@ namespace BinarySerializer.Editor.ViewModels
     {
         public ViewModel()
         {
-            Root = new ObjectViewModel("Png", new []
+            Root = new ClassViewModel("Png", new []
             {
-                new FieldViewModel("FileHeader"),
-                new CollectionViewModel("Chunks", new []
+                new FieldViewModel("FileHeader", "byte[]"),
+                new CollectionViewModel("Chunks", "List<PngChunkContainer>", new []
                 {
-                    new ObjectViewModel("PngChunkContainer", new []
+                    new ClassViewModel("PngChunkContainer", new []
                     {
-                        new FieldViewModel("Length"),
-                        new ObjectViewModel("Payload", new []
+                        new FieldViewModel("Length", "int"),
+                        new ClassViewModel("Payload", "PngChunkPayload", new []
                         {
-                            new FieldViewModel("ChunkType"),
-                            new ObjectViewModel("Chunk", Enumerable.Empty<FieldViewModel>())
+                            new FieldViewModel("ChunkType", "string"),
+                            new ClassViewModel("Chunk", "PngChunk", Enumerable.Empty<FieldViewModel>(), new []
+                            {
+                                new ClassViewModel("PngImageDataChunk", new []
+                                {
+                                    new FieldViewModel("Data", "byte[]"), 
+                                }), 
+                                new ClassViewModel("PngImageHeaderChunk", new []
+                                {
+                                    new FieldViewModel("Data", "byte[]"),
+                                }),
+                            })
                         }),
-                        new FieldViewModel("Crc"), 
+                        new FieldViewModel("Crc", "uint"), 
                     }), 
                 })
             });
         }
 
-        public ObjectViewModel Root { get; set; }
+        public ClassViewModel Root { get; set; }
     }
 }

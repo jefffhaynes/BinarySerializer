@@ -2,7 +2,7 @@
 {
     public class CollectionViewModelBase : FieldViewModel
     {
-        public CollectionViewModelBase(string name) : base(name)
+        public CollectionViewModelBase(string name, string type) : base(name, type)
         {
         }
     }

@@ -7,5 +7,5 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-
+    <TextBlock Margin="6" Text="{Binding Type}" FontWeight="Bold"/>
 </UserControl>

@@ -19,7 +19,7 @@ namespace BinarySerializer.Editor.Controls
                 return CollectionTemplate;
             }
 
-            if (item is ObjectViewModel)
+            if (item is ClassViewModel)
             {
                 return ClassTemplate;
             }

@@ -5,11 +5,15 @@ namespace BinarySerializer.Editor.ViewModels
 {
     public class CollectionViewModel : CollectionViewModelBase
     {
-        public CollectionViewModel(string name, IEnumerable<ObjectViewModel> subTypes) : base(name)
+        public CollectionViewModel(string type, IEnumerable<ClassViewModel> subTypes) : this(null, type, subTypes)
         {
-            SubTypes = new ObservableCollection<ObjectViewModel>(subTypes);
         }
 
-        public ObservableCollection<ObjectViewModel> SubTypes { get; }
+        public CollectionViewModel(string name, string type, IEnumerable<ClassViewModel> subTypes) : base(name, type)
+        {
+            SubTypes = new ObservableCollection<ClassViewModel>(subTypes);
+        }
+
+        public ObservableCollection<ClassViewModel> SubTypes { get; }
     }
 }

@@ -5,28 +5,24 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:BinarySerializer.Editor.Controls"
+    xmlns:converters="using:BinarySerializer.Editor.Converters"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
+    <UserControl.Resources>
+        <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
+    </UserControl.Resources>
 
-    <Grid Background="LightGray" Margin="6">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        
+    <Grid Background="LightGray">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Border Background="Black"  Grid.ColumnSpan="2" >
-            <TextBlock Text="{Binding Name}" Foreground="White" Margin="6" />
-        </Border>
-        
-        <Border Grid.Column="0" Grid.Row="1" Background="Black" VerticalAlignment="Stretch"  Width="6"></Border>
+        <!--<Border Grid.Column="0" Grid.Row="1" Background="Black" VerticalAlignment="Stretch"  Width="6"/>-->
 
-        <ListView Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+        <ListView Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                   ItemsSource="{Binding Fields}" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -74,5 +70,27 @@
                 </controls:FieldTemplateSelector>
             </ListView.ItemTemplateSelector>
         </ListView>
+        <Grid Grid.Row="2" Grid.Column="0" Visibility="{Binding SubTypes.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Path Grid.Row="0" Fill="Black" HorizontalAlignment="Center" Margin="6" 
+                  Data="M8.1999977,12.800003L18.000003,12.800003 18.000003,18.800003 26.2,18.800003 13.100008,32 0,18.900009 8.1999977,18.900009z M8.1999977,8.6000061L18.000003,8.6000061 18.000003,10.600006 8.1999977,10.600006z M8.1999977,4.3000031L18.000003,4.3000031 18.000003,6.3000031 8.1999977,6.3000031z M8.1999977,0L18.000003,0 18.000003,2 8.1999977,2z"/>
+            <ListView Grid.Row="1" ItemsSource="{Binding SubTypes}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <controls:ClassControl/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+        </Grid>
     </Grid>
 </UserControl>
