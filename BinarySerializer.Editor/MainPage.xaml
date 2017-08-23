@@ -8,9 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <!--<Canvas>-->
-            <controls:ClassControl DataContext="{Binding Root}"/>
-        <!--</Canvas>-->
+        <controls:ClassControl DataContext="{Binding Root}"/>
 
         <ItemsControl ItemsSource="{Binding Root.AllBindings}">
             <ItemsControl.ItemTemplate>

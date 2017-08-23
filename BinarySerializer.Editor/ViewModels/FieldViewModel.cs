@@ -6,6 +6,11 @@ namespace BinarySerializer.Editor.ViewModels
 {
     public class FieldViewModel : ViewModelBase
     {
+        private Point _anchorPoint;
+
+        private string _name;
+        private string _type;
+
         public FieldViewModel(string type)
         {
             Type = type;
@@ -16,17 +21,16 @@ namespace BinarySerializer.Editor.ViewModels
             Name = name;
         }
 
-        private string _name;
-        private string _type;
-        private Point _anchorPoint;
-
         public string Name
         {
             get => _name;
 
             set
             {
-                if (value == _name) return;
+                if (value == _name)
+                {
+                    return;
+                }
                 _name = value;
                 OnPropertyChanged();
             }
@@ -37,7 +41,10 @@ namespace BinarySerializer.Editor.ViewModels
             get => _type;
             set
             {
-                if (value == _type) return;
+                if (value == _type)
+                {
+                    return;
+                }
                 _type = value;
                 OnPropertyChanged();
             }
@@ -52,7 +59,10 @@ namespace BinarySerializer.Editor.ViewModels
             get => _anchorPoint;
             set
             {
-                if (value.Equals(_anchorPoint)) return;
+                if (value.Equals(_anchorPoint))
+                {
+                    return;
+                }
                 _anchorPoint = value;
                 OnPropertyChanged();
             }

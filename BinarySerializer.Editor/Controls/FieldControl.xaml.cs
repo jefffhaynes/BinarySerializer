@@ -19,7 +19,6 @@ namespace BinarySerializer.Editor.Controls
         public FieldControl()
         {
             InitializeComponent();
-
             LayoutUpdated += OnLayoutUpdated;
         }
 

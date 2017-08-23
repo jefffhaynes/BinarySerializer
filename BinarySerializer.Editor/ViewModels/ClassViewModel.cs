@@ -22,11 +22,6 @@ namespace BinarySerializer.Editor.ViewModels
         {
             Fields = new ObservableCollection<FieldViewModel>(fields);
             SubTypes = new ObservableCollection<ClassViewModel>(subTypes);
-
-            //Fields.CollectionChanged += (sender, args) =>
-            //{
-            //    OnPropertyChanged(nameof(AllBindings));
-            //};
         }
 
         public ObservableCollection<ClassViewModel> SubTypes { get; }

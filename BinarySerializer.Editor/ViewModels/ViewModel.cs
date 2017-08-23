@@ -8,8 +8,10 @@ namespace BinarySerializer.Editor.ViewModels
         public ViewModel()
         {
             FieldViewModel lengthField;
-
+            FieldViewModel chunkTypeField;
+            ClassViewModel payloadField;
             ClassViewModel chunkField;
+            FieldViewModel crcField;
             Root = new ClassViewModel("Png", new []
             {
                 new FieldViewModel("FileHeader", "byte[]"),
@@ -18,9 +20,9 @@ namespace BinarySerializer.Editor.ViewModels
                     new ClassViewModel("PngChunkContainer", new []
                     {
                         lengthField = new FieldViewModel("Length", "int"),
-                        new ClassViewModel("Payload", "PngChunkPayload", new []
+                        payloadField = new ClassViewModel("Payload", "PngChunkPayload", new []
                         {
-                            new FieldViewModel("ChunkType", "string"),
+                            chunkTypeField = new FieldViewModel("ChunkType", "string"),
                             chunkField = new ClassViewModel("Chunk", "PngChunk", Enumerable.Empty<FieldViewModel>(), new []
                             {
                                 new ClassViewModel("PngImageDataChunk", new []
@@ -33,12 +35,14 @@ namespace BinarySerializer.Editor.ViewModels
                                 }),
                             })
                         }),
-                        new FieldViewModel("Crc", "uint")
+                        crcField = new FieldViewModel("Crc", "uint")
                     }), 
                 })
             });
 
-            lengthField.Bindings.Add(new BindingViewModel(lengthField, chunkField));
+            //lengthField.Bindings.Add(new BindingViewModel(lengthField, chunkField));
+            chunkTypeField.Bindings.Add(new BindingViewModel(chunkTypeField, chunkField));
+            //crcField.Bindings.Add(new BindingViewModel(crcField, payloadField));
         }
 
         public ClassViewModel Root { get; set; }
