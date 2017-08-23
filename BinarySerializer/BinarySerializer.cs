@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -268,6 +269,18 @@ namespace BinarySerialization
         /// <summary>
         ///     Deserializes the specified stream into an object graph.
         /// </summary>
+        /// <param name="data">The list of bytes from which to deserialize the object graph.</param>
+        /// <param name="type">The type of the root of the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public object Deserialize(IReadOnlyList<byte> data, Type type, object context = null) 
+        {
+            return Deserialize(new ReadOnlyListStream(data), type, context);
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
         /// <typeparam name="T">The type of the root of the object graph.</typeparam>
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
@@ -287,6 +300,18 @@ namespace BinarySerialization
         public T Deserialize<T>(byte[] data, object context = null)
         {
             return Deserialize<T>(new MemoryStream(data), context);
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
+        /// <typeparam name="T">The type of the root of the object graph.</typeparam>
+        /// <param name="data">The list of bytes from which to deserialize the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public T Deserialize<T>(IReadOnlyList<byte> data, object context = null)
+        {
+            return (T) Deserialize(data, typeof(T), context);
         }
 
         private RootTypeNode GetGraph(Type valueType)
