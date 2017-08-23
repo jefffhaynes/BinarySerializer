@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace BinarySerializer.Editor.ViewModels
 {
@@ -15,5 +16,14 @@ namespace BinarySerializer.Editor.ViewModels
         }
 
         public ObservableCollection<ClassViewModel> SubTypes { get; }
+
+        public override IEnumerable<BindingViewModel> AllBindings
+        {
+            get
+            {
+                var subTypeBindings = SubTypes.SelectMany(subType => subType.AllBindings);
+                return Bindings.Concat(subTypeBindings);
+            }
+        }
     }
 }

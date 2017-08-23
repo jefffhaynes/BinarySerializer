@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Windows.Foundation;
 
 namespace BinarySerializer.Editor.ViewModels
@@ -43,6 +44,8 @@ namespace BinarySerializer.Editor.ViewModels
         }
 
         public ObservableCollection<BindingViewModel> Bindings { get; } = new ObservableCollection<BindingViewModel>();
+
+        public virtual IEnumerable<BindingViewModel> AllBindings => Bindings;
 
         public Point AnchorPoint
         {

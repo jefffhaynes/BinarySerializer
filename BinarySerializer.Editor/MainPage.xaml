@@ -11,5 +11,25 @@
         <!--<Canvas>-->
             <controls:ClassControl DataContext="{Binding Root}"/>
         <!--</Canvas>-->
+
+        <ItemsControl ItemsSource="{Binding Root.AllBindings}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Path Stroke="Orange" StrokeThickness="2" StrokeLineJoin="Round">
+                        <Path.Data>
+                            <PathGeometry>
+                                <PathGeometry.Figures>
+                                    <PathFigure StartPoint="{Binding Source.AnchorPoint}">
+                                        <LineSegment Point="{Binding SourceCornerPoint}"/>
+                                        <LineSegment Point="{Binding TargetCornerPoint}"/>
+                                        <LineSegment Point="{Binding Target.AnchorPoint}"/>
+                                    </PathFigure>
+                                </PathGeometry.Figures>
+                            </PathGeometry>
+                        </Path.Data>
+                    </Path>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </Page>

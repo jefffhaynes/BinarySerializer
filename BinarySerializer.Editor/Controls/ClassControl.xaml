@@ -25,7 +25,7 @@
         </Border>
         
         <ListView Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                  ItemsSource="{Binding Fields}" >
+                  ItemsSource="{Binding Fields}" SelectionMode="None">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="Padding" Value="6"/>
@@ -59,13 +59,13 @@
                     </controls:FieldTemplateSelector.CollectionTemplate>
                     <controls:FieldTemplateSelector.ClassTemplate>
                         <DataTemplate>
-                            <Grid BorderBrush="Black" BorderThickness="1" Background="White">
+                            <Grid BorderBrush="Black" Margin="0,0,16,0" BorderThickness="1" Background="White">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Margin="6" Text="{Binding Name}"/>
-                                <controls:ClassControl Grid.Column="1" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}"/>
+                                <controls:ClassControl Grid.Column="1" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}" Background="Green"/>
                             </Grid>
                         </DataTemplate>
                     </controls:FieldTemplateSelector.ClassTemplate>
@@ -83,7 +83,7 @@
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="Padding" Value="0"/>
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
@@ -92,33 +92,9 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-
-           
-
         </Grid>
     
-        <ItemsControl Grid.Row="0" Grid.RowSpan="3" ItemsSource="{Binding Fields}" VerticalAlignment="Stretch">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <ItemsControl ItemsSource="{Binding Bindings}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Path Stroke="Red" StrokeThickness="3">
-                                    <Path.Data>
-                                        <LineGeometry StartPoint="{Binding Source.AnchorPoint, Mode=TwoWay}" EndPoint="{Binding Target.AnchorPoint, Mode=TwoWay}"/>
-                                    </Path.Data>
-                                </Path>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+      
         
     </Grid>
 </UserControl>

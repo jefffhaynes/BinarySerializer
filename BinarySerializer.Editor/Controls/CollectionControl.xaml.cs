@@ -24,21 +24,7 @@ namespace BinarySerializer.Editor.Controls
 
         private void OnLayoutUpdated(object sender, object o)
         {
-
-            Size size = RenderSize;
-            Point ofs = new Point(size.Width, size.Height / 2);
-
-            var canvas = GetClassControl();
-
-            // TODO change to canvas
-            AnchorPoint = TransformToVisual(canvas).TransformPoint(ofs);
-        }
-
-        private ClassControl _classControl;
-
-        private ClassControl GetClassControl()
-        {
-            return _classControl ?? (_classControl = VisualHelper.GetAncestor<ClassControl>(this));
+            AnchorPoint = TransformToVisual(Window.Current.Content).TransformPoint(new Point(ActualWidth, ActualHeight / 2));
         }
     }
 }
