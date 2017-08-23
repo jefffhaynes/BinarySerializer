@@ -40,9 +40,9 @@ namespace BinarySerializer.Editor.ViewModels
                 })
             });
 
-            //lengthField.Bindings.Add(new BindingViewModel(lengthField, chunkField));
+            lengthField.Bindings.Add(new BindingViewModel(lengthField, chunkField));
             chunkTypeField.Bindings.Add(new BindingViewModel(chunkTypeField, chunkField));
-            //crcField.Bindings.Add(new BindingViewModel(crcField, payloadField));
+            crcField.Bindings.Add(new BindingViewModel(crcField, payloadField));
         }
 
         public ClassViewModel Root { get; set; }

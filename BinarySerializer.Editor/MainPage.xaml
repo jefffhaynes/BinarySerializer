@@ -8,13 +8,20 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        
         <controls:ClassControl DataContext="{Binding Root}"/>
 
         <ItemsControl ItemsSource="{Binding Root.AllBindings}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Path Stroke="Orange" StrokeThickness="2" StrokeLineJoin="Round">
                         <Path.Data>
+                            <!--<LineGeometry StartPoint="{Binding Source.AnchorPoint}" EndPoint="{Binding Target.AnchorPoint}"></LineGeometry>-->
                             <PathGeometry>
                                 <PathGeometry.Figures>
                                     <PathFigure StartPoint="{Binding Source.AnchorPoint}">
