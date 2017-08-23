@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.ObjectModel;
+using Windows.Foundation;
 
 namespace BinarySerializer.Editor.ViewModels
 {
@@ -16,6 +17,7 @@ namespace BinarySerializer.Editor.ViewModels
 
         private string _name;
         private string _type;
+        private Point _anchorPoint;
 
         public string Name
         {
@@ -36,6 +38,19 @@ namespace BinarySerializer.Editor.ViewModels
             {
                 if (value == _type) return;
                 _type = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<BindingViewModel> Bindings { get; } = new ObservableCollection<BindingViewModel>();
+
+        public Point AnchorPoint
+        {
+            get => _anchorPoint;
+            set
+            {
+                if (value.Equals(_anchorPoint)) return;
+                _anchorPoint = value;
                 OnPropertyChanged();
             }
         }

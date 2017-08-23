@@ -105,12 +105,14 @@
       <DependentUpon>FieldControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\FieldTemplateSelector.cs" />
+    <Compile Include="Controls\VisualHelper.cs" />
     <Compile Include="Converters\GreaterThanZeroConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\BindingViewModel.cs" />
     <Compile Include="ViewModels\ClassViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModelBase.cs" />

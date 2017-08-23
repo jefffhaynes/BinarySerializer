@@ -1,19 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+﻿using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-
-// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace BinarySerializer.Editor.Controls
 {
@@ -21,7 +8,41 @@ namespace BinarySerializer.Editor.Controls
     {
         public ClassControl()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+
+            LayoutUpdated += OnLayoutUpdated;
+        }
+
+        public static readonly DependencyProperty AnchorPointProperty = DependencyProperty.Register(
+            "AnchorPoint", typeof(Point), typeof(ClassControl), new PropertyMetadata(default(Point)));
+
+        public Point AnchorPoint
+        {
+            get => (Point)GetValue(AnchorPointProperty);
+            set => SetValue(AnchorPointProperty, value);
+        }
+
+        private void OnLayoutUpdated(object sender, object o)
+        {
+            Size size = RenderSize;
+            Point ofs = new Point(size.Width, size.Height / 2);
+
+            var classControl = GetClassControl();
+
+            if (classControl == null)
+            {
+                return;
+            }
+
+            // TODO change to canvas
+            AnchorPoint = TransformToVisual(classControl).TransformPoint(ofs);
+        }
+
+        private ClassControl _classControl;
+
+        private ClassControl GetClassControl()
+        {
+            return _classControl ?? (_classControl = VisualHelper.GetAncestor<ClassControl>(this));
         }
     }
 }

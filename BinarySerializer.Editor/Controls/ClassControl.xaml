@@ -20,7 +20,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ListView Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+        <Border Background="Black" >
+            <TextBlock Text="{Binding Type}" Foreground="White" Margin="6" />
+        </Border>
+        
+        <ListView Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                   ItemsSource="{Binding Fields}" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -37,7 +41,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Margin="6" Text="{Binding Name}"/>
-                                <controls:FieldControl Grid.Column="1" />
+                                <controls:FieldControl Grid.Column="1" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}"/>
                             </Grid>
                         </DataTemplate>
                     </controls:FieldTemplateSelector.ValueTemplate>
@@ -49,7 +53,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Margin="6" Text="{Binding Name}"/>
-                                <controls:CollectionControl Grid.Column="1" />
+                                <controls:CollectionControl Grid.Column="1" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}"/>
                             </Grid>
                         </DataTemplate>
                     </controls:FieldTemplateSelector.CollectionTemplate>
@@ -61,14 +65,14 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Margin="6" Text="{Binding Name}"/>
-                                <controls:ClassControl Grid.Column="1" />
+                                <controls:ClassControl Grid.Column="1" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}"/>
                             </Grid>
                         </DataTemplate>
                     </controls:FieldTemplateSelector.ClassTemplate>
                 </controls:FieldTemplateSelector>
             </ListView.ItemTemplateSelector>
         </ListView>
-        <Grid Grid.Row="2" Grid.Column="0" Visibility="{Binding SubTypes.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+        <Grid Grid.Row="2" Visibility="{Binding SubTypes.Count, Converter={StaticResource GreaterThanZeroConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -89,6 +93,32 @@
                 </ListView.ItemTemplate>
             </ListView>
 
+           
+
         </Grid>
+    
+        <ItemsControl Grid.Row="0" Grid.RowSpan="3" ItemsSource="{Binding Fields}" VerticalAlignment="Stretch">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ItemsControl ItemsSource="{Binding Bindings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Path Stroke="Red" StrokeThickness="3">
+                                    <Path.Data>
+                                        <LineGeometry StartPoint="{Binding Source.AnchorPoint, Mode=TwoWay}" EndPoint="{Binding Target.AnchorPoint, Mode=TwoWay}"/>
+                                    </Path.Data>
+                                </Path>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+        
     </Grid>
 </UserControl>
