@@ -35,7 +35,7 @@
                 <controls:FieldTemplateSelector>
                     <controls:FieldTemplateSelector.ValueTemplate>
                         <DataTemplate>
-                            <Grid BorderBrush="Black" BorderThickness="1" Background="White">
+                            <Grid BorderBrush="Black" Margin="0,0,16,0" BorderThickness="1" Background="White">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
@@ -47,7 +47,7 @@
                     </controls:FieldTemplateSelector.ValueTemplate>
                     <controls:FieldTemplateSelector.CollectionTemplate>
                         <DataTemplate>
-                            <Grid BorderBrush="Black" BorderThickness="1" Background="White">
+                            <Grid BorderBrush="Black" Margin="0,0,16,0" BorderThickness="1" Background="White">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
@@ -65,7 +65,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Margin="6" Text="{Binding Name}"/>
-                                <controls:ClassControl Grid.Column="1" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}" Background="Green"/>
+                                <controls:ClassControl Grid.Column="1" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}" />
                             </Grid>
                         </DataTemplate>
                     </controls:FieldTemplateSelector.ClassTemplate>
@@ -93,8 +93,5 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-    
-      
-        
     </Grid>
 </UserControl>
