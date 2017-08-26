@@ -20,7 +20,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public EnumInfo EnumInfo { get; private set; }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new EnumValueNode(parent, Name, this);
         }

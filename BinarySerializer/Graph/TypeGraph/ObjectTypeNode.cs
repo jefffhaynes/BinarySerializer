@@ -21,6 +21,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public ObjectTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
+            Construct();
         }
 
         public ObjectTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) :
@@ -31,6 +32,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public ObjectTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType)
             : base(parent, parentType, memberInfo, subType)
         {
+            Construct(subType != null);
         }
 
         public List<TypeNode> Children { get; private set; }
@@ -45,9 +47,6 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public ObjectTypeNode GetSubTypeNode(Type type)
         {
-            // make sure we're constructed first
-            Construct();
-
             // trivial case, nothing to do
             if (type == Type)
             {
@@ -63,17 +62,17 @@ namespace BinarySerialization.Graph.TypeGraph
 
                 // get matching subtype and make sure it's constructed
                 var subType = _subTypesLazy.Value[type];
-                subType.Construct();
+                subType.Construct(true);
                 return subType;
             }
         }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new ObjectValueNode(parent, Name, this);
         }
 
-        private void Construct()
+        private void Construct(bool isSubType = false)
         {
             if (_isConstructed)
             {
@@ -87,7 +86,10 @@ namespace BinarySerialization.Graph.TypeGraph
                     return;
                 }
 
-                ConstructSubtypes();
+                if (!isSubType)
+                {
+                    ConstructSubtypes();
+                }
 
                 Children = IsIgnored ? new List<TypeNode>() : GenerateChildren(Type).ToList();
 
@@ -118,8 +120,8 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 // check for custom subtype
                 typeNode = typeof(IBinarySerializable).IsAssignableFrom(type)
-                    ? new CustomTypeNode(parent, type)
-                    : new ObjectTypeNode(parent, type);
+                    ? new CustomTypeNode(parent, type, null, type)
+                    : new ObjectTypeNode(parent, type, null, type);
             }
 
             _subTypesLazy.Value.Add(type, typeNode);

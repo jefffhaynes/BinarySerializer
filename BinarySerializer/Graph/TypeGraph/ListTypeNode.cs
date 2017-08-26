@@ -16,7 +16,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             if (ChildType.GetTypeInfo().IsPrimitive)
             {

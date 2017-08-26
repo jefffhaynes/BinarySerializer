@@ -111,6 +111,14 @@
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test\Png.cs" />
+    <Compile Include="Test\PngChunk.cs" />
+    <Compile Include="Test\PngChunkContainer.cs" />
+    <Compile Include="Test\PngChunkPayload.cs" />
+    <Compile Include="Test\PngImageDataChunk.cs" />
+    <Compile Include="Test\PngImageHeaderChunk.cs" />
+    <Compile Include="Test\PngPaletteChunk.cs" />
+    <Compile Include="Test\PngUnknownChunk.cs" />
     <Compile Include="ViewModels\BindingViewModel.cs" />
     <Compile Include="ViewModels\ClassViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />
@@ -162,6 +170,12 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>5.2.3</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BinarySerializer\BinarySerializer.csproj">
+      <Project>{faf159f0-83c1-43c6-bca8-c58967da9806}</Project>
+      <Name>BinarySerializer</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

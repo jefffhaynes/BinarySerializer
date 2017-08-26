@@ -10,7 +10,7 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal abstract class ValueNode : Node
+    public abstract class ValueNode : Node
     {
         private const char PathSeparator = '.';
         public static readonly object UnsetValue = new object();
@@ -129,7 +129,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public void Serialize(BoundedStream stream, EventShuttle eventShuttle, bool align = true)
+        internal void Serialize(BoundedStream stream, EventShuttle eventShuttle, bool align = true)
         {
             try
             {
@@ -203,7 +203,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public void Deserialize(BoundedStream stream, EventShuttle eventShuttle)
+        internal void Deserialize(BoundedStream stream, EventShuttle eventShuttle)
         {
             try
             {
@@ -255,7 +255,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public async Task DeserializeAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal async Task DeserializeAsync(BoundedStream stream, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             try
@@ -327,7 +327,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return child;
         }
 
-        public LazyBinarySerializationContext CreateLazySerializationContext()
+        internal LazyBinarySerializationContext CreateLazySerializationContext()
         {
             var lazyContext = new Lazy<BinarySerializationContext>(CreateSerializationContext);
             return new LazyBinarySerializationContext(lazyContext);

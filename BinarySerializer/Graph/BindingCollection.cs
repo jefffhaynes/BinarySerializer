@@ -6,7 +6,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph
 {
-    internal class BindingCollection : ReadOnlyCollection<Binding>, IBinding
+    public class BindingCollection : ReadOnlyCollection<Binding>, IBinding
     {
         public BindingCollection(IEnumerable<Binding> bindings) : base(bindings.ToList())
         {

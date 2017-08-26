@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BinarySerialization.Graph.TypeGraph;
+using BinarySerialization.Graph;
 using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization
@@ -44,8 +43,7 @@ namespace BinarySerialization
         private const Endianness DefaultEndianness = Endianness.Little;
         private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
-        private static readonly ConcurrentDictionary<Type, RootTypeNode> GraphCache =
-            new ConcurrentDictionary<Type, RootTypeNode>();
+        private static readonly GraphGenerator GraphGenerator = new GraphGenerator();
 
         private readonly EventShuttle _eventShuttle = new EventShuttle();
 
@@ -124,7 +122,7 @@ namespace BinarySerialization
                 return;
             }
 
-            var graph = GetGraph(value.GetType());
+            var graph = GraphGenerator.GenerateGraph(value.GetType());
 
             var serializer = (RootValueNode) graph.CreateSerializer(null);
             serializer.EndiannessCallback = () => Endianness;
@@ -158,7 +156,7 @@ namespace BinarySerialization
         /// <returns>The deserialized object graph.</returns>
         public object Deserialize(Stream stream, Type type, object context = null)
         {
-            var graph = GetGraph(type);
+            var graph = GraphGenerator.GenerateGraph(type);
 
             var serializer = (RootValueNode) graph.CreateSerializer(null);
             serializer.EndiannessCallback = () => Endianness;
@@ -180,7 +178,7 @@ namespace BinarySerialization
         public async Task<object> DeserializeAsync(Stream stream, Type type, object context,
             CancellationToken cancellationToken)
         {
-            var graph = GetGraph(type);
+            var graph = GraphGenerator.GenerateGraph(type);
 
             var serializer = (RootValueNode) graph.CreateSerializer(null);
             serializer.EndiannessCallback = () => Endianness;
@@ -287,11 +285,6 @@ namespace BinarySerialization
         public T Deserialize<T>(byte[] data, object context = null)
         {
             return Deserialize<T>(new MemoryStream(data), context);
-        }
-
-        private RootTypeNode GetGraph(Type valueType)
-        {
-            return GraphCache.GetOrAdd(valueType, type => new RootTypeNode(type));
         }
     }
 }

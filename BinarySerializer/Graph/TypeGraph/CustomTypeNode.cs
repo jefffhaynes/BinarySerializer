@@ -21,7 +21,7 @@ namespace BinarySerialization.Graph.TypeGraph
         }
 
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new CustomValueNode(parent, Name, this);
         }

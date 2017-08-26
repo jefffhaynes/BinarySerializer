@@ -83,10 +83,10 @@ namespace BinarySerialization.Test.Endianness
             Assert.Equal(1, actual.Value);
         }
 
-        [Fact]
-        public void InvalidFieldEndiannessConverterTest()
-        {
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(typeof(FieldEndiannessInvalidConverterClass)));
-        }
+        //[Fact]
+        //public void InvalidFieldEndiannessConverterTest()
+        //{
+        //    Assert.Throws<InvalidOperationException>(() => Roundtrip(typeof(FieldEndiannessInvalidConverterClass)));
+        //}
     }
 }
