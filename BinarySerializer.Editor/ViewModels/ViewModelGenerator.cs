@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BinarySerialization.Graph;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerializer.Editor.ViewModels
 {
     public class ViewModelGenerator
     {
-        private Dictionary<TypeNode, FieldViewModel> _map = new Dictionary<TypeNode, FieldViewModel>();
+        private readonly Dictionary<TypeNode, FieldViewModel> _map = new Dictionary<TypeNode, FieldViewModel>();
 
         public FieldViewModel Generate(TypeNode typeNode)
+        {
+            _map.Clear();
+            return Generate(typeNode, true);
+        }
+
+        private FieldViewModel Generate(TypeNode typeNode, bool generateBindings)
         {
             FieldViewModel fieldViewModel = null;
 
@@ -29,7 +36,7 @@ namespace BinarySerializer.Editor.ViewModels
                     ? Enumerable.Empty<ClassViewModel>()
                     : objectTypeNode.SubTypeKeys.Keys
                         .Select(key => objectTypeNode.GetSubTypeNode(key))
-                        .Select(Generate).Cast<ClassViewModel>();
+                        .Select(child => Generate(child, false)).Cast<ClassViewModel>();
 
                 fieldViewModel = new ClassViewModel(objectTypeNode.Name, objectTypeNode.Type.ToString(), fields, subTypes);
             }
@@ -41,30 +48,55 @@ namespace BinarySerializer.Editor.ViewModels
                     new[] {subType});
             }
 
-            if (typeNode.FieldLengthBindings != null)
+            if (generateBindings)
             {
-                var bindingViewModels = typeNode.FieldLengthBindings.Where(binding => !binding.IsConst).Select(binding =>
+                var bindingCollections = new Dictionary<BindingKind, BindingCollection>
                 {
-                    var sourceNode = binding.GetSource(typeNode);
+                    {BindingKind.Length, typeNode.FieldLengthBindings},
+                    {BindingKind.Count, typeNode.FieldCountBindings},
+                    {BindingKind.Subtype, typeNode.SubtypeBindings},
+                    {BindingKind.Value, typeNode.FieldValueBindings}
+                };
 
-                    FieldViewModel sourceViewModel;
-                    if (_map.TryGetValue(sourceNode, out sourceViewModel))
-                    {
-                        return new BindingViewModel(BindingKind.Length, sourceViewModel, fieldViewModel);
-                    }
-
-                    throw new InvalidOperationException();
-                });
-
-                foreach (var bindingViewModel in bindingViewModels)
+                foreach (var bindingCollection in bindingCollections)
                 {
-                    fieldViewModel.Bindings.Add(bindingViewModel);
+                    var kind = bindingCollection.Key;
+                    var collection = bindingCollection.Value;
+
+                    GenerateBindings(typeNode, collection, kind, fieldViewModel);
                 }
             }
 
             _map.Add(typeNode, fieldViewModel);
 
             return fieldViewModel;
+        }
+
+        private void GenerateBindings(TypeNode typeNode, BindingCollection bindings, BindingKind kind, FieldViewModel fieldViewModel)
+        {
+            if (bindings == null)
+            {
+                return;
+            }
+
+            var bindingViewModels = bindings.Where(binding => !binding.IsConst).Select(
+                binding =>
+                {
+                    var sourceNode = binding.GetSource(typeNode);
+
+                    FieldViewModel sourceViewModel;
+                    if (_map.TryGetValue(sourceNode, out sourceViewModel))
+                    {
+                        return new BindingViewModel(kind, sourceViewModel, fieldViewModel);
+                    }
+
+                    return null;
+                });
+
+            foreach (var bindingViewModel in bindingViewModels)
+            {
+                fieldViewModel.Bindings.Add(bindingViewModel);
+            }
         }
     }
 }

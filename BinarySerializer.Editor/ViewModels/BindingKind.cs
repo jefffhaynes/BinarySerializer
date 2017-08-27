@@ -3,6 +3,8 @@
     public enum BindingKind
     {
         Length,
-        Count
+        Count,
+        Subtype,
+        Value
     }
 }
