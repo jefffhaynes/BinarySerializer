@@ -1,102 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using BinarySerialization.Graph;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerializer.Editor.ViewModels
 {
     public class ViewModelGenerator
     {
-        private readonly Dictionary<TypeNode, FieldViewModel> _map = new Dictionary<TypeNode, FieldViewModel>();
-
         public FieldViewModel Generate(TypeNode typeNode)
         {
-            _map.Clear();
-            return Generate(typeNode, true);
+            var map = new Dictionary<TypeNode, FieldViewModel>();
+            var fieldViewModel = Generate(typeNode, map);
+            fieldViewModel.Bind(map);
+            return fieldViewModel;
         }
 
-        private FieldViewModel Generate(TypeNode typeNode, bool generateBindings)
+        private FieldViewModel Generate(TypeNode typeNode, IDictionary<TypeNode, FieldViewModel> map)
         {
             FieldViewModel fieldViewModel = null;
 
             if (typeNode is RootTypeNode rootTypeNode)
             {
-                fieldViewModel = Generate(rootTypeNode.Child);
+                fieldViewModel = Generate(rootTypeNode.Child, map);
             }
             else if (typeNode is ValueTypeNode valueTypeNode)
             {
-                fieldViewModel = new FieldViewModel(valueTypeNode.Name, valueTypeNode.Type.ToString());
+                fieldViewModel = new FieldViewModel(valueTypeNode);
             }
             else if (typeNode is ObjectTypeNode objectTypeNode)
             {
-                var fields = objectTypeNode.Children.Select(Generate);
+                var fields = objectTypeNode.Children.Select(node => Generate(node, map));
 
                 var subTypes = objectTypeNode.SubTypeKeys == null
                     ? Enumerable.Empty<ClassViewModel>()
                     : objectTypeNode.SubTypeKeys.Keys
                         .Select(key => objectTypeNode.GetSubTypeNode(key))
-                        .Select(child => Generate(child, false)).Cast<ClassViewModel>();
+                        .Select(node => Generate(node, map)).Cast<ClassViewModel>();
 
-                fieldViewModel = new ClassViewModel(objectTypeNode.Name, objectTypeNode.Type.ToString(), fields, subTypes);
+                fieldViewModel = new ClassViewModel(objectTypeNode, fields, subTypes);
             }
             else if (typeNode is CollectionTypeNode collectionTypeNode)
             {
-                var subType = Generate(collectionTypeNode.Child) as ClassViewModel;
+                var subType = Generate(collectionTypeNode.Child, map) as ClassViewModel;
 
-                fieldViewModel = new CollectionViewModel(collectionTypeNode.Name, collectionTypeNode.Type.ToString(),
-                    new[] {subType});
+                fieldViewModel = new CollectionViewModel(collectionTypeNode, new[] {subType});
             }
-
-            if (generateBindings)
-            {
-                var bindingCollections = new Dictionary<BindingKind, BindingCollection>
-                {
-                    {BindingKind.Length, typeNode.FieldLengthBindings},
-                    {BindingKind.Count, typeNode.FieldCountBindings},
-                    {BindingKind.Subtype, typeNode.SubtypeBindings},
-                    {BindingKind.Value, typeNode.FieldValueBindings}
-                };
-
-                foreach (var bindingCollection in bindingCollections)
-                {
-                    var kind = bindingCollection.Key;
-                    var collection = bindingCollection.Value;
-
-                    GenerateBindings(typeNode, collection, kind, fieldViewModel);
-                }
-            }
-
-            _map.Add(typeNode, fieldViewModel);
+            
+            map.Add(typeNode, fieldViewModel);
 
             return fieldViewModel;
-        }
-
-        private void GenerateBindings(TypeNode typeNode, BindingCollection bindings, BindingKind kind, FieldViewModel fieldViewModel)
-        {
-            if (bindings == null)
-            {
-                return;
-            }
-
-            var bindingViewModels = bindings.Where(binding => !binding.IsConst).Select(
-                binding =>
-                {
-                    var sourceNode = binding.GetSource(typeNode);
-
-                    FieldViewModel sourceViewModel;
-                    if (_map.TryGetValue(sourceNode, out sourceViewModel))
-                    {
-                        return new BindingViewModel(kind, sourceViewModel, fieldViewModel);
-                    }
-
-                    return null;
-                });
-
-            foreach (var bindingViewModel in bindingViewModels)
-            {
-                fieldViewModel.Bindings.Add(bindingViewModel);
-            }
         }
     }
 }

@@ -1,24 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerializer.Editor.ViewModels
 {
     public class ClassViewModel : FieldViewModel
     {
-        public ClassViewModel(string type, IEnumerable<FieldViewModel> fields) : this(null, type, fields)
-        {
-        }
-
-        public ClassViewModel(string name, string type, IEnumerable<FieldViewModel> fields) : this(name, type, fields, new ClassViewModel[]{})
-        {
-        }
-
-        public ClassViewModel(string type, IEnumerable<FieldViewModel> fields, IEnumerable<ClassViewModel> subTypes) : this(null, type, fields, subTypes)
-        {
-        }
-
-        public ClassViewModel(string name, string type, IEnumerable<FieldViewModel> fields, IEnumerable<ClassViewModel> subTypes) : base(name, type)
+        public ClassViewModel(TypeNode typeNode, IEnumerable<FieldViewModel> fields, IEnumerable<ClassViewModel> subTypes) : base(typeNode)
         {
             Fields = new ObservableCollection<FieldViewModel>(fields);
             SubTypes = new ObservableCollection<ClassViewModel>(subTypes);
@@ -36,6 +25,16 @@ namespace BinarySerializer.Editor.ViewModels
                 var subTypeBindings = SubTypes.SelectMany(subType => subType.AllBindings);
                 var fieldBindings = Fields.SelectMany(c => c.AllBindings);
                 return Bindings.Concat(subTypeBindings.Concat(fieldBindings));
+            }
+        }
+
+        public override void Bind(IDictionary<TypeNode, FieldViewModel> map)
+        {
+            base.Bind(map);
+
+            foreach (var fieldViewModel in Fields)
+            {
+                fieldViewModel.Bind(map);
             }
         }
     }

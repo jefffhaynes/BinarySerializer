@@ -1,8 +1,10 @@
-﻿namespace BinarySerializer.Editor.ViewModels
+﻿using BinarySerialization.Graph.TypeGraph;
+
+namespace BinarySerializer.Editor.ViewModels
 {
     public class CollectionViewModelBase : FieldViewModel
     {
-        public CollectionViewModelBase(string name, string type) : base(name, type)
+        public CollectionViewModelBase(TypeNode typeNode) : base(typeNode)
         {
         }
     }
