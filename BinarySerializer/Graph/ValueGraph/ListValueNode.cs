@@ -8,7 +8,7 @@ namespace BinarySerialization.Graph.ValueGraph
     {
         private object _cachedValue;
 
-        public ListValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public ListValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 

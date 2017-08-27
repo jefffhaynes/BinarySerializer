@@ -11,7 +11,7 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal abstract class PrimitiveCollectionValueNode : CollectionValueNodeBase
     {
-        protected PrimitiveCollectionValueNode(Node parent, string name, TypeNode typeNode)
+        protected PrimitiveCollectionValueNode(ValueNode parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
         }

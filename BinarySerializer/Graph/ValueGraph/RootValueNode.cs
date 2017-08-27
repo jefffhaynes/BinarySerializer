@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.ValueGraph
         private static readonly Dictionary<Type, RootTypeNode> ContextCache = new Dictionary<Type, RootTypeNode>();
         private static readonly object ContextCacheLock = new object();
 
-        public RootValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public RootValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 

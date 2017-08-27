@@ -8,7 +8,7 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class StreamValueNode : ValueNode
     {
-        public StreamValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public StreamValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 

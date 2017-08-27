@@ -9,7 +9,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    public abstract class TypeNode : Node
+    public abstract class TypeNode : Node<TypeNode>
     {
         public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
             new Dictionary<Type, SerializedType>
@@ -356,7 +356,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 }
 
                 // If null terminated string is specified but item field length is present, override
-                var parent = (TypeNode) Parent;
+                var parent = Parent;
                 if (parent.ItemLengthBindings != null)
                 {
                     serializedType = SerializedType.SizedString;
@@ -521,7 +521,7 @@ namespace BinarySerialization.Graph.TypeGraph
         private int FindAncestorLevel(BindingInfo binding)
         {
             var level = 1;
-            var parent = (TypeNode) Parent;
+            var parent = Parent;
             while (parent != null)
             {
                 if (binding != null && binding.RelativeSourceMode == RelativeSourceMode.FindAncestor)
@@ -538,7 +538,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     }
                 }
 
-                parent = (TypeNode) parent.Parent;
+                parent = parent.Parent;
                 level++;
             }
 

@@ -7,7 +7,7 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class PrimitiveListValueNode : PrimitiveCollectionValueNode
     {
-        public PrimitiveListValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public PrimitiveListValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 

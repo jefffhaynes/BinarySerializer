@@ -7,7 +7,7 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class CustomValueNode : ObjectValueNode
     {
-        public CustomValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public CustomValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 

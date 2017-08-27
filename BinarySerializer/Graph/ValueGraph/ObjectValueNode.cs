@@ -15,7 +15,7 @@ namespace BinarySerialization.Graph.ValueGraph
         private object _cachedValue;
         private Type _valueType;
 
-        public ObjectValueNode(Node parent, string name, TypeNode typeNode)
+        public ObjectValueNode(ValueNode parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
         }
@@ -298,7 +298,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private bool IsCustomNode(out ValueNode customValueNode)
         {
-            var parent = (TypeNode) TypeNode.Parent;
+            var parent = TypeNode.Parent;
 
             if (_valueType != null &&
                 (TypeNode.SubtypeBindings != null || parent.ItemSubtypeBindings != null ||
@@ -309,7 +309,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (subType is CustomTypeNode)
                 {
-                    customValueNode = subType.CreateSerializer((ValueNode) Parent);
+                    customValueNode = subType.CreateSerializer(Parent);
                     return true;
                 }
             }
@@ -384,7 +384,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void ResolveValueType()
         {
-            var parent = (TypeNode) TypeNode.Parent;
+            var parent = TypeNode.Parent;
 
             // first check for any immediate subtype information
             if (TypeNode.SubtypeBindings != null || TypeNode.SubtypeFactoryBinding != null ||
@@ -400,7 +400,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 (parent.ItemSubtypeBindings != null || parent.ItemSubtypeFactoryBinding != null ||
                  parent.ItemSubtypeDefaultAttribute != null))
             {
-                SetValueType(parent.ItemSubtypeBindings, (ValueNode) Parent, parent.ItemSubtypeAttributes,
+                SetValueType(parent.ItemSubtypeBindings, Parent, parent.ItemSubtypeAttributes,
                     parent.ItemSubtypeFactoryBinding, parent.ItemSubtypeFactory,
                     parent.ItemSubtypeDefaultAttribute);
             }

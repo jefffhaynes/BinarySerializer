@@ -35,8 +35,6 @@ namespace BinarySerialization.Graph.TypeGraph
             Construct(subType != null);
         }
 
-        public List<TypeNode> Children { get; private set; }
-
         public ConstructorInfo Constructor { get; private set; }
 
         public Func<object> CompiledConstructor { get; private set; }
@@ -108,7 +106,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             ObjectTypeNode typeNode;
 
-            var parent = (TypeNode) Parent;
+            var parent = Parent;
             if (MemberInfo != null)
             {
                 // check for custom subtype
@@ -132,7 +130,7 @@ namespace BinarySerialization.Graph.TypeGraph
         /// </summary>
         private void ConstructSubtypes()
         {
-            var parent = (TypeNode) Parent;
+            var parent = Parent;
 
             if (SubtypeAttributes != null && SubtypeAttributes.Count > 0)
             {

@@ -115,15 +115,20 @@ namespace BinarySerialization.Graph
             source.Bindings.Add(finalCallback);
         }
 
-        public ValueNode GetSource(ValueNode target)
+        public TNode GetSource<TNode>(TNode target) where TNode : Node<TNode>
         {
-            var relativeSource = (ValueNode) GetRelativeSource(target);
+            if (IsConst)
+            {
+                throw new InvalidOperationException("Binding is constant.");
+            }
+
+            var relativeSource = GetRelativeSource(target);
             return relativeSource.GetChild(Path);
         }
 
-        private Node GetRelativeSource(Node target)
+        private TNode GetRelativeSource<TNode>(TNode target) where TNode : Node<TNode>
         {
-            Node source = null;
+            TNode source = null;
 
             switch (RelativeSourceMode)
             {
@@ -139,7 +144,7 @@ namespace BinarySerialization.Graph
             return source;
         }
 
-        private Node FindAncestor(Node target)
+        private TNode FindAncestor<TNode>(TNode target) where TNode : Node<TNode>
         {
             var level = 1;
             var parent = target.Parent;

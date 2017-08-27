@@ -7,7 +7,7 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class EnumValueNode : ValueValueNode
     {
-        public EnumValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public EnumValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 

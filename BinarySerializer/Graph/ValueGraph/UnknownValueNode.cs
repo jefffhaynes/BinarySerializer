@@ -9,7 +9,7 @@ namespace BinarySerialization.Graph.ValueGraph
     {
         private object _cachedValue;
 
-        public UnknownValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public UnknownValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 
@@ -32,8 +32,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 /* Create graph as if parent were creating it */
-                var unknownTypeGraph = new RootTypeNode((TypeNode) TypeNode.Parent, valueType);
-                var unknownSerializer = (RootValueNode) unknownTypeGraph.CreateSerializer((ValueNode) Parent);
+                var unknownTypeGraph = new RootTypeNode(TypeNode.Parent, valueType);
+                var unknownSerializer = (RootValueNode) unknownTypeGraph.CreateSerializer(Parent);
                 unknownSerializer.EndiannessCallback = GetFieldEndianness;
                 unknownSerializer.EncodingCallback = GetFieldEncoding;
                 unknownSerializer.Value = value;

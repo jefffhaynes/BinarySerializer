@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -6,19 +7,21 @@ namespace BinarySerializer.Editor.ViewModels
 {
     public class ViewModelGenerator
     {
+        private Dictionary<TypeNode, FieldViewModel> _map = new Dictionary<TypeNode, FieldViewModel>();
+
         public FieldViewModel Generate(TypeNode typeNode)
         {
+            FieldViewModel fieldViewModel = null;
+
             if (typeNode is RootTypeNode rootTypeNode)
             {
-                return Generate(rootTypeNode.Child);
+                fieldViewModel = Generate(rootTypeNode.Child);
             }
-
-            if (typeNode is ValueTypeNode valueTypeNode)
+            else if (typeNode is ValueTypeNode valueTypeNode)
             {
-                return new FieldViewModel(valueTypeNode.Name, valueTypeNode.Type.ToString());
+                fieldViewModel = new FieldViewModel(valueTypeNode.Name, valueTypeNode.Type.ToString());
             }
-
-            if (typeNode is ObjectTypeNode objectTypeNode)
+            else if (typeNode is ObjectTypeNode objectTypeNode)
             {
                 var fields = objectTypeNode.Children.Select(Generate);
 
@@ -28,18 +31,40 @@ namespace BinarySerializer.Editor.ViewModels
                         .Select(key => objectTypeNode.GetSubTypeNode(key))
                         .Select(Generate).Cast<ClassViewModel>();
 
-                return new ClassViewModel(objectTypeNode.Name, objectTypeNode.Type.ToString(), fields, subTypes);
+                fieldViewModel = new ClassViewModel(objectTypeNode.Name, objectTypeNode.Type.ToString(), fields, subTypes);
             }
-
-            if (typeNode is CollectionTypeNode collectionTypeNode)
+            else if (typeNode is CollectionTypeNode collectionTypeNode)
             {
                 var subType = Generate(collectionTypeNode.Child) as ClassViewModel;
 
-                return new CollectionViewModel(collectionTypeNode.Name, collectionTypeNode.Type.ToString(),
+                fieldViewModel = new CollectionViewModel(collectionTypeNode.Name, collectionTypeNode.Type.ToString(),
                     new[] {subType});
             }
 
-            throw new NotSupportedException();
+            if (typeNode.FieldLengthBindings != null)
+            {
+                var bindingViewModels = typeNode.FieldLengthBindings.Where(binding => !binding.IsConst).Select(binding =>
+                {
+                    var sourceNode = binding.GetSource(typeNode);
+
+                    FieldViewModel sourceViewModel;
+                    if (_map.TryGetValue(sourceNode, out sourceViewModel))
+                    {
+                        return new BindingViewModel(BindingKind.Length, sourceViewModel, fieldViewModel);
+                    }
+
+                    throw new InvalidOperationException();
+                });
+
+                foreach (var bindingViewModel in bindingViewModels)
+                {
+                    fieldViewModel.Bindings.Add(bindingViewModel);
+                }
+            }
+
+            _map.Add(typeNode, fieldViewModel);
+
+            return fieldViewModel;
         }
     }
 }

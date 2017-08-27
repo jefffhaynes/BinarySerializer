@@ -8,8 +8,9 @@ namespace BinarySerializer.Editor.ViewModels
     {
         private const double ConnectorOffset = 12;
 
-        public BindingViewModel(FieldViewModel source, FieldViewModel target)
+        public BindingViewModel(BindingKind kind, FieldViewModel source, FieldViewModel target)
         {
+            Kind = kind;
             Source = source;
             Target = target;
 
@@ -17,6 +18,7 @@ namespace BinarySerializer.Editor.ViewModels
             Target.PropertyChanged += FieldOnPropertyChanged;
         }
 
+        public BindingKind Kind { get; }
         public FieldViewModel Source { get; }
         public FieldViewModel Target { get; }
 

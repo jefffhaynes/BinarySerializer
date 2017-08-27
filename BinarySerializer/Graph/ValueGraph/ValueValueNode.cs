@@ -13,7 +13,7 @@ namespace BinarySerialization.Graph.ValueGraph
         private object _cachedValue;
         private object _value;
 
-        public ValueValueNode(Node parent, string name, TypeNode typeNode)
+        public ValueValueNode(ValueNode parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
         }

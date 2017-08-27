@@ -119,6 +119,7 @@
     <Compile Include="Test\PngImageHeaderChunk.cs" />
     <Compile Include="Test\PngPaletteChunk.cs" />
     <Compile Include="Test\PngUnknownChunk.cs" />
+    <Compile Include="ViewModels\BindingKind.cs" />
     <Compile Include="ViewModels\BindingViewModel.cs" />
     <Compile Include="ViewModels\ClassViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />

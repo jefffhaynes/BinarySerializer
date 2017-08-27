@@ -10,7 +10,7 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal abstract class CollectionValueNode : CollectionValueNodeBase
     {
-        protected CollectionValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        protected CollectionValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 
