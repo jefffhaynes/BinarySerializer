@@ -47,8 +47,13 @@ namespace BinarySerializer.Editor.ViewModels
 
             var generator = new GraphGenerator();
             var graph = generator.GenerateGraph(typeof(Png));
+
+            var viewModelGenerator = new ViewModelGenerator();
+            Root = viewModelGenerator.Generate(graph) as ClassViewModel;
         }
 
         public ClassViewModel Root { get; set; }
+
+        
     }
 }

@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal abstract class CollectionTypeNode : ContainerTypeNode
+    public abstract class CollectionTypeNode : ContainerTypeNode
     {
         private Lazy<TypeNode> _lazyChild;
 

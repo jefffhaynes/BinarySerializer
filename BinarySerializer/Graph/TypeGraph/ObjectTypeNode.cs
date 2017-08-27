@@ -7,7 +7,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal class ObjectTypeNode : ContainerTypeNode
+    public class ObjectTypeNode : ContainerTypeNode
     {
         private const BindingFlags MemberBindingFlags =
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;

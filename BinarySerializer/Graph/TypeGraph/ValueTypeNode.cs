@@ -4,7 +4,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal class ValueTypeNode : TypeNode
+    public class ValueTypeNode : TypeNode
     {
         public ValueTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
