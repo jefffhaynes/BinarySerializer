@@ -105,6 +105,7 @@
       <DependentUpon>FieldControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\FieldTemplateSelector.cs" />
+    <Compile Include="Converters\ConstBindingsConverter.cs" />
     <Compile Include="Converters\GreaterThanZeroConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -124,6 +125,7 @@
     <Compile Include="ViewModels\ClassViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModelBase.cs" />
+    <Compile Include="ViewModels\ConstBindingViewModel.cs" />
     <Compile Include="ViewModels\FieldViewModel.cs" />
     <Compile Include="ViewModels\PrimitiveCollectionViewModelBase.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />

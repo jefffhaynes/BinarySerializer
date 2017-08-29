@@ -4,7 +4,19 @@
     {
         Length,
         Count,
+        LeftAlignment,
+        RightAlignment,
+        Scale,
+        Endianness,
+        Encoding,
+        Value,
+        Offset,
         Subtype,
-        Value
+        When,
+        WhenNot,
+        Until,
+        ItemLength,
+        ItemSubtype,
+        ItemSerializeUntil
     }
 }

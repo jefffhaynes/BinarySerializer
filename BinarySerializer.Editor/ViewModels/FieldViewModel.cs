@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.Foundation;
@@ -54,6 +55,8 @@ namespace BinarySerializer.Editor.ViewModels
 
         public ObservableCollection<BindingViewModel> Bindings { get; } = new ObservableCollection<BindingViewModel>();
 
+        public ObservableCollection<ConstBindingViewModel> ConstBindings { get; } = new ObservableCollection<ConstBindingViewModel>();
+
         public virtual IEnumerable<BindingViewModel> AllBindings => Bindings;
 
         public Point AnchorPoint
@@ -76,8 +79,16 @@ namespace BinarySerializer.Editor.ViewModels
             {
                 {BindingKind.Length, TypeNode.FieldLengthBindings},
                 {BindingKind.Count, TypeNode.FieldCountBindings},
+                {BindingKind.LeftAlignment, TypeNode.LeftFieldAlignmentBindings },
+                {BindingKind.RightAlignment, TypeNode.RightFieldAlignmentBindings },
+                {BindingKind.Scale, TypeNode.FieldScaleBindings },
+                {BindingKind.Endianness, TypeNode.FieldEndiannessBindings },
+                {BindingKind.Encoding, TypeNode.FieldEncodingBindings },
+                {BindingKind.Value, TypeNode.FieldValueBindings},
+                {BindingKind.Offset, TypeNode.FieldOffsetBindings },
                 {BindingKind.Subtype, TypeNode.SubtypeBindings},
-                {BindingKind.Value, TypeNode.FieldValueBindings}
+                {BindingKind.ItemLength, TypeNode.ItemLengthBindings },
+                {BindingKind.ItemSubtype, TypeNode.ItemSubtypeBindings }
             };
 
             foreach (var bindingCollection in bindingCollections)
@@ -113,6 +124,14 @@ namespace BinarySerializer.Editor.ViewModels
             foreach (var bindingViewModel in bindingViewModels)
             {
                 Bindings.Add(bindingViewModel);
+            }
+
+            var constBindings = bindings.Where(binding => binding.IsConst)
+                .Select(binding => new ConstBindingViewModel(kind, Convert.ToInt32(binding.ConstValue)));
+
+            foreach (var constBindingViewModel in constBindings)
+            {
+                ConstBindings.Add(constBindingViewModel);
             }
         }
 

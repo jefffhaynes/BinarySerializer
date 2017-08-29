@@ -11,6 +11,7 @@
     d:DesignWidth="400">
     <UserControl.Resources>
         <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
+        <converters:ConstBindingsConverter x:Key="ConstBindingsConverter"/>
     </UserControl.Resources>
 
     <Grid Background="LightGray">
@@ -29,6 +30,10 @@
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="Padding" Value="6"/>
+                    <!--<Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="Background" Value="White"/>
+                    <Setter Property="Margin" Value="0,0,16,0"/>-->
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplateSelector>
@@ -38,10 +43,12 @@
                             <Grid BorderBrush="Black" Margin="0,0,16,0" BorderThickness="1" Background="White">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Margin="6" Text="{Binding Name}"/>
-                                <controls:FieldControl Grid.Column="1" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}"/>
+                                <TextBlock Grid.Column="1" Margin="0,6" Text="{Binding ConstBindings, Converter={StaticResource ConstBindingsConverter}}"/>
+                                <controls:FieldControl Grid.Column="2" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}"/>
                             </Grid>
                         </DataTemplate>
                     </controls:FieldTemplateSelector.ValueTemplate>
