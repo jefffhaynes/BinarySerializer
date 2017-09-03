@@ -16,6 +16,7 @@
     <Authors>Jeff Haynes</Authors>
     <Company />
     <RootNamespace>BinarySerialization</RootNamespace>
+    <PackageIconUrl>https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/bs.png</PackageIconUrl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
