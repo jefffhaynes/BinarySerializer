@@ -71,11 +71,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
+            ThrowIfUnordered();
             ObjectSerializeOverride(stream, eventShuttle);
         }
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
+            ThrowIfUnordered();
             ResolveValueType();
 
             // skip over if null (this may happen if subtypes are unknown during deserialization)
@@ -471,6 +473,19 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 eventShuttle.OnMemberDeserializing(this, child.Name, lazyContext,
                     stream.GlobalPosition, stream.RelativePosition);
+            }
+        }
+
+        private void ThrowIfUnordered()
+        {
+            var objectTypeNode = (ObjectTypeNode)TypeNode;
+            var unorderedChild = objectTypeNode.UnorderedChildren?.FirstOrDefault();
+            if (unorderedChild != null)
+            {
+                throw new InvalidOperationException(
+                    $"'{unorderedChild.Name}' does not have a FieldOrder attribute.  " +
+                    "All serializable fields or properties in a class with more than one member must specify a FieldOrder attribute.");
+
             }
         }
     }

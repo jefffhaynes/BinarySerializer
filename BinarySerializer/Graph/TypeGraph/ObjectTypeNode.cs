@@ -43,6 +43,8 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public IDictionary<Type, object> SubTypeKeys { get; private set; }
 
+        public List<TypeNode> UnorderedChildren { get; private set; }
+        
         public ObjectTypeNode GetSubTypeNode(Type type)
         {
             // trivial case, nothing to do
@@ -236,21 +238,15 @@ namespace BinarySerialization.Graph.TypeGraph
 
             if (serializableChildren.Count > 1)
             {
-                var unorderedChild = serializableChildren.FirstOrDefault(child => child.Order == null);
+                var orderedChildren = serializableChildren.Where(child => child.Order != null).ToList();
+                var orderGroups = orderedChildren.GroupBy(child => child.Order);
 
-                if (unorderedChild != null)
-                {
-                    throw new InvalidOperationException(
-                        $"'{unorderedChild.Name}' does not have a FieldOrder attribute.  " +
-                        "All serializable fields or properties in a class with more than one member must specify a FieldOrder attribute.");
-                }
-
-                var orderGroups = serializableChildren.GroupBy(child => child.Order);
-
-                if (orderGroups.Count() != serializableChildren.Count)
+                if (orderGroups.Count() != orderedChildren.Count)
                 {
                     throw new InvalidOperationException("All fields must have a unique order number.");
                 }
+
+                UnorderedChildren = serializableChildren.Where(child => child.Order == null).ToList();
             }
 
             if (parentType.GetTypeInfo().BaseType != null)
