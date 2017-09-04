@@ -123,7 +123,7 @@ namespace BinarySerializer.Editor.ViewModels
 
             foreach (var bindingViewModel in bindingViewModels)
             {
-                Bindings.Add(bindingViewModel);
+                bindingViewModel.Source.Bindings.Add(bindingViewModel);
             }
 
             var constBindings = bindings.Where(binding => binding.IsConst)
@@ -134,7 +134,5 @@ namespace BinarySerializer.Editor.ViewModels
                 ConstBindings.Add(constBindingViewModel);
             }
         }
-
-        ////public string TypeName => Type.Name;
     }
 }

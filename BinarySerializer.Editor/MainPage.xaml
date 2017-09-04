@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        
+
         <controls:ClassControl DataContext="{Binding Root, FallbackValue={x:Null}}"/>
 
         <ItemsControl ItemsSource="{Binding Root.AllBindings}">

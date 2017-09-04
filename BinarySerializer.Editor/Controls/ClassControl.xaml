@@ -12,6 +12,7 @@
     <UserControl.Resources>
         <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
         <converters:ConstBindingsConverter x:Key="ConstBindingsConverter"/>
+        <converters:BindingListConverter x:Key="BindingListConverter"/>
     </UserControl.Resources>
 
     <Grid Background="LightGray">
@@ -40,15 +41,23 @@
                 <controls:FieldTemplateSelector>
                     <controls:FieldTemplateSelector.ValueTemplate>
                         <DataTemplate>
-                            <Grid BorderBrush="Black" Margin="0,0,16,0" BorderThickness="1" Background="White">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid BorderBrush="Black" BorderThickness="1" Background="White">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
                                 <TextBlock Margin="6" Text="{Binding Name}"/>
                                 <TextBlock Grid.Column="1" Margin="0,6" Text="{Binding ConstBindings, Converter={StaticResource ConstBindingsConverter}}"/>
                                 <controls:FieldControl Grid.Column="2" AnchorPoint="{Binding AnchorPoint, Mode=TwoWay}"/>
+                                </Grid>
+                                <TextBlock Grid.Column="1" Margin="2,0,0,0" VerticalAlignment="Top" Text="{Binding Bindings, Converter={StaticResource BindingListConverter}}" 
+                                           FontSize="13"/>
                             </Grid>
                         </DataTemplate>
                     </controls:FieldTemplateSelector.ValueTemplate>
