@@ -1,7 +1,9 @@
-﻿namespace BinarySerializer.Editor.Test
+﻿using System.Collections.Generic;
+
+namespace BinarySerializer.Editor.Test
 {
     public class PngPaletteChunk : PngChunk
     {
-        public byte[] Data { get; set; }
+        public List<PngRgb> PaletteEntry { get; set; }
     }
 }
