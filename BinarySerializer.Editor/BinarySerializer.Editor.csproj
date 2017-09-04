@@ -116,9 +116,11 @@
     <Compile Include="Test\PngChunk.cs" />
     <Compile Include="Test\PngChunkContainer.cs" />
     <Compile Include="Test\PngChunkPayload.cs" />
+    <Compile Include="Test\PngColorType.cs" />
     <Compile Include="Test\PngImageDataChunk.cs" />
     <Compile Include="Test\PngImageHeaderChunk.cs" />
     <Compile Include="Test\PngPaletteChunk.cs" />
+    <Compile Include="Test\PngRgb.cs" />
     <Compile Include="Test\PngUnknownChunk.cs" />
     <Compile Include="ViewModels\BindingKind.cs" />
     <Compile Include="ViewModels\BindingViewModel.cs" />
