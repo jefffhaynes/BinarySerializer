@@ -30,11 +30,10 @@ namespace BinarySerializer.Editor.ViewModels
             {
                 var fields = objectTypeNode.Children.Select(node => Generate(node, map));
 
-                var subTypes = objectTypeNode.SubTypeKeys == null
-                    ? Enumerable.Empty<ClassViewModel>()
-                    : objectTypeNode.SubTypeKeys.Keys
-                        .Select(key => objectTypeNode.GetSubTypeNode(key))
-                        .Select(node => Generate(node, map)).Cast<ClassViewModel>();
+                var subTypes = objectTypeNode.SubTypeKeys?.Keys
+                                   .Select(key => objectTypeNode.GetSubTypeNode(key))
+                                   .Select(node => Generate(node, map)).Cast<ClassViewModel>() ??
+                               Enumerable.Empty<ClassViewModel>();
 
                 fieldViewModel = new ClassViewModel(objectTypeNode, fields, subTypes);
             }

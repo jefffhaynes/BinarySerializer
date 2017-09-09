@@ -1,6 +1,6 @@
 ﻿namespace BinarySerializer.Editor.Test
 {
-    public enum PngColorType : byte
+    public enum PngColorMode : byte
     {
         Greyscale = 0,
         Truecolor = 2,

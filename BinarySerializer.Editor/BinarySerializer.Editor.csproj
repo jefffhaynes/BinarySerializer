@@ -108,6 +108,7 @@
     <Compile Include="Converters\BindingListConverter.cs" />
     <Compile Include="Converters\ConstBindingsConverter.cs" />
     <Compile Include="Converters\GreaterThanZeroConverter.cs" />
+    <Compile Include="Converters\SerializedTypeConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -117,11 +118,12 @@
     <Compile Include="Test\PngChunk.cs" />
     <Compile Include="Test\PngChunkContainer.cs" />
     <Compile Include="Test\PngChunkPayload.cs" />
-    <Compile Include="Test\PngColorType.cs" />
+    <Compile Include="Test\PngColorMode.cs" />
     <Compile Include="Test\PngImageDataChunk.cs" />
     <Compile Include="Test\PngImageHeaderChunk.cs" />
     <Compile Include="Test\PngPaletteChunk.cs" />
     <Compile Include="Test\PngRgb.cs" />
+    <Compile Include="Test\PngTextChunk.cs" />
     <Compile Include="Test\PngUnknownChunk.cs" />
     <Compile Include="ViewModels\BindingKind.cs" />
     <Compile Include="ViewModels\BindingViewModel.cs" />

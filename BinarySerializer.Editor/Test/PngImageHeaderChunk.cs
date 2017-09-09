@@ -14,7 +14,7 @@ namespace BinarySerializer.Editor.Test
         public byte BitDepth { get; set; }
 
         [FieldOrder(3)]
-        public PngColorType ColorType { get; set; }
+        public PngColorMode ColorMode { get; set; }
 
         [FieldOrder(4)]
         public byte CompressionMethod { get; set; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.Foundation;
+using BinarySerialization;
 using BinarySerialization.Graph;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -22,6 +23,7 @@ namespace BinarySerializer.Editor.ViewModels
             Name = typeNode.Name;
             Type = typeNode.Type.Name;
             TypeNode = typeNode;
+            SerializedType = typeNode.GetSerializedType();
         }
 
         public string Name
@@ -52,6 +54,8 @@ namespace BinarySerializer.Editor.ViewModels
                 OnPropertyChanged();
             }
         }
+        
+        public SerializedType SerializedType { get; set; }
 
         public ObservableCollection<BindingViewModel> Bindings { get; } = new ObservableCollection<BindingViewModel>();
 
@@ -121,7 +125,7 @@ namespace BinarySerializer.Editor.ViewModels
                     return null;
                 });
 
-            foreach (var bindingViewModel in bindingViewModels)
+            foreach (var bindingViewModel in bindingViewModels.Where(binding => binding != null))
             {
                 bindingViewModel.Source.Bindings.Add(bindingViewModel);
             }
