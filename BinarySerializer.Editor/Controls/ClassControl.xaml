@@ -53,10 +53,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Margin="6" Text="{Binding Name}"/>
-                                    <TextBlock Grid.Column="1" Margin="0,6,6,6" Text="{Binding ConstBindings, Converter={StaticResource ConstBindingsConverter}}"/>
+                                    <TextBlock Margin="6,6,0,6" Text="{Binding Name}"/>
+                                    <TextBlock Grid.Column="1" Margin="6" Text="{Binding ConstBindings, Converter={StaticResource ConstBindingsConverter}}"/>
 
-                                    <controls:FieldControl Grid.Column="2" Margin="0,6,6,6" AnchorPoint="{x:Bind AnchorPoint, Mode=TwoWay}"/>
+                                    <controls:FieldControl Grid.Column="2" AnchorPoint="{x:Bind AnchorPoint, Mode=TwoWay}"/>
                                 </Grid>
                                 <TextBlock Grid.Column="1" Margin="2,0,0,0" VerticalAlignment="Top" Text="{Binding Bindings, Converter={StaticResource BindingListConverter}}" 
                                            FontSize="13"/>
@@ -106,7 +106,15 @@
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <controls:ClassControl/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <controls:ClassControl/>
+                            <!--<TextBlock Grid.Row="1" Margin="6" Text="OR"/>-->
+                        </Grid>
+                        
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

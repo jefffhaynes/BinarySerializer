@@ -5,7 +5,7 @@ using IValueConverter = Windows.UI.Xaml.Data.IValueConverter;
 
 namespace BinarySerializer.Editor.Converters
 {
-    public class SerializedTypeConverter : IValueConverter
+    public class TypeDescriptionConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -31,11 +31,11 @@ namespace BinarySerializer.Editor.Converters
                 case SerializedType.ByteArray:
                     return "Byte array";
                 case SerializedType.SizedString:
-                    return "Fixed size string";
+                    return "String";
                 case SerializedType.NullTerminatedString:
-                    return "Null terminated string";
+                    return "Null-terminated string";
                 case SerializedType.LengthPrefixedString:
-                    return "Length prefixed string";
+                    return "Length-prefixed string";
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
     <UserControl.Resources>
-        <converters:SerializedTypeConverter x:Key="SerializedTypeConverter"/>
+        <converters:TypeDescriptionConverter x:Key="SerializedTypeConverter"/>
     </UserControl.Resources>
-    <TextBlock Text="{Binding Converter={StaticResource SerializedTypeConverter}}" FontWeight="Bold"/>
+    <TextBlock Margin="0,6,6,6" Text="{Binding Converter={StaticResource SerializedTypeConverter}}" FontWeight="Bold"/>
 </UserControl>
