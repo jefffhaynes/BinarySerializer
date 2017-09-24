@@ -14,6 +14,7 @@ namespace BinarySerializer.Editor.Test
         [Subtype("ChunkType", "PLTE", typeof(PngPaletteChunk))]
         [Subtype("ChunkType", "IDAT", typeof(PngImageDataChunk))]
         [Subtype("ChunkType", "tEXt", typeof(PngTextChunk))]
+        [Subtype("ChunkType", "iTxt", typeof(PngInternationalTextChunk))]
         [SubtypeDefault(typeof(PngUnknownChunk))]
         public PngChunk Chunk { get; set; }
     }
