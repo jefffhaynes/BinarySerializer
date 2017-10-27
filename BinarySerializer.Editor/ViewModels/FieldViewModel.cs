@@ -57,11 +57,9 @@ namespace BinarySerializer.Editor.ViewModels
         
         public SerializedType SerializedType { get; set; }
 
-        public ObservableCollection<BindingViewModel> Bindings { get; } = new ObservableCollection<BindingViewModel>();
+        public virtual ObservableCollection<BindingViewModel> Bindings { get; } = new ObservableCollection<BindingViewModel>();
 
         public ObservableCollection<ConstBindingViewModel> ConstBindings { get; } = new ObservableCollection<ConstBindingViewModel>();
-
-        public virtual IEnumerable<BindingViewModel> AllBindings => Bindings;
 
         public Point AnchorPoint
         {
@@ -116,13 +114,9 @@ namespace BinarySerializer.Editor.ViewModels
                 {
                     var sourceNode = binding.GetSource(typeNode);
 
-                    FieldViewModel sourceViewModel;
-                    if (map.TryGetValue(sourceNode, out sourceViewModel))
-                    {
-                        return new BindingViewModel(kind, sourceViewModel, this);
-                    }
-
-                    return null;
+                    return map.TryGetValue(sourceNode, out var sourceViewModel)
+                        ? new BindingViewModel(kind, sourceViewModel, this)
+                        : null;
                 });
 
             foreach (var bindingViewModel in bindingViewModels.Where(binding => binding != null))

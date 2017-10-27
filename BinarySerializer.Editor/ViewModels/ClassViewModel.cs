@@ -17,17 +17,6 @@ namespace BinarySerializer.Editor.ViewModels
 
         public ObservableCollection<FieldViewModel> Fields { get; }
 
-
-        public override IEnumerable<BindingViewModel> AllBindings
-        {
-            get
-            {
-                var subTypeBindings = SubTypes.SelectMany(subType => subType.AllBindings);
-                var fieldBindings = Fields.SelectMany(c => c.AllBindings);
-                return Bindings.Concat(subTypeBindings.Concat(fieldBindings));
-            }
-        }
-
         public override void Bind(IDictionary<TypeNode, FieldViewModel> map)
         {
             base.Bind(map);
@@ -37,5 +26,8 @@ namespace BinarySerializer.Editor.ViewModels
                 fieldViewModel.Bind(map);
             }
         }
+
+        public override ObservableCollection<BindingViewModel> Bindings =>
+            new ObservableCollection<BindingViewModel>(Fields.SelectMany(field => field.Bindings));
     }
 }

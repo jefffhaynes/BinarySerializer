@@ -21,9 +21,18 @@ namespace BinarySerializer.Editor.Controls
             LayoutUpdated += OnLayoutUpdated;
         }
 
+
         private void OnLayoutUpdated(object sender, object o)
         {
-            AnchorPoint = TransformToVisual(Window.Current.Content).TransformPoint(new Point(ActualWidth, ActualHeight / 2));
+            var page = GetPage();
+            AnchorPoint = TransformToVisual(page).TransformPoint(new Point(ActualWidth, ActualHeight / 2));
+        }
+
+        private Page _page;
+
+        private Page GetPage()
+        {
+            return _page ?? (_page = this.FindVisualParent<Page>());
         }
     }
 }
