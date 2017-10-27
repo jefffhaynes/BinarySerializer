@@ -27,7 +27,9 @@ namespace BinarySerializer.Editor.ViewModels
             }
         }
 
+        // TODO this seems weird...seems like there should be a better way
         public override ObservableCollection<BindingViewModel> Bindings =>
-            new ObservableCollection<BindingViewModel>(Fields.SelectMany(field => field.Bindings));
+            new ObservableCollection<BindingViewModel>(Fields.Where(field => field.GetType() != typeof(ClassViewModel))
+                .SelectMany(field => field.Bindings));
     }
 }

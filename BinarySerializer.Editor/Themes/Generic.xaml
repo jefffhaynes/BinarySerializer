@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Expander" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
 
     <Style x:Key="HeaderToggleButtonStyle" TargetType="ToggleButton">
@@ -222,60 +222,5 @@
         </Setter>
     </Style>
 
-    <Style TargetType="local:Expander">
-        <Setter Property="ExpanderToggleButtonStyle" Value="{StaticResource HeaderToggleButtonStyle}" />
-        <Setter Property="HeaderButtonStyle" Value="{StaticResource HeaderButtonStyle}" />
-        <Setter Property="HeaderButtonContent" Value="Header" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="local:Expander">
-                    <Grid d:DesignWidth="600" d:DesignHeight="400">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal" />
-                                <VisualState x:Name="ReadOnly" />
-                                <VisualState x:Name="MouseOver" />
-                                <VisualState x:Name="Disabled" />
-                                <VisualState x:Name="Enabled" />
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="HeaderStates">
-                                <VisualState x:Name="HeaderExpanderMouseOver" />
-                                <VisualState x:Name="HeaderSelectorMouseOver" />
-                                <VisualState x:Name="HeaderExpanderPressed" />
-                                <VisualState x:Name="HeaderSelectorPressed" />
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="ContentStates">
-                                <VisualState x:Name="ContentExpanded" />
-                                <VisualState x:Name="ContentCollapsed" />
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                        <Grid Grid.RowSpan="2" VerticalAlignment="Top">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" x:Name="PART_MainContentRow" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Button x:Name="PART_HeaderButton" VerticalAlignment="Stretch"
-                                    d:LayoutOverrides="Height" Style="{TemplateBinding HeaderButtonStyle}"
-                                    HorizontalAlignment="Stretch">
-                                <ContentPresenter Content="{TemplateBinding HeaderButtonContent}" Margin="5,0,0,0" />
-                            </Button>
-                            <ToggleButton x:Name="PART_ExpanderToggleButton" Height="40"
-                                          Style="{TemplateBinding ExpanderToggleButtonStyle}" VerticalAlignment="Top"
-                                          Width="40" Grid.Column="1" FontFamily="Segoe MDL2 Assets" Content="&#xE011;">
-                            </ToggleButton>
-                            <ContentPresenter Content="{TemplateBinding Content}" Grid.ColumnSpan="3" Grid.Row="1" />
-                        </Grid>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+   
 </ResourceDictionary>
