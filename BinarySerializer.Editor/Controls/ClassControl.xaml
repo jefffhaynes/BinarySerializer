@@ -139,19 +139,6 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <controls:BindingControl Source="{Binding Source.AnchorPoint}" Target="{Binding Target.AnchorPoint}"/>
-                    <!--<Path Stroke="Orange" StrokeThickness="2" StrokeLineJoin="Round">
-                        <Path.Data>
-                            <PathGeometry>
-                                <PathGeometry.Figures>
-                                    <PathFigure StartPoint="{Binding Source.AnchorPoint}">
-                                        <LineSegment Point="{Binding SourceCornerPoint}"/>
-                                        <LineSegment Point="{Binding TargetCornerPoint}"/>
-                                        <LineSegment Point="{Binding Target.AnchorPoint}"/>
-                                    </PathFigure>
-                                </PathGeometry.Figures>
-                            </PathGeometry>
-                        </Path.Data>
-                    </Path>-->
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

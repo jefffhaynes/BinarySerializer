@@ -26,20 +26,8 @@ namespace BinarySerializer.Editor.Controls
         public static readonly DependencyProperty TargetCornerProperty = DependencyProperty.Register(
             "TargetCorner", typeof(Point), typeof(BindingControl), new PropertyMetadata(default(Point)));
 
-        public Point TargetCorner
-        {
-            get => (Point) GetValue(TargetCornerProperty);
-            set => SetValue(TargetCornerProperty, value);
-        }
-
         public static readonly DependencyProperty SourceCornerProperty = DependencyProperty.Register(
             "SourceCorner", typeof(Point), typeof(BindingControl), new PropertyMetadata(default(Point)));
-
-        public Point SourceCorner
-        {
-            get => (Point) GetValue(SourceCornerProperty);
-            set => SetValue(SourceCornerProperty, value);
-        }
 
         private ItemsControl _itemsControl;
 
@@ -49,6 +37,18 @@ namespace BinarySerializer.Editor.Controls
         public BindingControl()
         {
             InitializeComponent();
+        }
+
+        public Point TargetCorner
+        {
+            get => (Point) GetValue(TargetCornerProperty);
+            set => SetValue(TargetCornerProperty, value);
+        }
+
+        public Point SourceCorner
+        {
+            get => (Point) GetValue(SourceCornerProperty);
+            set => SetValue(SourceCornerProperty, value);
         }
 
         public Point Target
@@ -97,7 +97,7 @@ namespace BinarySerializer.Editor.Controls
             var transform = page.TransformToVisual(itemsControl);
             TransformedTarget = transform.TransformPoint(Target);
             TransformedSource = transform.TransformPoint(Source);
-            
+
             var connectorX = Math.Max(TransformedTarget.X, TransformedSource.X) + ConnectorOffset;
 
             TargetCorner = new Point(connectorX, TransformedTarget.Y);

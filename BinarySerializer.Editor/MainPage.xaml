@@ -8,35 +8,8 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
         <ScrollViewer>
             <controls:ClassControl DataContext="{Binding Root, FallbackValue={x:Null}}"/>
         </ScrollViewer>
-
-        <!--<ItemsControl ItemsSource="{Binding Root.AllBindings}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Path Stroke="Orange" StrokeThickness="2" StrokeLineJoin="Round">
-                        <Path.Data>
-                            --><!--<LineGeometry StartPoint="{Binding Source.AnchorPoint}" EndPoint="{Binding Target.AnchorPoint}"></LineGeometry>--><!--
-                            <PathGeometry>
-                                <PathGeometry.Figures>
-                                    <PathFigure StartPoint="{Binding Source.AnchorPoint}">
-                                        <LineSegment Point="{Binding SourceCornerPoint}"/>
-                                        <LineSegment Point="{Binding TargetCornerPoint}"/>
-                                        <LineSegment Point="{Binding Target.AnchorPoint}"/>
-                                    </PathFigure>
-                                </PathGeometry.Figures>
-                            </PathGeometry>
-                        </Path.Data>
-                    </Path>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>-->
     </Grid>
 </Page>
