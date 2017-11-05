@@ -95,8 +95,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             lock (ContextCacheLock)
             {
-                RootTypeNode graph;
-                if (ContextCache.TryGetValue(valueType, out graph))
+                if (ContextCache.TryGetValue(valueType, out var graph))
                 {
                     return graph;
                 }

@@ -4,7 +4,7 @@
     {
         [FieldOrder(0)]
         [FieldLength(3)]
-        [SerializeAs(SerializedType.NullTerminatedString)]
+        [SerializeAs(SerializedType.TerminatedString)]
         public string Field { get; set; }
 
         [FieldOrder(1)]

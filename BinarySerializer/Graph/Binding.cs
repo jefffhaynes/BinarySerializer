@@ -12,8 +12,7 @@ namespace BinarySerialization.Graph
             Path = attribute.Path;
             BindingMode = attribute.BindingMode;
 
-            var constAttribute = attribute as IConstAttribute;
-            if (constAttribute != null && Path == null)
+            if (attribute is IConstAttribute constAttribute && Path == null)
             {
                 IsConst = true;
                 _constValue = constAttribute.GetConstValue();
@@ -180,8 +179,8 @@ namespace BinarySerialization.Graph
         {
             return ValueConverter.ConvertBack(value, ConverterParameter, context);
         }
-
-        // ReSharper disable UnusedParameter.Local
+        
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private void CheckSource(ValueNode source)
         {
             if (!source.Visited && !SupportsDeferredEvaluation)
@@ -190,6 +189,5 @@ namespace BinarySerialization.Graph
                     "This attribute does not support forward binding.  Consider specifying a BindingMode of OneWayToSource.");
             }
         }
-        // ReSharper restore UnusedParameter.Local
     }
 }

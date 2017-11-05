@@ -44,9 +44,12 @@ namespace BinarySerialization.Graph.TypeGraph
 
             /* If any are specified, build dictionary of them one time */
             if (enumAttributes.Any(enumAttribute => enumAttribute.Value != null) ||
-                serializedType == SerializedType.NullTerminatedString ||
+                serializedType == SerializedType.TerminatedString ||
                 serializedType == SerializedType.SizedString ||
-                serializedType == SerializedType.LengthPrefixedString)
+                serializedType == SerializedType.LengthPrefixedString ||
+#pragma warning disable 618
+                serializedType == SerializedType.NullTerminatedString)
+#pragma warning restore 618
             {
                 EnumInfo.EnumValues = enumAttributes.ToDictionary(enumAttribute => enumAttribute.Key,
                     enumAttribute =>
@@ -75,7 +78,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     }
                     else
                     {
-                        EnumInfo.SerializedType = SerializedType.NullTerminatedString;
+                        EnumInfo.SerializedType = SerializedType.TerminatedString;
                     }
                 }
                 else if (serializedType == SerializedType.SizedString)

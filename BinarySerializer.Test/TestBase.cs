@@ -85,6 +85,21 @@ namespace BinarySerialization.Test
             return Deserialize<T>(stream);
         }
 
+        protected T RoundtripBigEndian<T>(T o, byte[] expectedValue)
+        {
+            PrintSerialize(typeof(T));
+            var stream = new MemoryStream();
+            SerializerBe.Serialize(stream, o);
+
+            stream.Position = 0;
+            var data = stream.ToArray();
+
+            AssertEqual(expectedValue, data);
+
+            PrintDeserialize(typeof(T));
+            return SerializerBe.Deserialize<T>(stream);
+        }
+
         private void AssertEqual(byte[] expected, byte[] actual)
         {
             var length = Math.Min(expected.Length, actual.Length);

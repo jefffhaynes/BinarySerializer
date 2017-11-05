@@ -7,7 +7,7 @@ namespace BinarySerializer.Test.Issues.Issue57
     public class Issue57Tests : TestBase
     {
         [Fact]
-        public void Roundtrip()
+        public void RoundtripFloat()
         {
             var expected = new BigEndianFloatClass
             {

@@ -440,8 +440,7 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 var subTypeFactoryValue = subtypeFactoryBinding.GetValue(bindingTarget);
 
-                Type valueType;
-                if (subtypeFactory.TryGetType(subTypeFactoryValue, out valueType))
+                if (subtypeFactory.TryGetType(subTypeFactoryValue, out var valueType))
                 {
                     _valueType = valueType;
                 }

@@ -1,4 +1,6 @@
-﻿namespace BinarySerialization
+﻿using System;
+
+namespace BinarySerialization
 {
     /// <summary>
     ///     Used to control how primitive values are serialized and interpreted.
@@ -77,7 +79,13 @@
         /// <summary>
         ///     An encoded string with a null (zero byte) termination.
         /// </summary>
+        [Obsolete("Use TerminatedString")]
         NullTerminatedString,
+
+        /// <summary>
+        ///     An encoded string with a terminator, which is null (zero) by default or can be specified by setting StringTerminator.
+        /// </summary>
+        TerminatedString,
 
         /// <summary>
         ///     An encoded string prefixed with a LEB128-encoded length.  This is equivalent to how BinaryWriter encodes a string.

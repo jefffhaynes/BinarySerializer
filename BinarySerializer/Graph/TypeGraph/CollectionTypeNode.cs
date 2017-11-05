@@ -39,8 +39,7 @@ namespace BinarySerialization.Graph.TypeGraph
             ChildType = GetChildType();
             CompiledChildConstructor = CreateCompiledConstructor(ChildType);
 
-            object terminationValue;
-            TerminationChild = GetTerminationChild(out terminationValue);
+            TerminationChild = GetTerminationChild(out var terminationValue);
             TerminationValue = terminationValue;
 
             _lazyChild = new Lazy<TypeNode>(() => GenerateChild(ChildType));

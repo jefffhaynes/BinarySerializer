@@ -24,6 +24,15 @@ namespace BinarySerialization.Test.Enums
         }
 
         [Fact]
+        public void EnumAsStringTest2()
+        {
+            var expected = new BaseTypeEnumAsStringClass2 { Field = BaseTypeEnumValues.B };
+            var actual = Roundtrip(expected, new byte[] { (byte)'B', 0x1 });
+
+            Assert.Equal(expected.Field, actual.Field);
+        }
+
+        [Fact]
         public void NamedEnumTest()
         {
             var expected = new NamedEnumClass {Field = NamedEnumValues.B};

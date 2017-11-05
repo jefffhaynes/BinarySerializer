@@ -8,7 +8,13 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ScrollViewer>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="100" MaxWidth="400"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox Name="CodeTextBox" Margin="6" TextChanged="TextBox_OnTextChanged" AcceptsReturn="True"/>
+        <ScrollViewer Grid.Column="1">
             <controls:ClassControl DataContext="{Binding Root, FallbackValue={x:Null}}"/>
         </ScrollViewer>
     </Grid>

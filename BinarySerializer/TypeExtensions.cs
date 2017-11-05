@@ -47,8 +47,7 @@ namespace BinarySerialization
                 }
             }
 
-            Func<object, object> converter;
-            if (TypeConverters.TryGetValue(type, out converter))
+            if (TypeConverters.TryGetValue(type, out var converter))
             {
                 return converter(value);
             }

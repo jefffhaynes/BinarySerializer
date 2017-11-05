@@ -28,9 +28,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     value = Bindings[0].Invoke();
 
-                    var enumerableValue = value as IEnumerable;
-
-                    if (enumerableValue == null)
+                    if (!(value is IEnumerable enumerableValue))
                     {
                         throw new InvalidOperationException(
                             "Complex types cannot be binding sources for scalar values.");

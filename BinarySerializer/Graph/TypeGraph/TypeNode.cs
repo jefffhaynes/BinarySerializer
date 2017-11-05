@@ -26,7 +26,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 {typeof(ulong), SerializedType.UInt8},
                 {typeof(float), SerializedType.Float4},
                 {typeof(double), SerializedType.Float8},
-                {typeof(string), SerializedType.NullTerminatedString},
+                {typeof(string), SerializedType.TerminatedString},
                 {typeof(byte[]), SerializedType.ByteArray}
             };
 
@@ -44,7 +44,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 {SerializedType.UInt8, default(ulong)},
                 {SerializedType.Float4, default(float)},
                 {SerializedType.Float8, default(double)},
-                {SerializedType.NullTerminatedString, default(string)},
+                {SerializedType.TerminatedString, default(string)},
                 {SerializedType.SizedString, default(string)},
                 {SerializedType.LengthPrefixedString, default(string)},
                 {SerializedType.ByteArray, default(byte[])}
@@ -128,9 +128,13 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 _serializedType = serializeAsAttribute.SerializedType;
 
-                if (_serializedType.Value == SerializedType.NullTerminatedString)
+                if (_serializedType.Value == SerializedType.TerminatedString ||
+#pragma warning disable 618
+                    _serializedType.Value == SerializedType.NullTerminatedString)
+#pragma warning restore 618
                 {
-                    AreStringsNullTerminated = true;
+                    AreStringsTerminated = true;
+                    StringTerminator = serializeAsAttribute.StringTerminator;
                 }
             }
 
@@ -140,8 +144,11 @@ namespace BinarySerialization.Graph.TypeGraph
                 var serializedType = GetSerializedType();
                 IsNullable = serializedType == SerializedType.Default ||
                              serializedType == SerializedType.ByteArray ||
-                             serializedType == SerializedType.NullTerminatedString ||
-                             serializedType == SerializedType.SizedString;
+                             serializedType == SerializedType.TerminatedString ||
+                             serializedType == SerializedType.SizedString ||
+#pragma warning disable 618
+                             serializedType == SerializedType.NullTerminatedString;
+#pragma warning restore 618
             }
 
             // setup bindings
@@ -325,7 +332,9 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public int? Order { get; }
 
-        public bool AreStringsNullTerminated { get; }
+        public bool AreStringsTerminated { get; }
+
+        public byte StringTerminator { get; }
 
         public bool IsNullable { get; }
 
@@ -347,7 +356,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
 
             // handle special cases within null terminated strings
-            if (serializedType == SerializedType.NullTerminatedString)
+            if (serializedType == SerializedType.TerminatedString)
             {
                 // If null terminated string is specified but field length is present, override
                 if (FieldLengthBindings != null)
@@ -368,13 +377,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public static object GetDefaultValue(SerializedType serializedType)
         {
-            object value;
-            if (SerializedTypeDefault.TryGetValue(serializedType, out value))
-            {
-                return value;
-            }
-
-            return null;
+            return SerializedTypeDefault.TryGetValue(serializedType, out var value) ? value : null;
         }
 
         public ValueNode CreateSerializer(ValueNode parent)

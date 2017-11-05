@@ -22,9 +22,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 return;
             }
 
-            var binarySerializable = value as IBinarySerializable;
-
-            if (binarySerializable == null)
+            if (!(value is IBinarySerializable binarySerializable))
             {
                 throw new InvalidOperationException("Must implement IBinarySerializable");
             }

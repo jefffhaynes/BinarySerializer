@@ -98,8 +98,7 @@ namespace BinarySerialization
                     return Position >= MaxLength;
                 }
 
-                var source = Source as BoundedStream;
-                return source != null && source.IsAtLimit;
+                return Source is BoundedStream source && source.IsAtLimit;
             }
         }
 
@@ -111,8 +110,7 @@ namespace BinarySerialization
 
                 if (MaxLength == null)
                 {
-                    var source = Source as BoundedStream;
-                    if (source != null)
+                    if (Source is BoundedStream source)
                     {
                         return source.AvailableForReading;
                     }

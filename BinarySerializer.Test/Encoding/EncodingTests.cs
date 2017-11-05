@@ -28,6 +28,16 @@ namespace BinarySerialization.Test.Encoding
         }
 
         [Fact]
+        public void EncodingTest2()
+        {
+            var expected = new EncodingClass2 { Name = "السلام عليكم" };
+            var expectedData = System.Text.Encoding.GetEncoding("windows-1256").GetBytes(expected.Name + "\0");
+            var actual = Roundtrip(expected, expectedData);
+
+            Assert.Equal(expected.Name, actual.Name);
+        }
+
+        [Fact]
         public void FieldEncodingTest()
         {
             var expected = new FieldEncodingClass {Value = "السلام عليكم", Encoding = "windows-1256"};
