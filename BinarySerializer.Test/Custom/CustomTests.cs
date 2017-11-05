@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using BinarySerializer.Test.Custom;
 using Xunit;
 
 namespace BinarySerialization.Test.Custom

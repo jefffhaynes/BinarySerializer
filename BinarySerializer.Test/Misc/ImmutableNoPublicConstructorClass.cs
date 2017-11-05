@@ -5,9 +5,8 @@
         private ImmutableNoPublicConstructorClass()
         {
         }
-
-        // ReSharper disable UnusedAutoPropertyAccessor.Local
-        public byte Value { get; private set; }
-        // ReSharper restore UnusedAutoPropertyAccessor.Local
+        
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
+        public byte Value { get; }
     }
 }

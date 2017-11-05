@@ -24,7 +24,7 @@ namespace BinarySerialization.Test.Misc
 
         public ulong Value
         {
-            get { return ((ulong) High << 32) + Low; }
+            get => ((ulong) High << 32) + Low;
 
             set
             {

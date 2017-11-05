@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BinarySerializer.Test.Custom
+namespace BinarySerialization.Test.Custom
 {
     public class CustomAttribute : Attribute
     {

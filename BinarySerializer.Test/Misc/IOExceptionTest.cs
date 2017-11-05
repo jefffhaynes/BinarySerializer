@@ -3,7 +3,6 @@ using Xunit;
 
 namespace BinarySerialization.Test.Misc
 {
-    
     public class IOExceptionTest
     {
         [Fact]

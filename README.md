@@ -1031,10 +1031,10 @@ public class LongAddress
     }
 
     [FieldOrder(0)]
-    public int Low { get; private set; }
+    public int Low { get; }
 
     [FieldOrder(1)]
-    public int High { get; private set; }
+    public int High { get; }
 }
 ```
 

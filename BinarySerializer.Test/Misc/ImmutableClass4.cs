@@ -14,9 +14,9 @@
         }
 
         [FieldOrder(0)]
-        public int Header { get; private set; }
+        public int Header { get; }
 
         [Ignore]
-        public int? ResponseId { get; private set; }
+        public int? ResponseId { get; }
     }
 }

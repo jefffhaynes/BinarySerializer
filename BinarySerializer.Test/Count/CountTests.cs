@@ -89,7 +89,7 @@ namespace BinarySerialization.Test.Count
             var expected = new PrimitiveListBindingClass();
             var actual = Roundtrip(expected);
 
-            Assert.Equal(0, actual.Ints.Count);
+            Assert.Empty(actual.Ints);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace BinarySerialization.Test.Count
             var expected = new PrimitiveArrayBindingClass();
             var actual = Roundtrip(expected);
 
-            Assert.Equal(0, actual.Ints.Length);
+            Assert.Empty(actual.Ints);
         }
 
         [Fact]
@@ -184,7 +184,7 @@ namespace BinarySerialization.Test.Count
         private void PrimitiveNullArrayLengthTest<TValue>(int expectedChildLength)
         {
             var expected = new PrimitiveArrayConstClass<TValue>();
-            var actual = Roundtrip(expectedChildLength * 5);
+            Roundtrip(expected, expectedChildLength * 5);
         }
     }
 }

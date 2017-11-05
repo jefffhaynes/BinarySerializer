@@ -7,6 +7,6 @@
             Value = 33;
         }
 
-        public int Value { get; private set; }
+        public int Value { get; }
     }
 }

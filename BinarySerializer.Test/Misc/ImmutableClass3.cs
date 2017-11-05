@@ -7,6 +7,6 @@
             Value = value;
         }
 
-        public int? Value { get; private set; }
+        public int? Value { get; }
     }
 }

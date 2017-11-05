@@ -9,31 +9,25 @@ namespace BinarySerialization.Test.Misc
 
         public override bool CanSeek => false;
 
-        public override bool CanWrite
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public override bool CanWrite => throw new NotSupportedException();
 
-        public override long Length
-        {
-            get { throw new IOException(); }
-        }
+        public override long Length => throw new IOException();
 
         public override long Position { get; set; }
 
         public override void Flush()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void SetLength(long value)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override int Read(byte[] buffer, int offset, int count)

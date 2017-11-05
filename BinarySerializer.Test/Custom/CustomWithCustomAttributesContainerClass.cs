@@ -1,4 +1,4 @@
-﻿namespace BinarySerializer.Test.Custom
+﻿namespace BinarySerialization.Test.Custom
 {
     public class CustomWithCustomAttributesContainerClass
     {

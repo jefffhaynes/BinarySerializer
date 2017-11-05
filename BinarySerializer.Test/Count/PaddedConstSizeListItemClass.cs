@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BinarySerialization.Test.Count
+﻿namespace BinarySerialization.Test.Count
 {
     public class PaddedConstSizeListItemClass
     {
