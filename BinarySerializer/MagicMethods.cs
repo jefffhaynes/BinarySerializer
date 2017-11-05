@@ -42,8 +42,8 @@ namespace BinarySerialization
             // Cast the result to the right kind of delegate and return it
             return (Action<object, object>) ret;
         }
-
-        // ReSharper disable UnusedMember.Local
+        
+        // ReSharper disable once UnusedMember.Local
         private static Func<object, object> MagicFuncHelper<TTarget, TReturn>(MethodInfo method)
         {
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
@@ -57,9 +57,8 @@ namespace BinarySerialization
 
             return Func;
         }
-        // ReSharper restore UnusedMember.Local
-
-        // ReSharper disable UnusedMember.Local
+        
+        // ReSharper disable once UnusedMember.Local
         private static Action<object, object> MagicActionHelper<TTarget, TValue>(MethodInfo method)
         {
             // Convert the slow MethodInfo into a fast, strongly typed, open delegate
@@ -76,6 +75,5 @@ namespace BinarySerialization
 
             return Func;
         }
-        // ReSharper restore UnusedMember.Local
     }
 }
