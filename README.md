@@ -643,7 +643,7 @@ Note that the Chunk field is bound to both the Length field and the ChunkType fi
 
 ### SerializeAsAttribute ###
 
-In general you shouldn't need this as most things tend to work out without it.  However, you can always override the default behavior by specifying SerializeAs.
+Allows for more detailed control over the serialization of fields.  This can be used to serialize into a different representation than specified in code.  The StringTerminator property can also be used to specifiy arbitrary string termination values.
 
 ### SerializeAsEnumAttribute ###
 
