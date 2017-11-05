@@ -110,27 +110,27 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 else
                 {
-                    if (constLength != null)
+                    // see if we're dealing with a const length field
+                    if (constLength == null)
                     {
-                        if (serializedType == SerializedType.ByteArray ||
-                            serializedType == SerializedType.TerminatedString ||
-#pragma warning disable 618
-                            serializedType == SerializedType.NullTerminatedString)
-#pragma warning restore 618
-                        {
-                            var data = new byte[constLength.Value];
-
-                            if (TypeNode.StringTerminator != 0)
-                            {
-                                for (int i = 0; i < data.Length; i++)
-                                {
-                                    data[i] = TypeNode.StringTerminator;
-                                }
-                            }
-
-                            stream.Write(data, 0, (int) constLength.Value);
-                        }
+                        return;
                     }
+
+                    // see if we're dealing with something that needs to be padded
+                    if (serializedType != SerializedType.ByteArray &&
+                        serializedType != SerializedType.TerminatedString)
+                    {
+                        return;
+                    }
+
+                    var data = new byte[constLength.Value];
+
+                    if (serializedType == SerializedType.TerminatedString && data.Length > 0)
+                    {
+                        data[0] = TypeNode.StringTerminator;
+                    }
+
+                    stream.Write(data, 0, (int) constLength.Value);
 
                     return;
                 }
@@ -210,9 +210,6 @@ namespace BinarySerialization.Graph.ValueGraph
                     stream.Write(data, 0, data.Length);
                     break;
                 }
-#pragma warning disable 618
-                case SerializedType.NullTerminatedString:
-#pragma warning restore 618
                 case SerializedType.TerminatedString:
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
@@ -304,9 +301,6 @@ namespace BinarySerialization.Graph.ValueGraph
                     value = reader.ReadBytes((int) effectiveLengthValue);
                     break;
                 }
-#pragma warning disable 618
-                case SerializedType.NullTerminatedString:
-#pragma warning restore 618
                 case SerializedType.TerminatedString:
                 {
                     var data = ReadTerminated(reader, (int) effectiveLengthValue, TypeNode.StringTerminator);
@@ -378,9 +372,6 @@ namespace BinarySerialization.Graph.ValueGraph
                         .ConfigureAwait(false);
                     break;
                 }
-#pragma warning disable 618
-                case SerializedType.NullTerminatedString:
-#pragma warning restore 618
                 case SerializedType.TerminatedString:
                 {
                     var data = await ReadTerminatedAsync(reader, (int) effectiveLengthValue, TypeNode.StringTerminator, cancellationToken)
@@ -508,10 +499,7 @@ namespace BinarySerialization.Graph.ValueGraph
             long? maxLength = null;
 
             if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
-                serializedType == SerializedType.TerminatedString ||
-#pragma warning disable 618
-                serializedType == SerializedType.NullTerminatedString)
-#pragma warning restore 618
+                serializedType == SerializedType.TerminatedString)
             {
                 // try to get bounded length
                 maxLength = stream.AvailableForWriting;
@@ -589,11 +577,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (effectiveLength == null)
             {
-                if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
-                    serializedType == SerializedType.TerminatedString ||
-#pragma warning disable 618
-                    serializedType == SerializedType.NullTerminatedString)
-#pragma warning restore 618
+                if (serializedType == SerializedType.ByteArray || 
+                    serializedType == SerializedType.SizedString ||
+                    serializedType == SerializedType.TerminatedString)
                 {
                     // try to get bounded length
                     var baseStream = (BoundedStream) reader.BaseStream;

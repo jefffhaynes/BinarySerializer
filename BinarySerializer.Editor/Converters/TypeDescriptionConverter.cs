@@ -32,10 +32,6 @@ namespace BinarySerializer.Editor.Converters
                     return "Byte array";
                 case SerializedType.SizedString:
                     return "String";
-#pragma warning disable 618
-                case SerializedType.NullTerminatedString:
-#pragma warning restore 618
-                    return "Null-terminated string";
                 case SerializedType.TerminatedString:
                     return "Terminated string";
                 case SerializedType.LengthPrefixedString:

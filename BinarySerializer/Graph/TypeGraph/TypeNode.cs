@@ -128,10 +128,14 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 _serializedType = serializeAsAttribute.SerializedType;
 
-                if (_serializedType.Value == SerializedType.TerminatedString ||
 #pragma warning disable 618
-                    _serializedType.Value == SerializedType.NullTerminatedString)
+                if (_serializedType == SerializedType.NullTerminatedString)
+                {
+                    _serializedType = SerializedType.TerminatedString;
+                }
 #pragma warning restore 618
+
+                if (_serializedType.Value == SerializedType.TerminatedString)
                 {
                     AreStringsTerminated = true;
                     StringTerminator = serializeAsAttribute.StringTerminator;
@@ -145,10 +149,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 IsNullable = serializedType == SerializedType.Default ||
                              serializedType == SerializedType.ByteArray ||
                              serializedType == SerializedType.TerminatedString ||
-                             serializedType == SerializedType.SizedString ||
-#pragma warning disable 618
-                             serializedType == SerializedType.NullTerminatedString;
-#pragma warning restore 618
+                             serializedType == SerializedType.SizedString;
             }
 
             // setup bindings
