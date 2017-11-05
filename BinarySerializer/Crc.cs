@@ -5,10 +5,9 @@ namespace BinarySerialization
     internal abstract class Crc<T>
     {
         private static readonly Dictionary<T, T[]> Tables = new Dictionary<T, T[]>();
-
-        // ReSharper disable StaticMemberInGenericType
+        
+        // ReSharper disable once StaticMemberInGenericType
         private static readonly object TableLock = new object();
-        // ReSharper restore StaticMemberInGenericType
 
         private readonly T _initialValue;
         private readonly T[] _table;
