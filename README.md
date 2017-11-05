@@ -887,7 +887,7 @@ Nullable types are supported and are serialized, if present, as the underlying t
 
 ### Advanced Binding ###
 
-Binding is not limited to fields in the same object but can be used to reference arbitrary fields accessible throughout the graph.  Ancestors in the graph can be located by either type or level and can be used as references for binding.
+Binding is not limited to fields in the same object but can be used to reference arbitrary fields accessible throughout the graph.  Ancestors in the graph can be located either by type or by level and can be used as references for binding.
 
 ```c#
 public class Container
