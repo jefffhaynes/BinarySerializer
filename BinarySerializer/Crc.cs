@@ -90,25 +90,17 @@ namespace BinarySerialization
             var padWidth = Width - 8;
 
             var topBit = 1 << (Width - 1);
-
-            /*
-             * Compute the remainder of each possible dividend.
-             */
+            
+            // Compute the remainder of each possible dividend.
             for (uint dividend = 0; dividend < 256; ++dividend)
             {
-                /*
-                 * Start with the dividend followed by zeros.
-                 */
+                // Start with the dividend followed by zeros.
                 var remainder = dividend << padWidth;
-
-                /*
-                 * Perform modulo-2 division, a bit at a time.
-                 */
+                
+                // Perform modulo-2 division, a bit at a time.
                 for (byte bit = 8; bit > 0; --bit)
                 {
-                    /*
-                     * Try to divide the current data bit.
-                     */
+                    // Try to divide the current data bit.
                     if ((remainder & topBit) != 0)
                     {
                         remainder = (remainder << 1) ^ poly;
@@ -119,9 +111,7 @@ namespace BinarySerialization
                     }
                 }
 
-                /*
-                 * Store the result into the table.
-                 */
+                // Store the result into the table.
                 table[dividend] = FromUInt32(remainder);
             }
 
@@ -132,14 +122,10 @@ namespace BinarySerialization
         {
             uint reflection = 0;
 
-            /*
-             * Reflect the data about the center bit.
-             */
+            // Reflect the data about the center bit.
             for (byte bit = 0; bit < bitCount; ++bit)
             {
-                /*
-                 * If the LSB bit is set, set the reflection of it.
-                 */
+                // If the LSB bit is set, set the reflection of it.
                 if ((value & 0x01) != 0)
                 {
                     reflection |= (uint) (1 << (bitCount - 1 - bit));
