@@ -855,7 +855,7 @@ Serializing this class would result in a single byte.  Alternatively, you may wa
 ```c#
 public class EnumClass
 {
-    [SerializeAs(SerializedType.NullTerminatedString)]
+    [SerializeAs(SerializedType.TerminatedString)]
     public Shape Shape { get; set; }
 }
 ```
