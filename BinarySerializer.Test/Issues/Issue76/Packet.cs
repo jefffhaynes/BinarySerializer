@@ -7,6 +7,10 @@
 
         [FieldOrder(1)]
         [FieldLength("Length")]
+        [FieldChecksum("Checksum", Mode = ChecksumMode.Xor)]
         public PacketContent Content { get; set; }
+
+        [FieldOrder(2)]
+        public byte Checksum { get; set; }
     }
 }
