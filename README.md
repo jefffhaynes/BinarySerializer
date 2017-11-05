@@ -1004,7 +1004,7 @@ public string Name { get; set;  }
 
 ### Endianness ###
 
-Maybe a quaint topic these days but incredibly painful if you're suddenly faced with it.  BinarySerializer handles endianness in two ways: globally or on a field basis.  If you're working in a system that deals entirely in big endian, you can simply write:
+Possibly more of a quaint topic these days but incredibly painful when it comes up.  BinarySerializer handles endianness in two ways: globally or on a field-by-field.  If you're working in a system that deals entirely in big endian, you can simply write:
 
 ```c#
 serializer.Endianness = Endianness.Big;
