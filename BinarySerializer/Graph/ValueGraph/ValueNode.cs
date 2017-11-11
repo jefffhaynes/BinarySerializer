@@ -145,11 +145,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (align)
                 {
-                    var leftAlignment = GetLeftFieldAlignment();
-                    if (leftAlignment != null)
-                    {
-                        Align(stream, leftAlignment, true);
-                    }
+                    AlignLeft(stream, true);
                 }
 
                 var offset = GetFieldOffset();
@@ -169,11 +165,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (align)
                 {
-                    var rightAlignment = GetRightFieldAlignment();
-                    if (rightAlignment != null)
-                    {
-                        Align(stream, rightAlignment, true);
-                    }
+                    AlignRight(stream, true);
                 }
             }
             catch (IOException)
@@ -615,21 +607,21 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private void AlignRight(BoundedStream stream)
+        private void AlignRight(BoundedStream stream, bool pad = false)
         {
             var rightAlignment = GetRightFieldAlignment();
             if (rightAlignment != null)
             {
-                Align(stream, rightAlignment);
+                Align(stream, rightAlignment, pad);
             }
         }
 
-        private void AlignLeft(BoundedStream stream)
+        private void AlignLeft(BoundedStream stream, bool pad = false)
         {
             var leftAlignment = GetLeftFieldAlignment();
             if (leftAlignment != null)
             {
-                Align(stream, leftAlignment);
+                Align(stream, leftAlignment, pad);
             }
         }
 
