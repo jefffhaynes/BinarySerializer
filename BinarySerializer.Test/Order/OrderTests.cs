@@ -24,14 +24,24 @@ namespace BinarySerialization.Test.Order
         public void MultipleMembersNoOrderAttributeShouldThrowTest()
         {
             var order = new MutlipleMembersNoOrderClass();
+
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(order));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(order));
+#endif
         }
 
         [Fact]
         public void MultipleMembersDuplicateOrderAttributeShouldThrowTest()
         {
             var order = new MutlipleMembersDuplicateOrderClass();
+
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(order));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(order));
+#endif
         }
 
         [Fact]

@@ -1,4 +1,6 @@
-﻿using BinarySerialization.Graph.TypeGraph;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
@@ -48,6 +50,19 @@ namespace BinarySerialization.Graph.ValueGraph
                 var terminationChild = typeNode.TerminationChild.CreateSerializer(this);
                 terminationChild.Value = typeNode.TerminationValue;
                 terminationChild.Serialize(stream, eventShuttle);
+            }
+        }
+
+        protected async Task SerializeTerminationAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            var typeNode = (CollectionTypeNode)TypeNode;
+
+            if (typeNode.TerminationChild != null)
+            {
+                var terminationChild = typeNode.TerminationChild.CreateSerializer(this);
+                terminationChild.Value = typeNode.TerminationValue;
+                await terminationChild.SerializeAsync(stream, eventShuttle, true, cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
 

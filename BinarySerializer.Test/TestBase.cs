@@ -31,7 +31,7 @@ namespace BinarySerialization.Test
             PrintSerialize(typeof(T));
 
             var stream = new MemoryStream();
-            Serializer.Serialize(stream, o);
+            Serialize(stream, o);
 
             stream.Position = 0;
 
@@ -43,7 +43,7 @@ namespace BinarySerialization.Test
         {
             PrintSerialize(typeof(T));
             var stream = new MemoryStream();
-            Serializer.Serialize(stream, o);
+            Serialize(stream, o);
 
             stream.Position = 0;
             var data = stream.ToArray();
@@ -59,7 +59,7 @@ namespace BinarySerialization.Test
         {
             PrintSerialize(typeof(T));
             var stream = new MemoryStream();
-            SerializerBe.Serialize(stream, o);
+            SerializeBe(stream, o);
 
             stream.Position = 0;
             var data = stream.ToArray();
@@ -67,14 +67,14 @@ namespace BinarySerialization.Test
             Assert.Equal(expectedLength, data.Length);
 
             PrintDeserialize(typeof(T));
-            return SerializerBe.Deserialize<T>(stream);
+            return DeserializeBe<T>(stream);
         }
 
         protected T Roundtrip<T>(T o, byte[] expectedValue)
         {
             PrintSerialize(typeof(T));
             var stream = new MemoryStream();
-            Serializer.Serialize(stream, o);
+            Serialize(stream, o);
 
             stream.Position = 0;
             var data = stream.ToArray();
@@ -89,7 +89,7 @@ namespace BinarySerialization.Test
         {
             PrintSerialize(typeof(T));
             var stream = new MemoryStream();
-            SerializerBe.Serialize(stream, o);
+            SerializeBe(stream, o);
 
             stream.Position = 0;
             var data = stream.ToArray();
@@ -97,7 +97,7 @@ namespace BinarySerialization.Test
             AssertEqual(expectedValue, data);
 
             PrintDeserialize(typeof(T));
-            return SerializerBe.Deserialize<T>(stream);
+            return DeserializeBe<T>(stream);
         }
 
         private void AssertEqual(byte[] expected, byte[] actual)
@@ -121,7 +121,7 @@ namespace BinarySerialization.Test
 
             PrintSerialize(typeof(T));
             var stream = new MemoryStream();
-            Serializer.Serialize(stream, o);
+            Serialize(stream, o);
 
             AssertEqual(data, stream.ToArray());
 
@@ -131,7 +131,7 @@ namespace BinarySerialization.Test
         protected byte[] Serialize(object o)
         {
             var stream = new MemoryStream();
-            Serializer.Serialize(stream, o);
+            Serialize(stream, o);
             return stream.ToArray();
         }
 
@@ -147,17 +147,52 @@ namespace BinarySerialization.Test
         protected T Deserialize<T>(byte[] data)
         {
             PrintDeserialize(typeof(T));
-            return Serializer.Deserialize<T>(data);
+            return Deserialize<T>(new MemoryStream(data));
         }
 
         protected T Deserialize<T>(Stream stream)
         {
 #if TESTASYNC
             var task = Serializer.DeserializeAsync<T>(stream);
+            task.ConfigureAwait(false);
             task.Wait();
             return task.Result;
 #else
             return Serializer.Deserialize<T>(stream);
+#endif
+        }
+
+        protected void Serialize(Stream stream, object o)
+        {
+#if TESTASYNC
+            var task = Serializer.SerializeAsync(stream, o);
+            task.ConfigureAwait(false);
+            task.Wait();
+#else
+            Serializer.Serialize(stream, o);
+#endif
+        }
+
+        protected void SerializeBe(Stream stream, object o)
+        {
+#if TESTASYNC
+            var task = SerializerBe.SerializeAsync(stream, o);
+            task.ConfigureAwait(false);
+            task.Wait();
+#else
+            SerializerBe.Serialize(stream, o);
+#endif
+        }
+
+        protected T DeserializeBe<T>(Stream stream)
+        {
+#if TESTASYNC
+            var task = SerializerBe.DeserializeAsync<T>(stream);
+            task.ConfigureAwait(false);
+            task.Wait();
+            return task.Result;
+#else
+            return SerializerBe.Deserialize<T>(stream);
 #endif
         }
 

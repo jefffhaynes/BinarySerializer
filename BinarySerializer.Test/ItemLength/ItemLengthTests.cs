@@ -44,7 +44,11 @@ namespace BinarySerialization.Test.ItemLength
         public void ItemBoundMismatchLengthTest_ShouldThrowInvalidOperation()
         {
             var expected = new ItemBoundLengthClass {Items = new List<string>(new[] {"abc", "defghi"})};
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+#endif
         }
 
         [Fact]

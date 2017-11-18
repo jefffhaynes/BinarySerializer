@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
@@ -27,6 +29,26 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 childSerializer.Serialize(stream, value, childSerializedType, itemLength);
+            }
+        }
+
+        protected override async Task PrimitiveCollectionSerializeOverrideAsync(BoundedStream stream, object boundValue, ValueValueNode childSerializer,
+            SerializedType childSerializedType, long? itemLength, long? itemCount, CancellationToken cancellationToken)
+        {
+            var list = (IList)boundValue;
+
+            // Handle const-sized mismatched collections
+            PadList(ref list, itemCount);
+
+            foreach (var value in list)
+            {
+                if (stream.IsAtLimit)
+                {
+                    break;
+                }
+
+                await childSerializer.SerializeAsync(stream, value, childSerializedType, itemLength, cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
 

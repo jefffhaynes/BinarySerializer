@@ -68,6 +68,11 @@ namespace BinarySerialization.Graph.ValueGraph
             Child.Serialize(stream, eventShuttle);
         }
 
+        internal override Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            return Child.SerializeAsync(stream, eventShuttle, true, cancellationToken);
+        }
+
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             Child = ((RootTypeNode) TypeNode).Child.CreateSerializer(this);

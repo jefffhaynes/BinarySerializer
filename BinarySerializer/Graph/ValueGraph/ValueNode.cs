@@ -47,24 +47,42 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private bool ShouldSerialize
+        //private bool ShouldSerialize
+        //{
+        //    get
+        //    {
+        //        if (TypeNode.SerializeWhenBindings != null &&
+        //            !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+        //        {
+        //            return false;
+        //        }
+
+        //        if (TypeNode.SerializeWhenNotBindings != null &&
+        //            TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
+        //        {
+        //            return false;
+        //        }
+
+        //        return true;
+        //    }
+        //}
+
+
+        private bool ShouldSerialize(Func<Binding, object> bindingValueSelector)
         {
-            get
+            if (TypeNode.SerializeWhenBindings != null &&
+                !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(bindingValueSelector(binding))))
             {
-                if (TypeNode.SerializeWhenBindings != null &&
-                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
-                {
-                    return false;
-                }
-
-                if (TypeNode.SerializeWhenNotBindings != null &&
-                    TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
-                {
-                    return false;
-                }
-
-                return true;
+                return false;
             }
+
+            if (TypeNode.SerializeWhenNotBindings != null &&
+                TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(bindingValueSelector(binding))))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public virtual void Bind()
@@ -130,15 +148,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (TypeNode.SerializeWhenBindings != null &&
-                    !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
-                {
-                    return;
-                }
-
-                if (TypeNode.SerializeWhenNotBindings != null &&
-                    TypeNode.SerializeWhenNotBindings.All(
-                        binding => binding.IsSatisfiedBy(binding.GetBoundValue(this))))
+                if (!ShouldSerialize(binding => binding.GetBoundValue(this)))
                 {
                     return;
                 }
@@ -180,11 +190,62 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (Exception e)
             {
-                var reference = Name == null
-                    ? $"type '{TypeNode.Type}'"
-                    : $"member '{Name}'";
-                var message = $"Error serializing {reference}.  See inner exception for detail.";
-                throw new InvalidOperationException(message, e);
+                ThrowSerializationException(e);
+            }
+            finally
+            {
+                Visited = true;
+            }
+        }
+        
+        internal async Task SerializeAsync(BoundedStream stream, EventShuttle eventShuttle, bool align, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (!ShouldSerialize(binding => binding.GetBoundValue(this)))
+                {
+                    return;
+                }
+
+                if (align)
+                {
+                    AlignLeft(stream, true);
+                }
+
+                var offset = GetFieldOffset();
+
+                if (offset != null)
+                {
+                    using (new StreamResetter(stream))
+                    {
+                        stream.Position = offset.Value;
+                        await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken);
+                }
+
+                if (align)
+                {
+                    AlignRight(stream, true);
+                }
+            }
+            catch (IOException)
+            {
+                // since this isn't really a serialization exception, no sense in hiding it
+                throw;
+            }
+            catch (TimeoutException)
+            {
+                // since this isn't really a serialization exception, no sense in hiding it
+                throw;
+            }
+            catch (Exception e)
+            {
+                ThrowSerializationException(e);
             }
             finally
             {
@@ -192,11 +253,20 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
+        private void ThrowSerializationException(Exception e)
+        {
+            var reference = Name == null
+                ? $"type '{TypeNode.Type}'"
+                : $"member '{Name}'";
+            var message = $"Error serializing {reference}.  See inner exception for detail.";
+            throw new InvalidOperationException(message, e);
+        }
+
         internal void Deserialize(BoundedStream stream, EventShuttle eventShuttle)
         {
             try
             {
-                if (!ShouldSerialize)
+                if (!ShouldSerialize(binding => binding.GetValue(this)))
                 {
                     return;
                 }
@@ -232,11 +302,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (Exception e)
             {
-                var reference = Name == null
-                    ? $"type '{TypeNode.Type}'"
-                    : $"member '{Name}'";
-                var message = $"Error deserializing '{reference}'.  See inner exception for detail.";
-                throw new InvalidOperationException(message, e);
+                ThrowDeserializationException(e);
             }
             finally
             {
@@ -249,7 +315,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize)
+                if (!ShouldSerialize(binding => binding.GetValue(this)))
                 {
                     return;
                 }
@@ -281,16 +347,21 @@ namespace BinarySerialization.Graph.ValueGraph
             }
             catch (Exception e)
             {
-                var reference = Name == null
-                    ? $"type '{TypeNode.Type}'"
-                    : $"member '{Name}'";
-                var message = $"Error deserializing '{reference}'.  See inner exception for detail.";
-                throw new InvalidOperationException(message, e);
+                ThrowDeserializationException(e);
             }
             finally
             {
                 Visited = true;
             }
+        }
+
+        private void ThrowDeserializationException(Exception e)
+        {
+            var reference = Name == null
+                ? $"type '{TypeNode.Type}'"
+                : $"member '{Name}'";
+            var message = $"Error deserializing '{reference}'.  See inner exception for detail.";
+            throw new InvalidOperationException(message, e);
         }
 
         internal LazyBinarySerializationContext CreateLazySerializationContext()
@@ -302,6 +373,9 @@ namespace BinarySerialization.Graph.ValueGraph
         // this is internal only because of the weird custom subtype case.  If I can figure out a better
         // way to handle that case, this can be protected.
         internal abstract void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle);
+        
+        internal abstract Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken);
 
         internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);
 
@@ -571,6 +645,29 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void SerializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
         {
+            stream = PrepareStream(stream, maxLengthDelegate);
+
+            SerializeOverride(stream, eventShuttle);
+
+            WritePadding(stream);
+
+            FlushStream(stream);
+        }
+
+        private async Task SerializeInternalAsync(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
+        {
+            stream = PrepareStream(stream, maxLengthDelegate);
+
+            await SerializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
+
+            await WritePaddingAsync(stream, cancellationToken).ConfigureAwait(false);
+
+            await FlushStreamAsync(stream, cancellationToken).ConfigureAwait(false);
+        }
+
+        private BoundedStream PrepareStream(BoundedStream stream, Func<long?> maxLengthDelegate)
+        {
             stream = new BoundedStream(stream, maxLengthDelegate);
 
             if (TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Count > 0)
@@ -585,25 +682,22 @@ namespace BinarySerialization.Graph.ValueGraph
                     stream = new TapStream(stream, tap);
                 }
             }
+            return stream;
+        }
 
-            SerializeOverride(stream, eventShuttle);
-
-            /* Check if we need to pad out object */
-            var length = GetConstFieldLength();
-
-            if (length != null)
-            {
-                if (length > stream.RelativePosition)
-                {
-                    var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int) padLength];
-                    stream.Write(pad, 0, pad.Length);
-                }
-            }
-
+        private void FlushStream(BoundedStream stream)
+        {
             if (TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Any())
             {
                 stream.Flush();
+            }
+        }
+
+        private async Task FlushStreamAsync(BoundedStream stream, CancellationToken cancellationToken)
+        {
+            if (TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Any())
+            {
+                await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -671,23 +765,65 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             stream = new BoundedStream(stream, maxLengthDelegate);
 
-            await DeserializeOverrideAsync(stream, eventShuttle, cancellationToken);
+            await DeserializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
 
-            SkipPadding(stream);
+            await SkipPaddingAsync(stream, cancellationToken).ConfigureAwait(false);
+        }
+
+        private void WritePadding(BoundedStream stream)
+        {
+            ProcessPadding(stream, (s, bytes, length) => s.Write(bytes, 0, length));
+        }
+
+        private Task WritePaddingAsync(BoundedStream stream, CancellationToken cancellationToken)
+        {
+            return ProcessPaddingAsync(stream, async (s, bytes, length) =>
+                await s.WriteAsync(bytes, 0, length, cancellationToken).ConfigureAwait(false));
         }
 
         private void SkipPadding(BoundedStream stream)
         {
+            ProcessPadding(stream, (s, bytes, length) => s.Read(bytes, 0, length));
+        }
+
+        private Task SkipPaddingAsync(BoundedStream stream, CancellationToken cancellationToken)
+        {
+            return ProcessPaddingAsync(stream,
+                async (s, bytes, length) =>
+                    await s.ReadAsync(bytes, 0, length, cancellationToken).ConfigureAwait(false));
+        }
+
+        private void ProcessPadding(BoundedStream stream, Action<Stream, byte[], int> streamOperation)
+        {
             var length = GetConstFieldLength();
 
-            if (length != null)
+            if (length == null)
             {
-                if (length > stream.RelativePosition)
-                {
-                    var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int) padLength];
-                    stream.Read(pad, 0, pad.Length);
-                }
+                return;
+            }
+
+            if (length > stream.RelativePosition)
+            {
+                var padLength = length - stream.RelativePosition;
+                var pad = new byte[(int) padLength];
+                streamOperation(stream, pad, pad.Length);
+            }
+        }
+
+        private async Task ProcessPaddingAsync(BoundedStream stream, Func<Stream, byte[], int, Task> streamOperationAsync)
+        {
+            var length = GetConstFieldLength();
+
+            if (length == null)
+            {
+                return;
+            }
+
+            if (length > stream.RelativePosition)
+            {
+                var padLength = length - stream.RelativePosition;
+                var pad = new byte[(int)padLength];
+                await streamOperationAsync(stream, pad, pad.Length).ConfigureAwait(false);
             }
         }
 

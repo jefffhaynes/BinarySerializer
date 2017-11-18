@@ -10,7 +10,12 @@ namespace BinarySerialization.Test.Misc
         public void MismatchBindingTest()
         {
             var expected = new MismatchBindingClass {Name1 = "Alice", Name2 = "Bob"};
+
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+#endif
         }
     }
 }

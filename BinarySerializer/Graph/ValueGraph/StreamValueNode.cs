@@ -8,6 +8,8 @@ namespace BinarySerialization.Graph.ValueGraph
 {
     internal class StreamValueNode : ValueNode
     {
+        private const int CopyToBufferSize = 81920;
+
         public StreamValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
@@ -28,6 +30,23 @@ namespace BinarySerialization.Graph.ValueGraph
             else
             {
                 valueStream.CopyTo(stream);
+            }
+        }
+
+        internal override async Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            var valueStream = (Stream)Value;
+
+            var length = GetConstFieldLength();
+
+            if (length != null)
+            {
+                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, length.Value);
+                await valueStreamlet.CopyToAsync(stream, CopyToBufferSize, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                await valueStream.CopyToAsync(stream, CopyToBufferSize,cancellationToken).ConfigureAwait(false);
             }
         }
 

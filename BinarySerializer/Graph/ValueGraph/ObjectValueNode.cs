@@ -75,6 +75,12 @@ namespace BinarySerialization.Graph.ValueGraph
             ObjectSerializeOverride(stream, eventShuttle);
         }
 
+        internal override Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            ThrowIfUnordered();
+            return ObjectSerializeOverrideAsync(stream, eventShuttle, cancellationToken);
+        }
+
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             ThrowIfUnordered();
@@ -148,6 +154,37 @@ namespace BinarySerialization.Graph.ValueGraph
                 EmitBeginSerialization(stream, child, lazyContext, eventShuttle);
 
                 child.Serialize(stream, eventShuttle);
+
+                EmitEndSerialization(stream, child, lazyContext, eventShuttle);
+            }
+        }
+
+        protected virtual async Task ObjectSerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            // check to see if we are actually supposed to be a custom serialization.  This is a side-effect of
+            // treating all object members as object nodes.  In the case of sub-types we could later discover we
+            // are actually a custom node because the specified subtype implements IBinarySerializable.
+
+            if (IsCustomNode(out ValueNode customValueNode))
+            {
+                // this is a little bit of a cheat, but another side-effect of this weird corner case
+                customValueNode.Value = _cachedValue;
+
+                await customValueNode.SerializeOverrideAsync(stream, eventShuttle, cancellationToken)
+                    .ConfigureAwait(false);
+
+                return;
+            }
+
+            var serializableChildren = GetSerializableChildren();
+
+            var lazyContext = CreateLazySerializationContext();
+
+            foreach (var child in serializableChildren)
+            {
+                EmitBeginSerialization(stream, child, lazyContext, eventShuttle);
+
+                await child.SerializeAsync(stream, eventShuttle, true, cancellationToken).ConfigureAwait(false);
 
                 EmitEndSerialization(stream, child, lazyContext, eventShuttle);
             }

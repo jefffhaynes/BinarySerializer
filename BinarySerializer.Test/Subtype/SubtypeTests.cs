@@ -73,7 +73,11 @@ namespace BinarySerialization.Test.Subtype
         public void MissingSubtypeTest()
         {
             var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+#endif
         }
 
         [Fact]
@@ -88,7 +92,13 @@ namespace BinarySerialization.Test.Subtype
         public void InvalidSubtypeDefaultTest()
         {
             var data = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5 };
-            Assert.Throws<InvalidOperationException>(() => Deserialize<InvalidDefaultSubtypeContainerClass>(data));
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() =>
+#else
+            Assert.Throws<InvalidOperationException>(() =>
+#endif
+            Deserialize<InvalidDefaultSubtypeContainerClass>(data));
+
         }
 
         [Fact]
@@ -149,28 +159,46 @@ namespace BinarySerialization.Test.Subtype
         public void IncompatibleBindingsTest()
         {
             var expected = new IncompatibleBindingsClass();
+
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+#endif
         }
 
         [Fact]
         public void InvalidSubtypeTest()
         {
             var expected = new InvalidSubtypeClass();
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+#endif
         }
 
         [Fact]
         public void NonUniqueSubtypesTest()
         {
             var expected = new NonUniqueSubtypesClass();
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+#endif
         }
 
         [Fact]
         public void NonUniqueSubtypeValuesTest()
         {
             var expected = new NonUniqueSubtypeValuesClass();
+
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+#endif
         }
 
         [Fact]

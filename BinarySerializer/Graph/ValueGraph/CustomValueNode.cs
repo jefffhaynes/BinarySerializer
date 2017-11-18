@@ -45,6 +45,12 @@ namespace BinarySerialization.Graph.ValueGraph
             return Task.CompletedTask;
         }
 
+        protected override Task ObjectSerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            ObjectSerializeOverride(stream, eventShuttle);
+            return Task.CompletedTask;
+        }
+
         private IBinarySerializable CreateBinarySerializable()
         {
             var binarySerializable = (IBinarySerializable) Activator.CreateInstance(TypeNode.Type);

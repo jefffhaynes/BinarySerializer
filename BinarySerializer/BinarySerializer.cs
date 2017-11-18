@@ -110,6 +110,7 @@ namespace BinarySerialization
         /// <param name="stream">The stream to which the graph is to be serialized.</param>
         /// <param name="value">The object at the root of the graph to serialize.</param>
         /// <param name="context">An optional serialization context.</param>
+        [Obsolete("Use SerializeAsync")]
         public void Serialize(Stream stream, object value, object context = null)
         {
             if (stream == null)
@@ -122,16 +123,38 @@ namespace BinarySerialization
                 return;
             }
 
-            var graph = GraphGenerator.GenerateGraph(value.GetType());
-
-            var serializer = (RootValueNode) graph.CreateSerializer(null);
-            serializer.EndiannessCallback = () => Endianness;
-            serializer.EncodingCallback = () => Encoding;
+            var serializer = CreateSerializer(value.GetType(), context);
             serializer.Value = value;
-            serializer.Context = context;
             serializer.Bind();
 
             serializer.Serialize(new BoundedStream(stream), _eventShuttle);
+        }
+
+        /// <summary>
+        ///     Serializes the object, or graph of objects with the specified top (root), to the given stream.
+        /// </summary>
+        /// <param name="stream">The stream to which the graph is to be serialized.</param>
+        /// <param name="value">The object at the root of the graph to serialize.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <param name="cancellationToken"></param>
+        public async Task SerializeAsync(Stream stream, object value, object context = null, CancellationToken cancellationToken = default (CancellationToken))
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (value == null)
+            {
+                return;
+            }
+
+            var serializer = CreateSerializer(value.GetType(), context);
+            serializer.Value = value;
+            serializer.Bind();
+
+            await serializer.SerializeAsync(new BoundedStream(stream), _eventShuttle, true, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -140,10 +163,25 @@ namespace BinarySerialization
         /// <param name="value">The object.</param>
         /// <param name="context">An optional context.</param>
         /// <returns>The length of the specified object graph when serialized.</returns>
+        [Obsolete("Use SizeOfAsync")]
         public long SizeOf(object value, object context = null)
         {
             var nullStream = new NullStream();
             Serialize(nullStream, value, context);
+            return nullStream.Length;
+        }
+
+        /// <summary>
+        ///     Calculates the serialized length of the object.
+        /// </summary>
+        /// <param name="value">The object.</param>
+        /// <param name="context">An optional context.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>The length of the specified object graph when serialized.</returns>
+        public async Task<long> SizeOfAsync(object value, object context = null, CancellationToken cancellationToken = default (CancellationToken))
+        {
+            var nullStream = new NullStream();
+            await SerializeAsync(nullStream, value, context, cancellationToken).ConfigureAwait(false);
             return nullStream.Length;
         }
 
@@ -154,14 +192,10 @@ namespace BinarySerialization
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
+        [Obsolete("Use DeserializeAsync")]
         public object Deserialize(Stream stream, Type type, object context = null)
         {
-            var graph = GraphGenerator.GenerateGraph(type);
-
-            var serializer = (RootValueNode) graph.CreateSerializer(null);
-            serializer.EndiannessCallback = () => Endianness;
-            serializer.EncodingCallback = () => Encoding;
-            serializer.Context = context;
+            var serializer = CreateSerializer(type, context);
             serializer.Deserialize(new BoundedStream(stream), _eventShuttle);
 
             return serializer.Value;
@@ -178,16 +212,22 @@ namespace BinarySerialization
         public async Task<object> DeserializeAsync(Stream stream, Type type, object context,
             CancellationToken cancellationToken)
         {
+            var serializer = CreateSerializer(type, context);
+            await serializer.DeserializeAsync(new BoundedStream(stream), _eventShuttle, cancellationToken)
+                .ConfigureAwait(false);
+
+            return serializer.Value;
+        }
+
+        private RootValueNode CreateSerializer(Type type, object context)
+        {
             var graph = GraphGenerator.GenerateGraph(type);
 
             var serializer = (RootValueNode) graph.CreateSerializer(null);
             serializer.EndiannessCallback = () => Endianness;
             serializer.EncodingCallback = () => Encoding;
             serializer.Context = context;
-            await serializer.DeserializeAsync(new BoundedStream(stream), _eventShuttle, cancellationToken)
-                .ConfigureAwait(false);
-
-            return serializer.Value;
+            return serializer;
         }
 
         /// <summary>
@@ -258,9 +298,23 @@ namespace BinarySerialization
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
+        [Obsolete("Use DeserializeAsync")]
         public object Deserialize(byte[] data, Type type, object context = null)
         {
             return Deserialize(new MemoryStream(data), type, context);
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
+        /// <param name="data">The byte array from which to deserialize the object graph.</param>
+        /// <param name="type">The type of the root of the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>The deserialized object graph.</returns>
+        public Task<object> DeserializeAsync(byte[] data, Type type, object context = null, CancellationToken cancellationToken = default (CancellationToken))
+        {
+            return DeserializeAsync(new MemoryStream(data), type, context, cancellationToken);
         }
 
         /// <summary>
@@ -270,6 +324,7 @@ namespace BinarySerialization
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
+        [Obsolete("Use DeserializeAsync")]
         public T Deserialize<T>(Stream stream, object context = null)
         {
             return (T) Deserialize(stream, typeof(T), context);
@@ -282,9 +337,22 @@ namespace BinarySerialization
         /// <param name="data">The byte array from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
+        [Obsolete("Use DeserializeAsync")]
         public T Deserialize<T>(byte[] data, object context = null)
         {
             return Deserialize<T>(new MemoryStream(data), context);
+        }
+
+        /// <summary>
+        ///     Deserializes the specified stream into an object graph.
+        /// </summary>
+        /// <typeparam name="T">The type of the root of the object graph.</typeparam>
+        /// <param name="data">The byte array from which to deserialize the object graph.</param>
+        /// <param name="context">An optional serialization context.</param>
+        /// <returns>The deserialized object graph.</returns>
+        public Task<T> DeserializeAsync<T>(byte[] data, object context = null)
+        {
+            return DeserializeAsync<T>(new MemoryStream(data), context);
         }
     }
 }

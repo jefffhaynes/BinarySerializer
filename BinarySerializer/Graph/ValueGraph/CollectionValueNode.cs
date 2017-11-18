@@ -35,6 +35,27 @@ namespace BinarySerialization.Graph.ValueGraph
             SerializeTermination(stream, eventShuttle);
         }
 
+        internal override async Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            var serializableChildren = GetSerializableChildren().ToList();
+
+            SetTerminationValue(serializableChildren);
+
+            foreach (var child in serializableChildren)
+            {
+                if (stream.IsAtLimit)
+                {
+                    break;
+                }
+
+                var childStream = new BoundedStream(stream, GetConstFieldItemLength);
+
+                await child.SerializeAsync(childStream, eventShuttle, true, cancellationToken).ConfigureAwait(false);
+            }
+
+            await SerializeTerminationAsync(stream, eventShuttle, cancellationToken);
+        }
+
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             var terminationValue = GetTerminationValue();

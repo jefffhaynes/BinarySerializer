@@ -51,6 +51,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
+        internal override async Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            foreach (var child in Children)
+            {
+                await child.SerializeAsync(stream, eventShuttle, true, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             throw new InvalidOperationException("Deserializing object fields not supported.");

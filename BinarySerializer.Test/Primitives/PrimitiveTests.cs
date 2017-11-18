@@ -159,6 +159,24 @@ namespace BinarySerialization.Test.Primitives
         }
 
         [Fact]
+        public void DoubleNanTest()
+        {
+            RoundtripPrimitive(double.NaN, sizeof(double));
+        }
+
+        [Fact]
+        public void DoublePositiveInfinityTest()
+        {
+            RoundtripPrimitive(double.PositiveInfinity, sizeof(double));
+        }
+
+        [Fact]
+        public void DoubleNegativeInfinityTest()
+        {
+            RoundtripPrimitive(double.NegativeInfinity, sizeof(double));
+        }
+
+        [Fact]
         public void ByteArrayTest()
         {
             Roundtrip(new byte[3], new byte[3]);

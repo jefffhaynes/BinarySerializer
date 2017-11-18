@@ -95,6 +95,40 @@ namespace BinarySerialization.Graph.ValueGraph
             SerializeTermination(stream, eventShuttle);
         }
 
+        internal override async Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            var childSerializer = (ValueValueNode)CreateChildSerializer();
+            var childSerializedType = childSerializer.TypeNode.GetSerializedType();
+
+            var itemLength = GetConstFieldItemLength();
+
+            var boundValue = BoundValue;
+
+            var count = GetConstFieldCount();
+
+            // handle null value case
+            if (boundValue == null)
+            {
+                if (count != null)
+                {
+                    var defaultValue = TypeNode.GetDefaultValue(childSerializedType);
+                    for (var i = 0; i < count.Value; i++)
+                    {
+                        await childSerializer
+                            .SerializeAsync(stream, defaultValue, childSerializedType, itemLength, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                }
+
+                return;
+            }
+
+            PrimitiveCollectionSerializeOverride(stream, boundValue, childSerializer, childSerializedType, itemLength,
+                count);
+
+            SerializeTermination(stream, eventShuttle);
+        }
+
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             var items = DeserializeCollection(stream, eventShuttle).ToList();
@@ -109,7 +143,11 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
         protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, object boundValue,
-            ValueValueNode childSerializer, SerializedType childSerializedType, long? length, long? itemCount);
+            ValueValueNode childSerializer, SerializedType childSerializedType, long? itemLength, long? itemCount);
+
+        protected abstract Task PrimitiveCollectionSerializeOverrideAsync(BoundedStream stream, object boundValue,
+            ValueValueNode childSerializer, SerializedType childSerializedType, long? itemLength, long? itemCount,
+            CancellationToken cancellationToken);
 
         protected abstract object CreateCollection(long size);
         protected abstract object CreateCollection(IEnumerable enumerable);
