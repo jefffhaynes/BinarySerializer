@@ -246,7 +246,8 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public async Task SerializeAsync(BoundedStream stream, object value, SerializedType serializedType, long? length = null, CancellationToken cancellationToken = default (CancellationToken))
+        public async Task SerializeAsync(BoundedStream stream, object value, SerializedType serializedType,
+            long? length = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var constLength = GetConstLength(length);
 
@@ -279,7 +280,7 @@ namespace BinarySerialization.Graph.ValueGraph
                         data[0] = TypeNode.StringTerminator;
                     }
 
-                    await stream.WriteAsync(data, 0, (int)constLength.Value, cancellationToken).ConfigureAwait(false);
+                    await stream.WriteAsync(data, 0, (int) constLength.Value, cancellationToken).ConfigureAwait(false);
 
                     return;
                 }
@@ -294,108 +295,108 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 case SerializedType.Int1:
                 {
-                    var data = new [] {(byte)Convert.ToSByte(convertedValue)};
+                    var data = new[] {(byte) Convert.ToSByte(convertedValue)};
                     await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.UInt1:
-                    {
-                        var data = new[] { Convert.ToByte(convertedValue) };
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                {
+                    var data = new[] {Convert.ToByte(convertedValue)};
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.Int2:
-                    {
-                        var data = BitConverter.GetBytes(Convert.ToInt16(convertedValue));
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                {
+                    var data = BitConverter.GetBytes(Convert.ToInt16(convertedValue));
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.UInt2:
-                    {
-                        var data = BitConverter.GetBytes(Convert.ToUInt16(convertedValue));
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                {
+                    var data = BitConverter.GetBytes(Convert.ToUInt16(convertedValue));
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.Int4:
-                    {
-                        var data = BitConverter.GetBytes(Convert.ToInt32(convertedValue));
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                {
+                    var data = BitConverter.GetBytes(Convert.ToInt32(convertedValue));
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.UInt4:
-                    {
-                        var data = BitConverter.GetBytes(Convert.ToUInt32(convertedValue));
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                {
+                    var data = BitConverter.GetBytes(Convert.ToUInt32(convertedValue));
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.Int8:
-                    {
-                        var data = BitConverter.GetBytes(Convert.ToInt64(convertedValue));
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                {
+                    var data = BitConverter.GetBytes(Convert.ToInt64(convertedValue));
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.UInt8:
-                    {
-                        var data = BitConverter.GetBytes(Convert.ToUInt64(convertedValue));
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                {
+                    var data = BitConverter.GetBytes(Convert.ToUInt64(convertedValue));
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.Float4:
-                    {
-                        var data = BitConverter.GetBytes(Convert.ToSingle(convertedValue));
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                {
+                    var data = BitConverter.GetBytes(Convert.ToSingle(convertedValue));
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.Float8:
-                    {
-                        var data = BitConverter.GetBytes(Convert.ToDouble(convertedValue));
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                {
+                    var data = BitConverter.GetBytes(Convert.ToDouble(convertedValue));
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.ByteArray:
-                    {
-                        var data = (byte[])value;
+                {
+                    var data = (byte[]) value;
 
-                        AdjustArrayLength(ref data, constLength, maxLength);
+                    AdjustArrayLength(ref data, constLength, maxLength);
 
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.TerminatedString:
-                    {
-                        var data = GetFieldEncoding().GetBytes(value.ToString());
+                {
+                    var data = GetFieldEncoding().GetBytes(value.ToString());
 
-                        AdjustNullTerminatedArrayLength(ref data, constLength, maxLength);
+                    AdjustNullTerminatedArrayLength(ref data, constLength, maxLength);
 
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
 
-                        var stringTerminatorData = new[] {TypeNode.StringTerminator};
-                        await stream.WriteAsync(stringTerminatorData, 0, stringTerminatorData.Length, cancellationToken)
-                            .ConfigureAwait(false);
+                    var stringTerminatorData = new[] {TypeNode.StringTerminator};
+                    await stream.WriteAsync(stringTerminatorData, 0, stringTerminatorData.Length, cancellationToken)
+                        .ConfigureAwait(false);
 
-                        break;
-                    }
+                    break;
+                }
                 case SerializedType.SizedString:
-                    {
-                        var data = GetFieldEncoding().GetBytes(value.ToString());
+                {
+                    var data = GetFieldEncoding().GetBytes(value.ToString());
 
-                        AdjustArrayLength(ref data, constLength, maxLength);
+                    AdjustArrayLength(ref data, constLength, maxLength);
 
-                        await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
-                        break;
-                    }
+                    await stream.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                    break;
+                }
                 case SerializedType.LengthPrefixedString:
+                {
+                    if (constLength != null)
                     {
-                        if (constLength != null)
-                        {
-                            throw new NotSupportedException("Length-prefixed strings cannot have a const length.");
-                        }
-
-                        var writer = new BinaryWriter(stream, GetFieldEncoding());
-
-                        writer.Write(value.ToString());
-                        break;
+                        throw new NotSupportedException("Length-prefixed strings cannot have a const length.");
                     }
+
+                    var writer = new BinaryWriter(stream, GetFieldEncoding());
+
+                    writer.Write(value.ToString());
+                    break;
+                }
 
                 default:
                     throw new NotSupportedException();
@@ -530,7 +531,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.TerminatedString:
                 {
-                    var data = await ReadTerminatedAsync(reader, (int) effectiveLengthValue, TypeNode.StringTerminator, cancellationToken)
+                    var data = await ReadTerminatedAsync(reader, (int) effectiveLengthValue, TypeNode.StringTerminator,
+                            cancellationToken)
                         .ConfigureAwait(false);
                     value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
@@ -572,7 +574,8 @@ namespace BinarySerialization.Graph.ValueGraph
             Serialize(stream, BoundValue, TypeNode.GetSerializedType());
         }
 
-        internal override Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        internal override Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
             return SerializeAsync(stream, BoundValue, TypeNode.GetSerializedType(), null, cancellationToken);
         }
@@ -738,7 +741,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (effectiveLength == null)
             {
-                if (serializedType == SerializedType.ByteArray || 
+                if (serializedType == SerializedType.ByteArray ||
                     serializedType == SerializedType.SizedString ||
                     serializedType == SerializedType.TerminatedString)
                 {
@@ -825,7 +828,8 @@ namespace BinarySerialization.Graph.ValueGraph
             var buffer = new MemoryStream();
 
             byte b;
-            while (maxLength-- > 0 && (b = await reader.ReadByteAsync(cancellationToken).ConfigureAwait(false)) != terminator)
+            while (maxLength-- > 0 &&
+                   (b = await reader.ReadByteAsync(cancellationToken).ConfigureAwait(false)) != terminator)
             {
                 buffer.WriteByte(b);
             }
