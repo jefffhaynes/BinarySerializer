@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer", "BinarySerializer\BinarySerializer.csproj", "{FAF159F0-83C1-43C6-BCA8-C58967DA9806}"
 EndProject
@@ -116,5 +116,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1C4495AD-C355-49D1-81D4-89307415C553} = {1F05252A-BD4D-4ED3-83FF-17E591090FC9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CFED1A81-878A-4070-AE75-A834466D48DD}
 	EndGlobalSection
 EndGlobal
