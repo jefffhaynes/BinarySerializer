@@ -27,7 +27,7 @@ public class DerivedClass : BaseClass
 var stream = new MemoryStream();
 var serializer = new BinarySerializer();
 var derivedClass = new DerivedClass();
-serializer.Serialize(stream, derivedClass);
+await serializer.SerializeAsync(stream, derivedClass);
 ```
 
 Note that properties and fields are used interchangeably as they are treated as equivalent by the serializer.
@@ -50,7 +50,7 @@ public class Person
 
 ```c#
 var person = new Person { Name = "Alice" };
-serializer.Serialize(stream, person);
+await serializer.SerializeAsync(stream, person);
 ```
 
 <p align="center">
