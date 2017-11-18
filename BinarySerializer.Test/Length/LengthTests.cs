@@ -65,7 +65,7 @@ namespace BinarySerialization.Test.Length
             var expected = new BoundLengthClass<List<string>> {Field = new List<string>()};
             var actual = Roundtrip(expected);
             Assert.Equal(expected.Field.Count*2, actual.FieldLengthField);
-            Assert.Equal(0, actual.Field.Count);
+            Assert.Empty(actual.Field);
         }
 
         [Fact]
@@ -169,8 +169,8 @@ namespace BinarySerialization.Test.Length
             var expected = new MultibindingClass {Value = "hi"};
             var actual = Roundtrip(expected, new byte[] {0x02, (byte) 'h', (byte) 'i', 0x02});
 
-            Assert.Equal(actual.Length, 2);
-            Assert.Equal(actual.Length2, 2);
+            Assert.Equal(2, actual.Length);
+            Assert.Equal(2, actual.Length2);
         }
 
         [Fact]
