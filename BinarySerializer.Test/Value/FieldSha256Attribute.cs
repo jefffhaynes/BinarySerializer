@@ -6,8 +6,6 @@ namespace BinarySerialization.Test.Value
     {
         private readonly IncrementalHash _sha = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
 
-        //public override int BlockSize => _sha.InputBlockSize;
-
         public FieldSha256Attribute(string valuePath) : base(valuePath)
         {
         }
