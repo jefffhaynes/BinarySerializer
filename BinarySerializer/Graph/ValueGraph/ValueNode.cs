@@ -122,8 +122,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 for (var index = 0; index < typeNode.FieldValueBindings.Count; index++)
                 {
                     var fieldValueBinding = typeNode.FieldValueBindings[index];
-
-                    var attributeIndex = index;
+                    var fieldValueAttribute = typeNode.FieldValueAttributes[index];
+                    
                     fieldValueBinding.Bind(this, () =>
                     {
                         if (!Visited)
@@ -132,7 +132,7 @@ namespace BinarySerialization.Graph.ValueGraph
                                 "Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
                         }
 
-                        return TypeNode.FieldValueAttributes[attributeIndex].ComputeFinalInternal();
+                        return fieldValueAttribute.ComputeFinalInternal();
                     });
                 }
             }
