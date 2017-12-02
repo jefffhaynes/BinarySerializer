@@ -149,7 +149,7 @@ namespace BinarySerializer.Performance
         //        }
         //        stopwatch.Stop();
         //        Console.WriteLine("BF SER: {0}", stopwatch.Elapsed);
-        //        stopwatch.Reset();
+        //        stopwatch.GetInitial();
         //    }
 
         //    var dataStream = new MemoryStream();
@@ -166,7 +166,7 @@ namespace BinarySerializer.Performance
         //        }
         //        stopwatch.Stop();
         //        Console.WriteLine("BF DESER: {0}", stopwatch.Elapsed);
-        //        stopwatch.Reset();
+        //        stopwatch.GetInitial();
         //    }
         //}
     }

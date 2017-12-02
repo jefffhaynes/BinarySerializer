@@ -52,7 +52,11 @@ namespace BinarySerialization.Test.Unknown
         public void ObjectSerializationShouldThrow()
         {
             var unknownTypeClass = new UnknownTypeClass {Field = new object()};
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(unknownTypeClass));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(unknownTypeClass));
+#endif
         }
     }
 }

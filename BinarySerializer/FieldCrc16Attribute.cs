@@ -8,8 +8,6 @@
         private const ushort DefaultPolynomial = 0x1021;
         private const ushort DefaultInitialValue = ushort.MaxValue;
 
-        private Crc16 _crc;
-
         /// <summary>
         ///     Initializes a new instance of the FieldCrc16 class.
         /// </summary>
@@ -47,39 +45,38 @@
         ///     This is called by the framework to indicate a new operation.
         /// </summary>
         /// <param name="context"></param>
-        protected override void Reset(BinarySerializationContext context)
+        protected override object GetInitialState(BinarySerializationContext context)
         {
-            if (_crc == null)
+            return new Crc16(Polynomial, InitialValue)
             {
-                _crc = new Crc16(Polynomial, InitialValue)
-                {
-                    IsDataReflected = IsDataReflected,
-                    IsRemainderReflected = IsRemainderReflected,
-                    FinalXor = FinalXor
-                };
-            }
-
-            _crc.Reset();
+                IsDataReflected = IsDataReflected,
+                IsRemainderReflected = IsRemainderReflected,
+                FinalXor = FinalXor
+            };
         }
 
         /// <summary>
         ///     This is called one or more times by the framework to add data to the computation.
         /// </summary>
+        /// <param name="state"></param>
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
-        protected override void Compute(byte[] buffer, int offset, int count)
+        protected override object GetUpdatedState(object state, byte[] buffer, int offset, int count)
         {
-            _crc.Compute(buffer, offset, count);
+            var crc = (Crc16)state;
+            crc.Compute(buffer, offset, count);
+            return state;
         }
 
         /// <summary>
         ///     This is called by the framework to retrieve the final value from computation.
         /// </summary>
         /// <returns></returns>
-        protected override object ComputeFinal()
+        protected override object GetFinalValue(object state)
         {
-            return _crc.ComputeFinal();
+            var crc = (Crc16) state;
+            return crc.ComputeFinal();
         }
     }
 }

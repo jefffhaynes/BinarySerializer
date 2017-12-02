@@ -21,39 +21,40 @@ namespace BinarySerialization
         /// </summary>
         public virtual int BlockSize => 81920;
 
-        internal virtual void ResetInternal(BinarySerializationContext context)
+        internal virtual object GetInitialStateInternal(BinarySerializationContext context)
         {
-            Reset(context);
+            return GetInitialState(context);
         }
 
-        internal void ComputeInternal(byte[] buffer, int offset, int count)
+        internal object GetUpdatedStateInternal(object state, byte[] buffer, int offset, int count)
         {
-            Compute(buffer, offset, count);
+            return GetUpdatedState(state, buffer, offset, count);
         }
 
-        internal object ComputeFinalInternal()
+        internal object GetFinalValueInternal(object state)
         {
-            return ComputeFinal();
+            return GetFinalValue(state);
         }
 
         /// <summary>
         ///     This is called by the framework to indicate a new operation.
         /// </summary>
         /// <param name="context"></param>
-        protected abstract void Reset(BinarySerializationContext context);
+        protected abstract object GetInitialState(BinarySerializationContext context);
 
         /// <summary>
         ///     This is called one or more times by the framework to add data to the computation.
         /// </summary>
+        /// <param name="state"></param>
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
-        protected abstract void Compute(byte[] buffer, int offset, int count);
+        protected abstract object GetUpdatedState(object state, byte[] buffer, int offset, int count);
 
         /// <summary>
         ///     This is called by the framework to retrieve the final value from computation.
         /// </summary>
         /// <returns></returns>
-        protected abstract object ComputeFinal();
+        protected abstract object GetFinalValue(object state);
     }
 }

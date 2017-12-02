@@ -106,7 +106,11 @@ namespace BinarySerialization.Test.Value
         [Fact]
         public void EasyMistakeCrcTest()
         {
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(new EasyMistakeCrcClass()));
+#else
             Assert.Throws<InvalidOperationException>(() => Roundtrip(new EasyMistakeCrcClass()));
+#endif
         }
 
         [Fact]

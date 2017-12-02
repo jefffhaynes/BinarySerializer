@@ -8,8 +8,6 @@ namespace BinarySerialization
     /// </summary>
     public class FieldChecksumAttribute : FieldValueAttributeBase
     {
-        private byte _checksum;
-
         /// <summary>
         ///     Initializes a new instance of the FieldChecksum class.
         /// </summary>
@@ -26,49 +24,56 @@ namespace BinarySerialization
         ///     This is called by the framework to indicate a new operation.
         /// </summary>
         /// <param name="context"></param>
-        protected override void Reset(BinarySerializationContext context)
+        protected override object GetInitialState(BinarySerializationContext context)
         {
-            _checksum = 0;
+            return default(byte);
         }
 
         /// <summary>
         ///     This is called one or more times by the framework to add data to the computation.
         /// </summary>
+        /// <param name="state"></param>
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
-        protected override void Compute(byte[] buffer, int offset, int count)
+        protected override object GetUpdatedState(object state, byte[] buffer, int offset, int count)
         {
+            var checksum = (byte) state;
+
             if (Mode == ChecksumMode.Xor)
             {
                 for (var i = offset; i < count; i++)
                 {
-                    _checksum ^= buffer[i];
+                    checksum ^= buffer[i];
                 }
             }
             else
             {
                 for (var i = offset; i < count; i++)
                 {
-                    _checksum = (byte) (_checksum + buffer[i]);
+                    checksum = (byte) (checksum + buffer[i]);
                 }
             }
+
+            return checksum;
         }
 
         /// <summary>
         ///     This is called by the framework to retrieve the final value from computation.
         /// </summary>
         /// <returns></returns>
-        protected override object ComputeFinal()
+        protected override object GetFinalValue(object state)
         {
+            var checksum = (byte) state;
+
             switch (Mode)
             {
                 case ChecksumMode.TwosComplement:
-                    return (byte) (0x100 - _checksum);
+                    return (byte) (0x100 - checksum);
                 case ChecksumMode.Modulo256:
-                    return (byte) (_checksum % 256);
+                    return (byte) (checksum % 256);
                 case ChecksumMode.Xor:
-                    return _checksum;
+                    return checksum;
                 default:
                     throw new ArgumentException();
             }

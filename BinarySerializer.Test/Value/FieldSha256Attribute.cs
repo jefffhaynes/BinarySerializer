@@ -4,25 +4,26 @@ namespace BinarySerialization.Test.Value
 {
     public class FieldSha256Attribute : FieldValueAttributeBase
     {
-        private readonly IncrementalHash _sha = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
-
         public FieldSha256Attribute(string valuePath) : base(valuePath)
         {
         }
 
-        protected override void Reset(BinarySerializationContext context)
+        protected override object GetInitialState(BinarySerializationContext context)
         {
-            _sha.GetHashAndReset();
+            return IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
         }
 
-        protected override void Compute(byte[] buffer, int offset, int count)
+        protected override object GetUpdatedState(object state, byte[] buffer, int offset, int count)
         {
-            _sha.AppendData(buffer, offset, count);
+            var sha = (IncrementalHash) state;
+            sha.AppendData(buffer, offset, count);
+            return sha;
         }
 
-        protected override object ComputeFinal()
+        protected override object GetFinalValue(object state)
         {
-            return _sha.GetHashAndReset();
+            var sha = (IncrementalHash)state;
+            return sha.GetHashAndReset();
         }
     }
 }

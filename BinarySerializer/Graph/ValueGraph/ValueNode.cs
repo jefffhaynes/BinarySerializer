@@ -22,6 +22,9 @@ namespace BinarySerialization.Graph.ValueGraph
             TypeNode = typeNode;
             Children = new List<ValueNode>();
             Bindings = new List<Func<object>>();
+
+            _fieldValueAttributeTaps =
+                typeNode.FieldValueAttributes?.ToDictionary(attribute => attribute, attribute => default(FieldValueAdapterStream));
         }
 
         public TypeNode TypeNode { get; set; }
@@ -46,6 +49,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 _visited = value;
             }
         }
+
+        private readonly Dictionary<FieldValueAttributeBase, FieldValueAdapterStream> _fieldValueAttributeTaps;
 
         private bool ShouldSerialize(Func<Binding, object> bindingValueSelector)
         {
@@ -111,7 +116,8 @@ namespace BinarySerialization.Graph.ValueGraph
                                 "Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
                         }
 
-                        return fieldValueAttribute.ComputeFinalInternal();
+                        var tap = _fieldValueAttributeTaps[fieldValueAttribute];
+                        return fieldValueAttribute.GetFinalValueInternal(tap.State);
                     });
                 }
             }
@@ -657,9 +663,11 @@ namespace BinarySerialization.Graph.ValueGraph
                 // Setup tap for value attributes if we need to siphon serialized data for later
                 foreach (var fieldValueAttribute in TypeNode.FieldValueAttributes)
                 {
-                    fieldValueAttribute.ResetInternal(context);
-                    var tap = new FieldValueAdapterStream(fieldValueAttribute);
+                    var state = fieldValueAttribute.GetInitialStateInternal(context);
+                    var tap = new FieldValueAdapterStream(fieldValueAttribute, state);
                     stream = new TapStream(stream, tap);
+
+                    _fieldValueAttributeTaps[fieldValueAttribute] = tap;
                 }
             }
             return stream;

@@ -59,5 +59,11 @@ namespace BinarySerialization
             await _tap.FlushAsync(cancellationToken).ConfigureAwait(false);
             await base.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
+
+        public override void Flush()
+        {
+            _tap.Flush();
+            base.Flush();
+        }
     }
 }

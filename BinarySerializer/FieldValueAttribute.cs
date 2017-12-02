@@ -5,8 +5,6 @@
     /// </summary>
     public sealed class FieldValueAttribute : FieldValueAttributeBase
     {
-        private object _value;
-
         /// <summary>
         ///     Initializes a new instance of the FieldValue class.
         /// </summary>
@@ -18,28 +16,30 @@
         ///     This is called by the framework to indicate a new operation.
         /// </summary>
         /// <param name="context"></param>
-        protected override void Reset(BinarySerializationContext context)
+        protected override object GetInitialState(BinarySerializationContext context)
         {
-            _value = context.Value;
+            return context.Value;
         }
 
         /// <summary>
         ///     This is called one or more times by the framework to add data to the computation.
         /// </summary>
+        /// <param name="state"></param>
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
-        protected override void Compute(byte[] buffer, int offset, int count)
+        protected override object GetUpdatedState(object state, byte[] buffer, int offset, int count)
         {
+            return state;
         }
 
         /// <summary>
         ///     This is called by the framework to retrieve the final value from computation.
         /// </summary>
         /// <returns></returns>
-        protected override object ComputeFinal()
+        protected override object GetFinalValue(object state)
         {
-            return _value;
+            return state;
         }
     }
 }
