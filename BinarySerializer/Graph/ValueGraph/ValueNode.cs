@@ -47,27 +47,6 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        //private bool ShouldSerialize
-        //{
-        //    get
-        //    {
-        //        if (TypeNode.SerializeWhenBindings != null &&
-        //            !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
-        //        {
-        //            return false;
-        //        }
-
-        //        if (TypeNode.SerializeWhenNotBindings != null &&
-        //            TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(binding.GetValue(this))))
-        //        {
-        //            return false;
-        //        }
-
-        //        return true;
-        //    }
-        //}
-
-
         private bool ShouldSerialize(Func<Binding, object> bindingValueSelector)
         {
             if (TypeNode.SerializeWhenBindings != null &&
@@ -225,7 +204,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 else
                 {
-                    await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken);
+                    await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken)
+                        .ConfigureAwait(false);
                 }
 
                 if (align)
