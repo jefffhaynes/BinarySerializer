@@ -53,11 +53,11 @@ namespace BinarySerialization
             _tap.Write(buffer, offset, count);
             base.Write(buffer, offset, count);
         }
-
-        public override void Flush()
+        
+        public override async Task FlushAsync(CancellationToken cancellationToken)
         {
-            _tap.Flush();
-            base.Flush();
+            await _tap.FlushAsync(cancellationToken).ConfigureAwait(false);
+            await base.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }
