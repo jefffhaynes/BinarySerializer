@@ -58,7 +58,7 @@ namespace BinarySerialization.Test.ItemSubtype
             var actual = Deserialize<ItemSubtypeClass>(data);
 
             Assert.Equal(4, actual.Indicator);
-            Assert.Equal(1, actual.Items.Count);
+            Assert.Single(actual.Items);
             Assert.Equal(typeof(DefaultItemType), actual.Items[0].GetType());
         }
 
@@ -103,7 +103,7 @@ namespace BinarySerialization.Test.ItemSubtype
             var actual = Deserialize<ItemSubtypeFactoryWithDefaultClass>(data);
 
             Assert.Equal(4, actual.Key);
-            Assert.Equal(1, actual.Items.Count);
+            Assert.Single(actual.Items);
             Assert.Equal(typeof(DefaultItemType), actual.Items[0].GetType());
         }
     }

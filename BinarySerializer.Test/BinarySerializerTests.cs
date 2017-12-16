@@ -214,7 +214,7 @@ namespace BinarySerialization.Test
         {
             var serializer = new BinarySerializer();
             var ingredients = serializer.Deserialize<Ingredients>(new byte[] {0x4});
-            Assert.Equal(null, ingredients.MainIngredient);
+            Assert.Null(ingredients.MainIngredient);
         }
 
         [Fact]

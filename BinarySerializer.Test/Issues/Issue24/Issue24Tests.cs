@@ -12,7 +12,7 @@ namespace BinarySerialization.Test.Issues.Issue24
 
             var actual = Roundtrip(data);
 
-            Assert.Equal(actual.CarrierType, LoadCarrierType.Bin1);
+            Assert.Equal(LoadCarrierType.Bin1, actual.CarrierType);
             Assert.IsAssignableFrom<Bin1Data>(actual.Data);
         }
     }

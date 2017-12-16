@@ -37,7 +37,7 @@ namespace BinarySerialization.Test.Issues.Issue38
             using (var stream = new MemoryStream(inBytes))
             {
                 var actualObj = serializer.Deserialize<MachineState1>(stream);
-                Assert.Equal(null, actualObj);//, "Deserialization done with invalid Stream.");
+                Assert.Null(actualObj);
             }
         }
     }

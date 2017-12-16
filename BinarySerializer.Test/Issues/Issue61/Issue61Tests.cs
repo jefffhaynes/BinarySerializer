@@ -18,7 +18,7 @@ namespace BinarySerialization.Test.Issues.Issue61
             };
 
             var actual = Roundtrip(expected);
-            Assert.Equal(1, actual.Count);
+            Assert.Single(actual);
         }
     }
 }

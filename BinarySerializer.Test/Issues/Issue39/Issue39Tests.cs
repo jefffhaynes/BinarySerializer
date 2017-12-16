@@ -10,8 +10,8 @@ namespace BinarySerialization.Test.Issues.Issue39
         {
             byte[] data = {0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1};
             var inputsStateFrameData = Deserialize<InputsStateFrameData>(data);
-            Assert.Equal(false, inputsStateFrameData.Inputs[0]);
-            Assert.Equal(true, inputsStateFrameData.Inputs[1]);
+            Assert.False(inputsStateFrameData.Inputs[0]);
+            Assert.True(inputsStateFrameData.Inputs[1]);
         }
     }
 }

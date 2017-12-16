@@ -15,7 +15,7 @@ namespace BinarySerialization.Test.Issues.Issue27
             using (var stream = new MemoryStream(inBytes))
             {
                 var actualObj = serializer.Deserialize<LoadCarrierData>(stream);
-                Assert.Equal(null, actualObj);//, "Deserialization done with invalid Stream.");
+                Assert.Null(actualObj);
             }
         }
     }
