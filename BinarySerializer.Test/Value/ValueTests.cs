@@ -48,6 +48,34 @@ namespace BinarySerialization.Test.Value
         }
 
         [Fact]
+        public void Crc16OneWayTest()
+        {
+            var expected = new FieldCrc16OneWayClass
+            {
+                Internal = new FieldCrcInternalClass
+                {
+                    UshortValue = 1,
+                    ByteValue = 2,
+                    ArrayValue = new byte[] { 0x3, 0x4 },
+                    Value = "hello world"
+                }
+            };
+
+            var expectedData = new byte[]
+            {
+                0x10, 0x0, 0x0, 0x0,
+                0x01, 0x00,
+                0x02,
+                0x03, 0x04,
+                0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64,
+                0x00, 0x00
+            };
+
+            var actual = Roundtrip(expected, expectedData);
+            Assert.Equal(0x0000, actual.Crc);
+        }
+
+        [Fact]
         public void Crc32Test()
         {
             var expected = new FieldCrc32Class

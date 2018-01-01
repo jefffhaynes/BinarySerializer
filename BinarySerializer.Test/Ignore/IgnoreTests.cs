@@ -15,5 +15,14 @@ namespace BinarySerialization.Test.Ignore
             Assert.Null(actual.IgnoreMe);
             Assert.Equal(expected.LastField, actual.LastField);
         }
+
+        [Fact]
+        public void IgnoreBindingTest()
+        {
+            var expected = new IgnoreBindingClass {Value = "Hello"};
+            var actual = Roundtrip(expected);
+
+            Assert.Equal(expected.Value, actual.Value);
+        }
     }
 }

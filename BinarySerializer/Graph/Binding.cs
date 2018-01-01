@@ -183,7 +183,7 @@ namespace BinarySerialization.Graph
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private void CheckSource(ValueNode source)
         {
-            if (!source.Visited && !SupportsDeferredEvaluation)
+            if (!source.Visited && !SupportsDeferredEvaluation && !source.TypeNode.IsIgnored)
             {
                 throw new InvalidOperationException(
                     "This attribute does not support forward binding.  Consider specifying a BindingMode of OneWayToSource.");

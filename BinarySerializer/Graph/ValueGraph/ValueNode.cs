@@ -106,6 +106,12 @@ namespace BinarySerialization.Graph.ValueGraph
                 for (var index = 0; index < typeNode.FieldValueBindings.Count; index++)
                 {
                     var fieldValueBinding = typeNode.FieldValueBindings[index];
+
+                    if (fieldValueBinding.BindingMode == BindingMode.OneWay)
+                    {
+                        continue;
+                    }
+
                     var fieldValueAttribute = typeNode.FieldValueAttributes[index];
                     
                     fieldValueBinding.Bind(this, () =>
@@ -741,21 +747,27 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void DeserializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
         {
-            stream = new BoundedStream(stream, maxLengthDelegate);
+            stream = PrepareStream(stream, maxLengthDelegate);
 
             DeserializeOverride(stream, eventShuttle);
 
             SkipPadding(stream);
+
+            // needed for tap
+            FlushStream(stream);
         }
 
         private async Task DeserializeInternalAsync(BoundedStream stream, Func<long?> maxLengthDelegate,
             EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
-            stream = new BoundedStream(stream, maxLengthDelegate);
+            stream = PrepareStream(stream, maxLengthDelegate);
 
             await DeserializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
 
             await SkipPaddingAsync(stream, cancellationToken).ConfigureAwait(false);
+
+            // needed for tap
+            await FlushStreamAsync(stream, cancellationToken).ConfigureAwait(false);
         }
 
         private void WritePadding(BoundedStream stream)

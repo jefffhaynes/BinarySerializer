@@ -62,7 +62,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (length != null)
             {
-                stream.Seek(length.Value, SeekOrigin.Current);
+                var nullStream = new NullStream();
+                stream.CopyTo(nullStream, (int)length.Value, CopyToBufferSize);
             }
             else
             {
