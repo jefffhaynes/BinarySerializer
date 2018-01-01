@@ -59,7 +59,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 // initialize all children from the corresponding set value fields
                 foreach (var child in Children)
                 {
-                    child.Value = child.TypeNode.ValueGetter(value);
+                    child.Value = child.TypeNode.ValueGetter?.Invoke(value);
                 }
 
                 _valueType = value.GetType();

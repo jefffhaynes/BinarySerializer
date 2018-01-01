@@ -59,5 +59,30 @@ namespace BinarySerialization
 
             return value;
         }
+
+        public static IEnumerable<Type> GetHierarchyGenericArguments(this Type type)
+        {
+            var genericTypes = type.GetGenericArguments();
+
+            foreach (var genericType in genericTypes)
+            {
+                yield return genericType;
+            }
+
+            var typeInfo = type.GetTypeInfo();
+            var baseType = typeInfo.BaseType;
+
+            if (baseType == null)
+            {
+                yield break;
+            }
+
+            var baseGenericArguments = baseType.GetHierarchyGenericArguments();
+
+            foreach (var baseGenericArgument in baseGenericArguments)
+            {
+                yield return baseGenericArgument;
+            }
+        }
     }
 }

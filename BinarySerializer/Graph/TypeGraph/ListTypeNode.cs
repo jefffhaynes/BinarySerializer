@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BinarySerialization.Graph.ValueGraph;
@@ -27,7 +28,15 @@ namespace BinarySerialization.Graph.TypeGraph
 
         protected override Type GetChildType()
         {
-            return Type.GetGenericArguments().Single();
+            var genericArguments = Type.GetHierarchyGenericArguments().ToList();
+
+            if (genericArguments.Count != 1)
+            {
+                throw new InvalidOperationException(
+                    "Lists must define one and only one generic argument in the list object hierarchy.");
+            }
+
+            return genericArguments[0];
         }
     }
 }

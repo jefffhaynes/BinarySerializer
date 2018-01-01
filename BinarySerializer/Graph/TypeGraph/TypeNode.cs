@@ -84,13 +84,19 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 Type = subType ?? propertyInfo.PropertyType;
 
-                ValueGetter = MagicMethods.MagicFunc(parentType, propertyInfo.GetGetMethod());
+                var indexParameters = propertyInfo.GetIndexParameters();
 
-                var setMethod = propertyInfo.GetSetMethod();
-
-                if (setMethod != null)
+                // ignore custom indexers
+                if (indexParameters.Length == 0)
                 {
-                    ValueSetter = MagicMethods.MagicAction(parentType, setMethod);
+                    ValueGetter = MagicMethods.MagicFunc(parentType, propertyInfo.GetGetMethod());
+                    
+                    var setMethod = propertyInfo.GetSetMethod();
+
+                    if (setMethod != null)
+                    {
+                        ValueSetter = MagicMethods.MagicAction(parentType, setMethod);
+                    }
                 }
             }
             else if (fieldInfo != null)

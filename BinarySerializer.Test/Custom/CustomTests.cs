@@ -89,5 +89,23 @@ namespace BinarySerialization.Test.Custom
 
             Roundtrip(expected);
         }
+
+        [Fact]
+        public void CustomListTest()
+        {
+            var expected = new CustomListClass {"hello"};
+            var actual = Roundtrip(expected);
+            
+            Assert.Equal(expected, actual);
+        }
+
+        //[Fact]
+        //public void CustomIListTest()
+        //{
+        //    var expected = new CustomIListClass {"hello"};
+        //    var actual = Roundtrip(expected);
+
+        //    Assert.Equal(expected, actual);
+        //}
     }
 }
