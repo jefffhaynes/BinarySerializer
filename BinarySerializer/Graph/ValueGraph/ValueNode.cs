@@ -60,13 +60,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 return false;
             }
 
-            if (TypeNode.SerializeWhenNotBindings != null &&
-                TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(bindingValueSelector(binding))))
-            {
-                return false;
-            }
-
-            return true;
+            return TypeNode.SerializeWhenNotBindings == null || !TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(bindingValueSelector(binding)));
         }
 
         public virtual void Bind()
