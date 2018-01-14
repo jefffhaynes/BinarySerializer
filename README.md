@@ -404,9 +404,7 @@ This is the most trivial example of a FieldValue attribute and will simply copy 
 
 ### FieldChecksumAttribute ###
 
-The FieldChecksum attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an 8-bit checksum.  The checksum can be configured with one of three modes: 2's complement, modulo 256, or xor.
-
-*Note that this attribute is only used during serialization.  The checksum is not checked during deserialization.*
+The FieldChecksum attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an 8-bit checksum.  The checksum can be configured with one of three modes: 2's complement, modulo 256, or xor.  If the BindingMode is any other than OneWayToSource, the checksum will also be checked during deserialization and an exception thrown if the actual value does not match the computed value.
 
 ```c#
 public class Packet
@@ -426,9 +424,7 @@ public class Packet
 
 ### FieldCrc16Attribute ###
 
-The FieldCrc16 attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an unsigned 16-bit checksum.
-
-*Note that this attribute is only used during serialization.  The CRC is not checked during deserialization.*
+The FieldCrc16 attribute is a built-in extension of the FieldValueAttributeBase that allows for the computation of an unsigned 16-bit checksum.  If the BindingMode is any other than OneWayToSource, the CRC will also be checked during deserialization and an exception thrown if the actual value does not match the computed value.
 
 ```c#
 public class Packet
