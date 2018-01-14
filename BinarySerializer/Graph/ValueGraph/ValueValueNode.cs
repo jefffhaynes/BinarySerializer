@@ -483,40 +483,6 @@ namespace BinarySerialization.Graph.ValueGraph
             CheckComputedValues();
         }
 
-        private void CheckComputedValues()
-        {
-            bool isMatch = true;
-            string expected = null;
-            string actual = null;
-
-            var value = Value;
-            var boundValue = BoundValue;
-
-            if (boundValue != null && Bindings.Count > 0)
-            {
-                if (boundValue is byte[] boundValueArray && value is byte[] valueArray)
-                {
-                    if (!boundValueArray.SequenceEqual(valueArray))
-                    {
-                        expected = BitConverter.ToString(boundValueArray);
-                        actual = BitConverter.ToString(valueArray);
-                        isMatch = false;
-                    }
-                }
-                else if (!boundValue.Equals(value))
-                {
-                    expected = boundValue.ToString();
-                    actual = value.ToString();
-                    isMatch = false;
-                }
-            }
-
-            if (!isMatch)
-            {
-                throw new InvalidDataException($"Deserialized value does not match computed value.  Expected {expected} but got {actual}.  To suppress this check, change binding mode to OneWayToSource.");
-            }
-        }
-
         public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, long? length,
             CancellationToken cancellationToken)
         {
@@ -842,6 +808,41 @@ namespace BinarySerialization.Graph.ValueGraph
         private object ConvertToFieldType(object value)
         {
             return value.ConvertTo(TypeNode.Type);
+        }
+
+        private void CheckComputedValues()
+        {
+            bool isMatch = true;
+            string expected = null;
+            string actual = null;
+
+            var value = Value;
+            var boundValue = BoundValue;
+
+            if (boundValue != null && Bindings.Count > 0)
+            {
+                // check special case of arrays
+                if (boundValue is byte[] boundValueArray && value is byte[] valueArray)
+                {
+                    if (!boundValueArray.SequenceEqual(valueArray))
+                    {
+                        expected = BitConverter.ToString(boundValueArray);
+                        actual = BitConverter.ToString(valueArray);
+                        isMatch = false;
+                    }
+                }
+                else if (!boundValue.Equals(value))
+                {
+                    expected = boundValue.ToString();
+                    actual = value.ToString();
+                    isMatch = false;
+                }
+            }
+
+            if (!isMatch)
+            {
+                throw new InvalidDataException($"Deserialized value does not match computed value.  Expected {expected} but got {actual}.  To suppress this check, change binding mode to OneWayToSource.");
+            }
         }
 
         private static byte[] ReadTerminated(BinaryReader reader, int maxLength, byte terminator)
