@@ -4,7 +4,7 @@
     <Description>A declarative serialization framework for controlling formatting of data at the byte level.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>CRCs and other value fields are now checked during deserialization and an InvalidDataException will be thrown if the expected value does not match the computed value.  To suppress this behavior, specify a BindingMode of OneWayToSource.  This release also includes a fix to deserialization events on fields with value attributes, which could occasionally report an incorrect value.</PackageReleaseNotes>
+    <PackageReleaseNotes>CRCs and other value fields are now checked during deserialization and an InvalidDataException will be thrown if the actual value does not match the computed value.  To suppress this behavior, specify a BindingMode of OneWayToSource.  This release also includes a fix to deserialization events on fields with value attributes, which could occasionally report an incorrect value.</PackageReleaseNotes>
     <PackageProjectUrl>http://binaryserializer.net</PackageProjectUrl>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
