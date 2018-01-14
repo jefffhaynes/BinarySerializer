@@ -48,7 +48,7 @@ namespace BinarySerialization.Test.Value
         }
 
         [Fact]
-        public void BadCrcTest()
+        public void CrcTestOneWay()
         {
             var expected = new FieldCrc16OneWayClass
             {
@@ -74,8 +74,37 @@ namespace BinarySerialization.Test.Value
 #if TESTASYNC
             Assert.Throws<AggregateException>(() => Roundtrip(expected, expectedData));
 #else
-            Assert.Throws<InvalidDataException>(() =>  Roundtrip(expected, expectedData));
+            Assert.Throws<InvalidOperationException>(() =>  Roundtrip(expected, expectedData));
 #endif
+        }
+
+        [Fact]
+        public void CrcTestOneWayToSource()
+        {
+            var expected = new FieldCrc16OneWayToSourceClass
+            {
+                Internal = new FieldCrcInternalClass
+                {
+                    UshortValue = 1,
+                    ByteValue = 2,
+                    ArrayValue = new byte[] { 0x3, 0x4 },
+                    Value = "hello world"
+                }
+            };
+
+            var data = new byte[]
+            {
+                0x10, 0x0, 0x0, 0x0,
+                0x01, 0x00,
+                0x02,
+                0x03, 0x04,
+                0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64,
+                0x00, 0x00
+            };
+
+            var actual = Deserialize<FieldCrc16OneWayToSourceClass>(data);
+
+            Assert.Equal(expected.Internal.Value, actual.Internal.Value);
         }
 
         [Fact]
