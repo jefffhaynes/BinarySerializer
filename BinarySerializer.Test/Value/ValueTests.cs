@@ -48,7 +48,7 @@ namespace BinarySerialization.Test.Value
         }
 
         [Fact]
-        public void Crc16OneWayTest()
+        public void BadCrcTest()
         {
             var expected = new FieldCrc16OneWayClass
             {
@@ -71,8 +71,11 @@ namespace BinarySerialization.Test.Value
                 0x00, 0x00
             };
 
-            var actual = Roundtrip(expected, expectedData);
-            Assert.Equal(0x0000, actual.Crc);
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected, expectedData));
+#else
+            Assert.Throws<InvalidDataException>(() =>  Roundtrip(expected, expectedData));
+#endif
         }
 
         [Fact]

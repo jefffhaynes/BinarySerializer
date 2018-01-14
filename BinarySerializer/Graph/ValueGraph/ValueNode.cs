@@ -25,6 +25,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
             _fieldValueAttributeTaps =
                 typeNode.FieldValueAttributes?.ToDictionary(attribute => attribute, attribute => default(FieldValueAdapterStream));
+
+            _fieldValueAttributeFinalValue = new Dictionary<FieldValueAttributeBase, object>();
         }
 
         public TypeNode TypeNode { get; set; }
@@ -51,6 +53,7 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
         private readonly Dictionary<FieldValueAttributeBase, FieldValueAdapterStream> _fieldValueAttributeTaps;
+        private readonly Dictionary<FieldValueAttributeBase, object> _fieldValueAttributeFinalValue;
 
         private bool ShouldSerialize(Func<Binding, object> bindingValueSelector)
         {
@@ -116,8 +119,15 @@ namespace BinarySerialization.Graph.ValueGraph
                                 "Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
                         }
 
-                        var tap = _fieldValueAttributeTaps[fieldValueAttribute];
-                        return fieldValueAttribute.GetFinalValueInternal(tap.State);
+                        if (!_fieldValueAttributeFinalValue.TryGetValue(fieldValueAttribute, out var finalValue))
+                        {
+                            var tap = _fieldValueAttributeTaps[fieldValueAttribute];
+
+                            finalValue = fieldValueAttribute.GetFinalValueInternal(tap.State);
+                            _fieldValueAttributeFinalValue.Add(fieldValueAttribute, finalValue);
+                        }
+
+                        return finalValue;
                     });
                 }
             }
@@ -126,6 +136,51 @@ namespace BinarySerialization.Graph.ValueGraph
             foreach (var child in Children)
             {
                 child.Bind();
+            }
+        }
+
+        public virtual void BindChecks()
+        {
+            var typeNode = TypeNode;
+
+            if (typeNode.FieldValueBindings != null)
+            {
+                // for each field value binding, create an anonymous function to get the final value from the corresponding attribute.
+                for (var index = 0; index < typeNode.FieldValueBindings.Count; index++)
+                {
+                    var fieldValueBinding = typeNode.FieldValueBindings[index];
+
+                    if (fieldValueBinding.BindingMode == BindingMode.OneWayToSource)
+                    {
+                        continue;
+                    }
+
+                    var fieldValueAttribute = typeNode.FieldValueAttributes[index];
+
+                    fieldValueBinding.Bind(this, () =>
+                    {
+                        if (!Visited)
+                        {
+                            throw new InvalidOperationException(
+                                "Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
+                        }
+
+                        if (!_fieldValueAttributeFinalValue.TryGetValue(fieldValueAttribute, out var finalValue))
+                        {
+                            var tap = _fieldValueAttributeTaps[fieldValueAttribute];
+
+                            finalValue = fieldValueAttribute.GetFinalValueInternal(tap.State);
+                            _fieldValueAttributeFinalValue.Add(fieldValueAttribute, finalValue);
+                        }
+
+                        return finalValue;
+                    });
+                }
+            }
+
+            foreach (var valueNode in Children)
+            {
+                valueNode.BindChecks();
             }
         }
 
@@ -294,6 +349,8 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 Visited = true;
             }
+            
+            BindChecks();
         }
 
         internal async Task DeserializeAsync(BoundedStream stream, EventShuttle eventShuttle,
@@ -339,6 +396,8 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 Visited = true;
             }
+            
+            BindChecks();
         }
 
         private void ThrowDeserializationException(Exception e)

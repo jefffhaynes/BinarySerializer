@@ -63,6 +63,11 @@ namespace BinarySerialization.Graph.ValueGraph
             Child.Bind();
         }
 
+        public override void BindChecks()
+        {
+            Child.BindChecks();
+        }
+
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             Child.Serialize(stream, eventShuttle);

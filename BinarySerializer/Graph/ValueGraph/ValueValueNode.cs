@@ -12,7 +12,7 @@ namespace BinarySerialization.Graph.ValueGraph
     {
         private object _cachedValue;
         private object _value;
-
+        
         public ValueValueNode(ValueNode parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
@@ -478,6 +478,43 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var convertedValue = ConvertToFieldType(value);
             _value = UnscaleValue(convertedValue);
+
+            // check computed values (CRCs, etc.)
+            CheckComputedValues();
+        }
+
+        private void CheckComputedValues()
+        {
+            bool isMatch = true;
+            string expected = null;
+            string actual = null;
+
+            var value = Value;
+            var boundValue = BoundValue;
+
+            if (boundValue != null && Bindings.Count > 0)
+            {
+                if (boundValue is byte[] boundValueArray && value is byte[] valueArray)
+                {
+                    if (!boundValueArray.SequenceEqual(valueArray))
+                    {
+                        expected = BitConverter.ToString(boundValueArray);
+                        actual = BitConverter.ToString(valueArray);
+                        isMatch = false;
+                    }
+                }
+                else if (!boundValue.Equals(value))
+                {
+                    expected = boundValue.ToString();
+                    actual = value.ToString();
+                    isMatch = false;
+                }
+            }
+
+            if (!isMatch)
+            {
+                throw new InvalidDataException($"Deserialized value does not match computed value.  Expected {expected} but got {actual}.  To suppress this check, change binding mode to OneWayToSource.");
+            }
         }
 
         public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, long? length,
@@ -552,6 +589,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var convertedValue = ConvertToFieldType(value);
             _value = UnscaleValue(convertedValue);
+
+            // check computed values (CRCs, etc.)
+            CheckComputedValues();
         }
 
         public override string ToString()
