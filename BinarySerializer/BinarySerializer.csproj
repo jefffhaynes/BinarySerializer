@@ -22,7 +22,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>portable</DebugType>
     <DebugSymbols>True</DebugSymbols>
-    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_3; TESTASYNC</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_3</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Collections" Version="4.3.0" />
