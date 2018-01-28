@@ -79,7 +79,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             var propertyInfo = memberInfo as PropertyInfo;
             var fieldInfo = memberInfo as FieldInfo;
-
+            
             if (propertyInfo != null)
             {
                 Type = subType ?? propertyInfo.PropertyType;
@@ -89,7 +89,8 @@ namespace BinarySerialization.Graph.TypeGraph
                 // ignore custom indexers
                 if (indexParameters.Length == 0)
                 {
-                    ValueGetter = MagicMethods.MagicFunc(parentType, propertyInfo.GetGetMethod());
+                    var getMethod = propertyInfo.GetGetMethod();
+                    ValueGetter = MagicMethods.MagicFunc(parentType, getMethod);
                     
                     var setMethod = propertyInfo.GetSetMethod();
 

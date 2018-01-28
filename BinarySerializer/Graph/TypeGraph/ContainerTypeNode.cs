@@ -104,22 +104,27 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 return typeof(ArrayTypeNode);
             }
+
             if (typeof(IList).IsAssignableFrom(type))
             {
                 return typeof(ListTypeNode);
             }
+
             if (typeof(Stream).IsAssignableFrom(type))
             {
                 return typeof(StreamTypeNode);
             }
+
             if (typeof(IBinarySerializable).IsAssignableFrom(type))
             {
                 return typeof(CustomTypeNode);
             }
+
             if (type == typeof(object))
             {
                 return typeof(UnknownTypeNode);
             }
+
             return typeof(ObjectTypeNode);
         }
     }
