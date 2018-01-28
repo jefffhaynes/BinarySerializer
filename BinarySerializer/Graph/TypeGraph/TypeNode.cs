@@ -447,12 +447,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         protected static Func<object> CreateCompiledConstructor(ConstructorInfo constructor)
         {
-            if (constructor == null)
-            {
-                return null;
-            }
-
-            return Expression.Lambda<Func<object>>(Expression.New(constructor)).Compile();
+            return constructor == null ? null : Expression.Lambda<Func<object>>(Expression.New(constructor)).Compile();
         }
 
         private Binding GetBinding(FieldBindingBaseAttribute attribute)
