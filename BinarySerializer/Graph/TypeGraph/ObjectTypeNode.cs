@@ -252,7 +252,11 @@ namespace BinarySerialization.Graph.TypeGraph
             if (parentType.GetTypeInfo().BaseType != null)
             {
                 var baseChildren = GenerateChildren(parentType.GetTypeInfo().BaseType);
-                return baseChildren.Concat(children);
+
+                // ignore properties that have been overridden
+                var novelBaseChildren = baseChildren.Except(children);
+
+                return novelBaseChildren.Concat(children);
             }
 
             return children;

@@ -59,7 +59,19 @@ namespace BinarySerialization.Graph.ValueGraph
                 // initialize all children from the corresponding set value fields
                 foreach (var child in Children)
                 {
-                    child.Value = child.TypeNode.ValueGetter?.Invoke(value);
+                    try
+                    {
+                        child.Value = child.TypeNode.ValueGetter?.Invoke(value);
+                    }
+                    catch (Exception)
+                    {
+                        // we want to include ignored fields so we can bind to them but we don't
+                        // need to throw exceptions if something isn't right inside an ignored property
+                        if (!child.TypeNode.IsIgnored)
+                        {
+                            throw;
+                        }
+                    }
                 }
 
                 _valueType = value.GetType();
