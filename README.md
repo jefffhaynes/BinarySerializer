@@ -150,7 +150,7 @@ public class Person
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/LengthBinding.png" />
 </p>
 
-In some cases you may want to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the serialized length in bytes.  To restrict the number of items in a collection use the FieldCount attribute.
+In some cases it may be desirable to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the serialized length in bytes.  To restrict the number of items in a collection use the FieldCount attribute.
 
 ```c#
 public class Directory
@@ -168,7 +168,7 @@ public class Directory
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/CollectionLengthBinding.png" />
 </p>
 
-If you want to enforce the size of an entire object, you can write:
+To enforce the size of an entire object, write:
 
 ```c#
 public class Person
@@ -282,7 +282,7 @@ public class Entry
 
 Let's say Value is set to 'hi'.  The framework will compute two (2) for the value of Length.  However, the Value field will be forcefully aligned to 32-bit boundaries and will therefore start at byte 5 and occupy 4 bytes.  This alignment will not affect the string value, which will still be "hi" (not, for example, "hi\0\0").
 
-By default FieldAlignment will align both the "left" and "right" boundary of the field.  However, you can override this behavior by setting the FieldAlignmentMode to LeftOnly or RightOnly.  In advanced cases, left and right alignment values can be mixed with multiple attributes.
+By default FieldAlignment will align both the "left" and "right" boundary of the field.  However, this behavior can be overridden by setting the FieldAlignmentMode to LeftOnly or RightOnly.  In advanced cases, left and right alignment values can be mixed with multiple attributes.
 
 FieldAlignment is not inherited by child fields.
 
@@ -643,7 +643,7 @@ Allows for more detailed control over the serialization of fields.  This can be 
 
 ### SerializeAsEnumAttribute ###
 
-The SerializeAsEnum attribute allows you specify an alternate value for an enum to be used during the operation.
+The SerializeAsEnum attribute allows an alternate value for an enum to be used during the operation.
 
 ```c#
 public enum Waypoints
@@ -689,7 +689,7 @@ public List<DirectoryRecord> Records { get; set; }
   <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/Until.png" />
 </p>
 
-Note that a significant disadvantage of this approach is that the DirectoryRecord object cannot start with a null!  In general, you should avoid this approach when defining formats.  However, in some cases you may not have a choice (this exact construct appears in the ISO 9660 specification).
+Note that a significant disadvantage of this approach is that the DirectoryRecord object cannot start with a null!  In general, it's best avoid this approach when defining formats.  However, in some cases you may not have a choice (this exact construct appears in the ISO 9660 specification).
 
 ### ItemLengthAttribute ###
 
@@ -846,7 +846,7 @@ public class EnumClass
 }
 ```
 
-Serializing this class would result in a single byte.  Alternatively, you may want the name of the enum to be serialized:
+Serializing this class would result in a single byte.  Alternatively, to serialized the name of the enum:
 
 ```c#
 public class EnumClass
@@ -856,11 +856,11 @@ public class EnumClass
 }
 ```
 
-You could also specify this to be a fixed-sized string, etc.
+It is also possible to specify this to be a fixed-sized string, etc.
 
 ### Streams ###
 
-In some cases you may be serializing or deserializing large amounts of data, which is logically broken into blocks or volumes.  In these cases it may be advantageous to defer handling of those sections, rather than dealing with large in-memory buffers.
+In some cases when serializing or deserializing large amounts of data that is logically broken into blocks or volumes, it may be advantageous to defer handling of those sections, rather than dealing with large in-memory buffers.
 
 ```c#
 [FieldOrder(22)]
@@ -911,7 +911,7 @@ public class Person
 
 #### Value Converter ####
 
-Sometimes binding directly to a source is insufficient and in those cases your best option is to define a value converter, which can be specified as part of the binding.
+Sometimes binding directly to a source is insufficient and in those cases the best option is to define a value converter, which can be specified as part of the binding.
 
 ```c#
 class SectorByteConverter : IValueConverter
@@ -939,7 +939,7 @@ public List<DirectoryRecord> Records { get; set; }
 
 ### Custom Serialization ###
 
-When all else fails, you can define a custom serialization object.
+When all else fails, it is possible to define a custom serialization object.
 
 ```c#
 /// <summary>
@@ -985,9 +985,9 @@ public class Varuint : IBinarySerializable
     }
 }
 ```
-Note that when using custom serialization the object can still be used as a source for binding.  In the above example you could bind to "Value" from elsewhere in your object hierarchy.
+Note that when using custom serialization the object can still be used as a source for binding.  In the above example is it possible to bind to "Value" from elsewhere in the object hierarchy.
 
-Also note that in the case that FieldLength is specified for the custom object, the stream passed in during serialization will be limited to that length.  This can help if you want to copy the entirety or balance of the object stream into a member field.  In essence, the custom object is unable to stray from the bounds set for it by the serialization object hierarchy.
+Also note that in the case that FieldLength is specified for the custom object, the stream passed in during serialization will be limited to that length.  In essence, the custom object is unable to stray from the bounds set for it by the serialization object hierarchy.
 
 ### Encoding ###
 
@@ -1000,13 +1000,13 @@ public string Name { get; set;  }
 
 ### Endianness ###
 
-Possibly more of a quaint topic these days but incredibly painful when it comes up.  BinarySerializer handles endianness in two ways: globally or on a field-by-field.  If you're working in a system that deals entirely in big endian, you can simply write:
+Possibly more of a quaint topic these days but incredibly painful when it comes up.  BinarySerializer handles endianness in two ways: globally or on a field-by-field.  If working in a system that deals entirely in big endian, simply write:
 
 ```c#
 serializer.Endianness = Endianness.Big;
 ```
  
-In other cases you may actually have a mix of big and little endian and again you can use the <code>FieldEndiannessAttribute</code> to specify endianness.  As with encoding, endianness is inherited through the graph hierarchy unless overridden by a child field.
+In other cases if dealing with a mix of big and little endian it is possible to use the <code>FieldEndiannessAttribute</code> to specify endianness.  As with encoding, endianness is inherited through the graph hierarchy unless overridden by a child field.
 
 ```c#
 [FieldEndianness(Endianness.Big)]
@@ -1015,7 +1015,7 @@ public uint SectorCountBig { get; set; }
 
 ### Immutable Types ###
 
-In certain cases you may not want to expose public setters on deserialized objects.  BinarySerializer will look for constructors with matching property or field parameter names and favor those over the default constructor.  In cases where multiple constructors are defined, the serializer will look for a best fit.
+In certain cases it may not be desirable to expose public setters on deserialized objects.  BinarySerializer will look for constructors with matching property or field parameter names and favor those over the default constructor.  In cases where multiple constructors are defined, the serializer will look for a best fit.
 
 ```c#
 public class LongAddress
