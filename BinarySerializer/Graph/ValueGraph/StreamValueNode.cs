@@ -24,7 +24,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (length != null)
             {
-                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, length.Value);
+                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, (long) length.ByteCount);
                 valueStreamlet.CopyTo(stream);
             }
             else
@@ -41,7 +41,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (length != null)
             {
-                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, length.Value);
+                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, (long) length.ByteCount);
                 await valueStreamlet.CopyToAsync(stream, CopyToBufferSize, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -57,13 +57,13 @@ namespace BinarySerialization.Graph.ValueGraph
             var length = GetFieldLength();
 
             Value = length != null
-                ? new Streamlet(rootStream, rootStream.Position, length.Value)
+                ? new Streamlet(rootStream, rootStream.Position, (long) length.ByteCount)
                 : new Streamlet(rootStream, rootStream.Position);
 
             if (length != null)
             {
                 var nullStream = new NullStream();
-                stream.CopyTo(nullStream, (int)length.Value, CopyToBufferSize);
+                stream.CopyTo(nullStream, (int) length.ByteCount, CopyToBufferSize);
             }
             else
             {
@@ -78,7 +78,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return Task.CompletedTask;
         }
 
-        protected override long MeasureOverride()
+        protected override FieldLength MeasureOverride()
         {
             var valueStream = (Stream) Value;
 
@@ -86,7 +86,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (length != null)
             {
-                return length.Value;
+                return length;
             }
 
             if (valueStream.CanSeek)

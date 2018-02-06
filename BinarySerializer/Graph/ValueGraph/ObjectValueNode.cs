@@ -410,7 +410,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (length > stream.RelativePosition)
                 {
                     var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int) padLength];
+                    var pad = new byte[(int) padLength.ByteCount];
                     stream.Read(pad, 0, pad.Length);
                 }
             }
@@ -425,7 +425,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (length > stream.RelativePosition)
                 {
                     var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int)padLength];
+                    var pad = new byte[(int) padLength.ByteCount];
                     return stream.ReadAsync(pad, 0, pad.Length, cancellationToken);
                 }
             }

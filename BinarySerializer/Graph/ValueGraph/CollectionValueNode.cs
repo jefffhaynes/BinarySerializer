@@ -157,7 +157,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return Children.Count;
         }
 
-        protected override IEnumerable<long> MeasureItemsOverride()
+        protected override IEnumerable<FieldLength> MeasureItemsOverride()
         {
             var nullStream = new NullStream();
             var boundedStream = new BoundedStream(nullStream);
@@ -166,7 +166,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             return serializableChildren.Select(child =>
             {
-                boundedStream.RelativePosition = 0;
+                boundedStream.RelativePosition = FieldLength.Zero;
                 child.Serialize(boundedStream, null);
                 return boundedStream.RelativePosition;
             });

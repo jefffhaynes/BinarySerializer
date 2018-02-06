@@ -14,7 +14,7 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
         protected override void PrimitiveCollectionSerializeOverride(BoundedStream stream, object boundValue,
-            ValueValueNode childSerializer, SerializedType childSerializedType, long? itemLength, long? itemCount)
+            ValueValueNode childSerializer, SerializedType childSerializedType, FieldLength itemLength, long? itemCount)
         {
             var list = (IList) boundValue;
 
@@ -33,7 +33,7 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
         protected override async Task PrimitiveCollectionSerializeOverrideAsync(BoundedStream stream, object boundValue, ValueValueNode childSerializer,
-            SerializedType childSerializedType, long? itemLength, long? itemCount, CancellationToken cancellationToken)
+            SerializedType childSerializedType, FieldLength itemLength, long? itemCount, CancellationToken cancellationToken)
         {
             var list = (IList)boundValue;
 

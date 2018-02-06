@@ -13,7 +13,7 @@ namespace BinarySerialization.Test.Custom
         {
             var boundedStream = (BoundedStream) stream;
             Assert.Equal(0, boundedStream.Position);
-            Assert.Equal(100, boundedStream.MaxLength);
+            Assert.Equal(100, (int) boundedStream.MaxLength.ByteCount);
 
             var varuint = new Varuint {Value = Value};
             varuint.Serialize(stream, endianness, serializationContext);

@@ -12,10 +12,10 @@ namespace BinarySerialization
     {
         private readonly bool _canSeek;
         private readonly long _length;
-        private readonly Func<long?> _maxLengthDelegate;
+        private readonly Func<FieldLength> _maxLengthDelegate;
         private readonly BoundedStream _root;
 
-        internal BoundedStream(Stream source, Func<long?> maxLengthDelegate = null)
+        internal BoundedStream(Stream source, Func<FieldLength> maxLengthDelegate = null)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
 
@@ -40,7 +40,7 @@ namespace BinarySerialization
         /// <summary>
         ///     Gets the current offset in the serialized graph.
         /// </summary>
-        public long GlobalPosition => _root.RelativePosition;
+        public FieldLength GlobalPosition => _root.RelativePosition;
 
         /// <summary>
         ///     The underlying source <see cref="Stream" />.
@@ -65,7 +65,7 @@ namespace BinarySerialization
         /// <summary>
         ///     Gets the maximum length of the stream in bytes if bounded.  Returns null if stream is unbounded.
         /// </summary>
-        public long? MaxLength => _maxLengthDelegate?.Invoke();
+        public FieldLength MaxLength => _maxLengthDelegate?.Invoke();
 
         /// <summary>
         ///     Gets the length in bytes of the stream.
@@ -77,17 +77,17 @@ namespace BinarySerialization
         /// </summary>
         public override long Position
         {
-            get => RelativePosition;
+            get => (long) RelativePosition.ByteCount;
 
             set
             {
                 var delta = value - RelativePosition;
-                Source.Position += delta;
+                Source.Position += (long) delta.ByteCount;
                 RelativePosition = value;
             }
         }
 
-        internal long RelativePosition { get; set; }
+        internal FieldLength RelativePosition { get; set; } = FieldLength.Zero;
 
         internal bool IsAtLimit
         {
@@ -102,11 +102,11 @@ namespace BinarySerialization
             }
         }
 
-        internal long AvailableForReading
+        internal FieldLength AvailableForReading
         {
             get
             {
-                long maxLength;
+                FieldLength maxLength;
 
                 if (MaxLength == null)
                 {
@@ -115,11 +115,11 @@ namespace BinarySerialization
                         return source.AvailableForReading;
                     }
 
-                    maxLength = long.MaxValue;
+                    maxLength = FieldLength.MaxValue;
                 }
                 else
                 {
-                    maxLength = MaxLength.Value;
+                    maxLength = MaxLength;
                 }
 
                 if (!_canSeek)
@@ -127,17 +127,17 @@ namespace BinarySerialization
                     return maxLength - Position;
                 }
 
-                return Math.Min(maxLength, Length) - Position;
+                return FieldLength.Min(maxLength, Length) - Position;
             }
         }
 
-        internal long AvailableForWriting
+        internal FieldLength AvailableForWriting
         {
             get
             {
                 if (MaxLength != null)
                 {
-                    return MaxLength.Value - Position;
+                    return MaxLength - Position;
                 }
 
                 var source = Source as BoundedStream;
@@ -265,7 +265,7 @@ namespace BinarySerialization
         {
             if (MaxLength != null && count > MaxLength - Position)
             {
-                count = Math.Max(0, (int) (MaxLength - Position));
+                count = Math.Max(0, (int) ((long) MaxLength.ByteCount - Position));
             }
             return count;
         }

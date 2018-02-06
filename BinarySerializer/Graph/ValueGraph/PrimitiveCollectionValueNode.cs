@@ -143,10 +143,10 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
         protected abstract void PrimitiveCollectionSerializeOverride(BoundedStream stream, object boundValue,
-            ValueValueNode childSerializer, SerializedType childSerializedType, long? itemLength, long? itemCount);
+            ValueValueNode childSerializer, SerializedType childSerializedType, FieldLength itemLength, long? itemCount);
 
         protected abstract Task PrimitiveCollectionSerializeOverrideAsync(BoundedStream stream, object boundValue,
-            ValueValueNode childSerializer, SerializedType childSerializedType, long? itemLength, long? itemCount,
+            ValueValueNode childSerializer, SerializedType childSerializedType, FieldLength itemLength, long? itemCount,
             CancellationToken cancellationToken);
 
         protected abstract object CreateCollection(long size);

@@ -70,8 +70,9 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var typeNode = TypeNode;
 
-            typeNode.FieldLengthBindings?.Bind(this, () => MeasureOverride());
-            typeNode.ItemLengthBindings?.Bind(this, MeasureItemsOverride);
+            typeNode.FieldLengthBindings?.Bind(this, () => MeasureOverride().ByteCount);
+            typeNode.FieldBitLengthBindings?.Bind(this, () => MeasureOverride().TotalBitCount);
+            typeNode.ItemLengthBindings?.Bind(this, () => MeasureItemsOverride().Select(item => item.ByteCount));
             typeNode.FieldCountBindings?.Bind(this, () => CountOverride());
 
             typeNode.SubtypeBindings?.Bind(this, () => SubtypeBindingCallback(typeNode));
@@ -432,12 +433,18 @@ namespace BinarySerialization.Graph.ValueGraph
             return Children.Where(child => !child.TypeNode.IsIgnored);
         }
 
-        protected long? GetFieldLength()
+        protected FieldLength GetFieldLength()
         {
             var length = GetNumericValue(TypeNode.FieldLengthBindings);
             if (length != null)
             {
-                return length;
+                return length.Value;
+            }
+
+            var bitLength = GetNumericValue(TypeNode.FieldBitLengthBindings);
+            if (bitLength != null)
+            {
+                return new FieldLength(0, (int) bitLength);
             }
 
             var parent = Parent;
@@ -453,9 +460,10 @@ namespace BinarySerialization.Graph.ValueGraph
             return null;
         }
 
-        protected long? GetConstFieldLength()
+        protected FieldLength GetConstFieldLength()
         {
             return GetConstNumericValue(TypeNode.FieldLengthBindings) ??
+                   GetConstNumericValue(TypeNode.FieldBitLengthBindings) ??
                    Parent?.GetConstFieldItemLength();
         }
 
@@ -500,7 +508,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return GetNumericValue(TypeNode.ItemLengthBindings);
         }
 
-        protected long? GetConstFieldItemLength()
+        protected FieldLength GetConstFieldItemLength()
         {
             return GetConstNumericValue(TypeNode.ItemLengthBindings);
         }
@@ -570,7 +578,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return encoding;
         }
 
-        protected virtual long MeasureOverride()
+        protected virtual FieldLength MeasureOverride()
         {
             var nullStream = new NullStream();
             var boundedStream = new BoundedStream(nullStream);
@@ -578,7 +586,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return boundedStream.RelativePosition;
         }
 
-        protected virtual IEnumerable<long> MeasureItemsOverride()
+        protected virtual IEnumerable<FieldLength> MeasureItemsOverride()
         {
             throw new InvalidOperationException("Not a collection field.");
         }
@@ -600,7 +608,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected static bool EndOfStream(BoundedStream stream)
         {
-            return stream.IsAtLimit || stream.AvailableForReading == 0;
+            return stream.IsAtLimit || stream.AvailableForReading == FieldLength.Zero;
         }
 
         private object SubtypeBindingCallback(TypeNode typeNode)
@@ -688,7 +696,7 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new InvalidOperationException($"No subtype specified for ${valueType}");
         }
 
-        private void SerializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
+        private void SerializeInternal(BoundedStream stream, Func<FieldLength> maxLengthDelegate, EventShuttle eventShuttle)
         {
             stream = PrepareStream(stream, maxLengthDelegate);
 
@@ -699,7 +707,7 @@ namespace BinarySerialization.Graph.ValueGraph
             FlushStream(stream);
         }
 
-        private async Task SerializeInternalAsync(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle,
+        private async Task SerializeInternalAsync(BoundedStream stream, Func<FieldLength> maxLengthDelegate, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             stream = PrepareStream(stream, maxLengthDelegate);
@@ -711,7 +719,7 @@ namespace BinarySerialization.Graph.ValueGraph
             await FlushStreamAsync(stream, cancellationToken).ConfigureAwait(false);
         }
 
-        private BoundedStream PrepareStream(BoundedStream stream, Func<long?> maxLengthDelegate)
+        private BoundedStream PrepareStream(BoundedStream stream, Func<FieldLength> maxLengthDelegate)
         {
             stream = new BoundedStream(stream, maxLengthDelegate);
 
@@ -774,7 +782,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var position = stream.RelativePosition;
-            var delta = (alignment.Value - position % alignment.Value) % alignment.Value;
+            var delta = (alignment.Value - (long) position.ByteCount % alignment.Value) % alignment.Value;
 
             if (delta == 0)
             {
@@ -798,7 +806,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private void DeserializeInternal(BoundedStream stream, Func<long?> maxLengthDelegate, EventShuttle eventShuttle)
+        private void DeserializeInternal(BoundedStream stream, Func<FieldLength> maxLengthDelegate, EventShuttle eventShuttle)
         {
             stream = PrepareStream(stream, maxLengthDelegate);
 
@@ -810,7 +818,7 @@ namespace BinarySerialization.Graph.ValueGraph
             FlushStream(stream);
         }
 
-        private async Task DeserializeInternalAsync(BoundedStream stream, Func<long?> maxLengthDelegate,
+        private async Task DeserializeInternalAsync(BoundedStream stream, Func<FieldLength> maxLengthDelegate,
             EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             stream = PrepareStream(stream, maxLengthDelegate);
@@ -858,7 +866,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (length > stream.RelativePosition)
             {
                 var padLength = length - stream.RelativePosition;
-                var pad = new byte[(int) padLength];
+                var pad = new byte[(int) padLength.ByteCount];
                 streamOperation(stream, pad, pad.Length);
             }
         }
@@ -875,7 +883,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (length > stream.RelativePosition)
             {
                 var padLength = length - stream.RelativePosition;
-                var pad = new byte[(int)padLength];
+                var pad = new byte[(int) padLength.ByteCount];
                 await streamOperationAsync(stream, pad, pad.Length).ConfigureAwait(false);
             }
         }

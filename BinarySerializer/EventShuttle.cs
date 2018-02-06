@@ -30,27 +30,28 @@ namespace BinarySerialization
         public event EventHandler<MemberSerializingEventArgs> MemberDeserializing;
 
         public void OnMemberSerialized(ValueNode sender, string name, object value, BinarySerializationContext context,
-            long offset, long localOffset)
+            FieldLength offset, FieldLength localOffset)
         {
             var handle = MemberSerialized;
             handle?.Invoke(sender, new MemberSerializedEventArgs(name, value, context, offset, localOffset));
         }
 
         public void OnMemberDeserialized(ValueNode sender, string name, object value,
-            BinarySerializationContext context, long offset, long localOffset)
+            BinarySerializationContext context, FieldLength offset, FieldLength localOffset)
         {
             var handle = MemberDeserialized;
             handle?.Invoke(sender, new MemberSerializedEventArgs(name, value, context, offset, localOffset));
         }
 
-        public void OnMemberSerializing(ValueNode sender, string name, BinarySerializationContext context, long offset, long localOffset)
+        public void OnMemberSerializing(ValueNode sender, string name, BinarySerializationContext context,
+            FieldLength offset, FieldLength localOffset)
         {
             var handle = MemberSerializing;
             handle?.Invoke(sender, new MemberSerializingEventArgs(name, context, offset, localOffset));
         }
 
         public void OnMemberDeserializing(ValueNode sender, string name, BinarySerializationContext context,
-            long offset, long localOffset)
+            FieldLength offset, FieldLength localOffset)
         {
             var handle = MemberDeserializing;
             handle?.Invoke(sender, new MemberSerializingEventArgs(name, context, offset, localOffset));
