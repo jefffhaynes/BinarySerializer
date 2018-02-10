@@ -246,6 +246,45 @@ namespace BinarySerialization
             RelativePosition += count;
         }
 
+        public async Task WriteAsync(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
+        {
+            if (length == FieldLength.Zero)
+            {
+                return;
+            }
+
+            if (MaxLength != null && length > MaxLength - Position)
+            {
+                throw new InvalidOperationException("Unable to write beyond end of stream limit.");
+            }
+
+            if (length.BitCount == 0 && _bitOffset == 0)
+            {
+                // trivial byte-aligned case
+                await WriteAsync(buffer, 0, (int) length.ByteCount, cancellationToken);
+            }
+            else
+            {
+                for (ulong i = 0; i < length.ByteCount; i++)
+                {
+                    WriteBits(buffer[i]);
+                }
+
+                WriteBits(buffer[length.ByteCount], length.BitCount);
+            }
+
+            RelativePosition += length;
+        }
+
+        private int _bitOffset;
+
+        private byte _bitBuffer;
+
+        public void WriteBits(byte value, int count = 8)
+        {
+
+        }
+
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             count = ClampCount(count);

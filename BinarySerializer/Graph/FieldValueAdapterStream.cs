@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BinarySerialization.Graph
 {
@@ -89,6 +91,12 @@ namespace BinarySerialization.Graph
                 Buffer.BlockCopy(buffer, offset, _block, _blockOffset, count);
                 _blockOffset += count;
             }
+        }
+
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            Write(buffer, offset, count);
+            return Task.CompletedTask;
         }
 
         protected override void Dispose(bool disposing)

@@ -293,61 +293,62 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
             }
 
-            var maxLength = GetMaxLength((BoundedStream) writer.BaseStream, serializedType);
+            var baseStream = (BoundedStream) writer.BaseStream;
+            var maxLength = GetMaxLength(baseStream, serializedType);
 
             var scaledValue = ScaleValue(value);
             var convertedValue = GetValue(scaledValue, serializedType);
-
+            
             switch (serializedType)
             {
                 case SerializedType.Int1:
                 {
-                    await writer.WriteAsync(Convert.ToSByte(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToSByte(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.UInt1:
                 {
-                    await writer.WriteAsync(Convert.ToByte(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToByte(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.Int2:
                 {
-                    await writer.WriteAsync(Convert.ToInt16(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToInt16(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.UInt2:
                 {
-                    await writer.WriteAsync(Convert.ToUInt16(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToUInt16(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.Int4:
                 {
-                    await writer.WriteAsync(Convert.ToInt32(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToInt32(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.UInt4:
                 {
-                    await writer.WriteAsync(Convert.ToUInt32(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToUInt32(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.Int8:
                 {
-                    await writer.WriteAsync(Convert.ToInt64(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToInt64(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.UInt8:
                 {
-                    await writer.WriteAsync(Convert.ToUInt64(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToUInt64(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.Float4:
                 {
-                    await writer.WriteAsync(Convert.ToSingle(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToSingle(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.Float8:
                 {
-                    await writer.WriteAsync(Convert.ToDouble(convertedValue), cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(Convert.ToDouble(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.ByteArray:

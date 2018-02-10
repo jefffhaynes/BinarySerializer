@@ -12,7 +12,7 @@ namespace BinarySerialization
         public FieldLength(ulong byteCount, int bitCount = 0)
         {
             ByteCount = byteCount + (ulong) bitCount / BitsPerByte;
-            BitCount = (int) ((ulong) bitCount + (ulong) bitCount % BitsPerByte);
+            BitCount = bitCount % BitsPerByte;
         }
 
         public FieldLength(long byteCount, int bitCount = 0) : this(Convert.ToUInt64(byteCount), bitCount)
@@ -23,11 +23,18 @@ namespace BinarySerialization
         {
         }
 
+        public static FieldLength FromBitCount(int count)
+        {
+            return new FieldLength(0, count);
+        }
+
         public ulong ByteCount { get; }
 
         public int BitCount { get; }
 
-        public int TotalBitCount => BitCount * BitsPerByte;
+        public ulong TotalBitCount => ByteCount * BitsPerByte + (ulong) BitCount;
+
+        public ulong TotalByteCount => BitCount > 0 ? ByteCount + 1 : ByteCount;
 
         public bool Equals(FieldLength other)
         {
@@ -136,6 +143,17 @@ namespace BinarySerialization
             {
                 return (ByteCount.GetHashCode() * 397) ^ BitCount;
             }
+        }
+
+        public override string ToString()
+        {
+            if (BitCount == 0)
+            {
+                return ByteCount.ToString();
+            }
+
+            var totalBitCount = TotalBitCount;
+            return totalBitCount == 1 ? "1 bit" : $"{totalBitCount} bits";
         }
     }
 }

@@ -462,9 +462,19 @@ namespace BinarySerialization.Graph.ValueGraph
 
         protected FieldLength GetConstFieldLength()
         {
-            return GetConstNumericValue(TypeNode.FieldLengthBindings) ??
-                   GetConstNumericValue(TypeNode.FieldBitLengthBindings) ??
-                   Parent?.GetConstFieldItemLength();
+            var length = GetConstNumericValue(TypeNode.FieldLengthBindings);
+            if (length != null)
+            {
+                return length;
+            }
+
+            var bitLength = GetConstNumericValue(TypeNode.FieldBitLengthBindings);
+            if (bitLength != null)
+            {
+                return FieldLength.FromBitCount((int) bitLength.Value);
+            }
+
+            return Parent?.GetConstFieldItemLength();
         }
 
         protected long? GetLeftFieldAlignment()
