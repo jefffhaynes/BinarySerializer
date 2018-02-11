@@ -10,11 +10,16 @@ namespace BinarySerialization
     /// </summary>
     public class BoundedStream : Stream
     {
+        private const int BitsPerByte = 8;
         private readonly bool _canSeek;
         private readonly long _length;
         private readonly Func<FieldLength> _maxLengthDelegate;
-        private readonly BoundedStream _root;
         private readonly string _name;
+        private readonly BoundedStream _root;
+
+        private byte _bitBuffer;
+
+        private int _bitOffset;
 
         internal BoundedStream(Stream source, string name, Func<FieldLength> maxLengthDelegate = null)
         {
@@ -25,17 +30,11 @@ namespace BinarySerialization
             /* Store for performance */
             _canSeek = source.CanSeek;
 
-            if (_canSeek)
-            {
-                _length = source.Length;
-            }
+            if (_canSeek) _length = source.Length;
 
             _root = this;
 
-            while (_root.Source is BoundedStream)
-            {
-                _root = (BoundedStream) _root.Source;
-            }
+            while (_root.Source is BoundedStream) _root = (BoundedStream) _root.Source;
         }
 
         /// <summary>
@@ -94,10 +93,7 @@ namespace BinarySerialization
         {
             get
             {
-                if (MaxLength != null)
-                {
-                    return Position >= MaxLength;
-                }
+                if (MaxLength != null) return Position >= MaxLength;
 
                 return Source is BoundedStream source && source.IsAtLimit;
             }
@@ -111,10 +107,7 @@ namespace BinarySerialization
 
                 if (MaxLength == null)
                 {
-                    if (Source is BoundedStream source)
-                    {
-                        return source.AvailableForReading;
-                    }
+                    if (Source is BoundedStream source) return source.AvailableForReading;
 
                     maxLength = FieldLength.MaxValue;
                 }
@@ -123,10 +116,7 @@ namespace BinarySerialization
                     maxLength = MaxLength;
                 }
 
-                if (!_canSeek)
-                {
-                    return maxLength - Position;
-                }
+                if (!_canSeek) return maxLength - Position;
 
                 return FieldLength.Min(maxLength, Length) - Position;
             }
@@ -136,10 +126,7 @@ namespace BinarySerialization
         {
             get
             {
-                if (MaxLength != null)
-                {
-                    return MaxLength - Position;
-                }
+                if (MaxLength != null) return MaxLength - Position;
 
                 var source = Source as BoundedStream;
                 return source?.AvailableForWriting ?? long.MaxValue;
@@ -212,10 +199,7 @@ namespace BinarySerialization
         {
             count = ClampCount(count);
 
-            if (count == 0)
-            {
-                return 0;
-            }
+            if (count == 0) return 0;
 
             var read = Source.Read(buffer, offset, count);
             RelativePosition += read;
@@ -233,15 +217,10 @@ namespace BinarySerialization
         /// <exception cref="InvalidOperationException">count is greater than the stream length.</exception>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (count == 0)
-            {
-                return;
-            }
+            if (count == 0) return;
 
             if (MaxLength != null && count > MaxLength - Position)
-            {
                 throw new InvalidOperationException("Unable to write beyond end of stream limit.");
-            }
 
             Source.Write(buffer, offset, count);
             RelativePosition += count;
@@ -249,15 +228,10 @@ namespace BinarySerialization
 
         public async Task WriteAsync(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
         {
-            if (length == FieldLength.Zero)
-            {
-                return;
-            }
+            if (length == FieldLength.Zero) return;
 
             if (MaxLength != null && length > MaxLength - Position)
-            {
                 throw new InvalidOperationException("Unable to write beyond end of stream limit.");
-            }
 
             if (length.BitCount == 0 && _bitOffset == 0)
             {
@@ -266,10 +240,7 @@ namespace BinarySerialization
             }
             else
             {
-                for (ulong i = 0; i < length.ByteCount; i++)
-                {
-                    WriteBits(buffer[i]);
-                }
+                for (ulong i = 0; i < length.ByteCount; i++) WriteBits(buffer[i]);
 
                 WriteBits(buffer[length.ByteCount], length.BitCount);
             }
@@ -277,16 +248,9 @@ namespace BinarySerialization
             RelativePosition += length;
         }
 
-        private int _bitOffset;
-
-        private byte _bitBuffer;
-
-        public void WriteBits(byte value, int count = 8)
+        public void WriteBits(byte value, int count = BitsPerByte)
         {
-            if (count == 0)
-            {
-                return;
-            }
+            if (count == 0) return;
 
             if (Source is BoundedStream boundedStream)
             {
@@ -294,31 +258,27 @@ namespace BinarySerialization
             }
             else
             {
-                var remaining = 8 - _bitOffset;
+                var remaining = BitsPerByte - _bitOffset;
                 var shiftedValue = value << _bitOffset;
                 _bitBuffer |= (byte) shiftedValue;
-
                 _bitOffset += count;
 
-                if (_bitOffset >= 8)
+                if (_bitOffset >= BitsPerByte)
                 {
                     WriteByte(_bitBuffer);
-                    var overflow = count - remaining;
-                    _bitBuffer = (byte)(value >> remaining);
+                    _bitBuffer = (byte) (value >> remaining);
                 }
-                
+
                 _bitOffset %= 8;
             }
         }
 
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
+            CancellationToken cancellationToken)
         {
             count = ClampCount(count);
 
-            if (count == 0)
-            {
-                return 0;
-            }
+            if (count == 0) return 0;
 
             var read = await Source.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
             RelativePosition += read;
@@ -329,9 +289,7 @@ namespace BinarySerialization
         private int ClampCount(int count)
         {
             if (MaxLength != null && count > MaxLength - Position)
-            {
                 count = Math.Max(0, (int) ((long) MaxLength.ByteCount - Position));
-            }
             return count;
         }
     }
