@@ -266,6 +266,8 @@ namespace BinarySerialization
             return WriteAsyncImpl(buffer, length, cancellationToken);
         }
 
+        protected virtual bool IsByteBarrier => false;
+
         private void WriteImpl(byte[] buffer, FieldLength length)
         {
             if (length == FieldLength.Zero)
@@ -275,19 +277,26 @@ namespace BinarySerialization
 
             WriteCheck(length);
 
-            if (length.BitCount == 0 && _bitOffset == 0)
+            if (Source is BoundedStream boundedStream && !IsByteBarrier)
             {
-                // trivial byte-aligned case
-                WriteByteAligned(buffer, (int) length.ByteCount);
+                boundedStream.Write(buffer, length);
             }
             else
             {
-                for (ulong i = 0; i < length.ByteCount; i++)
+                if (length.BitCount == 0 && _bitOffset == 0)
                 {
-                    WriteBits(buffer[i], BitsPerByte);
+                    // trivial byte-aligned case
+                    WriteByteAligned(buffer, (int)length.ByteCount);
                 }
+                else
+                {
+                    for (ulong i = 0; i < length.ByteCount; i++)
+                    {
+                        WriteBits(buffer[i], BitsPerByte);
+                    }
 
-                WriteBits(buffer[length.ByteCount], length.BitCount);
+                    WriteBits(buffer[length.ByteCount], length.BitCount);
+                }
             }
 
             RelativePosition += length;
@@ -302,22 +311,29 @@ namespace BinarySerialization
 
             WriteCheck(length);
 
-            if (length.BitCount == 0 && _bitOffset == 0)
+            if (Source is BoundedStream boundedStream && !IsByteBarrier)
             {
-                // trivial byte-aligned case, write to underlying stream
-                await WriteByteAlignedAsync(buffer, (int) length.ByteCount, cancellationToken)
-                    .ConfigureAwait(false);
+                await boundedStream.WriteAsync(buffer, length, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                // collect bits in this, the bottom bounded stream
-                for (ulong i = 0; i < length.ByteCount; i++)
+                if (length.BitCount == 0 && _bitOffset == 0)
                 {
-                    await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken).ConfigureAwait(false);
+                    // trivial byte-aligned case, write to underlying stream
+                    await WriteByteAlignedAsync(buffer, (int) length.ByteCount, cancellationToken)
+                        .ConfigureAwait(false);
                 }
+                else
+                {
+                    // collect bits in this, the bottom bounded stream
+                    for (ulong i = 0; i < length.ByteCount; i++)
+                    {
+                        await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken).ConfigureAwait(false);
+                    }
 
-                await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
-                    .ConfigureAwait(false);
+                    await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
+                        .ConfigureAwait(false);
+                }
             }
 
             RelativePosition += length;
