@@ -27,7 +27,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 }
 
-                var childStream = new BoundedStream(stream, GetConstFieldItemLength);
+                var childStream = new BoundedStream(stream, Name, GetConstFieldItemLength);
 
                 child.Serialize(childStream, eventShuttle);
             }
@@ -48,7 +48,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 }
 
-                var childStream = new BoundedStream(stream, GetConstFieldItemLength);
+                var childStream = new BoundedStream(stream, Name, GetConstFieldItemLength);
 
                 await child.SerializeAsync(childStream, eventShuttle, true, cancellationToken).ConfigureAwait(false);
             }
@@ -80,8 +80,8 @@ namespace BinarySerialization.Graph.ValueGraph
                     // probably extremely rare but still...
                     var itemLength = itemLengthEnumerator?.Current;
                     var childStream = itemLength == null
-                        ? new BoundedStream(stream)
-                        : new BoundedStream(stream, () => itemLength);
+                        ? new BoundedStream(stream, Name)
+                        : new BoundedStream(stream, Name, () => itemLength);
 
                     var child = CreateChildSerializer();
 
@@ -128,8 +128,8 @@ namespace BinarySerialization.Graph.ValueGraph
                     // probably extremely rare but still...
                     var itemLength = itemLengthEnumerator?.Current;
                     var childStream = itemLength == null
-                        ? new BoundedStream(stream)
-                        : new BoundedStream(stream, () => itemLength);
+                        ? new BoundedStream(stream, Name)
+                        : new BoundedStream(stream, Name, () => itemLength);
 
                     var child = CreateChildSerializer();
 
@@ -160,7 +160,7 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override IEnumerable<FieldLength> MeasureItemsOverride()
         {
             var nullStream = new NullStream();
-            var boundedStream = new BoundedStream(nullStream);
+            var boundedStream = new BoundedStream(nullStream, Name);
 
             var serializableChildren = GetSerializableChildren();
 

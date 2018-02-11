@@ -591,7 +591,7 @@ namespace BinarySerialization.Graph.ValueGraph
         protected virtual FieldLength MeasureOverride()
         {
             var nullStream = new NullStream();
-            var boundedStream = new BoundedStream(nullStream);
+            var boundedStream = new BoundedStream(nullStream, Name);
             Serialize(boundedStream, null, false);
             return boundedStream.RelativePosition;
         }
@@ -731,7 +731,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private BoundedStream PrepareStream(BoundedStream stream, Func<FieldLength> maxLengthDelegate)
         {
-            stream = new BoundedStream(stream, maxLengthDelegate);
+            stream = new BoundedStream(stream, Name, maxLengthDelegate);
 
             if (TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Count > 0)
             {
@@ -742,7 +742,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     var state = fieldValueAttribute.GetInitialStateInternal(context);
                     var tap = new FieldValueAdapterStream(fieldValueAttribute, state);
-                    stream = new TapStream(stream, tap);
+                    stream = new TapStream(stream, tap, Name);
 
                     _fieldValueAttributeTaps[fieldValueAttribute] = tap;
                 }

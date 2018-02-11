@@ -127,7 +127,7 @@ namespace BinarySerialization
             serializer.Value = value;
             serializer.Bind();
 
-            serializer.Serialize(new BoundedStream(stream), _eventShuttle);
+            serializer.Serialize(new BoundedStream(stream, "root"), _eventShuttle);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace BinarySerialization
             serializer.Value = value;
             serializer.Bind();
 
-            await serializer.SerializeAsync(new BoundedStream(stream), _eventShuttle, true, cancellationToken)
+            await serializer.SerializeAsync(new BoundedStream(stream, "root"), _eventShuttle, true, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -196,7 +196,7 @@ namespace BinarySerialization
         public object Deserialize(Stream stream, Type type, object context = null)
         {
             var serializer = CreateSerializer(type, context);
-            serializer.Deserialize(new BoundedStream(stream), _eventShuttle);
+            serializer.Deserialize(new BoundedStream(stream, "root"), _eventShuttle);
 
             return serializer.Value;
         }
@@ -213,7 +213,7 @@ namespace BinarySerialization
             CancellationToken cancellationToken)
         {
             var serializer = CreateSerializer(type, context);
-            await serializer.DeserializeAsync(new BoundedStream(stream), _eventShuttle, cancellationToken)
+            await serializer.DeserializeAsync(new BoundedStream(stream, "root"), _eventShuttle, cancellationToken)
                 .ConfigureAwait(false);
 
             return serializer.Value;

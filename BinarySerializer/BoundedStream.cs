@@ -14,11 +14,12 @@ namespace BinarySerialization
         private readonly long _length;
         private readonly Func<FieldLength> _maxLengthDelegate;
         private readonly BoundedStream _root;
+        private readonly string _name;
 
-        internal BoundedStream(Stream source, Func<FieldLength> maxLengthDelegate = null)
+        internal BoundedStream(Stream source, string name, Func<FieldLength> maxLengthDelegate = null)
         {
             Source = source ?? throw new ArgumentNullException(nameof(source));
-
+            _name = name;
             _maxLengthDelegate = maxLengthDelegate;
 
             /* Store for performance */
@@ -282,7 +283,32 @@ namespace BinarySerialization
 
         public void WriteBits(byte value, int count = 8)
         {
+            if (count == 0)
+            {
+                return;
+            }
 
+            if (Source is BoundedStream boundedStream)
+            {
+                boundedStream.WriteBits(value, count);
+            }
+            else
+            {
+                var remaining = 8 - _bitOffset;
+                var shiftedValue = value << _bitOffset;
+                _bitBuffer |= (byte) shiftedValue;
+
+                _bitOffset += count;
+
+                if (_bitOffset >= 8)
+                {
+                    WriteByte(_bitBuffer);
+                    var overflow = count - remaining;
+                    _bitBuffer = (byte)(value >> remaining);
+                }
+                
+                _bitOffset %= 8;
+            }
         }
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)

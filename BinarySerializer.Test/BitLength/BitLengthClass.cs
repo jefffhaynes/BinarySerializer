@@ -7,7 +7,7 @@
         public int A { get; set; }
 
         [FieldOrder(1)]
-        [FieldBitLength(6)]
+        [FieldBitLength(14)]
         public int B { get; set; }
     }
 }

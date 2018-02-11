@@ -11,7 +11,7 @@ namespace BinarySerialization
 
         private readonly Stream _tap;
 
-        public TapStream(Stream source, Stream tap) : base(source)
+        public TapStream(Stream source, Stream tap, string name) : base(source, name)
         {
             _tap = tap;
         }
