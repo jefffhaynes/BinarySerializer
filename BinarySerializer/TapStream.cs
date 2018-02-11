@@ -48,26 +48,16 @@ namespace BinarySerialization
             throw new InvalidOperationException(TappingErrorMessage);
         }
 
-        public override void Write(byte[] buffer, int offset, int count)
+        protected override void WriteByteAligned(byte[] buffer, int length)
         {
-            _tap.Write(buffer, offset, count);
-            base.Write(buffer, offset, count);
+            _tap.Write(buffer, 0, length);
+            base.WriteByteAligned(buffer, length);
         }
 
-        protected override void WriteOverride(byte[] buffer, FieldLength length)
+        protected override async Task WriteByteAlignedAsync(byte[] buffer, int length, CancellationToken cancellationToken)
         {
-            WriteImpl(buffer, length);
-        }
-
-        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        {
-            await _tap.WriteAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
-            await base.WriteAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
-        }
-
-        protected override Task WriteAsyncOverride(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
-        {
-            return WriteAsyncImpl(buffer, length, cancellationToken);
+            await _tap.WriteAsync(buffer, 0, length, cancellationToken).ConfigureAwait(false);
+            await base.WriteByteAlignedAsync(buffer, length, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task FlushAsync(CancellationToken cancellationToken)

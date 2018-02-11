@@ -238,15 +238,30 @@ namespace BinarySerialization
         /// <exception cref="InvalidOperationException">count is greater than the stream length.</exception>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            Source.Write(buffer, offset, count);
+            if (offset != 0)
+            {
+                throw new ArgumentException(nameof(offset));
+            }
+
+            WriteImpl(buffer, count);
         }
 
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            return Source.WriteAsync(buffer, 0, count, cancellationToken);
+            if (offset != 0)
+            {
+                throw new ArgumentException(nameof(offset));
+            }
+
+            return WriteAsyncImpl(buffer, count, cancellationToken);
         }
 
-        public async Task WriteAsync(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
+        public Task WriteAsync(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
+        {
+            return WriteAsyncImpl(buffer, length, cancellationToken);
+        }
+        
+        private async Task WriteAsyncImpl(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
         {
             if (length == FieldLength.Zero)
             {
@@ -255,43 +270,49 @@ namespace BinarySerialization
 
             WriteCheck(length);
 
-            await WriteAsyncOverride(buffer, length, cancellationToken);
-
-            RelativePosition += length;
-        }
-
-        protected virtual async Task WriteAsyncOverride(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
-        {
-            if (Source is BoundedStream boundedStream)
+            if (Source is BoundedStream boundedStream && !(this is TapStream))
             {
                 await boundedStream.WriteAsync(buffer, length, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                await WriteAsyncImpl(buffer, length, cancellationToken);
-            }
-        }
-
-        protected async Task WriteAsyncImpl(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
-        {
-            if (length.BitCount == 0 && _bitOffset == 0)
-            {
-                // trivial byte-aligned case
-                await WriteAsync(buffer, 0, (int) length.ByteCount, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                for (ulong i = 0; i < length.ByteCount; i++)
+                if (length.BitCount == 0 && _bitOffset == 0)
                 {
-                    await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken).ConfigureAwait(false);
+                    // trivial byte-aligned case, write to underlying stream
+                    await WriteByteAlignedAsync(buffer, (int) length.ByteCount, cancellationToken).ConfigureAwait(false);
                 }
+                else
+                {
+                    // collect bits in this, the bottom bounded stream
+                    for (ulong i = 0; i < length.ByteCount; i++)
+                    {
+                        await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken).ConfigureAwait(false);
+                    }
 
-                await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
-                    .ConfigureAwait(false);
+                    await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
+                        .ConfigureAwait(false);
+                }
             }
+
+            RelativePosition += length;
         }
 
+        protected virtual void WriteByteAligned(byte[] buffer, int length)
+        {
+            Source.Write(buffer, 0, length);
+        }
+
+        protected virtual Task WriteByteAlignedAsync(byte[] buffer, int length, CancellationToken cancellationToken)
+        {
+            return Source.WriteAsync(buffer, 0, length, cancellationToken);
+        }
+        
         public void Write(byte[] buffer, FieldLength length)
+        {
+            WriteImpl(buffer, length);
+        }
+        
+        private void WriteImpl(byte[] buffer, FieldLength length)
         {
             if (length == FieldLength.Zero)
             {
@@ -299,47 +320,37 @@ namespace BinarySerialization
             }
 
             WriteCheck(length);
-            
-            WriteOverride(buffer, length);
 
-            RelativePosition += length;
-        }
-
-        protected virtual void WriteOverride(byte[] buffer, FieldLength length)
-        {
-            if (Source is BoundedStream boundedStream)
+            if (Source is BoundedStream boundedStream && !(this is TapStream))
             {
                 boundedStream.Write(buffer, length);
             }
             else
             {
-                WriteImpl(buffer, length);
-            }
-        }
+                if (length.BitCount == 0 && _bitOffset == 0)
+                {
+                    // trivial byte-aligned case
+                    WriteByteAligned(buffer, (int) length.ByteCount);
+                }
+                else
+                {
+                    for (ulong i = 0; i < length.ByteCount; i++)
+                    {
+                        WriteBits(buffer[i], BitsPerByte);
+                    }
 
+                    WriteBits(buffer[length.ByteCount], length.BitCount);
+                }
+            }
+
+            RelativePosition += length;
+        }
+        
         private void WriteCheck(FieldLength length)
         {
             if (MaxLength != null && length > MaxLength - Position)
             {
                 throw new InvalidOperationException("Unable to write beyond end of stream limit.");
-            }
-        }
-
-        protected void WriteImpl(byte[] buffer, FieldLength length)
-        {
-            if (length.BitCount == 0 && _bitOffset == 0)
-            {
-                // trivial byte-aligned case
-                Write(buffer, 0, (int) length.ByteCount);
-            }
-            else
-            {
-                for (ulong i = 0; i < length.ByteCount; i++)
-                {
-                    WriteBits(buffer[i], BitsPerByte);
-                }
-
-                WriteBits(buffer[length.ByteCount], length.BitCount);
             }
         }
 
@@ -357,7 +368,8 @@ namespace BinarySerialization
 
             if (_bitOffset >= BitsPerByte)
             {
-                WriteByte(_bitBuffer);
+                var data = new[] { _bitBuffer };
+                WriteByteAligned(data, data.Length);
                 _bitBuffer = (byte) (value >> remaining);
             }
 
@@ -379,7 +391,7 @@ namespace BinarySerialization
             if (_bitOffset >= BitsPerByte)
             {
                 var data = new[] {_bitBuffer};
-                await WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                await WriteByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
                 _bitBuffer = (byte) (value >> remaining);
             }
 
