@@ -275,26 +275,19 @@ namespace BinarySerialization
 
             WriteCheck(length);
 
-            if (Source is BoundedStream boundedStream && !(this is TapStream))
+            if (length.BitCount == 0 && _bitOffset == 0)
             {
-                boundedStream.Write(buffer, length);
+                // trivial byte-aligned case
+                WriteByteAligned(buffer, (int) length.ByteCount);
             }
             else
             {
-                if (length.BitCount == 0 && _bitOffset == 0)
+                for (ulong i = 0; i < length.ByteCount; i++)
                 {
-                    // trivial byte-aligned case
-                    WriteByteAligned(buffer, (int)length.ByteCount);
+                    WriteBits(buffer[i], BitsPerByte);
                 }
-                else
-                {
-                    for (ulong i = 0; i < length.ByteCount; i++)
-                    {
-                        WriteBits(buffer[i], BitsPerByte);
-                    }
 
-                    WriteBits(buffer[length.ByteCount], length.BitCount);
-                }
+                WriteBits(buffer[length.ByteCount], length.BitCount);
             }
 
             RelativePosition += length;
@@ -309,29 +302,22 @@ namespace BinarySerialization
 
             WriteCheck(length);
 
-            if (Source is BoundedStream boundedStream && !(this is TapStream))
+            if (length.BitCount == 0 && _bitOffset == 0)
             {
-                await boundedStream.WriteAsync(buffer, length, cancellationToken).ConfigureAwait(false);
+                // trivial byte-aligned case, write to underlying stream
+                await WriteByteAlignedAsync(buffer, (int) length.ByteCount, cancellationToken)
+                    .ConfigureAwait(false);
             }
             else
             {
-                if (length.BitCount == 0 && _bitOffset == 0)
+                // collect bits in this, the bottom bounded stream
+                for (ulong i = 0; i < length.ByteCount; i++)
                 {
-                    // trivial byte-aligned case, write to underlying stream
-                    await WriteByteAlignedAsync(buffer, (int) length.ByteCount, cancellationToken)
-                        .ConfigureAwait(false);
+                    await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken).ConfigureAwait(false);
                 }
-                else
-                {
-                    // collect bits in this, the bottom bounded stream
-                    for (ulong i = 0; i < length.ByteCount; i++)
-                    {
-                        await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken).ConfigureAwait(false);
-                    }
 
-                    await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
-                        .ConfigureAwait(false);
-                }
+                await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             RelativePosition += length;
