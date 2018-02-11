@@ -8,18 +8,13 @@ namespace BinarySerialization
 {
     public class AsyncBinaryReader : BinaryReader
     {
-        public AsyncBinaryReader(Stream input) : base(input)
-        {
-        }
+        public BoundedStream InputStream { get; }
 
-        public AsyncBinaryReader(Stream input, Encoding encoding) : base(input, encoding)
+        public AsyncBinaryReader(BoundedStream input, Encoding encoding) : base(input, encoding)
         {
+            InputStream = input;
         }
-
-        public AsyncBinaryReader(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
-        {
-        }
-
+        
         public async Task<byte> ReadByteAsync(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(byte)];
@@ -88,6 +83,18 @@ namespace BinarySerialization
             var b = new byte[sizeof(double)];
             await BaseStream.ReadAsync(b, 0, b.Length, cancellationToken);
             return BitConverter.ToDouble(b, 0);
+        }
+
+        public Task<FieldLength> ReadAsync(byte[] data, FieldLength fieldLength, CancellationToken cancellationToken)
+        {
+            var length = fieldLength ?? data.Length;
+            return InputStream.ReadAsync(data, length, cancellationToken);
+        }
+
+        public FieldLength Read(byte[] data, FieldLength fieldLength)
+        {
+            var length = fieldLength ?? data.Length;
+            return InputStream.Read(data, length);
         }
 
         public async Task<byte[]> ReadBytesAsync(int count, CancellationToken cancellationToken)

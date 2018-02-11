@@ -215,17 +215,7 @@ namespace BinarySerialization
         /// </returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            count = ClampCount(count);
-
-            if (count == 0)
-            {
-                return 0;
-            }
-
-            var read = Source.Read(buffer, offset, count);
-            RelativePosition += read;
-
-            return read;
+            return (int) ReadImpl(buffer, count).ByteCount;
         }
 
         /// <summary>
@@ -379,6 +369,7 @@ namespace BinarySerialization
             _bitOffset %= BitsPerByte;
         }
 
+
         private async Task WriteBitsAsync(byte value, int count, CancellationToken cancellationToken)
         {
             if (count == 0)
@@ -404,27 +395,177 @@ namespace BinarySerialization
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
             CancellationToken cancellationToken)
         {
-            count = ClampCount(count);
+            var read = await ReadAsyncImpl(buffer, count, cancellationToken);
+            return (int) read.ByteCount;
+        }
+
+        public FieldLength Read(byte[] buffer, FieldLength length)
+        {
+            return ReadImpl(buffer, length);
+        }
+
+        public Task<FieldLength> ReadAsync(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
+        {
+            return ReadAsyncImpl(buffer, length, cancellationToken);
+        }
+
+        private FieldLength ReadImpl(byte[] buffer, FieldLength length)
+        {
+            length = ClampLength(length);
+
+            FieldLength readLength;
+
+            if (length == FieldLength.Zero)
+            {
+                return FieldLength.Zero;
+            }
+
+            if (Source is BoundedStream boundedStream && !IsByteBarrier)
+            {
+                readLength = boundedStream.Read(buffer, length);
+            }
+            else
+            {
+                if (length.BitCount == 0 && _bitOffset == 0)
+                {
+                    // trivial byte-aligned case
+                    readLength = ReadByteAligned(buffer, (int)length.ByteCount);
+                }
+                else
+                {
+                    readLength = FieldLength.Zero;
+
+                    byte b;
+                    int readBits;
+
+                    for (ulong i = 0; i < length.ByteCount; i++)
+                    {
+                        readBits = ReadBits(out b, BitsPerByte);
+                        buffer[i] = b;
+
+                        readLength += FieldLength.FromBitCount(readBits);
+                    }
+
+                    readBits = ReadBits(out b, length.BitCount);
+                    buffer[length.ByteCount] = b;
+
+                    readLength += FieldLength.FromBitCount(readBits);
+                }
+            }
+            
+            RelativePosition += readLength;
+            return readLength;
+        }
+
+        private async Task<FieldLength> ReadAsyncImpl(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
+        {
+            length = ClampLength(length);
+
+            FieldLength readLength;
+
+            if (length == FieldLength.Zero)
+            {
+                return FieldLength.Zero;
+            }
+
+            if (Source is BoundedStream boundedStream && !IsByteBarrier)
+            {
+                readLength = await boundedStream.ReadAsync(buffer, length, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                if (length.BitCount == 0 && _bitOffset == 0)
+                {
+                    // trivial byte-aligned case
+                    readLength = await ReadByteAlignedAsync(buffer, (int) length.ByteCount, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                else
+                {
+                    readLength = FieldLength.Zero;
+
+                    byte b;
+                    int readBits;
+
+                    for (ulong i = 0; i < length.ByteCount; i++)
+                    {
+                        readBits = await ReadBitsAsync(out b, BitsPerByte, cancellationToken);
+                        buffer[i] = b;
+
+                        readLength += FieldLength.FromBitCount(readBits);
+                    }
+
+                    readBits = ReadBits(out b, length.BitCount);
+                    buffer[length.ByteCount] = b;
+
+                    readLength += FieldLength.FromBitCount(readBits);
+                }
+            }
+
+            RelativePosition += readLength;
+            return readLength;
+        }
+
+
+        protected virtual int ReadByteAligned(byte[] buffer, int length)
+        {
+            return Source.Read(buffer, 0, length);
+        }
+
+        protected virtual Task<int> ReadByteAlignedAsync(byte[] buffer, int length, CancellationToken cancellationToken)
+        {
+            return Source.ReadAsync(buffer, 0, length, cancellationToken);
+        }
+
+        private int ReadBits(out byte value, int count)
+        {
+            throw new NotImplementedException();
 
             if (count == 0)
             {
+                value = 0;
                 return 0;
             }
 
-            var read = await Source.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
-            RelativePosition += read;
-
-            return read;
-        }
-
-        private int ClampCount(int count)
-        {
-            if (MaxLength != null && count > MaxLength - Position)
+            var remaining = BitsPerByte - _bitOffset;
+            if (count > remaining)
             {
-                count = Math.Max(0, (int) ((long) MaxLength.ByteCount - Position));
+                var data = new byte[1];
+                ReadByteAligned(data, data.Length);
+                var b = data[0];
+                var shiftedB = b << _bitOffset;
             }
 
-            return count;
+
+
+            //var remaining = BitsPerByte - _bitOffset;
+            //var shiftedValue = value << _bitOffset;
+            //_bitBuffer |= (byte)shiftedValue;
+            //_bitOffset += count;
+
+            //if (_bitOffset >= BitsPerByte)
+            //{
+            //    var data = new[] { _bitBuffer };
+            //    WriteByteAligned(data, data.Length);
+            //    _bitBuffer = (byte)(value >> remaining);
+            //}
+
+            _bitOffset %= BitsPerByte;
+        }
+
+        private Task<int> ReadBitsAsync(out byte value, int count, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private FieldLength ClampLength(FieldLength length)
+        {
+            if (MaxLength != null && length > MaxLength - Position)
+            {
+                length = Math.Max(0, (int) ((long) MaxLength.ByteCount - Position));
+            }
+
+            return length;
         }
     }
 }
