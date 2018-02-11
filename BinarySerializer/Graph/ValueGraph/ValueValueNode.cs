@@ -12,7 +12,11 @@ namespace BinarySerialization.Graph.ValueGraph
     {
         private object _cachedValue;
         private object _value;
-        
+
+        private const string LengthPrefixedStringsCannotHaveConstLengthMessage =
+            "Length-prefixed strings cannot have a const length.";
+
+
         public ValueValueNode(ValueNode parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
         {
@@ -97,7 +101,15 @@ namespace BinarySerialization.Graph.ValueGraph
             return GetValue(_value, serializedType);
         }
 
-        public void Serialize(BoundedStream stream, object value, SerializedType serializedType, FieldLength length = null)
+
+        public void Serialize(BoundedStream stream, object value, SerializedType serializedType,
+            FieldLength length = null)
+        {
+            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding());
+            Serialize(writer, value, serializedType, length);
+        }
+
+        public void Serialize(AsyncBinaryWriter writer, object value, SerializedType serializedType, FieldLength length = null)
         {
             var constLength = GetConstLength(length);
 
@@ -123,20 +135,21 @@ namespace BinarySerialization.Graph.ValueGraph
                         return;
                     }
 
-                    var data = new byte[constLength.ByteCount];
+                    var data = new byte[constLength.TotalByteCount];
 
                     if (serializedType == SerializedType.TerminatedString && data.Length > 0)
                     {
                         data[0] = TypeNode.StringTerminator;
                     }
 
-                    stream.Write(data, 0, (int) constLength.ByteCount);
+                    writer.Write(data, constLength);
 
                     return;
                 }
             }
 
-            var maxLength = GetMaxLength(stream, serializedType);
+            var outputStream = writer.OutputStream;
+            var maxLength = GetMaxLength(outputStream, serializedType);
 
             var scaledValue = ScaleValue(value);
             var convertedValue = GetValue(scaledValue, serializedType);
@@ -144,101 +157,93 @@ namespace BinarySerialization.Graph.ValueGraph
             switch (serializedType)
             {
                 case SerializedType.Int1:
-                {
-                    stream.WriteByte((byte) Convert.ToSByte(convertedValue));
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToSByte(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.UInt1:
-                {
-                    stream.WriteByte(Convert.ToByte(convertedValue));
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToByte(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.Int2:
-                {
-                    var data = BitConverter.GetBytes(Convert.ToInt16(convertedValue));
-                    stream.Write(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToInt16(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.UInt2:
-                {
-                    var data = BitConverter.GetBytes(Convert.ToUInt16(convertedValue));
-                    stream.Write(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToUInt16(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.Int4:
-                {
-                    var data = BitConverter.GetBytes(Convert.ToInt32(convertedValue));
-                    stream.Write(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToInt32(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.UInt4:
-                {
-                    var data = BitConverter.GetBytes(Convert.ToUInt32(convertedValue));
-                    stream.Write(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToUInt32(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.Int8:
-                {
-                    var data = BitConverter.GetBytes(Convert.ToInt64(convertedValue));
-                    stream.Write(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToInt64(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.UInt8:
-                {
-                    var data = BitConverter.GetBytes(Convert.ToUInt64(convertedValue));
-                    stream.Write(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToUInt64(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.Float4:
-                {
-                    var data = BitConverter.GetBytes(Convert.ToSingle(convertedValue));
-                    stream.Write(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToSingle(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.Float8:
-                {
-                    var data = BitConverter.GetBytes(Convert.ToDouble(convertedValue));
-                    stream.Write(data, 0, data.Length);
-                    break;
-                }
+                    {
+                        writer.Write(Convert.ToDouble(convertedValue), constLength);
+                        break;
+                    }
                 case SerializedType.ByteArray:
                 {
                     var data = (byte[]) value;
 
-                    AdjustArrayLength(ref data, constLength, maxLength);
+                    var dataLength = GetArrayLength(data, constLength, maxLength);
 
-                    stream.Write(data, 0, data.Length);
+                    writer.Write(data, dataLength);
                     break;
                 }
                 case SerializedType.TerminatedString:
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
 
-                    AdjustNullTerminatedArrayLength(ref data, constLength, maxLength);
+                    var dataLength = GetNullTerminatedArrayLength(data, constLength, maxLength);
 
-                    stream.Write(data, 0, data.Length);
-                    stream.WriteByte(TypeNode.StringTerminator);
+                    writer.Write(data, dataLength);
+                    var stringTerminatorData = new[] {TypeNode.StringTerminator};
+                    writer.Write(stringTerminatorData, stringTerminatorData.Length);
                     break;
                 }
                 case SerializedType.SizedString:
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
+                        
+                    var dataLength = GetArrayLength(data, constLength, maxLength);
 
-                    AdjustArrayLength(ref data, constLength, maxLength);
-
-                    stream.Write(data, 0, data.Length);
+                    writer.Write(data, dataLength);
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
                 {
                     if (constLength != null)
                     {
-                        throw new NotSupportedException("Length-prefixed strings cannot have a const length.");
+                        throw new NotSupportedException(LengthPrefixedStringsCannotHaveConstLengthMessage);
                     }
 
-                    var writer = new BinaryWriter(stream, GetFieldEncoding());
                     writer.Write(value.ToString());
-                    break;
+                        break;
                 }
 
                 default:
@@ -280,21 +285,21 @@ namespace BinarySerialization.Graph.ValueGraph
                         return;
                     }
 
-                    var data = new byte[constLength.ByteCount];
+                    var data = new byte[constLength.TotalByteCount];
 
                     if (serializedType == SerializedType.TerminatedString && data.Length > 0)
                     {
                         data[0] = TypeNode.StringTerminator;
                     }
 
-                    await writer.WriteAsync(data, (int) constLength.ByteCount, cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(data, constLength, cancellationToken).ConfigureAwait(false);
 
                     return;
                 }
             }
 
-            var baseStream = (BoundedStream) writer.BaseStream;
-            var maxLength = GetMaxLength(baseStream, serializedType);
+            var outputStream = writer.OutputStream;
+            var maxLength = GetMaxLength(outputStream, serializedType);
 
             var scaledValue = ScaleValue(value);
             var convertedValue = GetValue(scaledValue, serializedType);
@@ -355,18 +360,18 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     var data = (byte[]) value;
 
-                    AdjustArrayLength(ref data, constLength, maxLength);
+                    var dataLength = GetArrayLength(data, constLength, maxLength);
 
-                    await writer.WriteAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(data, dataLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.TerminatedString:
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
+                        
+                    var dataLength = GetNullTerminatedArrayLength(data, constLength, maxLength);
 
-                    AdjustNullTerminatedArrayLength(ref data, constLength, maxLength);
-
-                    await writer.WriteAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(data, dataLength, cancellationToken).ConfigureAwait(false);
 
                     var stringTerminatorData = new[] {TypeNode.StringTerminator};
                     await writer.WriteAsync(stringTerminatorData, stringTerminatorData.Length, cancellationToken)
@@ -377,17 +382,16 @@ namespace BinarySerialization.Graph.ValueGraph
                 case SerializedType.SizedString:
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
+                    var dataLength = GetArrayLength(data, constLength, maxLength);
 
-                    AdjustArrayLength(ref data, constLength, maxLength);
-
-                    await writer.WriteAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(data, dataLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
                 case SerializedType.LengthPrefixedString:
                 {
                     if (constLength != null)
                     {
-                        throw new NotSupportedException("Length-prefixed strings cannot have a const length.");
+                        throw new NotSupportedException(LengthPrefixedStringsCannotHaveConstLengthMessage);
                     }
 
                     writer.Write(value.ToString());
@@ -675,30 +679,38 @@ namespace BinarySerialization.Graph.ValueGraph
             return maxLength;
         }
 
-        private static void AdjustArrayLength(ref byte[] data, FieldLength constLength, FieldLength maxLength)
+        private static FieldLength GetArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
         {
+            FieldLength length = data.Length;
+
             if (constLength != null)
             {
-                Array.Resize(ref data, (int) constLength.ByteCount);
+                length = constLength;
             }
 
-            if (maxLength != null && data.Length > maxLength)
+            if (maxLength != null && length > maxLength)
             {
-                Array.Resize(ref data, (int) maxLength.ByteCount);
+                length = maxLength;
             }
+
+            return length;
         }
 
-        private static void AdjustNullTerminatedArrayLength(ref byte[] data, FieldLength constLength, FieldLength maxLength)
+        private static FieldLength GetNullTerminatedArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
         {
+            FieldLength length = data.Length;
+
             if (constLength != null)
             {
-                Array.Resize(ref data, (int) constLength.ByteCount - 1);
+                length = constLength - new FieldLength(1);
             }
 
-            if (maxLength != null && data.Length > maxLength)
+            if (maxLength != null && length > maxLength)
             {
-                Array.Resize(ref data, (int) maxLength.ByteCount - 1);
+                length = maxLength - new FieldLength(1);
             }
+
+            return length;
         }
 
         private object GetScalar(IEnumerable enumerable)

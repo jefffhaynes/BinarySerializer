@@ -53,7 +53,23 @@ namespace BinarySerialization
             _tap.Write(buffer, offset, count);
             base.Write(buffer, offset, count);
         }
-        
+
+        protected override void WriteOverride(byte[] buffer, FieldLength length)
+        {
+            WriteImpl(buffer, length);
+        }
+
+        public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            await _tap.WriteAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
+            await base.WriteAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
+        }
+
+        protected override Task WriteAsyncOverride(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
+        {
+            return WriteAsyncImpl(buffer, length, cancellationToken);
+        }
+
         public override async Task FlushAsync(CancellationToken cancellationToken)
         {
             await _tap.FlushAsync(cancellationToken).ConfigureAwait(false);

@@ -784,7 +784,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private void Align(BoundedStream stream, long? alignment, bool pad = false)
+        private void Align(BoundedStream stream, FieldLength alignment, bool pad = false)
         {
             if (alignment == null)
             {
@@ -792,21 +792,21 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var position = stream.RelativePosition;
-            var delta = (alignment.Value - (long) position.ByteCount % alignment.Value) % alignment.Value;
+            var delta = (alignment - position % alignment) % alignment;
 
-            if (delta == 0)
+            if (delta == FieldLength.Zero)
             {
                 return;
             }
 
             if (pad)
             {
-                var padding = new byte[delta];
-                stream.Write(padding, 0, padding.Length);
+                var padding = new byte[delta.TotalByteCount];
+                stream.Write(padding, delta);
             }
             else
             {
-                for (var i = 0; i < delta; i++)
+                for (var i = 0; i < (int) delta.ByteCount; i++)
                 {
                     if (stream.ReadByte() < 0)
                     {
@@ -843,28 +843,28 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void WritePadding(BoundedStream stream)
         {
-            ProcessPadding(stream, (s, bytes, length) => s.Write(bytes, 0, length));
+            ProcessPadding(stream, (s, bytes, length) => s.Write(bytes, length));
         }
 
         private Task WritePaddingAsync(BoundedStream stream, CancellationToken cancellationToken)
         {
             return ProcessPaddingAsync(stream, async (s, bytes, length) =>
-                await s.WriteAsync(bytes, 0, length, cancellationToken).ConfigureAwait(false));
+                await s.WriteAsync(bytes, length, cancellationToken).ConfigureAwait(false));
         }
 
         private void SkipPadding(BoundedStream stream)
         {
-            ProcessPadding(stream, (s, bytes, length) => s.Read(bytes, 0, length));
+            ProcessPadding(stream, (s, bytes, length) => s.Read(bytes, 0, (int)length.ByteCount));
         }
 
         private Task SkipPaddingAsync(BoundedStream stream, CancellationToken cancellationToken)
         {
             return ProcessPaddingAsync(stream,
                 async (s, bytes, length) =>
-                    await s.ReadAsync(bytes, 0, length, cancellationToken).ConfigureAwait(false));
+                    await s.ReadAsync(bytes, 0, (int)length.ByteCount, cancellationToken).ConfigureAwait(false));
         }
 
-        private void ProcessPadding(BoundedStream stream, Action<Stream, byte[], int> streamOperation)
+        private void ProcessPadding(BoundedStream stream, Action<BoundedStream, byte[], FieldLength> streamOperation)
         {
             var length = GetConstFieldLength();
 
@@ -876,12 +876,12 @@ namespace BinarySerialization.Graph.ValueGraph
             if (length > stream.RelativePosition)
             {
                 var padLength = length - stream.RelativePosition;
-                var pad = new byte[(int) padLength.ByteCount];
-                streamOperation(stream, pad, pad.Length);
+                var pad = new byte[(int) padLength.TotalByteCount];
+                streamOperation(stream, pad, padLength);
             }
         }
 
-        private async Task ProcessPaddingAsync(BoundedStream stream, Func<Stream, byte[], int, Task> streamOperationAsync)
+        private async Task ProcessPaddingAsync(BoundedStream stream, Func<BoundedStream, byte[], FieldLength, Task> streamOperationAsync)
         {
             var length = GetConstFieldLength();
 
@@ -893,8 +893,8 @@ namespace BinarySerialization.Graph.ValueGraph
             if (length > stream.RelativePosition)
             {
                 var padLength = length - stream.RelativePosition;
-                var pad = new byte[(int) padLength.ByteCount];
-                await streamOperationAsync(stream, pad, pad.Length).ConfigureAwait(false);
+                var pad = new byte[(int) padLength.TotalByteCount];
+                await streamOperationAsync(stream, pad, padLength).ConfigureAwait(false);
             }
         }
 

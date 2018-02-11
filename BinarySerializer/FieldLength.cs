@@ -63,6 +63,11 @@ namespace BinarySerialization
             return new FieldLength(l1.ByteCount - l2.ByteCount, l1.BitCount - l2.BitCount);
         }
 
+        public static FieldLength operator %(FieldLength l1, FieldLength l2)
+        {
+            return FromBitCount((int) l1.TotalBitCount % (int) l2.TotalBitCount);
+        }
+
         public static bool operator ==(FieldLength l1, FieldLength l2)
         {
             return Equals(l1, l2);

@@ -238,18 +238,12 @@ namespace BinarySerialization
         /// <exception cref="InvalidOperationException">count is greater than the stream length.</exception>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (count == 0)
-            {
-                return;
-            }
-
-            if (MaxLength != null && count > MaxLength - Position)
-            {
-                throw new InvalidOperationException("Unable to write beyond end of stream limit.");
-            }
-
             Source.Write(buffer, offset, count);
-            RelativePosition += count;
+        }
+
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            return Source.WriteAsync(buffer, 0, count, cancellationToken);
         }
 
         public async Task WriteAsync(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
@@ -259,55 +253,137 @@ namespace BinarySerialization
                 return;
             }
 
-            if (MaxLength != null && length > MaxLength - Position)
-            {
-                throw new InvalidOperationException("Unable to write beyond end of stream limit.");
-            }
+            WriteCheck(length);
 
+            await WriteAsyncOverride(buffer, length, cancellationToken);
+
+            RelativePosition += length;
+        }
+
+        protected virtual async Task WriteAsyncOverride(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
+        {
+            if (Source is BoundedStream boundedStream)
+            {
+                await boundedStream.WriteAsync(buffer, length, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                await WriteAsyncImpl(buffer, length, cancellationToken);
+            }
+        }
+
+        protected async Task WriteAsyncImpl(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
+        {
             if (length.BitCount == 0 && _bitOffset == 0)
             {
                 // trivial byte-aligned case
-                await WriteAsync(buffer, 0, (int) length.ByteCount, cancellationToken);
+                await WriteAsync(buffer, 0, (int) length.ByteCount, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 for (ulong i = 0; i < length.ByteCount; i++)
                 {
-                    WriteBits(buffer[i]);
+                    await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken).ConfigureAwait(false);
                 }
 
-                WriteBits(buffer[length.ByteCount], length.BitCount);
+                await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
+                    .ConfigureAwait(false);
             }
+        }
+
+        public void Write(byte[] buffer, FieldLength length)
+        {
+            if (length == FieldLength.Zero)
+            {
+                return;
+            }
+
+            WriteCheck(length);
+            
+            WriteOverride(buffer, length);
 
             RelativePosition += length;
         }
 
-        public void WriteBits(byte value, int count = BitsPerByte)
+        protected virtual void WriteOverride(byte[] buffer, FieldLength length)
+        {
+            if (Source is BoundedStream boundedStream)
+            {
+                boundedStream.Write(buffer, length);
+            }
+            else
+            {
+                WriteImpl(buffer, length);
+            }
+        }
+
+        private void WriteCheck(FieldLength length)
+        {
+            if (MaxLength != null && length > MaxLength - Position)
+            {
+                throw new InvalidOperationException("Unable to write beyond end of stream limit.");
+            }
+        }
+
+        protected void WriteImpl(byte[] buffer, FieldLength length)
+        {
+            if (length.BitCount == 0 && _bitOffset == 0)
+            {
+                // trivial byte-aligned case
+                Write(buffer, 0, (int) length.ByteCount);
+            }
+            else
+            {
+                for (ulong i = 0; i < length.ByteCount; i++)
+                {
+                    WriteBits(buffer[i], BitsPerByte);
+                }
+
+                WriteBits(buffer[length.ByteCount], length.BitCount);
+            }
+        }
+
+        private void WriteBits(byte value, int count)
         {
             if (count == 0)
             {
                 return;
             }
 
-            if (Source is BoundedStream boundedStream)
-            {
-                boundedStream.WriteBits(value, count);
-            }
-            else
-            {
-                var remaining = BitsPerByte - _bitOffset;
-                var shiftedValue = value << _bitOffset;
-                _bitBuffer |= (byte) shiftedValue;
-                _bitOffset += count;
+            var remaining = BitsPerByte - _bitOffset;
+            var shiftedValue = value << _bitOffset;
+            _bitBuffer |= (byte) shiftedValue;
+            _bitOffset += count;
 
-                if (_bitOffset >= BitsPerByte)
-                {
-                    WriteByte(_bitBuffer);
-                    _bitBuffer = (byte) (value >> remaining);
-                }
-
-                _bitOffset %= 8;
+            if (_bitOffset >= BitsPerByte)
+            {
+                WriteByte(_bitBuffer);
+                _bitBuffer = (byte) (value >> remaining);
             }
+
+            _bitOffset %= BitsPerByte;
+        }
+
+        private async Task WriteBitsAsync(byte value, int count, CancellationToken cancellationToken)
+        {
+            if (count == 0)
+            {
+                return;
+            }
+
+            var remaining = BitsPerByte - _bitOffset;
+            var shiftedValue = value << _bitOffset;
+            _bitBuffer |= (byte) shiftedValue;
+            _bitOffset += count;
+
+            if (_bitOffset >= BitsPerByte)
+            {
+                var data = new[] {_bitBuffer};
+                await WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
+                _bitBuffer = (byte) (value >> remaining);
+            }
+
+            _bitOffset %= BitsPerByte;
         }
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
