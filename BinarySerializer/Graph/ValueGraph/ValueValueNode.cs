@@ -403,20 +403,20 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        public void Deserialize(BoundedStream stream, SerializedType serializedType, long? length = null)
+        public void Deserialize(BoundedStream stream, SerializedType serializedType, FieldLength length = null)
         {
             var reader = new BinaryReader(stream);
             Deserialize(reader, serializedType, length);
         }
 
-        public Task DeserializeAsync(BoundedStream stream, SerializedType serializedType, long? length,
+        public Task DeserializeAsync(BoundedStream stream, SerializedType serializedType, FieldLength length,
             CancellationToken cancellationToken)
         {
             var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
             return DeserializeAsync(reader, serializedType, length, cancellationToken);
         }
 
-        public void Deserialize(BinaryReader reader, SerializedType serializedType, long? length = null)
+        public void Deserialize(BinaryReader reader, SerializedType serializedType, FieldLength length = null)
         {
             var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
 
@@ -488,7 +488,7 @@ namespace BinarySerialization.Graph.ValueGraph
             CheckComputedValues();
         }
 
-        public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, long? length,
+        public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, FieldLength length,
             CancellationToken cancellationToken)
         {
             var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
@@ -751,7 +751,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return value;
         }
 
-        private FieldLength GetEffectiveLengthValue(BinaryReader reader, SerializedType serializedType, long? length)
+        private FieldLength GetEffectiveLengthValue(BinaryReader reader, SerializedType serializedType, FieldLength length)
         {
             var effectiveLength = length ?? GetFieldLength() ?? GetFieldCount();
 

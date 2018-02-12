@@ -562,7 +562,7 @@ namespace BinarySerialization
         {
             if (MaxLength != null && length > MaxLength - Position)
             {
-                length = Math.Max(0, (int) ((long) MaxLength.ByteCount - Position));
+                length = FieldLength.Max(FieldLength.Zero, MaxLength - Position);
             }
 
             return length;

@@ -130,9 +130,14 @@ namespace BinarySerialization
             return true;
         }
 
-        public static FieldLength Min(FieldLength l1, FieldLength l2)
+        public static FieldLength Min(FieldLength a, FieldLength b)
         {
-            return l1 < l2 ? l1 : l2;
+            return a < b ? a : b;
+        }
+
+        public static FieldLength Max(FieldLength a, FieldLength b)
+        {
+            return a > b ? a : b;
         }
 
         public override bool Equals(object obj)
