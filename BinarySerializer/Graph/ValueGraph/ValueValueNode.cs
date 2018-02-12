@@ -412,7 +412,7 @@ namespace BinarySerialization.Graph.ValueGraph
         public Task DeserializeAsync(BoundedStream stream, SerializedType serializedType, long? length,
             CancellationToken cancellationToken)
         {
-            var reader = new AsyncBinaryReader(stream);
+            var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
             return DeserializeAsync(reader, serializedType, length, cancellationToken);
         }
 

@@ -26,20 +26,20 @@ namespace BinarySerialization
 
         protected override bool IsByteBarrier => true;
 
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            var read = base.Read(buffer, offset, count);
-            _tap.Write(buffer, offset, read);
-            return read;
-        }
+        //public override int Read(byte[] buffer, int offset, int count)
+        //{
+        //    var read = base.Read(buffer, offset, count);
+        //    _tap.Write(buffer, offset, read);
+        //    return read;
+        //}
 
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
-            CancellationToken cancellationToken)
-        {
-            var read = await base.ReadAsync(buffer, offset, count, cancellationToken);
-            _tap.Write(buffer, offset, read);
-            return read;
-        }
+        //public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
+        //    CancellationToken cancellationToken)
+        //{
+        //    var read = await base.ReadAsync(buffer, offset, count, cancellationToken);
+        //    _tap.Write(buffer, offset, read);
+        //    return read;
+        //}
 
         public override long Seek(long offset, SeekOrigin origin)
         {
@@ -62,6 +62,20 @@ namespace BinarySerialization
         {
             await _tap.WriteAsync(buffer, 0, length, cancellationToken).ConfigureAwait(false);
             await base.WriteByteAlignedAsync(buffer, length, cancellationToken).ConfigureAwait(false);
+        }
+
+        protected override int ReadByteAligned(byte[] buffer, int length)
+        {
+            var read = base.ReadByteAligned(buffer, length);
+            _tap.Write(buffer, 0, read);
+            return read;
+        }
+
+        protected override async Task<int> ReadByteAlignedAsync(byte[] buffer, int length, CancellationToken cancellationToken)
+        {
+            var read = await base.ReadByteAlignedAsync(buffer, length, cancellationToken).ConfigureAwait(false);
+            await _tap.WriteAsync(buffer, 0, read, cancellationToken).ConfigureAwait(false);
+            return read;
         }
 
         public override async Task FlushAsync(CancellationToken cancellationToken)

@@ -210,7 +210,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var terminationChild = GetTerminationChild();
             var itemLength = GetFieldItemLength();
 
-            var reader = new AsyncBinaryReader(stream);
+            var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
             var count = GetFieldCount() ?? long.MaxValue;
 
             for (long i = 0; i < count && !EndOfStream(stream); i++)
