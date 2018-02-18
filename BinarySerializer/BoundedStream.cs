@@ -280,12 +280,12 @@ namespace BinarySerialization
                 }
                 else
                 {
+                    WriteBits(buffer[length.ByteCount], length.BitCount);
+
                     for (ulong i = 0; i < length.ByteCount; i++)
                     {
-                        WriteBits(buffer[i], BitsPerByte);
+                        WriteBits(buffer[length.ByteCount - (i + 1)], BitsPerByte);
                     }
-
-                    WriteBits(buffer[length.ByteCount], length.BitCount);
                 }
             }
 
@@ -315,14 +315,15 @@ namespace BinarySerialization
                 }
                 else
                 {
+                    await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
+                        .ConfigureAwait(false);
+
                     // collect bits in this, the bottom bounded stream
                     for (ulong i = 0; i < length.ByteCount; i++)
                     {
-                        await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken).ConfigureAwait(false);
+                        await WriteBitsAsync(buffer[length.ByteCount - (i + 1)], BitsPerByte, cancellationToken)
+                            .ConfigureAwait(false);
                     }
-
-                    await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
-                        .ConfigureAwait(false);
                 }
             }
 
@@ -354,16 +355,17 @@ namespace BinarySerialization
                 return;
             }
 
-            var remaining = BitsPerByte - _bitOffset;
-            var shiftedValue = value << _bitOffset;
-            _bitBuffer |= (byte) shiftedValue;
+            var remaining = BitsPerByte - (count + _bitOffset);
+
+            var shiftedValue = remaining > 0 ? value << remaining : value >> -remaining;
+            _bitBuffer |= (byte)shiftedValue;
             _bitOffset += count;
 
             if (_bitOffset >= BitsPerByte)
             {
-                var data = new[] {_bitBuffer};
+                var data = new[] { _bitBuffer };
                 WriteByteAligned(data, data.Length);
-                _bitBuffer = (byte) (value >> remaining);
+                _bitBuffer = (byte)(value << remaining + BitsPerByte);
             }
 
             _bitOffset %= BitsPerByte;
@@ -377,8 +379,11 @@ namespace BinarySerialization
                 return;
             }
 
-            var remaining = BitsPerByte - _bitOffset;
-            var shiftedValue = value << _bitOffset;
+            // --|------|-
+            
+            var remaining = BitsPerByte - (count + _bitOffset);
+
+            var shiftedValue = remaining > 0 ? value << remaining : value >> -remaining;
             _bitBuffer |= (byte) shiftedValue;
             _bitOffset += count;
 
@@ -386,7 +391,7 @@ namespace BinarySerialization
             {
                 var data = new[] {_bitBuffer};
                 await WriteByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
-                _bitBuffer = (byte) (value >> remaining);
+                _bitBuffer = (byte) (value << remaining + BitsPerByte);
             }
 
             _bitOffset %= BitsPerByte;
@@ -434,22 +439,15 @@ namespace BinarySerialization
                 else
                 {
                     readLength = FieldLength.Zero;
-
-                    byte b;
-                    int readBits;
-
+                    
                     for (ulong i = 0; i < length.ByteCount; i++)
                     {
-                        readBits = ReadBits(out b, BitsPerByte);
-                        buffer[i] = b;
-
-                        readLength += FieldLength.FromBitCount(readBits);
+                        buffer[i] = ReadBits(BitsPerByte);
+                        readLength += FieldLength.FromBitCount(BitsPerByte);
                     }
 
-                    readBits = ReadBits(out b, length.BitCount);
-                    buffer[length.ByteCount] = b;
-
-                    readLength += FieldLength.FromBitCount(readBits);
+                    buffer[length.ByteCount] = ReadBits(length.BitCount);
+                    readLength += FieldLength.FromBitCount(length.BitCount);
                 }
             }
             
@@ -483,22 +481,17 @@ namespace BinarySerialization
                 else
                 {
                     readLength = FieldLength.Zero;
-
-                    byte b;
-                    int readBits;
-
+                    
                     for (ulong i = 0; i < length.ByteCount; i++)
                     {
-                        readBits = await ReadBitsAsync(out b, BitsPerByte, cancellationToken);
-                        buffer[i] = b;
-
-                        readLength += FieldLength.FromBitCount(readBits);
+                        buffer[i] = await ReadBitsAsync(BitsPerByte, cancellationToken);
+                        readLength += FieldLength.FromBitCount(BitsPerByte);
                     }
 
-                    readBits = ReadBits(out b, length.BitCount);
-                    buffer[length.ByteCount] = b;
+                    buffer[length.ByteCount] =
+                        await ReadBitsAsync(length.BitCount, cancellationToken).ConfigureAwait(false);
 
-                    readLength += FieldLength.FromBitCount(readBits);
+                    readLength += FieldLength.FromBitCount(length.BitCount);
                 }
             }
 
@@ -517,25 +510,32 @@ namespace BinarySerialization
             return Source.ReadAsync(buffer, 0, length, cancellationToken);
         }
 
-        private int ReadBits(out byte value, int count)
+        private byte ReadBits(int count)
         {
-            throw new NotImplementedException();
+            byte value;
 
             if (count == 0)
             {
-                value = 0;
                 return 0;
             }
 
-            var remaining = BitsPerByte - _bitOffset;
-            if (count > remaining)
+            // 0123456|7
+            // 89abcde|f
+            // xxxxxx|7f
+
+            value = (byte) (_bitBuffer << _bitOffset);
+            
+            if (count > _bitOffset)
             {
                 var data = new byte[1];
                 ReadByteAligned(data, data.Length);
-                var b = data[0];
-                var shiftedB = b << _bitOffset;
+                _bitBuffer = data[0];
+                var mask = 0xff << count;
+                value |= (byte) ((_bitBuffer << _bitOffset) & ~mask);
+                _bitOffset += BitsPerByte;
             }
 
+            _bitOffset -= count;
 
 
             //var remaining = BitsPerByte - _bitOffset;
@@ -551,11 +551,53 @@ namespace BinarySerialization
             //}
 
             _bitOffset %= BitsPerByte;
+
+            return value;
         }
 
-        private Task<int> ReadBitsAsync(out byte value, int count, CancellationToken cancellationToken)
+        private async Task<byte> ReadBitsAsync(int count, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            byte value;
+
+            if (count == 0)
+            {
+                return 0;
+            }
+
+            // 01|234567
+            // 89|abcdef
+            // abcdef01
+
+            value = (byte)(_bitBuffer << _bitOffset);
+
+            if (count > _bitOffset)
+            {
+                var data = new byte[1];
+                await ReadByteAlignedAsync(data, data.Length, cancellationToken);
+                _bitBuffer = data[0];
+                var mask = 0xff << count;
+                value |= (byte)((_bitBuffer << _bitOffset) & ~mask);
+                _bitOffset += BitsPerByte;
+            }
+
+            _bitOffset -= count;
+
+
+            //var remaining = BitsPerByte - _bitOffset;
+            //var shiftedValue = value << _bitOffset;
+            //_bitBuffer |= (byte)shiftedValue;
+            //_bitOffset += count;
+
+            //if (_bitOffset >= BitsPerByte)
+            //{
+            //    var data = new[] { _bitBuffer };
+            //    WriteByteAligned(data, data.Length);
+            //    _bitBuffer = (byte)(value >> remaining);
+            //}
+
+            _bitOffset %= BitsPerByte;
+
+            return value;
         }
 
         private FieldLength ClampLength(FieldLength length)
