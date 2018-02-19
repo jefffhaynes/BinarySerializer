@@ -282,7 +282,7 @@ namespace BinarySerialization
                 {
                     WriteBits(buffer[length.ByteCount], length.BitCount);
 
-                    for (ulong i = 0; i < length.ByteCount; i++)
+                    for (long i = 0; i < length.ByteCount; i++)
                     {
                         WriteBits(buffer[length.ByteCount - (i + 1)], BitsPerByte);
                     }
@@ -319,7 +319,7 @@ namespace BinarySerialization
                         .ConfigureAwait(false);
 
                     // collect bits in this, the bottom bounded stream
-                    for (ulong i = 0; i < length.ByteCount; i++)
+                    for (long i = 0; i < length.ByteCount; i++)
                     {
                         await WriteBitsAsync(buffer[length.ByteCount - (i + 1)], BitsPerByte, cancellationToken)
                             .ConfigureAwait(false);
@@ -444,7 +444,7 @@ namespace BinarySerialization
                     buffer[length.ByteCount] = ReadBits(length.BitCount);
                     readLength += FieldLength.FromBitCount(length.BitCount);
 
-                    for (ulong i = 0; i < length.ByteCount; i++)
+                    for (long i = 0; i < length.ByteCount; i++)
                     {
                         buffer[length.ByteCount - (i + 1)] = ReadBits(BitsPerByte);
                         readLength += FieldLength.FromBitCount(BitsPerByte);
@@ -487,7 +487,7 @@ namespace BinarySerialization
                         await ReadBitsAsync(length.BitCount, cancellationToken).ConfigureAwait(false);
                     readLength += FieldLength.FromBitCount(length.BitCount);
 
-                    for (ulong i = 0; i < length.ByteCount; i++)
+                    for (long i = 0; i < length.ByteCount; i++)
                     {
                         buffer[length.ByteCount - (i + 1)] = await ReadBitsAsync(BitsPerByte, cancellationToken);
                         readLength += FieldLength.FromBitCount(BitsPerByte);
