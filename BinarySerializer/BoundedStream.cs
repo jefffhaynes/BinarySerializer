@@ -340,6 +340,7 @@ namespace BinarySerialization
             return Source.WriteAsync(buffer, 0, length, cancellationToken);
         }
 
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private void WriteCheck(FieldLength length)
         {
             if (MaxLength != null && length > MaxLength - Position)
@@ -577,6 +578,11 @@ namespace BinarySerialization
             }
 
             return length;
+        }
+
+        public override string ToString()
+        {
+            return _name;
         }
     }
 }

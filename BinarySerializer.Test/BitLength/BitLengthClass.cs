@@ -11,7 +11,10 @@
         public int B { get; set; }
 
         [FieldOrder(2)]
-        [FieldBitLength(8)]
+        [FieldBitLength(4)]
         public int C { get; set; }
+
+        [FieldOrder(3)]
+        public InternalBitLengthClass Internal { get; set; }
     }
 }
