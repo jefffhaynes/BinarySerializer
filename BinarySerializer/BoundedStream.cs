@@ -439,15 +439,15 @@ namespace BinarySerialization
                 else
                 {
                     readLength = FieldLength.Zero;
-                    
-                    for (ulong i = 0; i < length.ByteCount; i++)
-                    {
-                        buffer[i] = ReadBits(BitsPerByte);
-                        readLength += FieldLength.FromBitCount(BitsPerByte);
-                    }
 
                     buffer[length.ByteCount] = ReadBits(length.BitCount);
                     readLength += FieldLength.FromBitCount(length.BitCount);
+
+                    for (ulong i = 0; i < length.ByteCount; i++)
+                    {
+                        buffer[length.ByteCount - (i + 1)] = ReadBits(BitsPerByte);
+                        readLength += FieldLength.FromBitCount(BitsPerByte);
+                    }
                 }
             }
             
@@ -481,17 +481,16 @@ namespace BinarySerialization
                 else
                 {
                     readLength = FieldLength.Zero;
-                    
-                    for (ulong i = 0; i < length.ByteCount; i++)
-                    {
-                        buffer[i] = await ReadBitsAsync(BitsPerByte, cancellationToken);
-                        readLength += FieldLength.FromBitCount(BitsPerByte);
-                    }
 
                     buffer[length.ByteCount] =
                         await ReadBitsAsync(length.BitCount, cancellationToken).ConfigureAwait(false);
-
                     readLength += FieldLength.FromBitCount(length.BitCount);
+
+                    for (ulong i = 0; i < length.ByteCount; i++)
+                    {
+                        buffer[length.ByteCount - (i + 1)] = await ReadBitsAsync(BitsPerByte, cancellationToken);
+                        readLength += FieldLength.FromBitCount(BitsPerByte);
+                    }
                 }
             }
 
@@ -512,91 +511,61 @@ namespace BinarySerialization
 
         private byte ReadBits(int count)
         {
-            byte value;
-
             if (count == 0)
             {
                 return 0;
             }
 
-            // 0123456|7
-            // 89abcde|f
-            // xxxxxx|7f
+            var value = _bitBuffer;
 
-            value = (byte) (_bitBuffer << _bitOffset);
-            
             if (count > _bitOffset)
             {
                 var data = new byte[1];
                 ReadByteAligned(data, data.Length);
                 _bitBuffer = data[0];
-                var mask = 0xff << count;
-                value |= (byte) ((_bitBuffer << _bitOffset) & ~mask);
+                value |= (byte)(_bitBuffer >> _bitOffset);
+                _bitBuffer = (byte)(_bitBuffer << count - _bitOffset);
                 _bitOffset += BitsPerByte;
             }
+            else
+            {
+                _bitBuffer = (byte)(_bitBuffer << count);
+            }
+
+            value = (byte)(value >> BitsPerByte - count);
 
             _bitOffset -= count;
-
-
-            //var remaining = BitsPerByte - _bitOffset;
-            //var shiftedValue = value << _bitOffset;
-            //_bitBuffer |= (byte)shiftedValue;
-            //_bitOffset += count;
-
-            //if (_bitOffset >= BitsPerByte)
-            //{
-            //    var data = new[] { _bitBuffer };
-            //    WriteByteAligned(data, data.Length);
-            //    _bitBuffer = (byte)(value >> remaining);
-            //}
-
-            _bitOffset %= BitsPerByte;
 
             return value;
         }
 
         private async Task<byte> ReadBitsAsync(int count, CancellationToken cancellationToken)
         {
-            byte value;
-
             if (count == 0)
             {
                 return 0;
             }
 
-            // 01|234567
-            // 89|abcdef
-            // abcdef01
-
-            value = (byte)(_bitBuffer << _bitOffset);
+            var value = _bitBuffer;
 
             if (count > _bitOffset)
             {
                 var data = new byte[1];
-                await ReadByteAlignedAsync(data, data.Length, cancellationToken);
+                await ReadByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
                 _bitBuffer = data[0];
-                var mask = 0xff << count;
-                value |= (byte)((_bitBuffer << _bitOffset) & ~mask);
+                value |= (byte)(_bitBuffer >> _bitOffset);
+                _bitBuffer = (byte)(_bitBuffer << count - _bitOffset);
                 _bitOffset += BitsPerByte;
             }
+            else
+            {
+                _bitBuffer = (byte)(_bitBuffer << count);
+            }
+
+            value = (byte)(value >> BitsPerByte - count);
 
             _bitOffset -= count;
-
-
-            //var remaining = BitsPerByte - _bitOffset;
-            //var shiftedValue = value << _bitOffset;
-            //_bitBuffer |= (byte)shiftedValue;
-            //_bitOffset += count;
-
-            //if (_bitOffset >= BitsPerByte)
-            //{
-            //    var data = new[] { _bitBuffer };
-            //    WriteByteAligned(data, data.Length);
-            //    _bitBuffer = (byte)(value >> remaining);
-            //}
-
-            _bitOffset %= BitsPerByte;
-
+            
             return value;
         }
 
