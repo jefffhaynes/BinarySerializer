@@ -16,5 +16,9 @@
 
         [FieldOrder(3)]
         public InternalBitLengthClass Internal { get; set; }
+
+        [FieldOrder(4)]
+        [FieldBitLength(8)]
+        public InternalBitLengthClass Internal2 { get; set; }
     }
 }

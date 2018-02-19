@@ -60,7 +60,7 @@ namespace BinarySerialization
 
         public static FieldLength operator -(FieldLength l1, FieldLength l2)
         {
-            return new FieldLength(l1.ByteCount - l2.ByteCount, l1.BitCount - l2.BitCount);
+            return FromBitCount((int)(l1.TotalBitCount - l2.TotalBitCount));
         }
 
         public static FieldLength operator %(FieldLength l1, FieldLength l2)
