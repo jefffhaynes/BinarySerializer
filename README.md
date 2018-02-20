@@ -70,6 +70,7 @@ There are a number of attributes that can be used to control the serialization o
 * [Ignore](#ignoreattribute)
 * [FieldOrder](#fieldorderattribute)
 * [FieldLength](#fieldlengthattribute)
+* [FieldBitLength](#fieldbitlengthattribute)
 * [FieldCount](#fieldcountattribute)
 * [FieldAlignment](#fieldalignmentattribute)
 * [FieldScale](#fieldscaleattribute)
@@ -226,6 +227,23 @@ public class PersonEntry
 ```
 
 If age is null during serialization, the framework will update EntryLength to be 32, or 36 if Age is present.  If EntryLength is 32 during deserialization, the framework will return a null value for Age.  If EntryLength is 36, the framework will deserialize the Age value.
+
+### FieldBitLengthAttribute ###
+
+The FieldBitLength attribute is similar to the length attribute but can be used to specify field lengths in terms of bits.  Note that if the bit values do not add to a byte-aligned length, remaining bits will be dropped from the final serialized stream.  There are also some limitations on non-byte-aligned field lengths when used in combination with other attributes.
+
+```c#
+public class Header
+{
+	[FieldOrder(0)]
+	[FieldBitLength(3)]
+	public HeaderType Type { get; set; }
+
+	[FieldOrder(1)]
+	[FieldBitLength(5)]
+	public int Length { get; set; }
+}
+```
 
 ### FieldCountAttribute ###
 

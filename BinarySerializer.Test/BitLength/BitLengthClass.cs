@@ -1,4 +1,6 @@
-﻿namespace BinarySerialization.Test.BitLength
+﻿using System;
+
+namespace BinarySerialization.Test.BitLength
 {
     public class BitLengthClass
     {
@@ -12,7 +14,7 @@
 
         [FieldOrder(2)]
         [FieldBitLength(4)]
-        public int C { get; set; }
+        public TypeCode C { get; set; }
 
         [FieldOrder(3)]
         public InternalBitLengthClass Internal { get; set; }

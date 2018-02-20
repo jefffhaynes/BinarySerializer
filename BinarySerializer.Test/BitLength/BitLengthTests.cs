@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace BinarySerialization.Test.BitLength
 {
@@ -11,7 +12,7 @@ namespace BinarySerialization.Test.BitLength
             {
                 A = 0b1_0110_1110_1111_0111_1101,
                 B = 0b111,
-                C = 0b1101,
+                C = (TypeCode) 0b1101,
                 Internal = new InternalBitLengthClass {Value = 0b1111},
                 Internal2 = new InternalBitLengthClass {Value = 0b10101010}
             };
