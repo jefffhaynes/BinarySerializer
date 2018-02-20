@@ -83,12 +83,12 @@ namespace BinarySerialization
         /// </summary>
         public override long Position
         {
-            get => (long) RelativePosition.ByteCount;
+            get => RelativePosition.ByteCount;
 
             set
             {
                 var delta = value - RelativePosition;
-                Source.Position += (long) delta.ByteCount;
+                Source.Position += delta.ByteCount;
                 RelativePosition = value;
             }
         }
@@ -379,8 +379,6 @@ namespace BinarySerialization
             {
                 return;
             }
-
-            // --|------|-
             
             var remaining = BitsPerByte - (count + _bitOffset);
 
