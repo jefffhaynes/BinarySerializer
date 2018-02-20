@@ -36,6 +36,6 @@ namespace BinarySerialization
         /// <summary>
         ///     The number of items in the decorated member for fixed-sized members or object subgraphs.
         /// </summary>
-        public ulong ConstLength { get; set; }
+        public ulong ConstLength { get; }
     }
 }

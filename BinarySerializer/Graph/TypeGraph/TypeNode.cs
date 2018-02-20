@@ -161,7 +161,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             // setup bindings
             FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
-            FieldBitLengthBindings = GetBindings<FieldBitLengthAttribute>(attributes);
+            FieldBitLengthAttribute = attributes.OfType<FieldBitLengthAttribute>().SingleOrDefault();
             FieldCountBindings = GetBindings<FieldCountAttribute>(attributes);
             FieldOffsetBindings = GetBindings<FieldOffsetAttribute>(attributes);
             FieldScaleBindings = GetBindings<FieldScaleAttribute>(attributes);
@@ -306,7 +306,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public Func<object, object> ValueGetter { get; }
 
         public BindingCollection FieldLengthBindings { get; }
-        public BindingCollection FieldBitLengthBindings { get; }
+        public FieldBitLengthAttribute FieldBitLengthAttribute { get; }
+        //public BindingCollection FieldBitLengthBindings { get; }
         public BindingCollection ItemLengthBindings { get; }
         public BindingCollection FieldCountBindings { get; }
         public BindingCollection FieldOffsetBindings { get; }

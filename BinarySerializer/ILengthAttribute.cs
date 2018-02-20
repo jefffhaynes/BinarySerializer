@@ -8,6 +8,6 @@
         /// <summary>
         ///     The length of the member for fixed-length fields.  This value will be used if no binding is specified.
         /// </summary>
-        ulong ConstLength { get; set; }
+        ulong ConstLength { get; }
     }
 }

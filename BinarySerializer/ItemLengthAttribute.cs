@@ -11,10 +11,10 @@ namespace BinarySerialization
         /// <summary>
         ///     Initializes a new instance of the ItemLength class with a constant length.
         /// </summary>
-        /// <param name="constLength">The fixed-size length of the decorated member.</param>
-        public ItemLengthAttribute(ulong constLength)
+        /// <param name="length">The fixed-size length of the decorated member.</param>
+        public ItemLengthAttribute(ulong length)
         {
-            ConstLength = constLength;
+            ConstLength = length;
         }
 
         /// <summary>
@@ -37,6 +37,6 @@ namespace BinarySerialization
         /// <summary>
         ///     Used to specify a constant field length.  This will be used if no binding is specified.
         /// </summary>
-        public ulong ConstLength { get; set; }
+        public ulong ConstLength { get; }
     }
 }

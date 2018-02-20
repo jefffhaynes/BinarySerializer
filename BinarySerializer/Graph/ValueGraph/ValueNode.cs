@@ -71,7 +71,6 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeNode = TypeNode;
 
             typeNode.FieldLengthBindings?.Bind(this, () => MeasureOverride().ByteCount);
-            typeNode.FieldBitLengthBindings?.Bind(this, () => MeasureOverride().TotalBitCount);
             typeNode.ItemLengthBindings?.Bind(this, () => MeasureItemsOverride().Select(item => item.ByteCount));
             typeNode.FieldCountBindings?.Bind(this, () => CountOverride());
 
@@ -441,10 +440,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 return length.Value;
             }
 
-            var bitLength = GetNumericValue(TypeNode.FieldBitLengthBindings);
-            if (bitLength != null)
+            var fieldBitLengthAttribute = TypeNode.FieldBitLengthAttribute;
+            if (fieldBitLengthAttribute != null)
             {
-                return new FieldLength(0, (int) bitLength);
+                return FieldLength.FromBitCount((int)fieldBitLengthAttribute.ConstLength);
             }
 
             var parent = Parent;
@@ -468,10 +467,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 return length;
             }
 
-            var bitLength = GetConstNumericValue(TypeNode.FieldBitLengthBindings);
-            if (bitLength != null)
+            var fieldBitLengthAttribute = TypeNode.FieldBitLengthAttribute;
+            if (fieldBitLengthAttribute != null)
             {
-                return FieldLength.FromBitCount((int) bitLength.Value);
+                return FieldLength.FromBitCount((int)fieldBitLengthAttribute.ConstLength);
             }
 
             return Parent?.GetConstFieldItemLength();
