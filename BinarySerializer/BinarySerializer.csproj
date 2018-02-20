@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
-    <Description>A declarative serialization framework for controlling formatting of data at the byte level.</Description>
+    <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Handling of overridden properties</PackageReleaseNotes>
+    <PackageReleaseNotes>Introducing the FieldBitLength attribute for describing bit-aligned fields.</PackageReleaseNotes>
     <PackageProjectUrl>http://binaryserializer.net</PackageProjectUrl>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>http://binaryserializer.net</RepositoryUrl>
-    <AssemblyVersion>7.9.1.0</AssemblyVersion>
-    <FileVersion>7.9.1.0</FileVersion>
-    <Version>7.9.1</Version>
+    <AssemblyVersion>8.0.0.0</AssemblyVersion>
+    <FileVersion>8.0.0.0</FileVersion>
+    <Version>8.0.0</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />
