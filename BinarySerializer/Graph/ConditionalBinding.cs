@@ -2,7 +2,7 @@
 
 namespace BinarySerialization.Graph
 {
-    public class ConditionalBinding : Binding
+    internal class ConditionalBinding : Binding
     {
         private readonly Type _conditionalValueType;
 

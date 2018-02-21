@@ -10,7 +10,7 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    public abstract class ValueNode : Node<ValueNode>
+    internal abstract class ValueNode : Node<ValueNode>
     {
         public static readonly object UnsetValue = new object();
 

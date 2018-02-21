@@ -9,7 +9,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    public abstract class TypeNode : Node<TypeNode>
+    internal abstract class TypeNode : Node<TypeNode>
     {
         public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
             new Dictionary<Type, SerializedType>

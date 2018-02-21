@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    public abstract class ContainerTypeNode : TypeNode
+    internal abstract class ContainerTypeNode : TypeNode
     {
         protected const BindingFlags ConstructorBindingFlags = BindingFlags.Instance | BindingFlags.Public;
 

@@ -4,7 +4,7 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph
 {
-    public class GraphGenerator
+    internal class GraphGenerator
     {
         private readonly ConcurrentDictionary<Type, RootTypeNode> _graphCache =
             new ConcurrentDictionary<Type, RootTypeNode>();

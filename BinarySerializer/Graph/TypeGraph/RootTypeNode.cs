@@ -3,7 +3,7 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    public sealed class RootTypeNode : ContainerTypeNode
+    internal sealed class RootTypeNode : ContainerTypeNode
     {
         public RootTypeNode(TypeNode parent, Type graphType) : base(parent, graphType)
         {

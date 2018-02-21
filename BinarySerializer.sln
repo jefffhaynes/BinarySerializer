@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer", "BinarySerializer\BinarySerializer.csproj", "{FAF159F0-83C1-43C6-BCA8-C58967DA9806}"
 EndProject
@@ -27,8 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.Performance", "BinarySerializer.Performance\BinarySerializer.Performance.csproj", "{58ECC3F1-FA04-4F60-B393-4D787000507B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinarySerializer.Editor", "BinarySerializer.Editor\BinarySerializer.Editor.csproj", "{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,26 +88,6 @@ Global
 		{58ECC3F1-FA04-4F60-B393-4D787000507B}.Release|x64.Build.0 = Release|Any CPU
 		{58ECC3F1-FA04-4F60-B393-4D787000507B}.Release|x86.ActiveCfg = Release|Any CPU
 		{58ECC3F1-FA04-4F60-B393-4D787000507B}.Release|x86.Build.0 = Release|Any CPU
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|ARM.ActiveCfg = Debug|ARM
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|ARM.Build.0 = Debug|ARM
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|ARM.Deploy.0 = Debug|ARM
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|x64.ActiveCfg = Debug|x64
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|x64.Build.0 = Debug|x64
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|x64.Deploy.0 = Debug|x64
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|x86.ActiveCfg = Debug|x86
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|x86.Build.0 = Debug|x86
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Debug|x86.Deploy.0 = Debug|x86
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|Any CPU.ActiveCfg = Release|x86
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|ARM.ActiveCfg = Release|ARM
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|ARM.Build.0 = Release|ARM
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|ARM.Deploy.0 = Release|ARM
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|x64.ActiveCfg = Release|x64
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|x64.Build.0 = Release|x64
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|x64.Deploy.0 = Release|x64
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|x86.ActiveCfg = Release|x86
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|x86.Build.0 = Release|x86
-		{AC7954A1-D74D-416A-B9BD-7C1E518E2D21}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
