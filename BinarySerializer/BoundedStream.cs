@@ -151,6 +151,8 @@ namespace BinarySerialization
             }
         }
 
+        protected virtual bool IsByteBarrier => false;
+
         /// <summary>
         ///     Clears all buffers for this stream and causes any buffered data to be written to the underlying device.
         /// </summary>
@@ -245,18 +247,16 @@ namespace BinarySerialization
 
             return WriteAsyncImpl(buffer, count, cancellationToken);
         }
-        
+
         public void Write(byte[] buffer, FieldLength length)
         {
             WriteImpl(buffer, length);
         }
-        
+
         public Task WriteAsync(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
         {
             return WriteAsyncImpl(buffer, length, cancellationToken);
         }
-
-        protected virtual bool IsByteBarrier => false;
 
         private void WriteImpl(byte[] buffer, FieldLength length)
         {
@@ -276,7 +276,7 @@ namespace BinarySerialization
                 if (length.BitCount == 0 && _bitOffset == 0)
                 {
                     // trivial byte-aligned case
-                    WriteByteAligned(buffer, (int)length.ByteCount);
+                    WriteByteAligned(buffer, (int) length.ByteCount);
                 }
                 else
                 {
@@ -359,14 +359,14 @@ namespace BinarySerialization
             var remaining = BitsPerByte - (count + _bitOffset);
 
             var shiftedValue = remaining > 0 ? value << remaining : value >> -remaining;
-            _bitBuffer |= (byte)shiftedValue;
+            _bitBuffer |= (byte) shiftedValue;
             _bitOffset += count;
 
             if (_bitOffset >= BitsPerByte)
             {
-                var data = new[] { _bitBuffer };
+                var data = new[] {_bitBuffer};
                 WriteByteAligned(data, data.Length);
-                _bitBuffer = (byte)(value << remaining + BitsPerByte);
+                _bitBuffer = (byte) (value << (remaining + BitsPerByte));
             }
 
             _bitOffset %= BitsPerByte;
@@ -379,7 +379,7 @@ namespace BinarySerialization
             {
                 return;
             }
-            
+
             var remaining = BitsPerByte - (count + _bitOffset);
 
             var shiftedValue = remaining > 0 ? value << remaining : value >> -remaining;
@@ -390,7 +390,7 @@ namespace BinarySerialization
             {
                 var data = new[] {_bitBuffer};
                 await WriteByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
-                _bitBuffer = (byte) (value << remaining + BitsPerByte);
+                _bitBuffer = (byte) (value << (remaining + BitsPerByte));
             }
 
             _bitOffset %= BitsPerByte;
@@ -433,7 +433,7 @@ namespace BinarySerialization
                 if (length.BitCount == 0 && _bitOffset == 0)
                 {
                     // trivial byte-aligned case
-                    readLength = ReadByteAligned(buffer, (int)length.ByteCount);
+                    readLength = ReadByteAligned(buffer, (int) length.ByteCount);
                 }
                 else
                 {
@@ -449,12 +449,13 @@ namespace BinarySerialization
                     }
                 }
             }
-            
+
             RelativePosition += readLength;
             return readLength;
         }
 
-        private async Task<FieldLength> ReadAsyncImpl(byte[] buffer, FieldLength length, CancellationToken cancellationToken)
+        private async Task<FieldLength> ReadAsyncImpl(byte[] buffer, FieldLength length,
+            CancellationToken cancellationToken)
         {
             length = ClampLength(length);
 
@@ -522,16 +523,16 @@ namespace BinarySerialization
                 var data = new byte[1];
                 ReadByteAligned(data, data.Length);
                 _bitBuffer = data[0];
-                value |= (byte)(_bitBuffer >> _bitOffset);
-                _bitBuffer = (byte)(_bitBuffer << count - _bitOffset);
+                value |= (byte) (_bitBuffer >> _bitOffset);
+                _bitBuffer = (byte) (_bitBuffer << (count - _bitOffset));
                 _bitOffset += BitsPerByte;
             }
             else
             {
-                _bitBuffer = (byte)(_bitBuffer << count);
+                _bitBuffer = (byte) (_bitBuffer << count);
             }
 
-            value = (byte)(value >> BitsPerByte - count);
+            value = (byte) (value >> (BitsPerByte - count));
 
             _bitOffset -= count;
 
@@ -552,19 +553,19 @@ namespace BinarySerialization
                 var data = new byte[1];
                 await ReadByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
                 _bitBuffer = data[0];
-                value |= (byte)(_bitBuffer >> _bitOffset);
-                _bitBuffer = (byte)(_bitBuffer << count - _bitOffset);
+                value |= (byte) (_bitBuffer >> _bitOffset);
+                _bitBuffer = (byte) (_bitBuffer << (count - _bitOffset));
                 _bitOffset += BitsPerByte;
             }
             else
             {
-                _bitBuffer = (byte)(_bitBuffer << count);
+                _bitBuffer = (byte) (_bitBuffer << count);
             }
 
-            value = (byte)(value >> BitsPerByte - count);
+            value = (byte) (value >> (BitsPerByte - count));
 
             _bitOffset -= count;
-            
+
             return value;
         }
 

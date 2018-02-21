@@ -405,7 +405,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public void Deserialize(BoundedStream stream, SerializedType serializedType, FieldLength length = null)
         {
-            var reader = new BinaryReader(stream);
+            var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
             Deserialize(reader, serializedType, length);
         }
 
