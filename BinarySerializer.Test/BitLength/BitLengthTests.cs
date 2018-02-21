@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace BinarySerialization.Test.BitLength
@@ -43,6 +44,29 @@ namespace BinarySerialization.Test.BitLength
             Assert.Equal(expected.Value.Value, acutal.Value.Value);
             Assert.Equal(expected.Value.Value2, acutal.Value.Value2);
             Assert.Equal(acutal.Crc2, acutal.Crc);
+        }
+
+        [Fact]
+        public void BitLengthBoolTest()
+        {
+            var expected = new List<BitLengthBoolClass>
+            {
+                new BitLengthBoolClass {Value = true},
+                new BitLengthBoolClass {Value = false},
+                new BitLengthBoolClass {Value = true},
+                new BitLengthBoolClass {Value = false},
+                new BitLengthBoolClass {Value = true},
+                new BitLengthBoolClass {Value = false},
+                new BitLengthBoolClass {Value = true},
+                new BitLengthBoolClass {Value = false}
+            };
+
+            var actual = Roundtrip(expected, new byte[]{0xaa});
+
+            for (int i = 0; i < expected.Count; i++)
+            {
+                Assert.Equal(expected[i].Value, actual[i].Value);
+            }
         }
     }
 }
