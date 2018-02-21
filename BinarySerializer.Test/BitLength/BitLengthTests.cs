@@ -24,5 +24,26 @@ namespace BinarySerialization.Test.BitLength
             Assert.Equal(expected.Internal.Value, actual.Internal.Value);
             Assert.Equal(0b1010, actual.Internal2.Value);
         }
+
+        [Fact]
+        public void TestBitLengthValue()
+        {
+            var expected = new BitLengthValueClass
+            {
+                Value = new InternalBitLengthValueClass
+                {
+                    Value = 1,
+                    Value2 = 1
+                },
+                Value2 = 0x11
+            };
+
+            var acutal = Roundtrip(expected);
+
+            Assert.Equal(expected.Value.Value, acutal.Value.Value);
+            Assert.Equal(expected.Value.Value2, acutal.Value.Value2);
+            Assert.Equal(acutal.Crc2, acutal.Crc);
+        }
     }
 }
+
