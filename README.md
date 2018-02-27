@@ -1,7 +1,7 @@
 BinarySerializer
 ================
 
-A .NET declarative serialization framework for controlling formatting of data at the byte and bit level, BinarySerializer is designed to make working with formats and protocols fast and simple using types, bindings, converters, and code.  The .NET Standard Library is available on [nuget](https://www.nuget.org/packages/BinarySerializer).  I am no longer actively maintaining the [Portable Class Library](https://www.nuget.org/packages/BinarySerializer/6.0.3).
+A .NET declarative serialization framework for controlling formatting of data at the byte and bit level, BinarySerializer is designed to make working with formats and protocols fast and simple using types, bindings, converters, and code.  The .NET Standard Library is available on [nuget](https://www.nuget.org/packages/BinarySerializer).  The [Portable Class Library](https://www.nuget.org/packages/BinarySerializer/6.0.3) is still available but no longer maintained.
 
 ### Field Ordering ###
 
