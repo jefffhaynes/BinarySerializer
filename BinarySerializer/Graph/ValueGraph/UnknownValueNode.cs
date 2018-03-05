@@ -68,7 +68,12 @@ namespace BinarySerialization.Graph.ValueGraph
             CancellationToken cancellationToken)
         {
             DeserializeOverride(stream, eventShuttle);
+            #if NETSTANDARD1_3
             return Task.CompletedTask;
+            #else
+            return Task.FromResult(true);
+            #endif
+
         }
     }
 }

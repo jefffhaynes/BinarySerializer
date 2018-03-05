@@ -96,7 +96,12 @@ namespace BinarySerialization.Graph
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             Write(buffer, offset, count);
+            #if NETSTANDARD1_3
             return Task.CompletedTask;
+            #else
+            return Task.FromResult(true);
+            #endif
+
         }
 
         protected override void Dispose(bool disposing)

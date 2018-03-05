@@ -42,13 +42,22 @@ namespace BinarySerialization.Graph.ValueGraph
             CancellationToken cancellationToken)
         {
             ObjectDeserializeOverride(stream, eventShuttle);
+            #if NETSTANDARD1_3
             return Task.CompletedTask;
+            #else
+            return Task.FromResult(true);
+            #endif
         }
 
         protected override Task ObjectSerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             ObjectSerializeOverride(stream, eventShuttle);
+            #if NETSTANDARD1_3
             return Task.CompletedTask;
+            #else
+            return Task.FromResult(true);
+            #endif
+
         }
 
         private IBinarySerializable CreateBinarySerializable()

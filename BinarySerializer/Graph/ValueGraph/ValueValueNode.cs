@@ -608,7 +608,11 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 if (TypeNode.IsNullable)
                 {
+                    #if NETSTANDARD1_3
                     return Task.CompletedTask;
+                    #else
+                    return Task.FromResult(true);
+                    #endif
                 }
 
                 throw new EndOfStreamException();

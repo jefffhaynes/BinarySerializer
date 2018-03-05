@@ -430,7 +430,12 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
             }
 
+            #if NETSTANDARD1_3
             return Task.CompletedTask;
+            #else
+            return Task.FromResult(true);
+            #endif
+
         }
 
         private void ResolveValueType()
