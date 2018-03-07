@@ -15,6 +15,15 @@ namespace BinarySerialization.Test.Enums
         }
 
         [Fact]
+        public void BasicSignedEnumTest()
+        {
+            var expected = new BaseTypeSignedEnumClass {Field = BaseTypeSignedEnumValues.NegativeValue};
+            var actual = Roundtrip(expected, sizeof (BaseTypeSignedEnumValues));
+
+            Assert.Equal(expected.Field, actual.Field);
+        }
+
+        [Fact]
         public void EnumAsStringTest()
         {
             var expected = new BaseTypeEnumAsStringClass {Field = BaseTypeEnumValues.B};

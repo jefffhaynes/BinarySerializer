@@ -52,8 +52,15 @@ namespace BinarySerialization
                 return converter(value);
             }
 
-            if (type.GetTypeInfo().IsEnum && (valueType.GetTypeInfo().IsPrimitive || valueType.GetTypeInfo().IsEnum))
+            if (type.GetTypeInfo().IsEnum && (valueType.GetTypeInfo().IsPrimitive || valueType.GetTypeInfo().IsEnum)) 
             {
+                var underlyingType = Enum.GetUnderlyingType(type);
+
+                if (TypeConverters.TryGetValue(underlyingType, out var c)) 
+                {
+                    return Enum.ToObject(type, c(value));
+                }
+
                 return Enum.ToObject(type, Convert.ToUInt64(value));
             }
 
