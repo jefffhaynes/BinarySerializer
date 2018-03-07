@@ -97,7 +97,8 @@ namespace BinarySerializer.Performance
                 stopwatch.Start();
                 for (int i = 0; i < iterations; i++)
                 {
-                    await ser.DeserializeAsync<T>(ms);
+                    await ser.DeserializeAsync<T>(ms)
+                        .ConfigureAwait(false);
                     ms.Position = 0;
                 }
                 stopwatch.Stop();
