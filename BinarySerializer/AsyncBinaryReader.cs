@@ -25,7 +25,8 @@ namespace BinarySerialization
         public async Task<byte> ReadByteAsync(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(byte)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return b[0];
         }
 
@@ -39,7 +40,8 @@ namespace BinarySerialization
         public async Task<sbyte> ReadSByteAsync(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(sbyte)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return (sbyte) b[0];
         }
 
@@ -53,7 +55,8 @@ namespace BinarySerialization
         public async Task<ushort> ReadUInt16Async(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(ushort)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return BitConverter.ToUInt16(b, 0);
         }
 
@@ -67,7 +70,8 @@ namespace BinarySerialization
         public async Task<short> ReadInt16Async(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(short)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return BitConverter.ToInt16(b, 0);
         }
 
@@ -81,7 +85,8 @@ namespace BinarySerialization
         public async Task<uint> ReadUInt32Async(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(uint)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return BitConverter.ToUInt32(b, 0);
         }
 
@@ -95,7 +100,8 @@ namespace BinarySerialization
         public async Task<int> ReadInt32Async(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(int)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return BitConverter.ToInt32(b, 0);
         }
 
@@ -109,7 +115,8 @@ namespace BinarySerialization
         public async Task<ulong> ReadUInt64Async(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(ulong)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return BitConverter.ToUInt64(b, 0);
         }
 
@@ -123,7 +130,8 @@ namespace BinarySerialization
         public async Task<long> ReadInt64Async(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(long)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return BitConverter.ToInt64(b, 0);
         }
 
@@ -137,7 +145,8 @@ namespace BinarySerialization
         public async Task<float> ReadSingleAsync(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(float)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return BitConverter.ToSingle(b, 0);
         }
 
@@ -151,7 +160,8 @@ namespace BinarySerialization
         public async Task<double> ReadDoubleAsync(CancellationToken cancellationToken)
         {
             var b = new byte[sizeof(double)];
-            await ReadAsync(b, b.Length, cancellationToken);
+            await ReadAsync(b, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return BitConverter.ToDouble(b, 0);
         }
 
@@ -170,7 +180,8 @@ namespace BinarySerialization
         public async Task<byte[]> ReadBytesAsync(int count, CancellationToken cancellationToken)
         {
             var b = new byte[count];
-            await BaseStream.ReadAsync(b, 0, b.Length, cancellationToken);
+            await BaseStream.ReadAsync(b, 0, b.Length, cancellationToken)
+                .ConfigureAwait(false);
             return b;
         }
     }

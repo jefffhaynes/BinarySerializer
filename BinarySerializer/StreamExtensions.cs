@@ -24,7 +24,8 @@ namespace BinarySerialization
             byte[] buffer = new byte[bufferSize];
             int read;
             while (length > 0 &&
-                   (read = await input.ReadAsync(buffer, 0, Math.Min(buffer.Length, length), cancellationToken)) > 0)
+                   (read = await input.ReadAsync(buffer, 0, Math.Min(buffer.Length, length), cancellationToken)
+                       .ConfigureAwait(false)) > 0)
             {
                 await output.WriteAsync(buffer, 0, read, cancellationToken).ConfigureAwait(false);
                 length -= read;

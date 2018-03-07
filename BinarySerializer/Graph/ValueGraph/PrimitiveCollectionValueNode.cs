@@ -220,7 +220,8 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 }
 
-                await childSerializer.DeserializeAsync(reader, childSerializedType, itemLength, cancellationToken);
+                await childSerializer.DeserializeAsync(reader, childSerializedType, itemLength, cancellationToken)
+                    .ConfigureAwait(false);
                 var value = childSerializer.GetValue(childSerializedType);
                 list.Add(value);
             }
