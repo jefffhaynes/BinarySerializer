@@ -399,7 +399,8 @@ namespace BinarySerialization
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
             CancellationToken cancellationToken)
         {
-            var read = await ReadAsyncImpl(buffer, count, cancellationToken);
+            var read = await ReadAsyncImpl(buffer, count, cancellationToken)
+                .ConfigureAwait(false);
             return (int) read.ByteCount;
         }
 
@@ -488,7 +489,8 @@ namespace BinarySerialization
 
                     for (long i = 0; i < length.ByteCount; i++)
                     {
-                        buffer[length.ByteCount - (i + 1)] = await ReadBitsAsync(BitsPerByte, cancellationToken);
+                        buffer[length.ByteCount - (i + 1)] = await ReadBitsAsync(BitsPerByte, cancellationToken)
+                            .ConfigureAwait(false);
                         readLength += FieldLength.FromBitCount(BitsPerByte);
                     }
                 }

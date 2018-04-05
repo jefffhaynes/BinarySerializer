@@ -163,7 +163,8 @@ namespace BinarySerialization
 
             Source.Position = Offset + Position;
 
-            var read = await Source.ReadAsync(buffer, offset, count, cancellationToken);
+            var read = await Source.ReadAsync(buffer, offset, count, cancellationToken)
+                .ConfigureAwait(false);
             Position += read;
 
             return read;

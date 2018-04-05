@@ -260,7 +260,8 @@ namespace BinarySerialization
         /// <returns>The deserialized object graph.</returns>
         public async Task<T> DeserializeAsync<T>(Stream stream, object context = null)
         {
-            return (T) await DeserializeAsync(stream, typeof(T), context);
+            return (T) await DeserializeAsync(stream, typeof(T), context)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -273,7 +274,8 @@ namespace BinarySerialization
         /// <returns>The deserialized object graph.</returns>
         public async Task<T> DeserializeAsync<T>(Stream stream, object context, CancellationToken cancellationToken)
         {
-            return (T) await DeserializeAsync(stream, typeof(T), context, cancellationToken);
+            return (T) await DeserializeAsync(stream, typeof(T), context, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -285,7 +287,8 @@ namespace BinarySerialization
         /// <returns>The deserialized object graph.</returns>
         public async Task<T> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken)
         {
-            return (T) await DeserializeAsync(stream, typeof(T), cancellationToken);
+            return (T) await DeserializeAsync(stream, typeof(T), cancellationToken)
+                .ConfigureAwait(false);
         }
 
         /// <summary>

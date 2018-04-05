@@ -50,10 +50,12 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var childStream = new BoundedStream(stream, Name, GetConstFieldItemLength);
 
-                await child.SerializeAsync(childStream, eventShuttle, true, cancellationToken).ConfigureAwait(false);
+                await child.SerializeAsync(childStream, eventShuttle, true, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
-            await SerializeTerminationAsync(stream, eventShuttle, cancellationToken);
+            await SerializeTerminationAsync(stream, eventShuttle, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
