@@ -7,16 +7,17 @@ namespace BinarySerialization.Graph
 {
     internal class FieldValueAdapterStream : Stream
     {
-        private readonly FieldValueAttributeBase _attribute;
         private readonly byte[] _block;
         private int _blockOffset;
 
         public FieldValueAdapterStream(FieldValueAttributeBase attribute, object state)
         {
-            _attribute = attribute;
+            Attribute = attribute;
             _block = new byte[attribute.BlockSize];
             State = state;
         }
+
+        public FieldValueAttributeBase Attribute { get; }
 
         public object State { get; private set; }
 
@@ -36,7 +37,7 @@ namespace BinarySerialization.Graph
         {
             if (_blockOffset > 0)
             {
-                State = _attribute.GetUpdatedStateInternal(State, _block, 0, _blockOffset);
+                State = Attribute.GetUpdatedStateInternal(State, _block, 0, _blockOffset);
             }
 
             _blockOffset = 0;
@@ -68,6 +69,7 @@ namespace BinarySerialization.Graph
             {
                 throw new ArgumentOutOfRangeException(nameof(offset), "< 0");
             }
+
             if (count < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(count), "< 0");
@@ -84,7 +86,7 @@ namespace BinarySerialization.Graph
             if (_blockOffset >= _block.Length - count)
             {
                 Flush();
-                State = _attribute.GetUpdatedStateInternal(State, buffer, offset, count);
+                State = Attribute.GetUpdatedStateInternal(State, buffer, offset, count);
             }
             else
             {

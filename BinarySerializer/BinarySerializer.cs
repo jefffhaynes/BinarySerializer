@@ -110,7 +110,6 @@ namespace BinarySerialization
         /// <param name="stream">The stream to which the graph is to be serialized.</param>
         /// <param name="value">The object at the root of the graph to serialize.</param>
         /// <param name="context">An optional serialization context.</param>
-        [Obsolete("Use SerializeAsync")]
         public void Serialize(Stream stream, object value, object context = null)
         {
             if (stream == null)
@@ -163,7 +162,6 @@ namespace BinarySerialization
         /// <param name="value">The object.</param>
         /// <param name="context">An optional context.</param>
         /// <returns>The length of the specified object graph when serialized.</returns>
-        [Obsolete("Use SizeOfAsync")]
         public long SizeOf(object value, object context = null)
         {
             var nullStream = new NullStream();
@@ -192,7 +190,6 @@ namespace BinarySerialization
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        [Obsolete("Use DeserializeAsync")]
         public object Deserialize(Stream stream, Type type, object context = null)
         {
             var serializer = CreateSerializer(type, context);
@@ -298,7 +295,6 @@ namespace BinarySerialization
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        [Obsolete("Use DeserializeAsync")]
         public object Deserialize(byte[] data, Type type, object context = null)
         {
             return Deserialize(new MemoryStream(data), type, context);
@@ -324,7 +320,6 @@ namespace BinarySerialization
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        [Obsolete("Use DeserializeAsync")]
         public T Deserialize<T>(Stream stream, object context = null)
         {
             return (T) Deserialize(stream, typeof(T), context);
@@ -337,7 +332,6 @@ namespace BinarySerialization
         /// <param name="data">The byte array from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        [Obsolete("Use DeserializeAsync")]
         public T Deserialize<T>(byte[] data, object context = null)
         {
             return Deserialize<T>(new MemoryStream(data), context);

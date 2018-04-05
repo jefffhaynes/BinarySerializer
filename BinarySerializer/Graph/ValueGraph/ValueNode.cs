@@ -119,12 +119,13 @@ namespace BinarySerialization.Graph.ValueGraph
                                 "Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
                         }
 
-                        if (!_fieldValueAttributeFinalValue.TryGetValue(fieldValueAttribute, out var finalValue))
+                        var source = fieldValueBinding.GetSource(this);
+                        if (!source._fieldValueAttributeFinalValue.TryGetValue(fieldValueAttribute, out var finalValue))
                         {
-                            var tap = _fieldValueAttributeTaps[fieldValueAttribute];
+                            var tap = source._fieldValueAttributeTaps[fieldValueAttribute];
 
                             finalValue = fieldValueAttribute.GetFinalValueInternal(tap.State);
-                            _fieldValueAttributeFinalValue.Add(fieldValueAttribute, finalValue);
+                            source._fieldValueAttributeFinalValue.Add(fieldValueAttribute, finalValue);
                         }
 
                         return finalValue;
@@ -165,12 +166,13 @@ namespace BinarySerialization.Graph.ValueGraph
                                 "Reverse binding not allowed on FieldValue attributes.  Consider swapping source and target.");
                         }
 
-                        if (!_fieldValueAttributeFinalValue.TryGetValue(fieldValueAttribute, out var finalValue))
+                        var source = fieldValueBinding.GetSource(this);
+                        if (!source._fieldValueAttributeFinalValue.TryGetValue(fieldValueAttribute, out var finalValue))
                         {
-                            var tap = _fieldValueAttributeTaps[fieldValueAttribute];
+                            var tap = source._fieldValueAttributeTaps[fieldValueAttribute];
 
                             finalValue = fieldValueAttribute.GetFinalValueInternal(tap.State);
-                            _fieldValueAttributeFinalValue.Add(fieldValueAttribute, finalValue);
+                            source._fieldValueAttributeFinalValue.Add(fieldValueAttribute, finalValue);
                         }
 
                         return finalValue;
@@ -737,13 +739,25 @@ namespace BinarySerialization.Graph.ValueGraph
                 var context = CreateLazySerializationContext();
 
                 // Setup tap for value attributes if we need to siphon serialized data for later
-                foreach (var fieldValueAttribute in TypeNode.FieldValueAttributes)
+                for (var index = 0; index < TypeNode.FieldValueAttributes.Count; index++)
                 {
-                    var state = fieldValueAttribute.GetInitialStateInternal(context);
-                    var tap = new FieldValueAdapterStream(fieldValueAttribute, state);
-                    stream = new TapStream(stream, tap, Name);
+                    var fieldValueAttribute = TypeNode.FieldValueAttributes[index];
+                    var fieldValueBinding = TypeNode.FieldValueBindings[index];
 
-                    _fieldValueAttributeTaps[fieldValueAttribute] = tap;
+                    var source = fieldValueBinding.GetSource(this);
+
+                    // Check if this tap has never been created, or if it has been created by this node, in
+                    // which case we need to recreate it and reset processing of the source value node.  This
+                    // would happen in instances where the tap was previously used inside of a measure override.
+                    if (!source._fieldValueAttributeTaps.TryGetValue(fieldValueAttribute, out var tap) || 
+                        ReferenceEquals(fieldValueAttribute, tap.Attribute))
+                    {
+                        var state = fieldValueAttribute.GetInitialStateInternal(context);
+                        tap = new FieldValueAdapterStream(fieldValueAttribute, state);
+                        source._fieldValueAttributeTaps[fieldValueAttribute] = tap;
+                    }
+
+                    stream = new TapStream(stream, tap, Name);
                 }
             }
             return stream;

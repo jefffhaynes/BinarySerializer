@@ -187,5 +187,14 @@ namespace BinarySerialization.Test.Value
             Assert.Equal(0x14, actual.ModuloChecksum);
             Assert.Equal(0x62, actual.XorChecksum);
         }
+
+        [Fact]
+        public void MultiValueFieldTest()
+        {
+            var expected = new FieldCrc16MultiFieldClass {Value1 = 0x1, Value2 = 0x0201, Value3 = 0x2};
+            var actual = Roundtrip(expected);
+
+            Assert.Equal(actual.Crc2, actual.Crc);
+        }
     }
 }

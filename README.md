@@ -480,6 +480,26 @@ public class Packet
 
 Also note that the target field must be an unsigned short, or unsigned int in the case of FieldCrc32.
 
+Lastly, field value attributes such as the CRC attributes can be broken up over multiple fields if necessary.
+
+```c#
+public class Packet
+{
+    [FieldOrder(0)]
+	[FieldCrc16("Crc")]
+    public int Length { get; set; }
+
+	[FieldOrder(1)]
+	public PacketOptions Options { get; set; }
+
+	[FieldOrder(2)]
+	[FieldCrc16("Crc")]
+	public int PacketType { get; set; }
+
+    [FieldOrder(3)]
+    public ushort Crc { get; set; }
+}
+```
 
 ### FieldCrc32Attribute ###
 
