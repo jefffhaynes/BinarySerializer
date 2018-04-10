@@ -98,7 +98,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 return _cachedValue;
             }
 
-            return GetValue(_value, serializedType);
+            var scaledValue = GetValue(_value, serializedType);
+            return UnscaleValue(scaledValue);
         }
 
 
@@ -481,8 +482,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     throw new NotSupportedException();
             }
 
-            var convertedValue = ConvertToFieldType(value);
-            _value = UnscaleValue(convertedValue);
+            _value = ConvertToFieldType(value);
 
             // check computed values (CRCs, etc.)
             CheckComputedValues();
@@ -558,8 +558,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     throw new NotSupportedException();
             }
 
-            var convertedValue = ConvertToFieldType(value);
-            _value = UnscaleValue(convertedValue);
+            _value = ConvertToFieldType(value);
 
             // check computed values (CRCs, etc.)
             CheckComputedValues();

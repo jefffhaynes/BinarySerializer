@@ -4,14 +4,14 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Adds support for value (e.g. CRC) bindings over noncontiguous fields</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixes issue when using scaled big endian fields</PackageReleaseNotes>
     <PackageProjectUrl>http://binaryserializer.net</PackageProjectUrl>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>http://binaryserializer.net</RepositoryUrl>
-    <AssemblyVersion>8.1.0.0</AssemblyVersion>
-    <FileVersion>8.1.0.0</FileVersion>
-    <Version>8.1</Version>
+    <AssemblyVersion>8.1.1.0</AssemblyVersion>
+    <FileVersion>8.1.1.0</FileVersion>
+    <Version>8.1.1</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />

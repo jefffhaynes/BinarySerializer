@@ -19,5 +19,13 @@ namespace BinarySerialization.Test.Scale
             var actual = Roundtrip(expected, new byte[] { 0xFA, 0xFF, 0xFF, 0xFF });
             Assert.Equal(expected.Value, actual.Value);
         }
+
+        [Fact]
+        public void BigEndianScaleTest()
+        {
+            var expected = new ScaledValueClass { Value = 3 };
+            var actual = RoundtripBigEndian(expected, new byte[] { 0, 0, 0, 6 });
+            Assert.Equal(expected.Value, actual.Value);
+        }
     }
 }
