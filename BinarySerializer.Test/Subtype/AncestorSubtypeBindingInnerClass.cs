@@ -3,7 +3,7 @@
     public class AncestorSubtypeBindingInnerClass
     {
         [FieldOrder(0)]
-        [FieldLength("ValueLength", RelativeSourceMode = RelativeSourceMode.FindAncestor,
+        [FieldLength(nameof(AncestorSubtypeBindingClass.ValueLength), RelativeSourceMode = RelativeSourceMode.FindAncestor,
             AncestorType = typeof (AncestorSubtypeBindingClass))]
         public string Value { get; set; }
 

@@ -6,7 +6,7 @@
         public bool ExcludeValue { get; set; }
 
         [FieldOrder(1)]
-        [SerializeWhenNot("ExcludeValue", true)]
+        [SerializeWhenNot(nameof(ExcludeValue), true)]
         public int Value { get; set; }
     }
 }

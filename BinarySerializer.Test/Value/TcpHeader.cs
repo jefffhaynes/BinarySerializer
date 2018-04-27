@@ -34,8 +34,8 @@ namespace BinarySerialization.Test.Value
 
         [FieldOrder(9)]
         [FieldAlignment(4)]
-        [FieldLength("Offset", ConverterType = typeof(OffsetLengthConverter))]
-        [ItemSerializeUntil("Kind", TcpOptionKind.End)]
+        [FieldLength(nameof(Offset), ConverterType = typeof(OffsetLengthConverter))]
+        [ItemSerializeUntil(nameof(TcpOption.Kind), TcpOptionKind.End)]
         public List<TcpOption> Options { get; set; }
     }
 }

@@ -43,7 +43,7 @@ public class Person
     public byte NameLength { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength(nameof(NameLength))]
+    [FieldLength("NameLength")]
     public string Name { get; set; }
 }
 ```
@@ -160,7 +160,7 @@ public class Directory
     public byte NamesLength { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength(nameof(NameLength))]
+    [FieldLength(nameof(NamesLength))]
     public List<string> Names { get; set; }
 }
 ```
@@ -486,14 +486,14 @@ Lastly, field value attributes such as the CRC attributes can be broken up over 
 public class Packet
 {
     [FieldOrder(0)]
-	[FieldCrc16("Crc")]
+	[FieldCrc16(nameof(Crc))]
     public int Length { get; set; }
 
 	[FieldOrder(1)]
 	public PacketOptions Options { get; set; }
 
 	[FieldOrder(2)]
-	[FieldCrc16("Crc")]
+	[FieldCrc16(nameof(Crc))]
 	public int PacketType { get; set; }
 
     [FieldOrder(3)]
@@ -520,9 +520,9 @@ public class Packet
     public FrameType FrameType { get; set; }
 
     [FieldOrder(1)]
-    [Subtype("FrameType", FrameType.Message, typeof(MessageFrame)]
-    [Subtype("FrameType", FrameType.Control, typeof(ControlFrame)]
-    [Subtype("FrameType", FrameType.Trigger, typeof(TriggerFrame)]
+    [Subtype(nameof(FrameType), FrameType.Message, typeof(MessageFrame)]
+    [Subtype(nameof(FrameType), FrameType.Control, typeof(ControlFrame)]
+    [Subtype(nameof(FrameType), FrameType.Trigger, typeof(TriggerFrame)]
     [SubtypeDefault(typeof(UnknownFrame))]
     public Frame Frame { get; set; }
 }
@@ -539,8 +539,8 @@ The Subtype attribute can be used with the FieldLength attribute to write forwar
 It is also possible to specify different subtypes for target and source bindings.  This is an example from the u-blox protocol:
 
 ```c#
-[Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvt))]
-[Subtype("MessageId", MessageId.NAV_PVT, typeof(NavPvtPoll), BindingMode = BindingMode.OneWayToSource)]
+[Subtype(nameof(MessageId), MessageId.NAV_PVT, typeof(NavPvt))]
+[Subtype(nameof(MessageId), MessageId.NAV_PVT, typeof(NavPvtPoll), BindingMode = BindingMode.OneWayToSource)]
 public PacketPayload Payload { get; set; }
 ```
 
@@ -549,8 +549,8 @@ The NavPvt message is only ever used from device to host whereas the NavPvtPoll 
 Similarly, types can be reused during deserialization if the same subtypes will never be used during serialization.  This is an example taken from the XBee control protocol:
 
 ```c#
-[Subtype("AtCommand", "D0", typeof(InputOutputResponseData), BindingMode = BindingMode.OneWay)]
-[Subtype("AtCommand", "D1", typeof(InputOutputResponseData), BindingMode = BindingMode.OneWay)]
+[Subtype(nameof(AtCommand), "D0", typeof(InputOutputResponseData), BindingMode = BindingMode.OneWay)]
+[Subtype(nameof(AtCommand), "D1", typeof(InputOutputResponseData), BindingMode = BindingMode.OneWay)]
 public AtCommandResponseFrameData Data { get; set; }
 ```
 
@@ -567,10 +567,10 @@ public class Packet
     public FrameType FrameType { get; set; }
 
     [FieldOrder(1)]
-    [Subtype("FrameType", FrameType.Message, typeof(MessageFrame)]
-    [Subtype("FrameType", FrameType.Control, typeof(ControlFrame)]
-    [Subtype("FrameType", FrameType.Trigger, typeof(TriggerFrame)]
-    [SubtypeFactory("FrameType", typeof(FrameFactory))]
+    [Subtype(nameof(FrameType), FrameType.Message, typeof(MessageFrame)]
+    [Subtype(nameof(FrameType), FrameType.Control, typeof(ControlFrame)]
+    [Subtype(nameof(FrameType), FrameType.Trigger, typeof(TriggerFrame)]
+    [SubtypeFactory(nameof(FrameType), typeof(FrameFactory))]
     [SubtypeDefault(typeof(UnknownFrame))]
     public Frame Frame { get; set; }
 }
@@ -634,10 +634,10 @@ public class PngChunkPayload
     public string ChunkType { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("Length", RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
-    [Subtype("ChunkType", "IHDR", typeof(PngImageHeaderChunk))]
-    [Subtype("ChunkType", "PLTE", typeof(PngPaletteChunk))]
-    [Subtype("ChunkType", "IDAT", typeof(PngImageDataChunk))]
+    [FieldLength(nameof(PngChunk.Length), RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
+    [Subtype(nameof(ChunkType), "IHDR", typeof(PngImageHeaderChunk))]
+    [Subtype(nameof(ChunkType), "PLTE", typeof(PngPaletteChunk))]
+    [Subtype(nameof(ChunkType), "IDAT", typeof(PngImageDataChunk))]
     [SubtypeDefault(typeof(PngUnknownChunk))]
     public PngChunk Chunk { get; set; }
 }
@@ -650,7 +650,7 @@ public class PngChunkContainer
     public int Length { get; set; }
 
     [FieldOrder(1)]
-    [FieldCrc32("Crc", Polynomial = 0x04c11db7)]
+    [FieldCrc32(nameof(Crc), Polynomial = 0x04c11db7)]
     [FieldEndianness(BinarySerialization.Endianness.Big)]
     public PngChunkPayload Payload { get; set; }
 
@@ -701,8 +701,8 @@ public enum Waypoints
 The SerializeWhen attribute can be used to conditionally serialize or deserialize a field based on bound predicate.  If multiple SerializeWhen attributes are specified only one must be satisfied for the field to be serialized or deserialized.
 
 ```c#
-[SerializeWhen("Version", HardwareVersion.XBeeSeries1)]
-[SerializeWhen("Version", HardwareVersion.XBeeProSeries1)]
+[SerializeWhen(nameof(Context.Version), HardwareVersion.XBeeSeries1)]
+[SerializeWhen(nameof(Context.Version), HardwareVersion.XBeeProSeries1)]
 public ReceivedSignalStrengthIndicator RSSI { get; set; }
 ```
 
@@ -740,7 +740,7 @@ public class Manifest
     public byte EntryLength { get; set; }
 
     [FieldOrder(1)]
-    [ItemLength("EntryLength")]
+    [ItemLength(nameof(EntryLength))]
     public List<string> Entries { get; set; }
 }
 ```
@@ -761,8 +761,8 @@ public class Manifest
     public byte EntryLength { get; set; }
 
     [FieldOrder(2)]
-    [FieldCount("EntryCount")]
-    [ItemLength("EntryLength")]
+    [FieldCount(nameof(EntryCount))]
+    [ItemLength(nameof(EntryLength))]
     public List<string> Entries { get; set; }
 }
 ```
@@ -780,12 +780,12 @@ public class JaggedArrayClass
     public int NameCount { get; set; }
 
     [FieldOrder(1)]
-    [FieldCount("NameCount")]
+    [FieldCount(nameof(NameCount))]
     public int[] NameLengths { get; set; }
 
     [FieldOrder(2)]
-    [FieldCount("NameCount")]
-    [ItemLength("NameLengths")]
+    [FieldCount(nameof(NameCount))]
+    [ItemLength(nameof(NameLengths))]
     public string[] Names { get; set; }
 }
 ```
@@ -804,8 +804,8 @@ public class ChocolateBox
 	public ChocolateType Type { get; set; }
 
 	[FieldOrder(1)]
-	[ItemSubtype("Type", ChocolateType.Dark, typeof(DarkChocolate))]
-	[ItemSubtype("Type", ChocolateType.NutsAndChews, typeof(NutsAndChewsChocolate))]
+	[ItemSubtype(nameof(Type), ChocolateType.Dark, typeof(DarkChocolate))]
+	[ItemSubtype(Type), ChocolateType.NutsAndChews, typeof(NutsAndChewsChocolate))]
 	public List<Chocolate> Chocolates;
 }
 ```
@@ -823,7 +823,7 @@ public class Toy
 
 public class ToyChest
 {
-    [ItemSerializeUntil("IsLast", true)]
+    [ItemSerializeUntil(nameof(Toy.IsLast), true)]
     public List<Toy> Toys { get; set; }
 }
 ```
@@ -841,7 +841,7 @@ public class Section
     public Block Header { get; set; }
 	
     [FieldOrder(1)]
-    [ItemSerializeUntil("Type", BlockType.Header, LastItemMode = LastItemMode.Defer)]
+    [ItemSerializeUntil(nameof(Block.Type), BlockType.Header, LastItemMode = LastItemMode.Defer)]
     public List<Block> Blocks { get; set; }
 }
 
@@ -902,9 +902,9 @@ In some cases when serializing or deserializing large amounts of data that is lo
 
 ```c#
 [FieldOrder(22)]
-[SerializeWhen("RecordType", RecordType.File)]
-[FieldOffset("FirstSectorData", ConverterType = typeof(SectorByteConverter))]
-[FieldLength("DataLength")]
+[SerializeWhen(nameof(RecordType), RecordType.File)]
+[FieldOffset(nameof(FirstSectorData), ConverterType = typeof(SectorByteConverter))]
+[FieldLength(nameof(DataLength))]
 public Stream Data { get; set; }
 ```
 
@@ -936,14 +936,32 @@ public class Container
 public class Person
 {
     [FieldOrder(0)]
-    [FieldLength("NameLength", Mode = RelativeSourceMode.FindAncestor, AncestorType = typeof(Container))]
+    [FieldLength(nameof(Container.NameLength), Mode = RelativeSourceMode.FindAncestor, AncestorType = typeof(Container))]
     public string Name1 { get; set; }
 
     // is equivalent to
 
     [FieldOrder(1)]
-    [FieldLength("NameLength", Mode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
+    [FieldLength(nameof(Container.NameLength), Mode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
     public string Name2 { get; set; }
+}
+```
+
+Child nodes in the graph, including children only present in derived classes, can be accessed using path syntax.
+
+```c#
+public class SubtypeAsSourceClass
+{
+    [FieldOrder(0)]
+    public byte Selector { get; set; }
+
+    [FieldOrder(1)]
+    [Subtype(nameof(Selector), 42, typeof (SubclassA))]
+    public Superclass Superclass { get; set; }
+
+    [FieldOrder(2)]
+    [FieldLength(nameof(Superclass) + "." + nameof(SubclassA.SomethingForClassA))]
+    public string Name { get; set; }
 }
 ```
 
@@ -970,7 +988,7 @@ class SectorByteConverter : IValueConverter
 ```
 
 ```c#
-[FieldOffset("FirstSector", ConverterType = typeof(SectorByteConverter))]
+[FieldOffset(nameof(FirstSector), ConverterType = typeof(SectorByteConverter))]
 [SerializeUntil((byte)0)]
 public List<DirectoryRecord> Records { get; set; }
 ```

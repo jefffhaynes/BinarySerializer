@@ -6,14 +6,14 @@
         public TcpOptionKind Kind { get; set; }
 
         [FieldOrder(1)]
-        [SerializeWhenNot("Kind", TcpOptionKind.End)]
-        [SerializeWhenNot("Kind", TcpOptionKind.NoOp)]
+        [SerializeWhenNot(nameof(Kind), TcpOptionKind.End)]
+        [SerializeWhenNot(nameof(Kind), TcpOptionKind.NoOp)]
         public byte Length { get; set; }
 
         [FieldOrder(2)]
-        [FieldLength("Length")]
-        [SerializeWhenNot("Kind", TcpOptionKind.End)]
-        [SerializeWhenNot("Kind", TcpOptionKind.NoOp)]
+        [FieldLength(nameof(Length))]
+        [SerializeWhenNot(nameof(Kind), TcpOptionKind.End)]
+        [SerializeWhenNot(nameof(Kind), TcpOptionKind.NoOp)]
         public byte[] Option { get; set; }
     }
 }

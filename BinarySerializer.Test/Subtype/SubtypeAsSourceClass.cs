@@ -6,11 +6,11 @@
         public byte Selector { get; set; }
 
         [FieldOrder(1)]
-        [Subtype("Selector", 42, typeof (SubclassA))]
+        [Subtype(nameof(Selector), 42, typeof (SubclassA))]
         public Superclass Superclass { get; set; }
 
         [FieldOrder(2)]
-        [FieldLength("Superclass.SomethingForClassA")]
+        [FieldLength(nameof(Superclass) + "." + nameof(SubclassA.SomethingForClassA))]
         public string Name { get; set; }
     }
 }

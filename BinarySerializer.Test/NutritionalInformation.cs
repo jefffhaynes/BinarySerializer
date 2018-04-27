@@ -20,20 +20,20 @@ namespace BinarySerialization.Test
         public uint VitaminB { get; set; }
 
         [FieldOrder(5)]
-        [FieldCount("OtherStuffCount", RelativeSourceMode = RelativeSourceMode.FindAncestor,
+        [FieldCount(nameof(Cereal.OtherStuffCount), RelativeSourceMode = RelativeSourceMode.FindAncestor,
             AncestorType = typeof (Cereal))]
         public List<string> OtherNestedStuff { get; set; }
 
         [FieldOrder(6)]
-        [FieldCount("OtherStuffCount", RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
+        [FieldCount(nameof(Cereal.OtherStuffCount), RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
         public List<string> OtherNestedStuff2 { get; set; }
 
         [FieldOrder(7)]
-        [ItemSerializeUntil("Last", true)]
+        [ItemSerializeUntil(nameof(Toy.Last), true)]
         public List<Toy> Toys { get; set; }
 
         [FieldOrder(8)]
-        [FieldLength("Outlier", ConverterType = typeof (DoubleOutlierConverter),
+        [FieldLength(nameof(Cereal.Outlier), ConverterType = typeof (DoubleOutlierConverter),
             RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
         public string WeirdOutlierLengthedField { get; set; }
 

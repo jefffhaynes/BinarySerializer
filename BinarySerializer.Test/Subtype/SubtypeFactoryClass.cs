@@ -6,7 +6,7 @@
         public int Key { get; set; }
 
         [FieldOrder(1)]
-        [SubtypeFactory("Key", typeof(SubtypeFactory))]
+        [SubtypeFactory(nameof(Key), typeof(SubtypeFactory))]
         public Superclass Value { get; set; }
     }
 }

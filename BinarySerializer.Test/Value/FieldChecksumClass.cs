@@ -6,10 +6,10 @@
         public int Length { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("Length")]
-        [FieldChecksum("Checksum")]
-        [FieldChecksum("ModuloChecksum", Mode = ChecksumMode.Modulo256)]
-        [FieldChecksum("XorChecksum", Mode = ChecksumMode.Xor)]
+        [FieldLength(nameof(Length))]
+        [FieldChecksum(nameof(Checksum))]
+        [FieldChecksum(nameof(ModuloChecksum), Mode = ChecksumMode.Modulo256)]
+        [FieldChecksum(nameof(XorChecksum), Mode = ChecksumMode.Xor)]
         public string Value { get; set; }
 
         [FieldOrder(2)]

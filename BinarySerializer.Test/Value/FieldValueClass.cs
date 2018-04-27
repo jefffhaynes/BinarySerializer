@@ -3,7 +3,7 @@
     public class FieldValueClass
     {
         [FieldOrder(0)]
-        [FieldValue("ValueCopy")]
+        [FieldValue(nameof(ValueCopy))]
         public int Value { get; set; }
 
         [FieldOrder(1)]

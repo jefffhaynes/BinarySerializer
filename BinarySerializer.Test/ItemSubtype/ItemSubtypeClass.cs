@@ -8,9 +8,9 @@ namespace BinarySerialization.Test.ItemSubtype
         public byte Indicator { get; set; }
 
         [FieldOrder(1)]
-        [ItemSubtype("Indicator", 1, typeof(ItemTypeA))]
-        [ItemSubtype("Indicator", 2, typeof(ItemTypeB))]
-        [ItemSubtype("Indicator", 3, typeof(CustomItem))]
+        [ItemSubtype(nameof(Indicator), 1, typeof(ItemTypeA))]
+        [ItemSubtype(nameof(Indicator), 2, typeof(ItemTypeB))]
+        [ItemSubtype(nameof(Indicator), 3, typeof(CustomItem))]
         [ItemSubtypeDefault(typeof(DefaultItemType))]
         public List<IItemSubtype> Items { get; set; }
     }

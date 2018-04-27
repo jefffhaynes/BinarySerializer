@@ -6,16 +6,16 @@
         public string WhatToDo { get; set; }
 
         [FieldOrder(1)]
-        [SerializeWhen("WhatToDo", "PickOne")]
+        [SerializeWhen(nameof(WhatToDo), "PickOne")]
         public int SerializeThis { get; set; }
 
         [FieldOrder(2)]
-        [SerializeWhen("WhatToDo", "PickTwo")]
+        [SerializeWhen(nameof(WhatToDo), "PickTwo")]
         public int DontSerializeThis { get; set; }
 
         [FieldOrder(3)]
-        [SerializeWhen("WhatToDo", "PickOne")]
-        [SerializeWhen("WhatToDo", "PickTwo")]
+        [SerializeWhen(nameof(WhatToDo), "PickOne")]
+        [SerializeWhen(nameof(WhatToDo), "PickTwo")]
         public int SerializeThisNoMatterWhat { get; set; }
     }
 }

@@ -6,8 +6,8 @@
         public byte Length { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("Length")]
-        [FieldLength("Length", ConverterType = typeof(RoundUpConverter),
+        [FieldLength(nameof(Length))]
+        [FieldLength(nameof(Length), ConverterType = typeof(RoundUpConverter),
             ConverterParameter = 4, BindingMode = BindingMode.OneWay)]
         public string Value { get; set; }
 

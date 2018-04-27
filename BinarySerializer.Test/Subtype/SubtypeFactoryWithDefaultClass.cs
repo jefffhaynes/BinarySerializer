@@ -6,7 +6,7 @@
         public byte Key { get; set; }
 
         [FieldOrder(1)]
-        [SubtypeFactory("Key", typeof(SubtypeFactory))]
+        [SubtypeFactory(nameof(Key), typeof(SubtypeFactory))]
         [SubtypeDefault(typeof(DefaultSubtypeClass))]
         public Superclass Value { get; set; }
     }

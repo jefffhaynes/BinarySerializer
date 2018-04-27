@@ -8,7 +8,7 @@ namespace BinarySerialization.Test
         [FieldOrder(6)] public double DoubleField;
 
         [FieldOrder(0)]
-        [SerializeAs(SerializedType.NullTerminatedString)]
+        [SerializeAs(SerializedType.TerminatedString)]
         public string IsLittleEndian { get; set; }
 
         [FieldOrder(1)]
@@ -16,7 +16,7 @@ namespace BinarySerialization.Test
         public string Name { get; set; }
 
         [FieldOrder(2)]
-        [SerializeAs(SerializedType.NullTerminatedString)]
+        [SerializeAs(SerializedType.TerminatedString)]
         public string Manufacturer { get; set; }
 
         [FieldOrder(3)]
@@ -30,7 +30,7 @@ namespace BinarySerialization.Test
         public NutritionalInformation NutritionalInformation { get; set; }
 
         [FieldOrder(7)]
-        [FieldCount("OtherStuffCount")]
+        [FieldCount(nameof(OtherStuffCount))]
         [SerializeAs(SerializedType.SizedString)]
         [ItemLength(3)]
         public List<string> OtherStuff { get; set; }
@@ -44,11 +44,11 @@ namespace BinarySerialization.Test
         public CerealShape DefinitelyNotTheShape { get; set; }
 
         [FieldOrder(10)]
-        [SerializeWhen("Shape", "Square")]
+        [SerializeWhen(nameof(Shape), nameof(CerealShape.Square))]
         public string DontSerializeMe { get; set; }
 
         [FieldOrder(11)]
-        [SerializeWhen("Shape", CerealShape.Circular)]
+        [SerializeWhen(nameof(Shape), CerealShape.Circular)]
         public string SerializeMe { get; set; }
 
         [FieldOrder(12)]
@@ -71,7 +71,7 @@ namespace BinarySerialization.Test
         public long DisclaimerLength { get; set; }
 
         [FieldOrder(17)]
-        [FieldLength("DisclaimerLength")]
+        [FieldLength(nameof(DisclaimerLength))]
         public Stream Disclaimer { get; set; }
     }
 }

@@ -11,7 +11,7 @@
         public ushort FieldLengthField { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("FieldLengthField")]
+        [FieldLength(nameof(FieldLengthField))]
         public T Field { get; set; }
 
         [FieldOrder(2)]

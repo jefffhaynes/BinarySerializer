@@ -36,17 +36,17 @@
         public char CharLength { get; set; }
 
         [FieldOrder(11)]
-        [FieldLength("ByteLength")]
-        [FieldLength("SByteLength")]
-        [FieldLength("ShortLength")]
-        [FieldLength("UShortLength")]
-        [FieldLength("IntLength")]
-        [FieldLength("UIntLength")]
-        [FieldLength("LongLength")]
-        [FieldLength("ULongLength")]
-        [FieldLength("FloatLength")]
-        [FieldLength("DoubleLength")]
-        [FieldLength("CharLength")]
+        [FieldLength(nameof(ByteLength))]
+        [FieldLength(nameof(SByteLength))]
+        [FieldLength(nameof(ShortLength))]
+        [FieldLength(nameof(UShortLength))]
+        [FieldLength(nameof(IntLength))]
+        [FieldLength(nameof(UIntLength))]
+        [FieldLength(nameof(LongLength))]
+        [FieldLength(nameof(ULongLength))]
+        [FieldLength(nameof(FloatLength))]
+        [FieldLength(nameof(DoubleLength))]
+        [FieldLength(nameof(CharLength))]
         public string Value { get; set; }
     }
 }

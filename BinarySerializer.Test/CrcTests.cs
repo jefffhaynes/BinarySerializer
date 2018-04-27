@@ -92,6 +92,7 @@ namespace BinarySerialization.Test
             Assert.Equal((uint)0x6cca121f, final);
         }
 
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private void TestCrc16(Crc16 crc, string value, ushort expected)
         {
             var messageData = System.Text.Encoding.ASCII.GetBytes(value);

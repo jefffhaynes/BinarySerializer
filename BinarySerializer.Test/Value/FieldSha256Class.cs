@@ -6,8 +6,8 @@
         public int Length { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("Length")]
-        [FieldSha256("Hash")]
+        [FieldLength(nameof(Length))]
+        [FieldSha256(nameof(Hash))]
         public string Value { get; set; }
 
         [FieldOrder(2)]

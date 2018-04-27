@@ -6,9 +6,9 @@
         public byte MainIngredientIndicator { get; set; }
 
         [FieldOrder(1)]
-        [Subtype("MainIngredientIndicator", 1, typeof (CalciumCarbonate))]
-        [Subtype("MainIngredientIndicator", 2, typeof (Iron))]
-        [Subtype("MainIngredientIndicator", 3, typeof (Zinc))]
+        [Subtype(nameof(MainIngredientIndicator), 1, typeof (CalciumCarbonate))]
+        [Subtype(nameof(MainIngredientIndicator), 2, typeof (Iron))]
+        [Subtype(nameof(MainIngredientIndicator), 3, typeof (Zinc))]
         public Chemical MainIngredient { get; set; }
     }
 }

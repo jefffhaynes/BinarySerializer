@@ -6,12 +6,12 @@
         public int NameCount { get; set; }
 
         [FieldOrder(1)]
-        [FieldCount("NameCount")]
+        [FieldCount(nameof(NameCount))]
         public byte[] NameDataLengths { get; set; }
 
         [FieldOrder(2)]
-        [FieldCount("NameCount")]
-        [ItemLength("NameDataLengths")]
+        [FieldCount(nameof(NameCount))]
+        [ItemLength(nameof(NameDataLengths))]
         public byte[][] NameData { get; set; }
     }
 }

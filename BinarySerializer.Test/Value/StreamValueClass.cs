@@ -8,8 +8,8 @@ namespace BinarySerialization.Test.Value
         public int Length { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("Length")]
-        [FieldCrc16("Crc")]
+        [FieldLength(nameof(Length))]
+        [FieldCrc16(nameof(Crc))]
         public Stream Data { get; set; }
 
         [FieldOrder(2)]

@@ -6,7 +6,7 @@
         public uint Value { get; set; }
 
         [FieldOrder(1)]
-        [FieldCrc32("Value")]
+        [FieldCrc32(nameof(Value))]
         public uint Crc { get; set; }
     }
 }

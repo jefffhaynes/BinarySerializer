@@ -8,25 +8,25 @@ namespace BinarySerialization.Test.UntilItem
         public uint StuffBefore { get; set; }
 
         [FieldOrder(1)]
-        [ItemSerializeUntil("LastItem", "Yep")]
+        [ItemSerializeUntil(nameof(UntilItemClass.LastItem), "Yep")]
         public List<UntilItemClass> Items { get; set; }
 
         [FieldOrder(2)]
-        [ItemSerializeUntil("LastItem", "Yep", LastItemMode = LastItemMode.Discard)]
+        [ItemSerializeUntil(nameof(UntilItemClass.LastItem), "Yep", LastItemMode = LastItemMode.Discard)]
         public List<UntilItemClass> ItemsLastItemExcluded { get; set; }
 
         [FieldOrder(3)]
         public string SerializeUntilField { get; set; }
 
         [FieldOrder(4)]
-        [ItemSerializeUntil("LastItem", Path = "SerializeUntilField")]
+        [ItemSerializeUntil(nameof(UntilItemClass.LastItem), Path = nameof(SerializeUntilField))]
         public List<UntilItemClass> BoundItems { get; set; }
 
         [FieldOrder(5)]
         public uint StuffAfter { get; set; }
 
         [FieldOrder(6)]
-        [ItemSerializeUntil("Type", (int)UntilItemEnum.End)]
+        [ItemSerializeUntil(nameof(UntilItemClass.Type), (int)UntilItemEnum.End)]
         public List<UntilItemClass> EnumTerminationItems { get; set; }
 
         [FieldOrder(7)]

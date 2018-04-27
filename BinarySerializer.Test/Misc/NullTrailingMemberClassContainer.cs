@@ -11,7 +11,7 @@
         public int InnerLength { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("InnerLength")]
+        [FieldLength(nameof(InnerLength))]
         public NullTrailingMemberClass Inner { get; set; }
     }
 }

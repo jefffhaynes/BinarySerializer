@@ -6,7 +6,7 @@
         public int Length { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("Length")]
+        [FieldLength(nameof(Length))]
         public string Value { get; set; }
 
         [FieldOrder(2)]

@@ -6,8 +6,8 @@
         public int Length { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("Length")]
-        [FieldCrc16("Crc", BindingMode = BindingMode.OneWay)]
+        [FieldLength(nameof(Length))]
+        [FieldCrc16(nameof(Crc), BindingMode = BindingMode.OneWay)]
         public FieldCrcInternalClass Internal { get; set; }
 
         [FieldOrder(2)]

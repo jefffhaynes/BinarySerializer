@@ -3,7 +3,7 @@
     public class OrderClass
     {
         [FieldOrder(3)]
-        [FieldLength("NameLength")]
+        [FieldLength(nameof(NameLength))]
         public string Name { get; set; }
 
         [FieldOrder(2)]

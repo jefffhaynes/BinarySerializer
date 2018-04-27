@@ -6,8 +6,8 @@
         public int Length { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("Length")]
-        [FieldCrc16("Crc")]
+        [FieldLength(nameof(Length))]
+        [FieldCrc16(nameof(Crc))]
         public FieldCrcInternalClass Internal { get; set; }
 
         [FieldOrder(2)]

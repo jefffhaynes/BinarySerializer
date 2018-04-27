@@ -7,7 +7,7 @@
             Formula = formula;
         }
 
-        [SerializeAs(SerializedType.NullTerminatedString)]
+        [SerializeAs(SerializedType.TerminatedString)]
         public string Formula { get; set; }
     }
 }

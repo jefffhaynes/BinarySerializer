@@ -6,7 +6,7 @@
         public int ItemLength { get; set; }
 
         [FieldOrder(1)]
-        [ItemLength("ItemLength")]
+        [ItemLength(nameof(ItemLength))]
         public string[] Items { get; set; }
     }
 }

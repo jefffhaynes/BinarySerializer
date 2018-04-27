@@ -2,7 +2,8 @@
 {
     public class BoundItemClass
     {
-        [FieldLength("NameLength", RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 3)]
+        [FieldLength(nameof(BoundItemContainerClass.NameLength), 
+            RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 3)]
         public string Name { get; set; }
     }
 }

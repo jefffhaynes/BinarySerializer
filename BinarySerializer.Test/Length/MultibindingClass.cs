@@ -6,8 +6,8 @@
         public byte Length { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("Length")]
-        [FieldLength("Length2", BindingMode = BindingMode.OneWayToSource)]
+        [FieldLength(nameof(Length))]
+        [FieldLength(nameof(Length2), BindingMode = BindingMode.OneWayToSource)]
         public string Value { get; set; }
 
         [FieldOrder(2)]

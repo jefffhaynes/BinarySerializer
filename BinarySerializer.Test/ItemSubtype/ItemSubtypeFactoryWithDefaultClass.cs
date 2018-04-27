@@ -8,7 +8,7 @@ namespace BinarySerialization.Test.ItemSubtype
         public byte Key { get; set; }
 
         [FieldOrder(1)]
-        [ItemSubtypeFactory("Key", typeof(ItemSubtypeFactory))]
+        [ItemSubtypeFactory(nameof(Key), typeof(ItemSubtypeFactory))]
         [ItemSubtypeDefault(typeof(DefaultItemType))]
         public List<IItemSubtype> Items { get; set; }
     }
