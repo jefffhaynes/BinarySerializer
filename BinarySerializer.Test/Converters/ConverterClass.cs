@@ -6,7 +6,7 @@ namespace BinarySerialization.Test.Converters
         public double HalfFieldLength { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("HalfFieldLength", ConverterType = typeof (TwiceConverter))]
+        [FieldLength(nameof(HalfFieldLength), ConverterType = typeof (TwiceConverter))]
         public string Field { get; set; }
     }
 }

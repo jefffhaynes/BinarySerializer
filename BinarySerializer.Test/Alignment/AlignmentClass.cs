@@ -6,7 +6,7 @@
         public byte Length { get; set; }
 
         [FieldOrder(1)]
-        [FieldLength("Length")]
+        [FieldLength(nameof(Length))]
         [FieldAlignment(4)]
         public string Value { get; set; }
     }

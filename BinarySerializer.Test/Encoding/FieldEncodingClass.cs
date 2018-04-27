@@ -6,7 +6,7 @@
         public string Encoding { get; set; }
 
         [FieldOrder(1)]
-        [FieldEncoding("Encoding", typeof(EncodingConverter))]
+        [FieldEncoding(nameof(Encoding), typeof(EncodingConverter))]
         public string Value { get; set; }
     }
 }

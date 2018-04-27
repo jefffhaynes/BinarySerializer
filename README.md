@@ -43,7 +43,7 @@ public class Person
     public byte NameLength { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("NameLength")]
+    [FieldLength(nameof(NameLength))]
     public string Name { get; set; }
 }
 ```
@@ -142,7 +142,7 @@ public class Person
     public byte NameLength { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("NameLength")]
+    [FieldLength(nameof(NameLength))]
     public string Name { get; set; }
 } 
 ```
@@ -160,7 +160,7 @@ public class Directory
     public byte NamesLength { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("NamesLength")]
+    [FieldLength(nameof(NameLength))]
     public List<string> Names { get; set; }
 }
 ```
@@ -197,7 +197,7 @@ public class PersonContainer
     public int PersonLength { get; set; } // set to the length of Person during serialization.
 
     [FieldOrder(1)]
-    [FieldLength("PersonLength")]
+    [FieldLength(nameof(PersonLength))]
     public Person Person { get; set; }
 }
 ```
@@ -221,7 +221,7 @@ public class PersonEntry
     public int EntryLength { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("EntryLength")]
+    [FieldLength(nameof(EntryLength))]
     public Person Person { get; set; }
 }
 ```
@@ -256,7 +256,7 @@ public class Directory
     public byte EntryCount { get; set; }
 
     [FieldOrder(1)]
-    [FieldCount("EntryCount")]
+    [FieldCount(nameof(EntryCount))]
     public List<Entry> Entries { get; set; }
 }
 ```
@@ -272,7 +272,7 @@ public class Directory
     public byte NameCount { get; set; }
 
     [FieldOrder(1)]
-    [FieldCount("NameCount")]
+    [FieldCount(nameof(NameCount))]
     public List<string> Names { get; set; }
 }
 ```
@@ -293,7 +293,7 @@ public class Entry
 
     [FieldOrder(1)]
     [FieldAlignment(4)]
-    [FieldLength("Length")]
+    [FieldLength(nameof(Length))]
     public string Value { get; set; }
 }
 ```
@@ -313,7 +313,7 @@ public class Entry
     [FieldOrder(1)]
     [FieldAlignment(4, FieldAlignmentMode.LeftOnly)]
     [FieldAlignment(2, FieldAlignmentMode.RightOnly)]
-    [FieldLength("Length")]
+    [FieldLength(nameof(Length))]
     public string Value { get; set; }
 }
 ```
@@ -352,7 +352,7 @@ public class Packet
     public uint Endianness { get; set; }
 
     [FieldOrder(1)]
-    [FieldEndianness("Endianness", typeof(EndiannessConverter))]
+    [FieldEndianness(nameof(Endianness), typeof(EndiannessConverter))]
     public ushort Value { get; set; }
 }
 ```
@@ -394,7 +394,7 @@ FieldEndianness is one of the stranger attributes in that in some instances the 
 public class Header
 {
     [FieldOrder(0)]
-    [Endianness("ByteOrderIndicator", Converter = typeof(EndiannessConverter)]
+    [Endianness(nameof(ByteOrderIndicator), Converter = typeof(EndiannessConverter)]
     public int Length { get; set; }
 	
     [FieldOrder(1)]
@@ -431,8 +431,8 @@ public class Packet
     public int Length { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("Length")]
-    [FieldChecksum("Checksum", Mode = ChecksumMode.Xor)]
+    [FieldLength(nameof(Length))]
+    [FieldChecksum(nameof(Checksum), Mode = ChecksumMode.Xor)]
     public byte[] Data { get; set; }
 
     [FieldOrder(2)]
@@ -451,8 +451,8 @@ public class Packet
     public int Length { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("Length")]
-    [FieldCrc16("Crc")]
+    [FieldLength(nameof(Length))]
+    [FieldCrc16(nameof(Crc))]
     public byte[] Data { get; set; }
 
     [FieldOrder(2)]
@@ -469,8 +469,8 @@ public class Packet
     public int Length { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("Length")]
-    [FieldCrc16("Crc", InitialValue = 0, IsDataReflected = false, IsRemainderReflected = false)]
+    [FieldLength(nameof(Length))]
+    [FieldCrc16(nameof(Crc), InitialValue = 0, IsDataReflected = false, IsRemainderReflected = false)]
     public Internal Internal { get; set; }
 
     [FieldOrder(2)]

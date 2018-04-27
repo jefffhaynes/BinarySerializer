@@ -8,8 +8,8 @@ namespace BinarySerialization.Test.Count
         public byte Count { get; set; }
 
         [FieldOrder(1)]
-        [FieldCount("Count")]
-        [FieldCount("Count2", BindingMode = BindingMode.OneWayToSource)]
+        [FieldCount(nameof(Count))]
+        [FieldCount(nameof(Count2), BindingMode = BindingMode.OneWayToSource)]
         public List<string> Items { get; set; }
 
         [FieldOrder(2)]

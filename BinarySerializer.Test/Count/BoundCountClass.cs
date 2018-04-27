@@ -8,7 +8,7 @@ namespace BinarySerialization.Test.Count
         public ushort FieldCountField { get; set; }
 
         [FieldOrder(1)]
-        [FieldCount("FieldCountField")]
+        [FieldCount(nameof(FieldCountField))]
         public List<string> Field { get; set; }
     }
 }

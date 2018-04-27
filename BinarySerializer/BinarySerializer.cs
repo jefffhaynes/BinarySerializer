@@ -157,6 +157,32 @@ namespace BinarySerialization
         }
 
         /// <summary>
+        ///     Serializes the object, or graph of objects with the specified top (root), to the given stream.
+        /// </summary>
+        /// <param name="stream">The stream to which the graph is to be serialized.</param>
+        /// <param name="value">The object at the root of the graph to serialize.</param>
+        /// <param name="cancellationToken"></param>
+        public async Task SerializeAsync(Stream stream, object value, CancellationToken cancellationToken)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (value == null)
+            {
+                return;
+            }
+
+            var serializer = CreateSerializer(value.GetType(), null);
+            serializer.Value = value;
+            serializer.Bind();
+
+            await serializer.SerializeAsync(new BoundedStream(stream, "root"), _eventShuttle, true, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
         ///     Calculates the serialized length of the object.
         /// </summary>
         /// <param name="value">The object.</param>

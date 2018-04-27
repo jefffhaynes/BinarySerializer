@@ -2,7 +2,7 @@
 {
     public class ContextClass
     {
-        [SerializeWhen("SerializeCondtion", true, RelativeSourceMode = RelativeSourceMode.SerializationContext)]
+        [SerializeWhen(nameof(Context.SerializeCondtion), true, RelativeSourceMode = RelativeSourceMode.SerializationContext)]
         public int ContextConditionalField { get; set; }
     }
 }

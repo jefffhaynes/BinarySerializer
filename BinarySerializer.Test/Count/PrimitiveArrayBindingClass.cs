@@ -6,7 +6,7 @@
         public int ItemCount { get; set; }
 
         [FieldOrder(1)]
-        [FieldCount("ItemCount")]
+        [FieldCount(nameof(ItemCount))]
         public int[] Ints { get; set; }
     }
 }

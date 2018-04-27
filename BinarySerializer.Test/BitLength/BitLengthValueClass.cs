@@ -3,14 +3,14 @@
     public class BitLengthValueClass
     {
         [FieldOrder(0)]
-        [FieldCrc16("Crc")]
+        [FieldCrc16(nameof(Crc))]
         public InternalBitLengthValueClass Value { get; set; }
 
         [FieldOrder(1)]
         public ushort Crc { get; set; }
 
         [FieldOrder(2)]
-        [FieldCrc16("Crc2")]
+        [FieldCrc16(nameof(Crc2))]
         public byte Value2 { get; set; }
 
         [FieldOrder(3)]

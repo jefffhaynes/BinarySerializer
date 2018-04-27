@@ -9,8 +9,8 @@
         public byte Alignment { get; set; }
 
         [FieldOrder(2)]
-        [FieldLength("Length")]
-        [FieldAlignment("Alignment")]
+        [FieldLength(nameof(Length))]
+        [FieldAlignment(nameof(Alignment))]
         public string Value { get; set; }
     }
 }

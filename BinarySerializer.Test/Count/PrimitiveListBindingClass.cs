@@ -8,7 +8,7 @@ namespace BinarySerialization.Test.Count
         public int ItemCount { get; set; }
 
         [FieldOrder(1)]
-        [FieldCount("ItemCount")]
+        [FieldCount(nameof(ItemCount))]
         public List<int> Ints { get; set; }
     }
 }

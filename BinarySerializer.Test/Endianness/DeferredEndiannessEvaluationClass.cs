@@ -3,7 +3,7 @@
     public class DeferredEndiannessEvaluationClass
     {
         [FieldOrder(0)]
-        [FieldEndianness("Endianness", typeof(EndiannessConverter))]
+        [FieldEndianness(nameof(Endianness), typeof(EndiannessConverter))]
         public ushort Value { get; set; }
         
         [FieldOrder(1)]
