@@ -24,7 +24,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (length != null)
             {
-                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, (long) length.ByteCount);
+                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, length.ByteCount);
                 valueStreamlet.CopyTo(stream);
             }
             else
@@ -41,7 +41,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (length != null)
             {
-                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, (long) length.ByteCount);
+                var valueStreamlet = new Streamlet(valueStream, valueStream.Position, length.ByteCount);
                 await valueStreamlet.CopyToAsync(stream, CopyToBufferSize, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -57,7 +57,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var length = GetFieldLength();
 
             Value = length != null
-                ? new Streamlet(rootStream, rootStream.Position, (long) length.ByteCount)
+                ? new Streamlet(rootStream, rootStream.Position, length.ByteCount)
                 : new Streamlet(rootStream, rootStream.Position);
 
             if (length != null)
@@ -71,11 +71,27 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
-            DeserializeOverride(stream, eventShuttle);
-            return Task.CompletedTask;
+            var rootStream = GetRootStream(stream);
+
+            var length = GetFieldLength();
+
+            Value = length != null
+                ? new Streamlet(rootStream, rootStream.Position, length.ByteCount)
+                : new Streamlet(rootStream, rootStream.Position);
+
+            if (length != null)
+            {
+                var nullStream = new NullStream();
+                await stream.CopyToAsync(nullStream, (int) length.ByteCount, CopyToBufferSize, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                stream.Seek(0, SeekOrigin.End);
+            }
         }
 
         protected override FieldLength MeasureOverride()
