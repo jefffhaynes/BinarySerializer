@@ -280,11 +280,14 @@ namespace BinarySerialization
                 }
                 else
                 {
-                    WriteBits(buffer[length.ByteCount], length.BitCount);
+                    var lastByteIndex = length.BitCount == 0 ? length.ByteCount - 1 : length.ByteCount;
+                    var bitCount = length.BitCount == 0 ? BitsPerByte : length.BitCount;
 
-                    for (long i = 0; i < length.ByteCount; i++)
+                    WriteBits(buffer[lastByteIndex], bitCount);
+
+                    for (long i = 0; i < lastByteIndex; i++)
                     {
-                        WriteBits(buffer[length.ByteCount - (i + 1)], BitsPerByte);
+                        WriteBits(buffer[lastByteIndex - (i + 1)], BitsPerByte);
                     }
                 }
             }
@@ -315,13 +318,16 @@ namespace BinarySerialization
                 }
                 else
                 {
-                    await WriteBitsAsync(buffer[length.ByteCount], length.BitCount, cancellationToken)
+                    var lastByteIndex = length.BitCount == 0 ? length.ByteCount - 1 : length.ByteCount;
+                    var bitCount = length.BitCount == 0 ? BitsPerByte : length.BitCount;
+
+                    await WriteBitsAsync(buffer[lastByteIndex], bitCount, cancellationToken)
                         .ConfigureAwait(false);
 
                     // collect bits in this, the bottom bounded stream
-                    for (long i = 0; i < length.ByteCount; i++)
+                    for (long i = 0; i < lastByteIndex; i++)
                     {
-                        await WriteBitsAsync(buffer[length.ByteCount - (i + 1)], BitsPerByte, cancellationToken)
+                        await WriteBitsAsync(buffer[lastByteIndex - (i + 1)], BitsPerByte, cancellationToken)
                             .ConfigureAwait(false);
                     }
                 }
@@ -440,12 +446,15 @@ namespace BinarySerialization
                 {
                     readLength = FieldLength.Zero;
 
-                    buffer[length.ByteCount] = ReadBits(length.BitCount);
-                    readLength += FieldLength.FromBitCount(length.BitCount);
+                    var lastByteIndex = length.BitCount == 0 ? length.ByteCount - 1 : length.ByteCount;
+                    var bitCount = length.BitCount == 0 ? BitsPerByte : length.BitCount;
 
-                    for (long i = 0; i < length.ByteCount; i++)
+                    buffer[lastByteIndex] = ReadBits(bitCount);
+                    readLength += FieldLength.FromBitCount(bitCount);
+
+                    for (long i = 0; i < lastByteIndex; i++)
                     {
-                        buffer[length.ByteCount - (i + 1)] = ReadBits(BitsPerByte);
+                        buffer[lastByteIndex - (i + 1)] = ReadBits(BitsPerByte);
                         readLength += FieldLength.FromBitCount(BitsPerByte);
                     }
                 }
@@ -483,13 +492,16 @@ namespace BinarySerialization
                 {
                     readLength = FieldLength.Zero;
 
-                    buffer[length.ByteCount] =
-                        await ReadBitsAsync(length.BitCount, cancellationToken).ConfigureAwait(false);
-                    readLength += FieldLength.FromBitCount(length.BitCount);
+                    var lastByteIndex = length.BitCount == 0 ? length.ByteCount - 1 : length.ByteCount;
+                    var bitCount = length.BitCount == 0 ? BitsPerByte : length.BitCount;
 
-                    for (long i = 0; i < length.ByteCount; i++)
+                    buffer[lastByteIndex] =
+                        await ReadBitsAsync(bitCount, cancellationToken).ConfigureAwait(false);
+                    readLength += FieldLength.FromBitCount(bitCount);
+
+                    for (long i = 0; i < lastByteIndex; i++)
                     {
-                        buffer[length.ByteCount - (i + 1)] = await ReadBitsAsync(BitsPerByte, cancellationToken)
+                        buffer[lastByteIndex - (i + 1)] = await ReadBitsAsync(BitsPerByte, cancellationToken)
                             .ConfigureAwait(false);
                         readLength += FieldLength.FromBitCount(BitsPerByte);
                     }

@@ -23,6 +23,10 @@ namespace BinarySerializer.Performance
                     new SortContainer{Name = "some sort of beer"},
                     new SortContainer {Name = "another beer"}
                 },
+                WeirdNumber = 3,
+                WeirdNumber2 = 2,
+                Color = Color.Blue,
+                TerminatedString = "hello everyone",
                 Brewery = "Brasserie Grain d'Orge"
             };
 

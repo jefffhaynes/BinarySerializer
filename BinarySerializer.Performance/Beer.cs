@@ -24,6 +24,21 @@ namespace BinarySerializer.Performance
 
         [FieldOrder(5)]
         public ushort Crc { get; set; }
+
+        [FieldOrder(6)]
+        [FieldBitLength(5)]
+        public byte WeirdNumber { get; set; }
+
+        [FieldOrder(7)]
+        [FieldBitLength(3)]
+        public byte WeirdNumber2 { get; set; }
+
+        [FieldOrder(8)]
+        [SerializeAs(SerializedType.TerminatedString, StringTerminator = 5)]
+        public string TerminatedString { get; set; }
+
+        [FieldOrder(9)]
+        public Color Color { get; set; }
     }
 
     [Serializable]
