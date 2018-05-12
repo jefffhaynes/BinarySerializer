@@ -200,18 +200,18 @@ namespace BinarySerialization.Test.Value
         [Fact]
         public void NestedCrcTest()
         {
-            var expected = new NestedCrcClass {Value = 5};
+            var expected = new NestedCrcClass {Value = "hello"};
             var actual = Roundtrip(expected);
-            Assert.Equal(0x3885, actual.Crc);
+            Assert.Equal(0xd26e, actual.Crc);
         }
 
         [Fact]
         public void OuterCrcTest()
         {
-            var value = new OuterCrcClass {NestedCrc = new NestedCrcClass {Value = 5}};
+            var value = new OuterCrcClass {NestedCrc = new NestedCrcClass {Value = "hello"}};
             var actual = Roundtrip(value);
-            Assert.Equal(0x3885, actual.NestedCrc.Crc);
-            Assert.Equal(0x1e27, actual.Crc);
+            Assert.Equal(0xd26e, actual.NestedCrc.Crc);
+            Assert.Equal(0x91f8, actual.Crc);
         }
     }
 }

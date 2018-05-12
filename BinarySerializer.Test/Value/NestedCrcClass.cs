@@ -3,10 +3,14 @@
     public class NestedCrcClass
     {
         [FieldOrder(0)]
-        [FieldCrc16(nameof(Crc))]
-        public int Value { get; set; }
+        public int Length { get; set; }
 
         [FieldOrder(1)]
+        [FieldLength(nameof(Length))]
+        [FieldCrc16(nameof(Crc))]
+        public string Value { get; set; }
+
+        [FieldOrder(2)]
         public ushort Crc { get; set; }
     }
 }
