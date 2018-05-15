@@ -186,7 +186,8 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal void Serialize(BoundedStream stream, EventShuttle eventShuttle, bool align = true)
+        internal void Serialize(BoundedStream stream, EventShuttle eventShuttle, bool align = true,
+            bool measuring = false)
         {
             try
             {
@@ -207,12 +208,12 @@ namespace BinarySerialization.Graph.ValueGraph
                     using (new StreamResetter(stream))
                     {
                         stream.Position = offset.Value;
-                        SerializeInternal(stream, GetConstFieldLength, eventShuttle);
+                        SerializeInternal(stream, GetConstFieldLength, eventShuttle, measuring);
                     }
                 }
                 else
                 {
-                    SerializeInternal(stream, GetConstFieldLength, eventShuttle);
+                    SerializeInternal(stream, GetConstFieldLength, eventShuttle, measuring);
                 }
 
                 if (align)
@@ -593,7 +594,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var nullStream = new NullStream();
             var boundedStream = new BoundedStream(nullStream, Name);
-            Serialize(boundedStream, null, false);
+            Serialize(boundedStream, null, false, true);
             return boundedStream.RelativePosition;
         }
 
@@ -707,9 +708,9 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new InvalidOperationException($"No subtype specified for ${valueType}");
         }
 
-        private void SerializeInternal(BoundedStream stream, Func<FieldLength> maxLengthDelegate, EventShuttle eventShuttle)
+        private void SerializeInternal(BoundedStream stream, Func<FieldLength> maxLengthDelegate, EventShuttle eventShuttle, bool measuring)
         {
-            stream = PrepareStream(stream, maxLengthDelegate);
+            stream = PrepareStream(stream, maxLengthDelegate, measuring);
 
             SerializeOverride(stream, eventShuttle);
 
@@ -721,7 +722,7 @@ namespace BinarySerialization.Graph.ValueGraph
         private async Task SerializeInternalAsync(BoundedStream stream, Func<FieldLength> maxLengthDelegate, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
-            stream = PrepareStream(stream, maxLengthDelegate);
+            stream = PrepareStream(stream, maxLengthDelegate, false);
 
             await SerializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
 
@@ -730,11 +731,11 @@ namespace BinarySerialization.Graph.ValueGraph
             await FlushStreamAsync(stream, cancellationToken).ConfigureAwait(false);
         }
 
-        private BoundedStream PrepareStream(BoundedStream stream, Func<FieldLength> maxLengthDelegate)
+        private BoundedStream PrepareStream(BoundedStream stream, Func<FieldLength> maxLengthDelegate, bool measuring)
         {
             stream = new BoundedStream(stream, Name, maxLengthDelegate);
 
-            if (TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Count > 0)
+            if (!measuring && TypeNode.FieldValueAttributes != null && TypeNode.FieldValueAttributes.Count > 0)
             {
                 var context = CreateLazySerializationContext();
 
@@ -749,8 +750,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     // Check if this tap has never been created, or if it has been created by this node, in
                     // which case we need to recreate it and reset processing of the source value node.  This
                     // would happen in instances where the tap was previously used inside of a measure override.
-                    if (!source._fieldValueAttributeTaps.TryGetValue(fieldValueAttribute, out var tap) || 
-                        ReferenceEquals(fieldValueAttribute, tap.Attribute))
+                    if (!source._fieldValueAttributeTaps.TryGetValue(fieldValueAttribute, out var tap))
                     {
                         var state = fieldValueAttribute.GetInitialStateInternal(context);
                         tap = new FieldValueAdapterStream(fieldValueAttribute, state);
@@ -760,6 +760,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     stream = new TapStream(stream, tap, Name);
                 }
             }
+
             return stream;
         }
 
@@ -831,7 +832,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void DeserializeInternal(BoundedStream stream, Func<FieldLength> maxLengthDelegate, EventShuttle eventShuttle)
         {
-            stream = PrepareStream(stream, maxLengthDelegate);
+            stream = PrepareStream(stream, maxLengthDelegate, false);
 
             DeserializeOverride(stream, eventShuttle);
 
@@ -844,7 +845,7 @@ namespace BinarySerialization.Graph.ValueGraph
         private async Task DeserializeInternalAsync(BoundedStream stream, Func<FieldLength> maxLengthDelegate,
             EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
-            stream = PrepareStream(stream, maxLengthDelegate);
+            stream = PrepareStream(stream, maxLengthDelegate, false);
 
             await DeserializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
 
