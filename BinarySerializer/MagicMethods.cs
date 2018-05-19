@@ -12,7 +12,7 @@ namespace BinarySerialization
         public static Func<object, object> MagicFunc(Type targetType, MethodInfo method)
         {
             // First fetch the generic form
-            var genericHelper = typeof(MagicMethods).GetMethod("MagicFuncHelper",
+            var genericHelper = typeof(MagicMethods).GetMethod(nameof(MagicFuncHelper),
                 BindingFlags.Static | BindingFlags.NonPublic);
 
             // Now supply the type arguments
@@ -29,7 +29,7 @@ namespace BinarySerialization
         public static Action<object, object> MagicAction(Type targetType, MethodInfo method)
         {
             // First fetch the generic form
-            var genericHelper = typeof(MagicMethods).GetMethod("MagicActionHelper",
+            var genericHelper = typeof(MagicMethods).GetMethod(nameof(MagicActionHelper),
                 BindingFlags.Static | BindingFlags.NonPublic);
 
             // Now supply the type arguments
