@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph.TypeGraph
@@ -90,13 +91,18 @@ namespace BinarySerialization.Graph.TypeGraph
                 if (indexParameters.Length == 0)
                 {
                     var getMethod = propertyInfo.GetGetMethod();
-                    ValueGetter = MagicMethods.MagicFunc(parentType, getMethod);
-                    
+
+                    ValueGetter = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                        ? (target => getMethod.Invoke(target, null))
+                        : MagicMethods.MagicFunc(parentType, getMethod);
+
                     var setMethod = propertyInfo.GetSetMethod();
 
                     if (setMethod != null)
                     {
-                        ValueSetter = MagicMethods.MagicAction(parentType, setMethod);
+                        ValueSetter = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                            ? ((target, value) => setMethod.Invoke(target, new[] {value}))
+                            : MagicMethods.MagicAction(parentType, setMethod);
                     }
                 }
             }

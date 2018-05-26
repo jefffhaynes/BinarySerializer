@@ -4,14 +4,14 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Fixes issue with aggregated CRC fields involving field length measurement</PackageReleaseNotes>
+    <PackageReleaseNotes>Attempt at fixing iOS issues</PackageReleaseNotes>
     <PackageProjectUrl>http://binaryserializer.net</PackageProjectUrl>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>http://binaryserializer.net</RepositoryUrl>
-    <AssemblyVersion>8.1.3.0</AssemblyVersion>
-    <FileVersion>8.1.3.0</FileVersion>
-    <Version>8.1.3</Version>
+    <AssemblyVersion>8.1.3.1</AssemblyVersion>
+    <FileVersion>8.1.3.1</FileVersion>
+    <Version>8.1.4-beta</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />
