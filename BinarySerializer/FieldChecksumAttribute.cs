@@ -6,7 +6,7 @@ namespace BinarySerialization
     ///     Specifies an 8-bit checksum for a member or object subgraph, defined as the 2's compliment of the addition of all
     ///     bytes.
     /// </summary>
-    public class FieldChecksumAttribute : FieldValueAttributeBase
+    public sealed class FieldChecksumAttribute : FieldValueAttributeBase
     {
         /// <summary>
         ///     Initializes a new instance of the FieldChecksum class.

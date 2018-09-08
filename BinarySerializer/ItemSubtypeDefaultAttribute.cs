@@ -7,7 +7,7 @@ namespace BinarySerialization
     ///     deserialization.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class ItemSubtypeDefaultAttribute : SubtypeDefaultBaseAttribute
+    public sealed class ItemSubtypeDefaultAttribute : SubtypeDefaultBaseAttribute
     {
         /// <summary>
         ///     Initializes a new instance of <see cref="SubtypeDefaultAttribute" />.

@@ -6,7 +6,7 @@ namespace BinarySerialization
     ///     Specifies a scaling value for a value-type field.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class FieldScaleAttribute : FieldBindingBaseAttribute, IConstAttribute
+    public sealed class FieldScaleAttribute : FieldBindingBaseAttribute, IConstAttribute
     {
         /// <summary>
         ///     Initializes a new instance of the FieldScale attribute with a fixed scaling value.
