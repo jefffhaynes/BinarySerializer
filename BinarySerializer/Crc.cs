@@ -47,7 +47,7 @@ namespace BinarySerialization
         {
             var remainder = ToUInt32(_crc);
 
-            for (var i = offset; i < count; ++i)
+            for (var i = offset; i < count; i++)
             {
                 var b = buffer[i];
 
@@ -123,7 +123,7 @@ namespace BinarySerialization
             uint reflection = 0;
 
             // Reflect the data about the center bit.
-            for (int bit = 0; bit < bitCount; ++bit)
+            for (int bit = 0; bit < bitCount; bit++)
             {
                 // If the LSB bit is set, set the reflection of it.
                 if ((value & 0x01) != 0)
