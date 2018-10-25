@@ -92,13 +92,13 @@ namespace BinarySerialization
             var topBit = 1 << (Width - 1);
             
             // Compute the remainder of each possible dividend.
-            for (uint dividend = 0; dividend < 256; ++dividend)
+            for (uint dividend = 0; dividend < table.Length; dividend++)
             {
                 // Start with the dividend followed by zeros.
                 var remainder = dividend << padWidth;
                 
                 // Perform modulo-2 division, a bit at a time.
-                for (byte bit = 8; bit > 0; --bit)
+                for (uint bit = 8; bit > 0; bit--)
                 {
                     // Try to divide the current data bit.
                     if ((remainder & topBit) != 0)
@@ -123,7 +123,7 @@ namespace BinarySerialization
             uint reflection = 0;
 
             // Reflect the data about the center bit.
-            for (byte bit = 0; bit < bitCount; ++bit)
+            for (int bit = 0; bit < bitCount; ++bit)
             {
                 // If the LSB bit is set, set the reflection of it.
                 if ((value & 0x01) != 0)
