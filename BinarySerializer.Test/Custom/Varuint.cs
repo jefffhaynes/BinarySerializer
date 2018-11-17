@@ -4,35 +4,37 @@ using System.IO;
 namespace BinarySerialization.Test.Custom
 {
     /// <summary>
-    /// A class for multibyte representation of an integer.
+    ///     A class for multibyte representation of an integer.
     /// </summary>
     public class Varuint : IBinarySerializable
     {
         [Ignore]
         public uint Value { get; set; }
 
-        public void Deserialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
+        public void Deserialize(Stream stream, BinarySerialization.Endianness endianness,
+            BinarySerializationContext context)
         {
-            bool more = true;
-            int shift = 0;
+            var more = true;
+            var shift = 0;
 
             Value = 0;
 
             while (more)
             {
-                int b = stream.ReadByte();
+                var b = stream.ReadByte();
 
                 if (b == -1)
                     throw new InvalidOperationException("Reached end of stream before end of varuint.");
 
-                var lower7Bits = (byte)b;
+                var lower7Bits = (byte) b;
                 more = (lower7Bits & 128) != 0;
-                Value |= (uint)((lower7Bits & 127) << shift);
+                Value |= (uint) ((lower7Bits & 127) << shift);
                 shift += 7;
             }
         }
 
-        public void Serialize(Stream stream, BinarySerialization.Endianness endianness, BinarySerializationContext context)
+        public void Serialize(Stream stream, BinarySerialization.Endianness endianness,
+            BinarySerializationContext context)
         {
             var value = Value;
             do

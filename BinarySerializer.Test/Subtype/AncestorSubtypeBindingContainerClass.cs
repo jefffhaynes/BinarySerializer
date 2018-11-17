@@ -6,7 +6,7 @@
         public int Selector { get; set; }
 
         [FieldOrder(1)]
-        [Subtype("Selector", 1, typeof(AncestorSubtypeBindingClass))]
+        [Subtype("Selector", 1, typeof (AncestorSubtypeBindingClass))]
         public AncestorSubtypeBindingBaseClass AncestorSubtypeBindingClass { get; set; }
     }
 }

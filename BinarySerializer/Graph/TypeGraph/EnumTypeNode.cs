@@ -12,17 +12,18 @@ namespace BinarySerialization.Graph.TypeGraph
             InitializeEnumValues();
         }
 
-        public EnumTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
+        public EnumTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+            memberInfo)
         {
             InitializeEnumValues();
         }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        public EnumInfo EnumInfo { get; private set; }
+
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new EnumValueNode(parent, Name, this);
         }
-
-        public EnumInfo EnumInfo { get; private set; }
 
         private void InitializeEnumValues()
         {
@@ -35,7 +36,7 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 var memberInfo = BaseSerializedType.GetMember(value.ToString()).Single();
                 return (SerializeAsEnumAttribute) memberInfo.GetCustomAttributes(
-                    typeof (SerializeAsEnumAttribute),
+                    typeof(SerializeAsEnumAttribute),
                     false).FirstOrDefault();
             });
 
@@ -43,7 +44,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             /* If any are specified, build dictionary of them one time */
             if (enumAttributes.Any(enumAttribute => enumAttribute.Value != null) ||
-                serializedType == SerializedType.NullTerminatedString ||
+                serializedType == SerializedType.TerminatedString ||
                 serializedType == SerializedType.SizedString ||
                 serializedType == SerializedType.LengthPrefixedString)
             {
@@ -72,7 +73,10 @@ namespace BinarySerialization.Graph.TypeGraph
                         EnumInfo.SerializedType = SerializedType.SizedString;
                         EnumInfo.EnumValueLength = lengthGroups[0].Key;
                     }
-                    else EnumInfo.SerializedType = SerializedType.NullTerminatedString;
+                    else
+                    {
+                        EnumInfo.SerializedType = SerializedType.TerminatedString;
+                    }
                 }
                 else if (serializedType == SerializedType.SizedString)
                 {

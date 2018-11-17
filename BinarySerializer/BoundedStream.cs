@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BinarySerialization
 {
@@ -12,32 +12,35 @@ namespace BinarySerialization
     {
         private readonly bool _canSeek;
         private readonly long _length;
+        private readonly Func<long?> _maxLengthDelegate;
+        private readonly BoundedStream _root;
 
-        internal BoundedStream(Stream source, long? maxLength = null)
+        internal BoundedStream(Stream source, Func<long?> maxLengthDelegate = null)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
+            Source = source ?? throw new ArgumentNullException(nameof(source));
 
-            if (maxLength < 0)
-                throw new ArgumentOutOfRangeException(nameof(maxLength), "Cannot be negative.");
-
-            Source = source;
-            MaxLength = maxLength;
+            _maxLengthDelegate = maxLengthDelegate;
 
             /* Store for performance */
             _canSeek = source.CanSeek;
 
             if (_canSeek)
+            {
                 _length = source.Length;
+            }
+
+            _root = this;
+
+            while (_root.Source is BoundedStream)
+            {
+                _root = (BoundedStream) _root.Source;
+            }
         }
 
         /// <summary>
-        ///     Gets the the current offset in the serialized graph.
+        ///     Gets the current offset in the serialized graph.
         /// </summary>
-        public long GlobalPosition
-        {
-            get { return Ancestors.Sum(stream => stream.RelativePosition); }
-        }
+        public long GlobalPosition => _root.RelativePosition;
 
         /// <summary>
         ///     The underlying source <see cref="Stream" />.
@@ -62,7 +65,7 @@ namespace BinarySerialization
         /// <summary>
         ///     Gets the maximum length of the stream in bytes if bounded.  Returns null if stream is unbounded.
         /// </summary>
-        public long? MaxLength { get; }
+        public long? MaxLength => _maxLengthDelegate?.Invoke();
 
         /// <summary>
         ///     Gets the length in bytes of the stream.
@@ -74,13 +77,71 @@ namespace BinarySerialization
         /// </summary>
         public override long Position
         {
-            get { return RelativePosition; }
+            get => RelativePosition;
 
             set
             {
                 var delta = value - RelativePosition;
                 Source.Position += delta;
                 RelativePosition = value;
+            }
+        }
+
+        internal long RelativePosition { get; set; }
+
+        internal bool IsAtLimit
+        {
+            get
+            {
+                if (MaxLength != null)
+                {
+                    return Position >= MaxLength;
+                }
+
+                return Source is BoundedStream source && source.IsAtLimit;
+            }
+        }
+
+        internal long AvailableForReading
+        {
+            get
+            {
+                long maxLength;
+
+                if (MaxLength == null)
+                {
+                    if (Source is BoundedStream source)
+                    {
+                        return source.AvailableForReading;
+                    }
+
+                    maxLength = long.MaxValue;
+                }
+                else
+                {
+                    maxLength = MaxLength.Value;
+                }
+
+                if (!_canSeek)
+                {
+                    return maxLength - Position;
+                }
+
+                return Math.Min(maxLength, Length) - Position;
+            }
+        }
+
+        internal long AvailableForWriting
+        {
+            get
+            {
+                if (MaxLength != null)
+                {
+                    return MaxLength.Value - Position;
+                }
+
+                var source = Source as BoundedStream;
+                return source?.AvailableForWriting ?? long.MaxValue;
             }
         }
 
@@ -148,13 +209,12 @@ namespace BinarySerialization
         /// </returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (MaxLength != null && count > MaxLength - Position)
-            {
-                count = Math.Max(0, (int) (MaxLength - Position));
-            }
+            count = ClampCount(count);
 
             if (count == 0)
+            {
                 return 0;
+            }
 
             var read = Source.Read(buffer, offset, count);
             RelativePosition += read;
@@ -173,7 +233,9 @@ namespace BinarySerialization
         public override void Write(byte[] buffer, int offset, int count)
         {
             if (count == 0)
+            {
                 return;
+            }
 
             if (MaxLength != null && count > MaxLength - Position)
             {
@@ -183,56 +245,29 @@ namespace BinarySerialization
             Source.Write(buffer, offset, count);
             RelativePosition += count;
         }
-        
-        internal long RelativePosition { get; set; }
-        
-        internal bool IsAtLimit
+
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            get
+            count = ClampCount(count);
+
+            if (count == 0)
             {
-                if (MaxLength == null)
-                    return false;
-
-                return Position >= MaxLength;
+                return 0;
             }
-        }
-        
-        internal long AvailableForReading
-        {
-            get
-            {
-                var maxLength = MaxLength ?? long.MaxValue;
 
-                if (!_canSeek)
-                    return maxLength - Position;
+            var read = await Source.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
+            RelativePosition += read;
 
-                return Math.Min(maxLength, Length) - Position;
-            }
+            return read;
         }
 
-        internal long AvailableForWriting
+        private int ClampCount(int count)
         {
-            get
+            if (MaxLength != null && count > MaxLength - Position)
             {
-                if (MaxLength == null)
-                    return long.MaxValue;
-
-                return MaxLength.Value - Position;
+                count = Math.Max(0, (int) (MaxLength - Position));
             }
-        }
-
-        private IEnumerable<BoundedStream> Ancestors
-        {
-            get
-            {
-                var parent = this;
-
-                while (parent != null)
-                {
-                    yield return parent;
-                    parent = parent.Source as BoundedStream;
-                }
-            }
+            return count;
         }
     }
 }

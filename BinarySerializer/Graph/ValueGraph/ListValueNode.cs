@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -9,7 +8,7 @@ namespace BinarySerialization.Graph.ValueGraph
     {
         private object _cachedValue;
 
-        public ListValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public ListValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 
@@ -19,29 +18,32 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 /* For creating serialization contexts quickly */
                 if (_cachedValue != null)
+                {
                     return _cachedValue;
+                }
 
-                var typeNode = (ListTypeNode)TypeNode;
+                var typeNode = (ListTypeNode) TypeNode;
 
                 var list = (IList) typeNode.CompiledConstructor();
 
                 foreach (var child in Children)
+                {
                     list.Add(child.Value);
+                }
 
                 return list;
             }
 
             set
             {
-                if (Children.Count > 0)
-                    throw new InvalidOperationException("Value already set.");
-
                 if (value == null)
+                {
                     return;
+                }
 
-                var list = (IList)value;
+                var list = (IList) value;
 
-                var typeNode = (ListTypeNode)TypeNode;
+                var typeNode = (ListTypeNode) TypeNode;
 
                 var count = GetConstFieldCount();
 
@@ -50,7 +52,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     /* Pad out const-sized list */
                     while (list.Count < count)
                     {
-                        var item = typeNode.ChildType == typeof (string)
+                        var item = typeNode.ChildType == typeof(string)
                             ? string.Empty
                             : typeNode.CompiledChildConstructor();
 
@@ -81,7 +83,9 @@ namespace BinarySerialization.Graph.ValueGraph
                 var list = (IList) typeNode.CompiledConstructor();
 
                 foreach (var child in Children)
+                {
                     list.Add(child.BoundValue);
+                }
 
                 return list;
             }

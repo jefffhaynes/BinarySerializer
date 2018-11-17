@@ -1,108 +1,222 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Primitives
 {
-    [TestClass]
+    
     public class PrimitiveTests : TestBase
     {
         private void RoundtripPrimitive<T>(T value, long expectedLength) where T : new()
         {
             var actual = Roundtrip(value, expectedLength);
-            Assert.AreEqual(value, actual);
+            Assert.Equal(value, actual);
+
+            var actualBe = RoundtripBigEndian(value, expectedLength);
+            Assert.Equal(value, actualBe);
         }
 
-        [TestMethod]
+        [Fact]
         public void BoolTest()
         {
             RoundtripPrimitive(true, 1);
         }
 
-        [TestMethod]
-        public void ByteTest()
+        [Fact]
+        public void ByteMaxTest()
         {
-            RoundtripPrimitive(byte.MaxValue, 1);
+            RoundtripPrimitive(byte.MaxValue, sizeof(byte));
         }
 
-        [TestMethod]
-        public void SByteTest()
+        [Fact]
+        public void ByteMinTest()
         {
-            RoundtripPrimitive(sbyte.MaxValue, 1);
+            RoundtripPrimitive(byte.MinValue, sizeof(byte));
         }
 
-        [TestMethod]
-        public void CharTest()
+        [Fact]
+        public void SByteMaxTest()
         {
-            RoundtripPrimitive(char.MaxValue, 2);
+            RoundtripPrimitive(sbyte.MaxValue, sizeof(sbyte));
         }
 
-        [TestMethod]
-        public void ShortTest()
+        [Fact]
+        public void SByteMinTest()
         {
-            RoundtripPrimitive(short.MaxValue, 2);
+            RoundtripPrimitive(sbyte.MinValue, sizeof(sbyte));
         }
 
-        [TestMethod]
-        public void UShortTest()
+        [Fact]
+        public void CharMaxTest()
         {
-            RoundtripPrimitive(ushort.MaxValue, 2);
+            RoundtripPrimitive(char.MaxValue, sizeof(char));
         }
 
-        [TestMethod]
-        public void Int32Test()
+        [Fact]
+        public void CharMinTest()
         {
-            RoundtripPrimitive(Int32.MaxValue, 4);
+            RoundtripPrimitive(char.MinValue, sizeof(char));
         }
 
-        [TestMethod]
-        public void UInt32Test()
+        [Fact]
+        public void ShortMaxTest()
         {
-            RoundtripPrimitive(UInt32.MaxValue, 4);
+            RoundtripPrimitive(short.MaxValue, sizeof(short));
         }
 
-        [TestMethod]
-        public void Int64Test()
+        [Fact]
+        public void ShortMinTest()
         {
-            RoundtripPrimitive(Int64.MaxValue, 8);
+            RoundtripPrimitive(short.MinValue, sizeof(short));
         }
 
-        [TestMethod]
-        public void UInt64Test()
+        [Fact]
+        public void UShortMaxTest()
         {
-            RoundtripPrimitive(UInt64.MaxValue, 8);
+            RoundtripPrimitive(ushort.MaxValue, sizeof(ushort));
         }
 
-        [TestMethod]
-        public void SingleTest()
+        [Fact]
+        public void UShortMinTest()
         {
-            RoundtripPrimitive(Single.MaxValue, 4);
+            RoundtripPrimitive(ushort.MinValue, sizeof(ushort));
         }
 
-        [TestMethod]
-        public void DoubleTest()
+        [Fact]
+        public void Int32MaxTest()
         {
-            RoundtripPrimitive(Double.MaxValue, 8);
+            RoundtripPrimitive(int.MaxValue, sizeof(int));
         }
 
-        [TestMethod]
+        [Fact]
+        public void Int32MinTest()
+        {
+            RoundtripPrimitive(int.MinValue, sizeof(int));
+        }
+
+        [Fact]
+        public void UInt32MaxTest()
+        {
+            RoundtripPrimitive(uint.MaxValue, sizeof(uint));
+        }
+
+        [Fact]
+        public void UInt32MinTest()
+        {
+            RoundtripPrimitive(uint.MinValue, sizeof(uint));
+        }
+
+        [Fact]
+        public void Int64MaxTest()
+        {
+            RoundtripPrimitive(long.MaxValue, sizeof(long));
+        }
+
+        [Fact]
+        public void Int64MinTest()
+        {
+            RoundtripPrimitive(long.MinValue, sizeof(long));
+        }
+
+        [Fact]
+        public void UInt64MaxTest()
+        {
+            RoundtripPrimitive(ulong.MaxValue, sizeof(ulong));
+        }
+
+        [Fact]
+        public void UInt64MinTest()
+        {
+            RoundtripPrimitive(ulong.MinValue, sizeof(ulong));
+        }
+
+        [Fact]
+        public void SingleMaxTest()
+        {
+            RoundtripPrimitive(float.MaxValue, sizeof(float));
+        }
+
+        [Fact]
+        public void SingleMinTest()
+        {
+            RoundtripPrimitive(float.MinValue, sizeof(float));
+        }
+
+        [Fact]
+        public void SingleTest2()
+        {
+            RoundtripPrimitive(-48.651363f, sizeof(float));
+        }
+
+        [Fact]
+        public void DoubleMaxTest()
+        {
+            RoundtripPrimitive(double.MaxValue, sizeof(double));
+        }
+
+        [Fact]
+        public void DoubleMinTest()
+        {
+            RoundtripPrimitive(double.MinValue, sizeof(double));
+        }
+
+        [Fact]
+        public void DoubleNanTest()
+        {
+            RoundtripPrimitive(double.NaN, sizeof(double));
+        }
+
+        [Fact]
+        public void DoublePositiveInfinityTest()
+        {
+            RoundtripPrimitive(double.PositiveInfinity, sizeof(double));
+        }
+
+        [Fact]
+        public void DoubleNegativeInfinityTest()
+        {
+            RoundtripPrimitive(double.NegativeInfinity, sizeof(double));
+        }
+
+        [Fact]
         public void ByteArrayTest()
         {
             Roundtrip(new byte[3], new byte[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void StringTest()
         {
             const string value = "hello";
-            Roundtrip(value, System.Text.Encoding.UTF8.GetBytes(value));
+            Roundtrip(value, System.Text.Encoding.UTF8.GetBytes(value + "\0"));
         }
-
-
-        [TestMethod]
+        
+        [Fact]
         public void NullTerminatedStringTest()
         {
             var container = new ContainedStringClass {Value = "hello"};
             Roundtrip(container, container.Value.Length + 5);
+        }
+
+        [Fact]
+        public void PrimitiveBindingTest()
+        {
+            var expected = new PrimitiveBindingsClass
+            {
+                Value = "hello"
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.Equal(expected.Value.Length, actual.ByteLength);
+            Assert.Equal(expected.Value.Length, actual.SByteLength);
+            Assert.Equal(expected.Value.Length, actual.ShortLength);
+            Assert.Equal(expected.Value.Length, actual.UShortLength);
+            Assert.Equal(expected.Value.Length, actual.IntLength);
+            Assert.Equal((uint)expected.Value.Length, actual.UIntLength);
+            Assert.Equal(expected.Value.Length, actual.LongLength);
+            Assert.Equal((ulong)expected.Value.Length, actual.ULongLength);
+            Assert.Equal(expected.Value.Length, actual.FloatLength);
+            Assert.Equal(expected.Value.Length, actual.DoubleLength);
+            Assert.Equal(expected.Value.Length, actual.CharLength);
         }
     }
 }

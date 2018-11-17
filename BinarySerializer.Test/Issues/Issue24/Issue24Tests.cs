@@ -1,19 +1,19 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue24
 {
-    [TestClass]
+    
     public class Issue24Tests : TestBase
     {
-        //[TestMethod]
+        //[Fact]
         public void SerializeTest()
         {
             var data = new LoadCarrierData {Data = new Bin1Data()};
 
             var actual = Roundtrip(data);
 
-            Assert.AreEqual(actual.CarrierType, LoadCarrierType.Bin1);
-            Assert.IsInstanceOfType(actual.Data, typeof(Bin1Data));
+            Assert.Equal(actual.CarrierType, LoadCarrierType.Bin1);
+            Assert.IsAssignableFrom<Bin1Data>(actual.Data);
         }
     }
 }

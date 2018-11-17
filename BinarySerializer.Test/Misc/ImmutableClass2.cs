@@ -24,12 +24,12 @@ namespace BinarySerialization.Test.Misc
 
         public ulong Value
         {
-            get { return ((ulong)High << 32) + Low; }
+            get => ((ulong) High << 32) + Low;
 
             set
             {
-                High = (uint)((value & 0xFFFFFFFF00000000UL) >> 32);
-                Low = (uint)(value & 0x00000000FFFFFFFFUL);
+                High = (uint) ((value & 0xFFFFFFFF00000000UL) >> 32);
+                Low = (uint) (value & 0x00000000FFFFFFFFUL);
             }
         }
 

@@ -1,53 +1,62 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Enums
 {
-    [TestClass]
+    
     public class EnumTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void BasicEnumTest()
         {
             var expected = new BaseTypeEnumClass {Field = BaseTypeEnumValues.B};
-            var actual = Roundtrip(expected, sizeof(BaseTypeEnumValues));
+            var actual = Roundtrip(expected, sizeof (BaseTypeEnumValues));
 
-            Assert.AreEqual(expected.Field, actual.Field);
+            Assert.Equal(expected.Field, actual.Field);
         }
 
-        [TestMethod]
+        [Fact]
         public void EnumAsStringTest()
         {
             var expected = new BaseTypeEnumAsStringClass {Field = BaseTypeEnumValues.B};
             var actual = Roundtrip(expected, new byte[] {(byte) 'B', 0x0});
 
-            Assert.AreEqual(expected.Field, actual.Field);
+            Assert.Equal(expected.Field, actual.Field);
         }
 
-        [TestMethod]
+        [Fact]
+        public void EnumAsStringTest2()
+        {
+            var expected = new BaseTypeEnumAsStringClass2 { Field = BaseTypeEnumValues.B };
+            var actual = Roundtrip(expected, new byte[] { (byte)'B', 0x1 });
+
+            Assert.Equal(expected.Field, actual.Field);
+        }
+
+        [Fact]
         public void NamedEnumTest()
         {
-            var expected = new NamedEnumClass { Field = NamedEnumValues.B };
-            var actual = Roundtrip(expected, System.Text.Encoding.UTF8.GetBytes("Bravo"));
+            var expected = new NamedEnumClass {Field = NamedEnumValues.B};
+            var actual = Roundtrip(expected, System.Text.Encoding.UTF8.GetBytes("Bravo\0"));
 
-            Assert.AreEqual(expected.Field, actual.Field);
+            Assert.Equal(expected.Field, actual.Field);
         }
 
-        [TestMethod]
+        [Fact]
         public void NamedEnumTest2()
         {
-            var expected = new NamedEnumClass { Field = NamedEnumValues.C };
-            var actual = Roundtrip(expected, System.Text.Encoding.UTF8.GetBytes("C"));
+            var expected = new NamedEnumClass {Field = NamedEnumValues.C};
+            var actual = Roundtrip(expected, System.Text.Encoding.UTF8.GetBytes("C\0"));
 
-            Assert.AreEqual(expected.Field, actual.Field);
+            Assert.Equal(expected.Field, actual.Field);
         }
 
-        [TestMethod]
+        [Fact]
         public void NullableEnumTest()
         {
             var expected = new NullableEnumClass {Field = BaseTypeEnumValues.B};
             var actual = Roundtrip(expected);
 
-            Assert.AreEqual(expected.Field, actual.Field);
+            Assert.Equal(expected.Field, actual.Field);
         }
     }
 }

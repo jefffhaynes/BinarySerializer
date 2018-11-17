@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="BinarySerializer.Editor.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:BinarySerializer.Editor.Controls"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="100" MaxWidth="400"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox Name="CodeTextBox" Margin="6" TextChanged="TextBox_OnTextChanged" AcceptsReturn="True"/>
+        <ScrollViewer Grid.Column="1">
+            <controls:ClassControl DataContext="{Binding Root, FallbackValue={x:Null}}"/>
+        </ScrollViewer>
+    </Grid>
+</Page>

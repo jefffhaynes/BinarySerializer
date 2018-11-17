@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using BinarySerialization;
 
 namespace BinarySerialization.Test.UntilItem
 {
@@ -14,7 +12,7 @@ namespace BinarySerialization.Test.UntilItem
         public List<UntilItemClass> Items { get; set; }
 
         [FieldOrder(2)]
-        [ItemSerializeUntil("LastItem", "Yep", ExcludeLastItem = true)]
+        [ItemSerializeUntil("LastItem", "Yep", LastItemMode = LastItemMode.Discard)]
         public List<UntilItemClass> ItemsLastItemExcluded { get; set; }
 
         [FieldOrder(3)]
@@ -26,5 +24,12 @@ namespace BinarySerialization.Test.UntilItem
 
         [FieldOrder(5)]
         public uint StuffAfter { get; set; }
+
+        [FieldOrder(6)]
+        [ItemSerializeUntil("Type", (int)UntilItemEnum.End)]
+        public List<UntilItemClass> EnumTerminationItems { get; set; }
+
+        [FieldOrder(7)]
+        public uint MoreStuffAfter { get; set; }
     }
 }

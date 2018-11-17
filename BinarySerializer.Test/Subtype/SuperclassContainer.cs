@@ -10,9 +10,9 @@
 
         [FieldOrder(2)]
         [FieldLength("Length")]
-        [Subtype("Indicator", 1, typeof(SubclassA))]
-        [Subtype("Indicator", 2, typeof(SubclassB))]
-        [Subtype("Indicator", 3, typeof(SubSubclassC))]
+        [Subtype("Indicator", 1, typeof (SubclassA))]
+        [Subtype("Indicator", 2, typeof (SubclassB))]
+        [Subtype("Indicator", 3, typeof (SubSubclassC))]
         public Superclass Value { get; set; }
     }
 }

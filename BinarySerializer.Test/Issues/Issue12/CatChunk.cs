@@ -9,6 +9,6 @@ namespace BinarySerialization.Test.Issues.Issue12
         public string TypeId { get; set; }
 
         [FieldOrder(1)]
-        public List<ChunkContainer> Chunks { get; set; } 
+        public List<ChunkContainer> Chunks { get; set; }
     }
 }

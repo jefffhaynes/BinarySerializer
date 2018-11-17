@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Unknown
 {
-    [TestClass]
+    
     public class UnknownTypeTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void UnknownTypeSerializationTest()
         {
             var unknownTypeClass = new UnknownTypeClass {Field = "hello"};
@@ -18,19 +18,18 @@ namespace BinarySerialization.Test.Unknown
             serializer.Serialize(stream, unknownTypeClass);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof (BindingException))]
+        [Fact]
         public void SubtypesOnUnknownTypeFieldShouldThrowBindingException()
         {
-            var unknownTypeClass = new InvalidUnknownTypeClass { Field = "hello" };
+            var unknownTypeClass = new InvalidUnknownTypeClass {Field = "hello"};
 
             var serializer = new BinarySerializer();
 
             var stream = new MemoryStream();
-            serializer.Serialize(stream, unknownTypeClass);
+            Assert.Throws<BindingException>(() => serializer.Serialize(stream, unknownTypeClass));
         }
 
-        [TestMethod]
+        [Fact]
         public void BindingAcrossUnknownBoundaryTest()
         {
             var childClass = new BindingAcrossUnknownBoundaryChildClass {Subfield = "hello"};
@@ -46,15 +45,14 @@ namespace BinarySerialization.Test.Unknown
 
             var data = stream.ToArray();
 
-            Assert.AreEqual((byte)childClass.Subfield.Length, data[0]);
+            Assert.Equal((byte) childClass.Subfield.Length, data[0]);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void ObjectSerializationShouldThrow()
         {
-            var unknownTypeClass = new UnknownTypeClass { Field = new object() };
-            Roundtrip(unknownTypeClass);
+            var unknownTypeClass = new UnknownTypeClass {Field = new object()};
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(unknownTypeClass));
         }
     }
 }

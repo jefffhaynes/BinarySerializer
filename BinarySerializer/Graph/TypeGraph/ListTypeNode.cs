@@ -9,29 +9,25 @@ namespace BinarySerialization.Graph.TypeGraph
     {
         public ListTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
-            Construct();
         }
 
-        public ListTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
+        public ListTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+            memberInfo)
         {
-            Construct();
         }
 
-        private void Construct()
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            ChildType = GetChildType(Type);
-        }
-
-        private Type GetChildType(Type collectionType)
-        {
-            return collectionType.GetGenericArguments().Single();
-        }
-
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
-        {
-            if(ChildType.IsPrimitive)
+            if (ChildType.GetTypeInfo().IsPrimitive)
+            {
                 return new PrimitiveListValueNode(parent, Name, this);
+            }
             return new ListValueNode(parent, Name, this);
+        }
+
+        protected override Type GetChildType()
+        {
+            return Type.GetGenericArguments().Single();
         }
     }
 }

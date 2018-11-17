@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BinarySerialization;
-
-namespace BinarySerialization.Test.UntilItem
+﻿namespace BinarySerialization.Test.UntilItem
 {
     public class UntilItemClass
     {
@@ -17,5 +10,8 @@ namespace BinarySerialization.Test.UntilItem
 
         [FieldOrder(2)]
         public string Description { get; set; }
+
+        [FieldOrder(3)]
+        public UntilItemEnum Type { get; set; }
     }
 }

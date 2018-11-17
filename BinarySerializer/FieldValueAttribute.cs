@@ -1,21 +1,21 @@
 ﻿namespace BinarySerialization
 {
     /// <summary>
-    /// Specifies a value binding for a member or object subgraph.
+    ///     Specifies a value binding for a member or object subgraph.
     /// </summary>
     public sealed class FieldValueAttribute : FieldValueAttributeBase
     {
         private object _value;
 
         /// <summary>
-        /// Initializes a new instance of the FieldValue class.
+        ///     Initializes a new instance of the FieldValue class.
         /// </summary>
         public FieldValueAttribute(string valuePath) : base(valuePath)
         {
         }
 
         /// <summary>
-        /// This is called by the framework to indicate a new operation.
+        ///     This is called by the framework to indicate a new operation.
         /// </summary>
         /// <param name="context"></param>
         protected override void Reset(BinarySerializationContext context)
@@ -24,7 +24,7 @@
         }
 
         /// <summary>
-        /// This is called one or more times by the framework to add data to the computation.
+        ///     This is called one or more times by the framework to add data to the computation.
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="offset"></param>
@@ -34,7 +34,7 @@
         }
 
         /// <summary>
-        /// This is called by the framework to retrieve the final value from computation.
+        ///     This is called by the framework to retrieve the final value from computation.
         /// </summary>
         /// <returns></returns>
         protected override object ComputeFinal()

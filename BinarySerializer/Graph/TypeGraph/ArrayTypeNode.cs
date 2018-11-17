@@ -8,26 +8,25 @@ namespace BinarySerialization.Graph.TypeGraph
     {
         public ArrayTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
-            Construct();
         }
 
         public ArrayTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo)
             : base(parent, parentType, memberInfo)
         {
-            Construct();
         }
 
-        private void Construct()
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
-            ChildType = Type.GetElementType();
-            CompiledChildConstructor = CreateCompiledConstructor(ChildType);
-        }
-
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
-        {
-            if (ChildType.IsPrimitive)
+            if (ChildType.GetTypeInfo().IsPrimitive)
+            {
                 return new PrimitveArrayValueNode(parent, Name, this);
+            }
             return new ArrayValueNode(parent, Name, this);
+        }
+
+        protected override Type GetChildType()
+        {
+            return Type.GetElementType();
         }
     }
 }

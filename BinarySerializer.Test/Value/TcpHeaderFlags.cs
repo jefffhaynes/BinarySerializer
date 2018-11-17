@@ -1,6 +1,6 @@
 ﻿namespace BinarySerialization.Test.Value
 {
-    public enum TcpHeaderFlags : ushort
+    public enum TcpHeaderFlags : byte
     {
         Finished = 0x1,
         Synchronize = 0x2,

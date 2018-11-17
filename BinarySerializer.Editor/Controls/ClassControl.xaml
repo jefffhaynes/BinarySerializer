@@ -1,0 +1,130 @@
+﻿<UserControl
+    x:Class="BinarySerializer.Editor.Controls.ClassControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:BinarySerializer.Editor.Controls"
+    xmlns:converters="using:BinarySerializer.Editor.Converters"
+    xmlns:viewModels="using:BinarySerializer.Editor.ViewModels"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400" d:DataContext="{d:DesignData ClassViewModel}">
+    <UserControl.Resources>
+        <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
+        <converters:ConstBindingsConverter x:Key="ConstBindingsConverter"/>
+        <converters:BindingListConverter x:Key="BindingListConverter"/>
+    </UserControl.Resources>
+
+    <Grid Background="LightGray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ListView Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                      ItemsSource="{Binding Fields}" SelectionMode="None">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Padding" Value="6"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplateSelector>
+                <controls:FieldTemplateSelector>
+                    <controls:FieldTemplateSelector.ValueTemplate>
+                        <DataTemplate x:DataType="viewModels:FieldViewModel">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid BorderBrush="Black" BorderThickness="1" Background="White">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Margin="6,6,0,6" Text="{x:Bind Name}"/>
+                                    <TextBlock Grid.Column="1" Margin="6" Text="{x:Bind ConstBindings, Converter={StaticResource ConstBindingsConverter}}"/>
+
+                                    <controls:FieldControl Grid.Column="2" AnchorPoint="{x:Bind AnchorPoint, Mode=TwoWay}"/>
+                                </Grid>
+                                <TextBlock Grid.Column="1" Margin="2,0,0,0" VerticalAlignment="Top" 
+                                           Text="{x:Bind Bindings, Converter={StaticResource BindingListConverter}}" 
+                                           FontSize="13"/>
+                            </Grid>
+                        </DataTemplate>
+                    </controls:FieldTemplateSelector.ValueTemplate>
+                    <controls:FieldTemplateSelector.CollectionTemplate>
+                        <DataTemplate x:DataType="viewModels:CollectionViewModel">
+                            <Grid BorderBrush="Black" Margin="0,0,16,0" BorderThickness="1" Background="White">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="6" Text="{x:Bind Name}"/>
+                                <controls:CollectionControl Grid.Column="1" AnchorPoint="{x:Bind AnchorPoint, Mode=TwoWay}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </controls:FieldTemplateSelector.CollectionTemplate>
+                    <controls:FieldTemplateSelector.ClassTemplate>
+                        <DataTemplate x:DataType="viewModels:ClassViewModel">
+                            <Grid BorderBrush="Black" Margin="0,0,16,0" BorderThickness="1" Background="White">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="6" Text="{x:Bind Name}"/>
+                                <controls:ClassControl Grid.Column="1" AnchorPoint="{x:Bind AnchorPoint, Mode=TwoWay}" />
+                            </Grid>
+                        </DataTemplate>
+                    </controls:FieldTemplateSelector.ClassTemplate>
+                </controls:FieldTemplateSelector>
+            </ListView.ItemTemplateSelector>
+        </ListView>
+
+        <ItemsControl Grid.Row="0" ItemsSource="{Binding Bindings}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:BindingViewModel">
+                    <controls:BindingControl Source="{x:Bind Source.AnchorPoint, Mode=TwoWay}" 
+                                             Target="{x:Bind Target.AnchorPoint, Mode=TwoWay}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Grid Grid.Row="1" Visibility="{Binding SubTypes.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Path Grid.Row="0" Fill="Black" HorizontalAlignment="Center" Margin="6" 
+                  Data="M8.1999977,12.800003L18.000003,12.800003 18.000003,18.800003 26.2,18.800003 13.100008,32 0,18.900009 8.1999977,18.900009z M8.1999977,8.6000061L18.000003,8.6000061 18.000003,10.600006 8.1999977,10.600006z M8.1999977,4.3000031L18.000003,4.3000031 18.000003,6.3000031 8.1999977,6.3000031z M8.1999977,0L18.000003,0 18.000003,2 8.1999977,2z"/>
+            <ListView Grid.Row="1" ItemsSource="{Binding SubTypes}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <controls:ClassControl/>
+                            <!--<TextBlock Grid.Row="1" Margin="6" Text="OR"/>-->
+                        </Grid>
+                        
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </Grid>
+</UserControl>

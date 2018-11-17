@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Misc
 {
-    [TestClass]
+    
     public class DictionaryTests : TestBase
     {
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void ThrowIfMemberImplementsIDictionary()
         {
-            Roundtrip(new DictionaryMemberClass());
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(new DictionaryMemberClass()));
+#else
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(new DictionaryMemberClass()));
+#endif
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [Fact]
         public void ThrowIfImplementsIDictionary()
         {
-            Roundtrip(new Dictionary<string, string>());
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(new Dictionary<string, string>()));
+#else
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(new Dictionary<string, string>()));
+#endif
         }
     }
 }

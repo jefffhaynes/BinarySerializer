@@ -1,0 +1,21 @@
+﻿<UserControl
+    x:Class="BinarySerializer.Editor.Controls.CollectionControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BinarySerializer.Editor.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Path Margin="6" Stretch="Uniform" Height="24" Grid.Column="0" VerticalAlignment="Top"
+              Data="M0,0 6,0 6,1 0,1z M0,2 6,2 6,3 0,3z M0,4 6,4 6,5 0,5z" Fill="Black"/>
+        <local:ClassControl Grid.Column="1" DataContext="{Binding SubTypes[0]}"/>
+    </Grid>
+</UserControl>

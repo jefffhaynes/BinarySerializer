@@ -1,12 +1,14 @@
 ﻿using System;
 
+// ReSharper disable UnusedParameter.Local
+
 namespace BinarySerialization.Test.Misc
 {
     public class ImmutableClass
     {
         public ImmutableClass(string value, string value2)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public ImmutableClass(int valuE, int value2)
@@ -17,24 +19,24 @@ namespace BinarySerialization.Test.Misc
 
         public ImmutableClass(int value)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public ImmutableClass(string whyDoWeEvenHaveThisConstructor)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public ImmutableClass(int value, int value2, int value3)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         [FieldOrder(0)]
-        public int Value { get; private set; }
+        public int Value { get; }
 
         [FieldOrder(1)]
-        public int Value2 { get; private set; }
+        public int Value2 { get; }
 
         [FieldOrder(2)]
         public int MutableValue { get; set; }

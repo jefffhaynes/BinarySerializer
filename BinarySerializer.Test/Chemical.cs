@@ -1,8 +1,6 @@
-﻿using BinarySerialization;
-
-namespace BinarySerialization.Test
+﻿namespace BinarySerialization.Test
 {
-    abstract public class Chemical
+    public abstract class Chemical
     {
         protected Chemical(string formula)
         {
