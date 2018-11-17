@@ -1,6 +1,4 @@
-﻿using BinarySerialization;
-
-namespace BinarySerialization.Test.Unknown
+﻿namespace BinarySerialization.Test.Unknown
 {
     public class BindingAcrossUnknownBoundaryClass
     {

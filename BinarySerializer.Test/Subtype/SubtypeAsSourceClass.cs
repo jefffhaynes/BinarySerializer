@@ -6,7 +6,7 @@
         public byte Selector { get; set; }
 
         [FieldOrder(1)]
-        [Subtype("Selector", 42, typeof(SubclassA))]
+        [Subtype("Selector", 42, typeof (SubclassA))]
         public Superclass Superclass { get; set; }
 
         [FieldOrder(2)]

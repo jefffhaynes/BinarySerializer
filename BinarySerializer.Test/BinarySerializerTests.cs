@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test
 {
-    [TestClass]
-    public class BinarySerializerTests
+    
+    public class BinarySerializerTests : TestBase
     {
         private const string Disclaimer = "This isn't really cereal";
         private readonly BinarySerializer _serializer = new BinarySerializer();
@@ -70,10 +71,10 @@ namespace BinarySerialization.Test
             };
         }
 
-        [TestMethod]
-        public void Roundtrip()
+        [Fact]
+        public void CerealTest()
         {
-            Cereal cereal = Cerealize();
+            var cereal = Cerealize();
 
 
             using (var stream = new MemoryStream())
@@ -81,53 +82,53 @@ namespace BinarySerialization.Test
                 _serializer.Serialize(stream, cereal);
                 stream.Position = 0;
 
-                Assert.AreEqual(BinarySerialization.Endianness.Big, _serializer.Endianness);
+                Assert.Equal(BinarySerialization.Endianness.Big, _serializer.Endianness);
 
                 //File.WriteAllBytes("c:\\temp\\out.bin", stream.ToArray());
 
 
                 var cereal2 = _serializer.Deserialize<Cereal>(stream);
 
-                Assert.AreEqual("Cheeri", cereal2.Name);
-                Assert.AreEqual(cereal.Manufacturer, cereal2.Manufacturer);
-                Assert.AreEqual(cereal.NutritionalInformation.Fat, cereal2.NutritionalInformation.Fat);
-                Assert.AreEqual(cereal.NutritionalInformation.Calories, cereal2.NutritionalInformation.Calories);
-                Assert.AreEqual(cereal.NutritionalInformation.VitaminA, cereal2.NutritionalInformation.VitaminA);
-                Assert.AreEqual(cereal.NutritionalInformation.VitaminB, cereal2.NutritionalInformation.VitaminB);
-                Assert.IsTrue(cereal.NutritionalInformation.OtherNestedStuff.SequenceEqual(
+                Assert.Equal("Cheeri", cereal2.Name);
+                Assert.Equal(cereal.Manufacturer, cereal2.Manufacturer);
+                Assert.Equal(cereal.NutritionalInformation.Fat, cereal2.NutritionalInformation.Fat);
+                Assert.Equal(cereal.NutritionalInformation.Calories, cereal2.NutritionalInformation.Calories);
+                Assert.Equal(cereal.NutritionalInformation.VitaminA, cereal2.NutritionalInformation.VitaminA);
+                Assert.Equal(cereal.NutritionalInformation.VitaminB, cereal2.NutritionalInformation.VitaminB);
+                Assert.True(cereal.NutritionalInformation.OtherNestedStuff.SequenceEqual(
                     cereal2.NutritionalInformation.OtherNestedStuff));
-                Assert.IsTrue(cereal.NutritionalInformation.OtherNestedStuff2.SequenceEqual(
+                Assert.True(cereal.NutritionalInformation.OtherNestedStuff2.SequenceEqual(
                     cereal2.NutritionalInformation.OtherNestedStuff2));
 
-                Assert.IsTrue(cereal.NutritionalInformation.Toys.SequenceEqual(cereal2.NutritionalInformation.Toys));
+                Assert.True(cereal.NutritionalInformation.Toys.SequenceEqual(cereal2.NutritionalInformation.Toys));
 
-                Assert.IsInstanceOfType(cereal.NutritionalInformation.Ingredients.MainIngredient, typeof (Iron));
+                Assert.IsAssignableFrom(typeof(Iron), cereal.NutritionalInformation.Ingredients.MainIngredient);
 
-                Assert.AreEqual(cereal2.DoubleField, cereal2.DoubleField);
-                Assert.IsTrue(cereal2.OtherStuff.Contains("app"));
-                Assert.IsTrue(cereal2.OtherStuff.Contains("pea"));
-                Assert.IsTrue(cereal2.OtherStuff.Contains("ban"));
-                Assert.AreEqual(3, cereal2.OtherStuff.Count);
-                Assert.AreEqual(cereal2.OtherStuff.Count, cereal2.OtherStuffCount);
-                Assert.AreEqual(CerealShape.Circular, cereal2.Shape);
-                Assert.AreEqual(CerealShape.Square, cereal2.DefinitelyNotTheShape);
-                Assert.IsNull(cereal2.DontSerializeMe);
-                Assert.AreEqual(cereal.SerializeMe, cereal2.SerializeMe);
-                Assert.AreEqual(3, cereal2.ArrayOfInts.Length);
-                Assert.AreEqual(1, cereal2.ArrayOfInts[0]);
-                Assert.AreEqual(2, cereal2.ArrayOfInts[1]);
-                Assert.AreEqual(3, cereal2.ArrayOfInts[2]);
-                Assert.AreEqual(cereal.NutritionalInformation.WeirdOutlierLengthedField.Length/2.0, cereal2.Outlier);
+                Assert.Equal(cereal2.DoubleField, cereal2.DoubleField);
+                Assert.True(cereal2.OtherStuff.Contains("app"));
+                Assert.True(cereal2.OtherStuff.Contains("pea"));
+                Assert.True(cereal2.OtherStuff.Contains("ban"));
+                Assert.Equal(3, cereal2.OtherStuff.Count);
+                Assert.Equal(cereal2.OtherStuff.Count, cereal2.OtherStuffCount);
+                Assert.Equal(CerealShape.Circular, cereal2.Shape);
+                Assert.Equal(CerealShape.Square, cereal2.DefinitelyNotTheShape);
+                Assert.Null(cereal2.DontSerializeMe);
+                Assert.Equal(cereal.SerializeMe, cereal2.SerializeMe);
+                Assert.Equal(3, cereal2.ArrayOfInts.Length);
+                Assert.Equal(1, cereal2.ArrayOfInts[0]);
+                Assert.Equal(2, cereal2.ArrayOfInts[1]);
+                Assert.Equal(3, cereal2.ArrayOfInts[2]);
+                Assert.Equal(cereal.NutritionalInformation.WeirdOutlierLengthedField.Length/2.0, cereal2.Outlier);
 
-                Assert.IsTrue(cereal.ExplicitlyTerminatedList.SequenceEqual(cereal2.ExplicitlyTerminatedList));
-                Assert.IsTrue(cereal.ImplicitlyTerminatedList.SequenceEqual(cereal2.ImplicitlyTerminatedList));
+                Assert.True(cereal.ExplicitlyTerminatedList.SequenceEqual(cereal2.ExplicitlyTerminatedList));
+                Assert.True(cereal.ImplicitlyTerminatedList.SequenceEqual(cereal2.ImplicitlyTerminatedList));
 
                 //string weirdOutlierLengthedField = cereal.NutritionalInformation.WeirdOutlierLengthedField;
-                //Assert.AreEqual(weirdOutlierLengthedField.Substring(0, (int)cereal.Outlier*2),
+                //Assert.Equal(weirdOutlierLengthedField.Substring(0, (int)cereal.Outlier*2),
                 //                cereal2.NutritionalInformation.WeirdOutlierLengthedField);
 
                 var reader = new StreamReader(cereal2.Disclaimer);
-                Assert.AreEqual(Disclaimer, reader.ReadToEnd());
+                Assert.Equal(Disclaimer, reader.ReadToEnd());
             }
         }
 
@@ -136,27 +137,27 @@ namespace BinarySerialization.Test
         {
             if (e.MemberName == "IsLittleEndian")
             {
-                bool isLittleEndian = bool.Parse((string) e.Value);
+                var isLittleEndian = bool.Parse((string) e.Value);
                 if (!isLittleEndian)
                     _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
 
-            Console.WriteLine("write {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
+            Debug.WriteLine("write {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
         }
 
         private void SerializerMemberDeserialized(object sender, MemberSerializedEventArgs e)
         {
             if (e.MemberName == "IsLittleEndian")
             {
-                bool isLittleEndian = bool.Parse((string) e.Value);
+                var isLittleEndian = bool.Parse((string) e.Value);
                 if (!isLittleEndian)
                     _serializer.Endianness = BinarySerialization.Endianness.Big;
             }
 
-            Console.WriteLine("read {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
+            Debug.WriteLine("read {0}: {1} @ {2}", e.MemberName, e.Value, e.Offset);
         }
 
-        [TestMethod]
+        [Fact]
         public void NonSeekableStreamSerializationTest()
         {
             var stream = new NonSeekableStream();
@@ -164,7 +165,7 @@ namespace BinarySerialization.Test
             serializer.Serialize(stream, new Iron());
         }
 
-        [TestMethod]
+        [Fact]
         public void NonSeekableStreamDeserializationTest()
         {
             var stream = new NonSeekableStream();
@@ -172,33 +173,31 @@ namespace BinarySerialization.Test
             serializer.Serialize(stream, new Iron());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof (InvalidOperationException))]
+        [Fact]
         public void NonSeekableStreamWithOffsetAttributeShouldThrowInvalidOperationException()
         {
             var stream = new NonSeekableStream();
             var serializer = new BinarySerializer();
-            serializer.Serialize(stream, Cerealize());
+            Assert.Throws<InvalidOperationException>(() => serializer.Serialize(stream, Cerealize()));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof (ArgumentNullException))]
-        public void NullStreamSerializationShouldThrowNullArgumentException()
+        [Fact]
+        public void NullStreamSerializationShouldThrowArgumentNullException()
         {
             var serializer = new BinarySerializer();
-            serializer.Serialize(null, new object());
+            Assert.Throws<ArgumentNullException>(() => serializer.Serialize(null, new object()));
         }
 
-        [TestMethod]
+        [Fact]
         public void NullGraphSerializationShouldSerializeNothing()
         {
             var serializer = new BinarySerializer();
             var stream = new MemoryStream();
             serializer.Serialize(stream, null);
-            Assert.AreEqual(0, stream.Length);
+            Assert.Equal(0, stream.Length);
         }
 
-//        [TestMethod]
+//        [Fact]
 //#if DEBUG
 //        [ExpectedException(typeof(ArgumentNullException))]
 //#else
@@ -210,15 +209,15 @@ namespace BinarySerialization.Test
 //            serializer.Serialize(new MemoryStream(), new NullArrayClass());
 //        }
 
-        [TestMethod]
+        [Fact]
         public void UnresolvedSubtypeMemberDeserializationYieldsNull()
         {
             var serializer = new BinarySerializer();
             var ingredients = serializer.Deserialize<Ingredients>(new byte[] {0x4});
-            Assert.AreEqual(null, ingredients.MainIngredient);
+            Assert.Equal(null, ingredients.MainIngredient);
         }
 
-        [TestMethod]
+        [Fact]
         public void ImplicitTermination()
         {
             var data = new byte[] {0x0, 0x1, 0x2, 0x3};
@@ -226,15 +225,16 @@ namespace BinarySerialization.Test
             var serializer = new BinarySerializer();
             var byteList = serializer.Deserialize<ImplictTermination>(data);
 
-            Assert.AreEqual(4, byteList.Data.Count);
+            Assert.Equal(4, byteList.Data.Count);
         }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(NotSupportedException))]
-        //public void CollectionAtRootShouldThrowNotSupportedException()
-        //{
-        //    var serializer = new BinarySerialization.BinarySerializer();
-        //    serializer.Deserialize<List<string>>(new byte[3]);
         //}
+        //    serializer.Deserialize<List<string>>(new byte[3]);
+        //    var serializer = new BinarySerialization.BinarySerializer();
+        //{
+        //public void CollectionAtRootShouldThrowNotSupportedException()
+        //[ExpectedException(typeof(NotSupportedException))]
+
+        //[Fact]
     }
 }

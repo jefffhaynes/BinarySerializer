@@ -1,6 +1,4 @@
-﻿using BinarySerialization;
-
-namespace BinarySerialization.Test.Misc
+﻿namespace BinarySerialization.Test.Misc
 {
     public class NullTrailingMemberClassBase
     {

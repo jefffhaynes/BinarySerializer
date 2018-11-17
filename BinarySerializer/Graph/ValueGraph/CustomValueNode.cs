@@ -1,51 +1,60 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
     internal class CustomValueNode : ObjectValueNode
     {
-        public CustomValueNode(Node parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public CustomValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 
         protected override void ObjectSerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            var serializationContext = CreateSerializationContext();
+            var serializationContext = CreateLazySerializationContext();
 
             var value = BoundValue;
 
             if (value == null)
+            {
                 return;
+            }
 
-            var binarySerializable = value as IBinarySerializable;
-
-            if (binarySerializable == null)
+            if (!(value is IBinarySerializable binarySerializable))
+            {
                 throw new InvalidOperationException("Must implement IBinarySerializable");
+            }
 
-            binarySerializable.Serialize(stream, Endianness, serializationContext);
+            binarySerializable.Serialize(stream, GetFieldEndianness(), serializationContext);
         }
 
         protected override void ObjectDeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            var serializationContext = CreateSerializationContext();
-            var binarySerializable = (IBinarySerializable)Activator.CreateInstance(TypeNode.Type);
-            binarySerializable.Deserialize(stream, Endianness, serializationContext);
+            var serializationContext = CreateLazySerializationContext();
+            var binarySerializable = CreateBinarySerializable();
+            binarySerializable.Deserialize(stream, GetFieldEndianness(), serializationContext);
             Value = binarySerializable;
         }
 
-        public override bool Visited
+        protected override Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+            CancellationToken cancellationToken)
         {
-            get { return base.Visited; }
+            ObjectDeserializeOverride(stream, eventShuttle);
+            return Task.CompletedTask;
+        }
 
-            set
-            {
-                // no children will be marked as visited so we'll do it for them
-                foreach (ValueNode child in Children)
-                    child.Visited = value;
+        protected override Task ObjectSerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
+        {
+            ObjectSerializeOverride(stream, eventShuttle);
+            return Task.CompletedTask;
+        }
 
-                base.Visited = value;
-            }
+        private IBinarySerializable CreateBinarySerializable()
+        {
+            var binarySerializable = (IBinarySerializable) Activator.CreateInstance(TypeNode.Type);
+            return binarySerializable;
         }
     }
 }

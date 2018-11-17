@@ -3,17 +3,16 @@ using BinarySerialization.Graph.ValueGraph;
 
 namespace BinarySerialization.Graph
 {
-    internal class Binding : IBinding
+    public class Binding : IBinding
     {
         private readonly object _constValue;
 
-        public Binding(IBindableFieldAttribute attribute, int level)
+        public Binding(FieldBindingBaseAttribute attribute, int level)
         {
             Path = attribute.Path;
             BindingMode = attribute.BindingMode;
 
-            var constAttribute = attribute as IConstAttribute;
-            if (constAttribute != null && Path == null)
+            if (attribute is IConstAttribute constAttribute && Path == null)
             {
                 IsConst = true;
                 _constValue = constAttribute.GetConstValue();
@@ -35,7 +34,17 @@ namespace BinarySerialization.Graph
             RelativeSourceMode = attribute.RelativeSourceMode;
 
             Level = level;
+
+            SupportsDeferredEvaluation = attribute.SupportsDeferredBinding;
         }
+
+        public string Path { get; }
+        public BindingMode BindingMode { get; }
+        public IValueConverter ValueConverter { get; }
+        public object ConverterParameter { get; }
+        public RelativeSourceMode RelativeSourceMode { get; }
+        public int Level { get; set; }
+        public bool SupportsDeferredEvaluation { get; }
 
         public bool IsConst { get; }
 
@@ -44,57 +53,81 @@ namespace BinarySerialization.Graph
             get
             {
                 if (!IsConst)
+                {
                     throw new InvalidOperationException("Not const.");
+                }
 
                 return _constValue;
             }
         }
 
-        public string Path { get; }
-        public BindingMode BindingMode { get; private set; }
-        public IValueConverter ValueConverter { get; }
-        public object ConverterParameter { get; }
-        public RelativeSourceMode RelativeSourceMode { get; }
-        public int Level { get; set; }
-
         public object GetValue(ValueNode target)
         {
             if (IsConst)
+            {
                 return _constValue;
+            }
 
             if (BindingMode == BindingMode.OneWayToSource)
+            {
                 return null;
+            }
 
             var source = GetSource(target);
-            
-            if (!source.Visited)
-                throw new InvalidOperationException(
-                    "Binding source has not been deserialized.  Consider specifying a BindingMode of OneWayToSource.");
-            
-            return ValueConverter == null ? source.Value : Convert(source.Value, target.CreateSerializationContext());
+
+            CheckSource(source);
+
+            return ValueConverter == null
+                ? source.Value
+                : Convert(source.Value, target.CreateLazySerializationContext());
         }
 
         public object GetBoundValue(ValueNode target)
         {
             if (IsConst)
+            {
                 return _constValue;
+            }
 
             var source = GetSource(target);
 
+            CheckSource(source);
+
             return ValueConverter == null
                 ? source.BoundValue
-                : Convert(source.BoundValue, target.CreateSerializationContext());
+                : Convert(source.BoundValue, target.CreateLazySerializationContext());
         }
 
-        public ValueNode GetSource(ValueNode target)
+        public void Bind(ValueNode target, Func<object> callback)
         {
-            var relativeSource = (ValueNode) GetRelativeSource(target);
+            if (IsConst)
+            {
+                return;
+            }
+
+            var source = GetSource(target);
+
+            var finalCallback = ValueConverter == null
+                ? callback
+                : () => ConvertBack(callback(), target.CreateLazySerializationContext());
+
+            source.Bindings.Add(finalCallback);
+        }
+
+        public TNode GetSource<TNode>(TNode target) where TNode : Node<TNode>
+        {
+            if (IsConst)
+            {
+                throw new InvalidOperationException("Binding is constant.");
+            }
+
+            var relativeSource = GetRelativeSource(target);
             return relativeSource.GetChild(Path);
         }
 
-        private Node GetRelativeSource(Node target)
+        private TNode GetRelativeSource<TNode>(TNode target) where TNode : Node<TNode>
         {
-            Node source = null;
+            TNode source = null;
 
             switch (RelativeSourceMode)
             {
@@ -105,46 +138,36 @@ namespace BinarySerialization.Graph
                 case RelativeSourceMode.SerializationContext:
                     source = FindAncestor(target);
                     break;
-                case RelativeSourceMode.PreviousData:
-                    throw new NotImplementedException();
             }
 
             return source;
         }
 
-        private Node FindAncestor(Node target)
+        private TNode FindAncestor<TNode>(TNode target) where TNode : Node<TNode>
         {
             var level = 1;
             var parent = target.Parent;
             while (parent != null)
             {
                 if (level == Level)
+                {
                     return parent;
+                }
 
                 if (parent.Parent == null && RelativeSourceMode == RelativeSourceMode.SerializationContext)
+                {
                     return parent;
+                }
 
                 parent = parent.Parent;
 
-                if (!(parent is ContextValueNode))
+                if (!(parent is RootValueNode))
+                {
                     level++;
+                }
             }
 
             return null;
-        }
-
-        public void Bind(ValueNode target, Func<object> callback)
-        {
-            if (IsConst)
-                return;
-
-            ValueNode source = GetSource(target);
-
-            var finalCallback = ValueConverter == null
-                ? callback
-                : () => ConvertBack(callback(), target.CreateSerializationContext());
-
-            source.Bindings.Add(finalCallback);
         }
 
         private object Convert(object value, BinarySerializationContext context)
@@ -155,6 +178,16 @@ namespace BinarySerialization.Graph
         private object ConvertBack(object value, BinarySerializationContext context)
         {
             return ValueConverter.ConvertBack(value, ConverterParameter, context);
+        }
+        
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
+        private void CheckSource(ValueNode source)
+        {
+            if (!source.Visited && !SupportsDeferredEvaluation)
+            {
+                throw new InvalidOperationException(
+                    "This attribute does not support forward binding.  Consider specifying a BindingMode of OneWayToSource.");
+            }
         }
     }
 }

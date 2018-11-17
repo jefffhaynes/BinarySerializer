@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using BinarySerialization;
 
 namespace BinarySerialization.Test
 {
@@ -21,7 +20,8 @@ namespace BinarySerialization.Test
         public uint VitaminB { get; set; }
 
         [FieldOrder(5)]
-        [FieldCount("OtherStuffCount", RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorType = typeof(Cereal))]
+        [FieldCount("OtherStuffCount", RelativeSourceMode = RelativeSourceMode.FindAncestor,
+            AncestorType = typeof (Cereal))]
         public List<string> OtherNestedStuff { get; set; }
 
         [FieldOrder(6)]
@@ -33,7 +33,8 @@ namespace BinarySerialization.Test
         public List<Toy> Toys { get; set; }
 
         [FieldOrder(8)]
-        [FieldLength("Outlier", ConverterType = typeof(DoubleOutlierConverter), RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
+        [FieldLength("Outlier", ConverterType = typeof (DoubleOutlierConverter),
+            RelativeSourceMode = RelativeSourceMode.FindAncestor, AncestorLevel = 2)]
         public string WeirdOutlierLengthedField { get; set; }
 
         [FieldOrder(9)]

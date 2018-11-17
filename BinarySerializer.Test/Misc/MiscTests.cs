@@ -1,34 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.IO;
+using Xunit;
 
-namespace BinarySerializer.Test.Misc
+namespace BinarySerialization.Test.Misc
 {
-    public class DictionaryMemberClass
+    public class MiscTests : TestBase
     {
-        public DictionaryMemberClass()
+        [Fact]
+        public void DontFlushTooMuchTest()
         {
-            Field = new Dictionary<string, string>();
-        }
-
-        public Dictionary<string, string> Field { get; set; }
-    }
-
-    [TestClass]
-    public class CountTests : TestBase
-    {
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ThrowIfMemberImplementsIDictionary()
-        {
-            Roundtrip(new DictionaryMemberClass());
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ThrowIfImplementsIDictionary()
-        {
-            Roundtrip(new Dictionary<string, string>());
+            var serializer = new BinarySerializer();
+            var expected = new DontFlushTooMuchClass();
+            var stream = new UnflushableStream();
+            
+            serializer.Serialize(stream, expected);
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue9
 {
-    [TestClass]
+    
     public class Issue9Tests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void TestMethod()
         {
             var expected = new ElementClass();

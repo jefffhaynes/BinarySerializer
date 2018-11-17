@@ -3,18 +3,18 @@
     public enum BinOccupancy
     {
         /// <summary>
-        /// The unknown.
+        ///     The unknown.
         /// </summary>
         Unknown = 0,
 
         /// <summary>
-        /// The empty.
+        ///     The empty.
         /// </summary>
         Empty = 1,
 
         /// <summary>
-        /// The full.
+        ///     The full.
         /// </summary>
-        Full = 2,
+        Full = 2
     }
 }

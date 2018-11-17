@@ -8,7 +8,7 @@
         [FieldOrder(1)]
         [FieldOffset(50)]
         [FieldLength(100)]
-        [Subtype("Indicator", 1, typeof(CustomSubtypeCustomClass))]
+        [Subtype("Indicator", 1, typeof (CustomSubtypeCustomClass))]
         public CustomSubtypeBaseClass Inner { get; set; }
     }
 }

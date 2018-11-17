@@ -1,18 +1,18 @@
 ﻿using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace BinarySerialization.Test.Streams
 {
-    [TestClass]
+    
     public class StreamTests : TestBase
     {
-        [TestMethod]
+        [Fact]
         public void StreamTest()
         {
             var stream = new MemoryStream(System.Text.Encoding.ASCII.GetBytes("StreamValue"));
             var expected = new StreamClass {Field = stream};
             var actual = Roundtrip(expected);
-            Assert.AreEqual(stream.Length, actual.Field.Length);
+            Assert.Equal(stream.Length, actual.Field.Length);
         }
     }
 }

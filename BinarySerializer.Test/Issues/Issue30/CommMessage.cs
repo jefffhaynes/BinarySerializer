@@ -2,11 +2,6 @@
 {
     public class CommMessage<T> : IMessage<T> where T : class, IPayload
     {
-        [FieldOrder(0)]
-        public Header Header { get; set; }
-        [FieldOrder(1)]
-        public T Payload { get; set; }
-
         public CommMessage()
         {
         }
@@ -16,6 +11,12 @@
             Header = header;
             Payload = payload;
         }
+
+        [FieldOrder(0)]
+        public Header Header { get; set; }
+
+        [FieldOrder(1)]
+        public T Payload { get; set; }
 
         public void ComplementHeader()
         {

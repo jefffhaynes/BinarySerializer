@@ -5,19 +5,29 @@ namespace BinarySerialization.Test.Misc
 {
     internal class UnreadableStream : Stream
     {
+        public override bool CanRead => true;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => throw new NotSupportedException();
+
+        public override long Length => throw new IOException();
+
+        public override long Position { get; set; }
+
         public override void Flush()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void SetLength(long value)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -28,27 +38,5 @@ namespace BinarySerialization.Test.Misc
         public override void Write(byte[] buffer, int offset, int count)
         {
         }
-
-        public override bool CanRead
-        {
-            get { return true; }
-        }
-
-        public override bool CanSeek
-        {
-            get { return false; }
-        }
-
-        public override bool CanWrite
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override long Length
-        {
-            get { throw new IOException(); }
-        }
-
-        public override long Position { get; set; }
     }
 }

@@ -10,11 +10,12 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        public StreamTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
+        public StreamTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+            memberInfo)
         {
         }
 
-        public override ValueNode CreateSerializerOverride(ValueNode parent)
+        internal override ValueNode CreateSerializerOverride(ValueNode parent)
         {
             return new StreamValueNode(parent, Name, this);
         }

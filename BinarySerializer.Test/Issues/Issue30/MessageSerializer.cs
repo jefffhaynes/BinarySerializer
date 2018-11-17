@@ -9,15 +9,14 @@ namespace BinarySerialization.Test.Issues.Issue30
 
         public MessageSerializer()
         {
-            _binSerializer = new BinarySerializer();
-            _binSerializer.Endianness = BinarySerialization.Endianness.Big;
+            _binSerializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Big};
         }
 
         public byte[] BinarySerializeMessage<T>(IMessage<T> message) where T : class, IPayload
         {
             message.ComplementHeader();
 
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
                 _binSerializer.Serialize(memoryStream, message);
                 return memoryStream.ToArray();

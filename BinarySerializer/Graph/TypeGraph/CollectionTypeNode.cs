@@ -3,21 +3,22 @@ using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
 {
-    internal abstract class CollectionTypeNode : ContainerTypeNode
+    public abstract class CollectionTypeNode : ContainerTypeNode
     {
-        private Lazy<TypeNode> _lazyChild; 
+        private Lazy<TypeNode> _lazyChild;
 
         protected CollectionTypeNode(TypeNode parent, Type type) : base(parent, type)
         {
             Construct();
         }
 
-        protected CollectionTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType, memberInfo)
+        protected CollectionTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+            memberInfo)
         {
             Construct();
         }
 
-        public Func<object> CompiledConstructor { get; private set; } 
+        public Func<object> CompiledConstructor { get; private set; }
 
         public Type ChildType { get; set; }
 
@@ -29,13 +30,18 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public object TerminationValue { get; private set; }
 
+        protected abstract Type GetChildType();
+
         private void Construct()
         {
             CompiledConstructor = CreateCompiledConstructor();
 
-            object terminationValue;
-            TerminationChild = GetTerminationChild(out terminationValue);
+            ChildType = GetChildType();
+            CompiledChildConstructor = CreateCompiledConstructor(ChildType);
+
+            TerminationChild = GetTerminationChild(out var terminationValue);
             TerminationValue = terminationValue;
+
             _lazyChild = new Lazy<TypeNode>(() => GenerateChild(ChildType));
         }
 
@@ -51,7 +57,9 @@ namespace BinarySerialization.Graph.TypeGraph
 
             TypeNode terminationChild = null;
             if (terminationValue != null)
+            {
                 terminationChild = GenerateChild(terminationValue.GetType());
+            }
 
             return terminationChild;
         }

@@ -5,7 +5,8 @@
         private ImmutableNoPublicConstructorClass()
         {
         }
-
-        public byte Value { get; private set; }
+        
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
+        public byte Value { get; }
     }
 }
