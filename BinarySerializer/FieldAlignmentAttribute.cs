@@ -3,7 +3,7 @@
 namespace BinarySerialization
 {
     /// <summary>
-    ///     Specifies the alignment of a member or object subgraph.
+    ///     Specifies the alignment of a member or object sub-graph.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
     public sealed class FieldAlignmentAttribute : FieldBindingBaseAttribute, IConstAttribute

@@ -37,9 +37,9 @@ namespace BinarySerialization
 
             _root = this;
 
-            while (_root.Source is BoundedStream)
+            while (_root.Source is BoundedStream root)
             {
-                _root = (BoundedStream) _root.Source;
+                _root = root;
             }
         }
 

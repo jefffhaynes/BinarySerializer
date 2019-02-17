@@ -3,7 +3,7 @@
 namespace BinarySerialization
 {
     /// <summary>
-    ///     Specifies an 8-bit checksum for a member or object subgraph, defined as the 2's compliment of the addition of all
+    ///     Specifies an 8-bit checksum for a member or object sub-graph, defined as the 2's compliment of the addition of all
     ///     bytes.
     /// </summary>
     public sealed class FieldChecksumAttribute : FieldValueAttributeBase

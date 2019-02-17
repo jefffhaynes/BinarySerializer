@@ -1,7 +1,7 @@
 ﻿namespace BinarySerialization
 {
     /// <summary>
-    ///     Specifies a 32-bit checksum for a member or object subgraph.
+    ///     Specifies a 32-bit checksum for a member or object sub-graph.
     /// </summary>
     public sealed class FieldCrc32Attribute : FieldValueAttributeBase
     {

@@ -57,80 +57,56 @@ namespace BinarySerialization
         /// </summary>
         public Endianness Endianness { get; set; }
 
-        /// <summary>
-        ///     Writes a two-byte signed integer to the current stream and advances the stream position by two bytes.
-        /// </summary>
-        /// <param name="value"></param>
+        /// <inheritdoc />
         public override void Write(short value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        /// <summary>
-        ///     Writes a two-byte unsigned integer to the current stream and advances the stream position by two bytes.
-        /// </summary>
-        /// <param name="value"></param>
+        /// <inheritdoc />
         public override void Write(ushort value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        /// <summary>
-        ///     Writes a four-byte signed integer to the current stream and advances the stream position by four bytes.
-        /// </summary>
-        /// <param name="value"></param>
+        /// <inheritdoc />
         public override void Write(int value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        /// <summary>
-        ///     Writes a four-byte unsigned integer to the current stream and advances the stream position by four bytes.
-        /// </summary>
-        /// <param name="value"></param>
+        /// <inheritdoc />
         public override void Write(uint value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        /// <summary>
-        ///     Writes an eight-byte signed integer to the current stream and advances the stream position by eight bytes.
-        /// </summary>
-        /// <param name="value"></param>
+        /// <inheritdoc />
         public override void Write(long value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        /// <summary>
-        ///     Writes an eight-byte unsigned integer to the current stream and advances the stream position by eight bytes.
-        /// </summary>
-        /// <param name="value"></param>
+        /// <inheritdoc />
         public override void Write(ulong value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        /// <summary>
-        ///     Writes a four-byte floating-point value to the current stream and advances the stream position by four bytes.
-        /// </summary>
-        /// <param name="value"></param>
+        /// <inheritdoc />
         public override void Write(float value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;
             base.Write(v);
         }
 
-        /// <summary>
-        ///     Writes an eight-byte floating-point value to the current stream and advances the stream position by eight bytes.
-        /// </summary>
-        /// <param name="value"></param>
+        /// <inheritdoc />
         public override void Write(double value)
         {
             var v = Endianness == Endianness.Big ? Bytes.Reverse(value) : value;

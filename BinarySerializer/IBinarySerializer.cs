@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BinarySerialization {
     /// <summary>
-    /// Declaratively serializes and deserializes an object, or a graph of connected objects, in binary format.
+    /// Serializes and deserializes an object, or a graph of connected objects, in binary format.
     /// </summary>
     public interface IBinarySerializer {
         /// <summary>

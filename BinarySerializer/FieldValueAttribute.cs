@@ -1,7 +1,7 @@
 ﻿namespace BinarySerialization
 {
     /// <summary>
-    ///     Specifies a value binding for a member or object subgraph.
+    ///     Specifies a value binding for a member or object sub-graph.
     /// </summary>
     public sealed class FieldValueAttribute : FieldValueAttributeBase
     {
