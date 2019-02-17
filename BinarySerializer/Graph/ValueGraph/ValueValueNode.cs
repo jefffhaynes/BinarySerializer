@@ -53,10 +53,9 @@ namespace BinarySerialization.Graph.ValueGraph
                             {
                                 var bindingValue = binding();
                                 return bindingValue == UnsetValue ? Value : bindingValue;
-                            })
-                            .ToArray();
+                            }).ToArray();
 
-                        if (targetValues.Any(v => !Equals(value, v)))
+                        if (targetValues.Any(targetValue => !Equals(value, targetValue)))
                         {
                             throw new BindingException(
                                 "Multiple bindings to a single source must have equivalent target values.");

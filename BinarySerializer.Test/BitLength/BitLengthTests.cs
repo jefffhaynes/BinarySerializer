@@ -68,6 +68,25 @@ namespace BinarySerialization.Test.BitLength
                 Assert.Equal(expected[i].Value, actual[i].Value);
             }
         }
+
+        [Fact]
+        public void BoundBitLengthTest()
+        {
+            var expected = new BoundBitLengthClass
+            {
+                Items = new List<InternalBitLengthClass>
+                {
+                    new InternalBitLengthClass {Value = 1},
+                    new InternalBitLengthClass {Value = 2}
+                }
+            };
+
+            var actual = Roundtrip(expected);
+            Assert.Equal(8, actual.BitLength);
+            Assert.Equal(expected.Items.Count, actual.Items.Count);
+            Assert.Equal(expected.Items[0].Value, actual.Items[0].Value);
+            Assert.Equal(expected.Items[1].Value, actual.Items[1].Value);
+        }
     }
 }
 

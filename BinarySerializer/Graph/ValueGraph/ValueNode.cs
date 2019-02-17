@@ -71,6 +71,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeNode = TypeNode;
 
             typeNode.FieldLengthBindings?.Bind(this, () => MeasureOverride().ByteCount);
+            typeNode.FieldBitLengthBindings?.Bind(this, () => MeasureOverride().TotalBitCount);
             typeNode.ItemLengthBindings?.Bind(this, () => MeasureItemsOverride().Select(item => item.ByteCount));
             typeNode.FieldCountBindings?.Bind(this, () => CountOverride());
 
@@ -450,13 +451,17 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var parent = Parent;
-            if (parent?.TypeNode.ItemLengthBindings != null)
+            var parentItemLengthBindings = parent?.TypeNode.ItemLengthBindings;
+
+            if (parentItemLengthBindings == null)
             {
-                var parentItemLength = parent.TypeNode.ItemLengthBindings.GetValue(parent);
-                if (parentItemLength.GetType().GetTypeInfo().IsPrimitive)
-                {
-                    return Convert.ToInt64(parentItemLength);
-                }
+                return null;
+            }
+
+            var parentItemLength = parentItemLengthBindings.GetValue(parent);
+            if (parentItemLength.GetType().GetTypeInfo().IsPrimitive)
+            {
+                return Convert.ToInt64(parentItemLength);
             }
 
             return null;
@@ -566,9 +571,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (value != null)
             {
-                if (value is Encoding)
+                if (value is Encoding encodingValue)
                 {
-                    encoding = value as Encoding;
+                    encoding = encodingValue;
                 }
                 else
                 {

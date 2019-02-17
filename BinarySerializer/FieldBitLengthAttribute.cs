@@ -3,7 +3,7 @@
 namespace BinarySerialization
 {
     /// <summary>
-    ///     Specifies the length of a member or object subgraph.
+    ///     Specifies the length of a member or object sub-graph.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
     public sealed class FieldBitLengthAttribute : FieldBindingBaseAttribute, ILengthAttribute, IConstAttribute
@@ -34,7 +34,7 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        ///     The number of items in the decorated member for fixed-sized members or object subgraphs.
+        ///     The number of items in the decorated member for fixed-sized members or object sub-graphs.
         /// </summary>
         public ulong ConstLength { get; }
     }
