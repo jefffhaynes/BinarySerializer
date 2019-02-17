@@ -443,10 +443,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 return length.Value;
             }
 
-            var fieldBitLengthAttribute = TypeNode.FieldBitLengthAttribute;
-            if (fieldBitLengthAttribute != null)
+            var bitLength = GetNumericValue(TypeNode.FieldBitLengthBindings);
+            if (bitLength != null)
             {
-                return FieldLength.FromBitCount((int)fieldBitLengthAttribute.ConstLength);
+                return FieldLength.FromBitCount((int) bitLength);
             }
 
             var parent = Parent;
@@ -470,10 +470,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 return length;
             }
 
-            var fieldBitLengthAttribute = TypeNode.FieldBitLengthAttribute;
-            if (fieldBitLengthAttribute != null)
+            var bitLength = GetConstNumericValue(TypeNode.FieldBitLengthBindings);
+            if (bitLength != null)
             {
-                return FieldLength.FromBitCount((int)fieldBitLengthAttribute.ConstLength);
+                return FieldLength.FromBitCount((int) bitLength);
             }
 
             return Parent?.GetConstFieldItemLength();
@@ -528,11 +528,6 @@ namespace BinarySerialization.Graph.ValueGraph
         protected long? GetFieldOffset()
         {
             return GetNumericValue(TypeNode.FieldOffsetBindings);
-        }
-
-        protected long? GetConstFieldOffset()
-        {
-            return GetConstNumericValue(TypeNode.FieldOffsetBindings);
         }
 
         protected virtual Endianness GetFieldEndianness()

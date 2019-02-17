@@ -9,7 +9,7 @@ using BinarySerialization.Graph.ValueGraph;
 namespace BinarySerialization
 {
     /// <summary>
-    ///     Declaratively serializes and deserializes an object, or a graph of connected objects, in binary format.
+    ///     Serializes or deserializes an object, or a graph of connected objects, in binary format.
     ///     <seealso cref="IgnoreAttribute" />
     ///     <seealso cref="FieldOrderAttribute" />
     ///     <seealso cref="FieldLengthAttribute" />

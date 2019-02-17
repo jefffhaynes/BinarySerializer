@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Xunit;
+
+#pragma warning disable 649
 
 namespace BinarySerialization.Test.Issues.Issue94
 {

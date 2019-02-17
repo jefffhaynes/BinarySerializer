@@ -116,10 +116,11 @@ namespace BinarySerialization.Graph.ValueGraph
         private static Stream GetRootStream(BoundedStream stream)
         {
             Stream baseStream = stream;
-            while (baseStream is BoundedStream)
+            while (baseStream is BoundedStream boundedStream)
             {
-                baseStream = (baseStream as BoundedStream).Source;
+                baseStream = boundedStream.Source;
             }
+
             return baseStream;
         }
     }

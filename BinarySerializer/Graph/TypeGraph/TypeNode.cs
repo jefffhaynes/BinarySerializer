@@ -92,17 +92,25 @@ namespace BinarySerialization.Graph.TypeGraph
                 {
                     var getMethod = propertyInfo.GetGetMethod();
 
+#if NETSTANDARD1_3
                     ValueGetter = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-                        ? (target => getMethod.Invoke(target, null))
+                        ? target => getMethod.Invoke(target, null)
                         : MagicMethods.MagicFunc(parentType, getMethod);
+#else
+                    ValueGetter = MagicMethods.MagicFunc(parentType, getMethod);
+#endif
 
                     var setMethod = propertyInfo.GetSetMethod();
 
                     if (setMethod != null)
                     {
+#if NETSTANDARD1_3
                         ValueSetter = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
                             ? ((target, value) => setMethod.Invoke(target, new[] {value}))
                             : MagicMethods.MagicAction(parentType, setMethod);
+#else
+                        ValueSetter = MagicMethods.MagicAction(parentType, setMethod);
+#endif
                     }
                 }
             }
@@ -167,7 +175,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             // setup bindings
             FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
-            FieldBitLengthAttribute = attributes.OfType<FieldBitLengthAttribute>().SingleOrDefault();
+            FieldBitLengthBindings = GetBindings<FieldBitLengthAttribute>(attributes);
             FieldCountBindings = GetBindings<FieldCountAttribute>(attributes);
             FieldOffsetBindings = GetBindings<FieldOffsetAttribute>(attributes);
             FieldScaleBindings = GetBindings<FieldScaleAttribute>(attributes);
@@ -312,8 +320,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public Func<object, object> ValueGetter { get; }
 
         public BindingCollection FieldLengthBindings { get; }
-        public FieldBitLengthAttribute FieldBitLengthAttribute { get; }
-        //public BindingCollection FieldBitLengthBindings { get; }
+        public BindingCollection FieldBitLengthBindings { get; }
         public BindingCollection ItemLengthBindings { get; }
         public BindingCollection FieldCountBindings { get; }
         public BindingCollection FieldOffsetBindings { get; }

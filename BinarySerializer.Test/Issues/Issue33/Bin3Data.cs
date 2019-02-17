@@ -14,7 +14,9 @@
         /// </summary>
         [FieldOrder(1)]
         [FieldLength(31)]
+#pragma warning disable 618
         [SerializeAs(SerializedType = SerializedType.NullTerminatedString)]
+#pragma warning restore 618
         public string Ident { get; set; }
 
         /// <summary>

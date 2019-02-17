@@ -39,11 +39,11 @@ namespace BinarySerialization.Test.BitLength
                 Value2 = 0x11
             };
 
-            var acutal = Roundtrip(expected);
+            var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.Value.Value, acutal.Value.Value);
-            Assert.Equal(expected.Value.Value2, acutal.Value.Value2);
-            Assert.Equal(acutal.Crc2, acutal.Crc);
+            Assert.Equal(expected.Value.Value, actual.Value.Value);
+            Assert.Equal(expected.Value.Value2, actual.Value.Value2);
+            Assert.Equal(actual.Crc2, actual.Crc);
         }
 
         [Fact]
