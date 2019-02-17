@@ -4,7 +4,7 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Support for bit length binding, fixes for iOS</PackageReleaseNotes>
+    <PackageReleaseNotes>Support for bit length binding</PackageReleaseNotes>
     <PackageProjectUrl>http://binaryserializer.net</PackageProjectUrl>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
