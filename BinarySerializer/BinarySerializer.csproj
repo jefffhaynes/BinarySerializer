@@ -5,10 +5,10 @@
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
     <PackageReleaseNotes>Support for bit length binding</PackageReleaseNotes>
-    <PackageProjectUrl>http://binaryserializer.net</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/jefffhaynes/BinarySerializer</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>http://binaryserializer.net</RepositoryUrl>
+    <RepositoryUrl>https://github.com/jefffhaynes/BinarySerializer</RepositoryUrl>
     <AssemblyVersion>8.2.0.0</AssemblyVersion>
     <FileVersion>8.2.0.0</FileVersion>
     <Version>8.2</Version>
