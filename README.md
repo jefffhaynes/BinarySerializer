@@ -235,13 +235,13 @@ The FieldBitLength attribute is similar to the length attribute but can be used 
 ```c#
 public class Header
 {
-	[FieldOrder(0)]
-	[FieldBitLength(3)]
-	public HeaderType Type { get; set; }
+    [FieldOrder(0)]
+    [FieldBitLength(3)]
+    public HeaderType Type { get; set; }
 
-	[FieldOrder(1)]
-	[FieldBitLength(5)]
-	public int Length { get; set; }
+    [FieldOrder(1)]
+    [FieldBitLength(5)]
+    public int Length { get; set; }
 }
 ```
 
@@ -396,10 +396,10 @@ public class Header
     [FieldOrder(0)]
     [Endianness(nameof(ByteOrderIndicator), Converter = typeof(EndiannessConverter)]
     public int Length { get; set; }
-	
+
     [FieldOrder(1)]
     public int ByteOrderIndicator { get; set; }
-	
+
     [FieldOrder(2)]
     [FieldLength("Length")]
     public string Value { get; set; }
@@ -486,15 +486,15 @@ Lastly, field value attributes such as the CRC attributes can be broken up over 
 public class Packet
 {
     [FieldOrder(0)]
-	[FieldCrc16(nameof(Crc))]
+    [FieldCrc16(nameof(Crc))]
     public int Length { get; set; }
 
-	[FieldOrder(1)]
-	public PacketOptions Options { get; set; }
+    [FieldOrder(1)]
+    public PacketOptions Options { get; set; }
 
-	[FieldOrder(2)]
-	[FieldCrc16(nameof(Crc))]
-	public int PacketType { get; set; }
+    [FieldOrder(2)]
+    [FieldCrc16(nameof(Crc))]
+    public int PacketType { get; set; }
 
     [FieldOrder(3)]
     public ushort Crc { get; set; }
@@ -800,13 +800,13 @@ The ItemSubtype attribute is similar to the Subtype attribute but can be used to
 ```c#
 public class ChocolateBox
 {
-	[FieldOrder(0)]
-	public ChocolateType Type { get; set; }
+    [FieldOrder(0)]
+    public ChocolateType Type { get; set; }
 
-	[FieldOrder(1)]
-	[ItemSubtype(nameof(Type), ChocolateType.Dark, typeof(DarkChocolate))]
-	[ItemSubtype(Type), ChocolateType.NutsAndChews, typeof(NutsAndChewsChocolate))]
-	public List<Chocolate> Chocolates;
+    [FieldOrder(1)]
+    [ItemSubtype(nameof(Type), ChocolateType.Dark, typeof(DarkChocolate))]
+    [ItemSubtype(Type), ChocolateType.NutsAndChews, typeof(NutsAndChewsChocolate))]
+    public List<Chocolate> Chocolates;
 }
 ```
 
@@ -839,7 +839,7 @@ public class Section
 {
     [FieldOrder(0)]
     public Block Header { get; set; }
-	
+
     [FieldOrder(1)]
     [ItemSerializeUntil(nameof(Block.Type), BlockType.Header, LastItemMode = LastItemMode.Defer)]
     public List<Block> Blocks { get; set; }
