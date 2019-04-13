@@ -2,7 +2,7 @@
 {
     public abstract class CommandContainer
     {
-        [SerializeAs(SerializedType.TerminatedString, StringTerminator = 0x20)]
+        [SerializeAs(SerializedType.TerminatedString, StringTerminator = (char)0x20)]
         public CommandType CommandType { get; set; }
     }
 }

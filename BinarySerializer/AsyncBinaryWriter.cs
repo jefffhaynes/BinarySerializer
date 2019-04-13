@@ -8,9 +8,12 @@ namespace BinarySerialization
 {
     internal class AsyncBinaryWriter : BinaryWriter
     {
+        private readonly Encoding _encoding;
+
         public AsyncBinaryWriter(BoundedStream output, Encoding encoding) : base(output, encoding)
         {
             OutputStream = output;
+            _encoding = encoding;
         }
 
         public BoundedStream OutputStream { get; }
@@ -24,6 +27,12 @@ namespace BinarySerialization
         public Task WriteAsync(byte value, FieldLength fieldLength, CancellationToken cancellationToken)
         {
             var data = new[] {value};
+            return WriteAsync(data, fieldLength, cancellationToken);
+        }
+
+        public Task WriteAsync(char value, FieldLength fieldLength, CancellationToken cancellationToken)
+        {
+            var data = _encoding.GetBytes(new[] {value});
             return WriteAsync(data, fieldLength, cancellationToken);
         }
 

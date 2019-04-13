@@ -31,6 +31,6 @@ namespace BinarySerialization
         /// <summary>
         /// Specify the string terminator when the serialized type is TerminatedString.  Null (zero) by default.
         /// </summary>
-        public byte StringTerminator { get; set; }
+        public char StringTerminator { get; set; }
     }
 }

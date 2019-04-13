@@ -9,7 +9,7 @@ namespace BinarySerialization
     public class AsyncBinaryReader : BinaryReader
     {
         public BoundedStream InputStream { get; }
-
+        
         public AsyncBinaryReader(BoundedStream input, Encoding encoding) : base(input, encoding)
         {
             InputStream = input;
@@ -28,6 +28,11 @@ namespace BinarySerialization
             await ReadAsync(b, b.Length, cancellationToken)
                 .ConfigureAwait(false);
             return b[0];
+        }
+
+        public Task<char> ReadCharAsync(CancellationToken cancellationToken)
+        {
+            return Task.FromResult(base.ReadChar());
         }
 
         public override sbyte ReadSByte()

@@ -6,7 +6,8 @@ namespace BinarySerialization.Test.Encoding
     {
         public object Convert(object value, object parameter, BinarySerializationContext context)
         {
-            return System.Text.Encoding.GetEncoding((string) value);
+            var encodingName = (string) value;
+            return EncodingHelper.GetEncoding(encodingName);
         }
 
         public object ConvertBack(object value, object parameter, BinarySerializationContext context)

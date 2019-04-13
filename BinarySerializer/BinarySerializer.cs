@@ -41,7 +41,7 @@ namespace BinarySerialization
     public class BinarySerializer : IBinarySerializer
     {
         private const Endianness DefaultEndianness = Endianness.Little;
-        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
+        private static readonly Encoding DefaultEncoding = new UTF8Encoding(false);
 
         private static readonly GraphGenerator GraphGenerator = new GraphGenerator();
 

@@ -34,7 +34,7 @@ namespace BinarySerializer.Performance
         public byte WeirdNumber2 { get; set; }
 
         [FieldOrder(8)]
-        [SerializeAs(SerializedType.TerminatedString, StringTerminator = 5)]
+        [SerializeAs(SerializedType.TerminatedString, StringTerminator = (char)5)]
         public string TerminatedString { get; set; }
 
         [FieldOrder(9)]

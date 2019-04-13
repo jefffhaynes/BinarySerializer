@@ -139,7 +139,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     if (serializedType == SerializedType.TerminatedString && data.Length > 0)
                     {
-                        data[0] = TypeNode.StringTerminator;
+                        var terminatorData = GetNullTermination();
+                        Array.Copy(terminatorData, data, terminatorData.Length);
                     }
 
                     writer.Write(data, constLength);
@@ -217,12 +218,14 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.TerminatedString:
                 {
-                    var data = GetFieldEncoding().GetBytes(value.ToString());
+                    var encoding = GetFieldEncoding();
+                    var data = encoding.GetBytes(value.ToString());
 
                     var dataLength = GetNullTerminatedArrayLength(data, constLength, maxLength);
 
                     writer.Write(data, dataLength);
-                    var stringTerminatorData = new[] {TypeNode.StringTerminator};
+
+                    var stringTerminatorData = encoding.GetBytes(new[] {TypeNode.StringTerminator});
                     writer.Write(stringTerminatorData, stringTerminatorData.Length);
                     break;
                 }
@@ -289,7 +292,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     if (serializedType == SerializedType.TerminatedString && data.Length > 0)
                     {
-                        data[0] = TypeNode.StringTerminator;
+                        var terminatorData = GetNullTermination();
+                        Array.Copy(terminatorData, data, terminatorData.Length);
                     }
 
                     await writer.WriteAsync(data, constLength, cancellationToken).ConfigureAwait(false);
@@ -373,8 +377,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     await writer.WriteAsync(data, dataLength, cancellationToken).ConfigureAwait(false);
 
-                    var stringTerminatorData = new[] {TypeNode.StringTerminator};
-                    await writer.WriteAsync(stringTerminatorData, stringTerminatorData.Length, cancellationToken)
+                    var stringTerminatorData = GetNullTermination();
+                    await writer.WriteAsync(TypeNode.StringTerminator, stringTerminatorData.Length, cancellationToken)
                         .ConfigureAwait(false);
 
                     break;
@@ -663,6 +667,11 @@ namespace BinarySerialization.Graph.ValueGraph
             return constLength;
         }
 
+        private byte[] GetNullTermination()
+        {
+            return GetFieldEncoding().GetBytes(new[] { TypeNode.StringTerminator });
+        }
+
         private static FieldLength GetMaxLength(BoundedStream stream, SerializedType serializedType)
         {
             FieldLength maxLength = null;
@@ -694,18 +703,20 @@ namespace BinarySerialization.Graph.ValueGraph
             return length;
         }
 
-        private static FieldLength GetNullTerminatedArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
+        private FieldLength GetNullTerminatedArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
         {
             FieldLength length = data.Length;
+            var nullTermination = GetNullTermination();
+            var nullTerminationLength = new FieldLength(nullTermination.Length);
 
             if (constLength != null)
             {
-                length = constLength - new FieldLength(1);
+                length = constLength - nullTerminationLength;
             }
 
             if (maxLength != null && length > maxLength)
             {
-                length = maxLength - new FieldLength(1);
+                length = maxLength - nullTerminationLength;
             }
 
             return length;
@@ -739,7 +750,7 @@ namespace BinarySerialization.Graph.ValueGraph
             var untrimmed = GetFieldEncoding().GetString(data, 0, data.Length);
             if (TypeNode.AreStringsTerminated)
             {
-                var terminatorIndex = untrimmed.IndexOf((char) TypeNode.StringTerminator);
+                var terminatorIndex = untrimmed.IndexOf(TypeNode.StringTerminator);
                 value = terminatorIndex != -1 ? untrimmed.Substring(0, terminatorIndex) : untrimmed;
             }
             else
@@ -855,31 +866,35 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private static byte[] ReadTerminated(BinaryReader reader, FieldLength maxLength, byte terminator)
+        private byte[] ReadTerminated(BinaryReader reader, FieldLength maxLength, char terminator)
         {
             var buffer = new MemoryStream();
-
-            var byteLength = maxLength.ByteCount;
-
-            byte b;
-            while (byteLength-- > 0 && (b = reader.ReadByte()) != terminator)
+            using (var writer = new StreamWriter(buffer, GetFieldEncoding()))
             {
-                buffer.WriteByte(b);
+                var byteLength = maxLength.ByteCount;
+
+                char c;
+                while (byteLength-- > 0 && (c = reader.ReadChar()) != terminator)
+                {
+                    writer.Write(c);
+                }
             }
 
             return buffer.ToArray();
         }
 
-        private static async Task<byte[]> ReadTerminatedAsync(AsyncBinaryReader reader, int maxLength, byte terminator,
+        private async Task<byte[]> ReadTerminatedAsync(AsyncBinaryReader reader, int maxLength, char terminator,
             CancellationToken cancellationToken)
         {
             var buffer = new MemoryStream();
-
-            byte b;
-            while (maxLength-- > 0 &&
-                   (b = await reader.ReadByteAsync(cancellationToken).ConfigureAwait(false)) != terminator)
+            using (var writer = new StreamWriter(buffer, GetFieldEncoding()))
             {
-                buffer.WriteByte(b);
+                char b;
+                while (maxLength-- > 0 &&
+                       (b = await reader.ReadCharAsync(cancellationToken).ConfigureAwait(false)) != terminator)
+                {
+                    await writer.WriteAsync(b);
+                }
             }
 
             return buffer.ToArray();

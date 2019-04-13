@@ -3,7 +3,7 @@
     public class PacketContent
     {
         [FieldOrder(0)]
-        [SerializeAs(SerializedType.TerminatedString, StringTerminator = 0x20)]
+        [SerializeAs(SerializedType.TerminatedString, StringTerminator = (char)0x20)]
         public CommandClass CommandClass { get; set; }
 
         [FieldOrder(1)]

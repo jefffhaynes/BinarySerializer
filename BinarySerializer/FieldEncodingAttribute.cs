@@ -17,7 +17,7 @@ namespace BinarySerialization
         /// <param name="encodingName">The field encoding name.</param>
         public FieldEncodingAttribute(string encodingName)
         {
-            _encoding = Encoding.GetEncoding(encodingName);
+            _encoding = EncodingHelper.GetEncoding(encodingName);
             BindingMode = BindingMode.OneWay;
         }
 

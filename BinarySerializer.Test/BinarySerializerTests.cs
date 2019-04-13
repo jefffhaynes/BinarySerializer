@@ -102,12 +102,12 @@ namespace BinarySerialization.Test
 
                 Assert.True(cereal.NutritionalInformation.Toys.SequenceEqual(cereal2.NutritionalInformation.Toys));
 
-                Assert.IsAssignableFrom(typeof(Iron), cereal.NutritionalInformation.Ingredients.MainIngredient);
+                Assert.IsAssignableFrom<Iron>(cereal.NutritionalInformation.Ingredients.MainIngredient);
 
                 Assert.Equal(cereal2.DoubleField, cereal2.DoubleField);
-                Assert.True(cereal2.OtherStuff.Contains("app"));
-                Assert.True(cereal2.OtherStuff.Contains("pea"));
-                Assert.True(cereal2.OtherStuff.Contains("ban"));
+                Assert.Contains("app", cereal2.OtherStuff);
+                Assert.Contains("pea", cereal2.OtherStuff);
+                Assert.Contains("ban", cereal2.OtherStuff);
                 Assert.Equal(3, cereal2.OtherStuff.Count);
                 Assert.Equal(cereal2.OtherStuff.Count, cereal2.OtherStuffCount);
                 Assert.Equal(CerealShape.Circular, cereal2.Shape);
@@ -122,10 +122,6 @@ namespace BinarySerialization.Test
 
                 Assert.True(cereal.ExplicitlyTerminatedList.SequenceEqual(cereal2.ExplicitlyTerminatedList));
                 Assert.True(cereal.ImplicitlyTerminatedList.SequenceEqual(cereal2.ImplicitlyTerminatedList));
-
-                //string weirdOutlierLengthedField = cereal.NutritionalInformation.WeirdOutlierLengthedField;
-                //Assert.Equal(weirdOutlierLengthedField.Substring(0, (int)cereal.Outlier*2),
-                //                cereal2.NutritionalInformation.WeirdOutlierLengthedField);
 
                 var reader = new StreamReader(cereal2.Disclaimer);
                 Assert.Equal(Disclaimer, reader.ReadToEnd());

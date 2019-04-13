@@ -61,7 +61,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (enumInfo.ValueEnums != null)
             {
-                value = enumInfo.ValueEnums[(string) value];
+                var stringValue = (string) value;
+                value = enumInfo.ValueEnums[stringValue];
             }
 
             var underlyingValue = value.ConvertTo(enumInfo.UnderlyingType);

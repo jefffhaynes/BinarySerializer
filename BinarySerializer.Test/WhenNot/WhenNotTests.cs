@@ -15,7 +15,7 @@ namespace BinarySerialization.Test.WhenNot
             };
 
             var data = Serialize(expected);
-            Assert.Equal(1, data.Length);
+            Assert.Single(data);
 
             expected.ExcludeValue = false;
             data = Serialize(expected);

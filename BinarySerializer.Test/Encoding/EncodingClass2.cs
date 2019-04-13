@@ -6,4 +6,11 @@
         [SerializeAs(SerializedType.TerminatedString)]
         public string Name { get; set; }
     }
+
+    public class EncodingClassUtf16
+    {
+        [FieldEncoding("UTF-16")]
+        [SerializeAs(SerializedType.TerminatedString)]
+        public string Name { get; set; }
+    }
 }
