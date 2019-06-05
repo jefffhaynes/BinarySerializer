@@ -1,3 +1,5 @@
+# jda808 adds ds store for edge case on certain OSX case sensitive journaled volumes
+.DS_Store
 
 # Created by https://www.gitignore.io/api/visualstudio
 
