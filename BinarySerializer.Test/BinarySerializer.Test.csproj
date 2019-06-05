@@ -16,4 +16,12 @@
   <ItemGroup>
     <ProjectReference Include="..\BinarySerializer\BinarySerializer.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Value\image.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Issues\Issue94\tst.file">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
