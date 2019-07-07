@@ -13,6 +13,14 @@ namespace BinarySerialization.Test.Scale
         }
 
         [Fact]
+        public void ScaleIntTest()
+        {
+            var expected = new ScaledIntValueClass { Value = 3 };
+            var actual = Roundtrip(expected, new byte[] { 0x6, 0, 0, 0 });
+            Assert.Equal(expected.Value, actual.Value);
+        }
+
+        [Fact]
         public void NegativeScaleTest()
         {
             var expected = new ScaledValueClass { Value = -3 };

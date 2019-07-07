@@ -642,7 +642,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var scale = TypeNode.FieldScaleBindings.GetValue(this);
 
-            return Convert.ToDouble(value) * Convert.ToDouble(scale);
+            var scaledValue = Convert.ToDouble(value) * Convert.ToDouble(scale);
+
+            return ConvertToFieldType(scaledValue);
         }
 
         private object UnscaleValue(object value)
@@ -654,7 +656,9 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var scale = TypeNode.FieldScaleBindings.GetValue(this);
 
-            return Convert.ToDouble(value) / Convert.ToDouble(scale);
+            var unscaledValue = Convert.ToDouble(value) / Convert.ToDouble(scale);
+
+            return ConvertToFieldType(unscaledValue);
         }
 
         private FieldLength GetConstLength(FieldLength length)
