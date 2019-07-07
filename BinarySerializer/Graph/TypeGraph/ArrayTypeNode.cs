@@ -19,7 +19,7 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             if (ChildType.GetTypeInfo().IsPrimitive)
             {
-                return new PrimitveArrayValueNode(parent, Name, this);
+                return new PrimitiveArrayValueNode(parent, Name, this);
             }
             return new ArrayValueNode(parent, Name, this);
         }

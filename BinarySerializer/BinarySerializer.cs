@@ -136,7 +136,7 @@ namespace BinarySerialization
         /// <param name="value">The object at the root of the graph to serialize.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <param name="cancellationToken"></param>
-        public async Task SerializeAsync(Stream stream, object value, object context = null, CancellationToken cancellationToken = default (CancellationToken))
+        public async Task SerializeAsync(Stream stream, object value, object context = null, CancellationToken cancellationToken = default)
         {
             if (stream == null)
             {
@@ -202,7 +202,7 @@ namespace BinarySerialization
         /// <param name="context">An optional context.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The length of the specified object graph when serialized.</returns>
-        public async Task<long> SizeOfAsync(object value, object context = null, CancellationToken cancellationToken = default (CancellationToken))
+        public async Task<long> SizeOfAsync(object value, object context = null, CancellationToken cancellationToken = default)
         {
             var nullStream = new NullStream();
             await SerializeAsync(nullStream, value, context, cancellationToken).ConfigureAwait(false);
@@ -337,7 +337,7 @@ namespace BinarySerialization
         /// <param name="context">An optional serialization context.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The deserialized object graph.</returns>
-        public Task<object> DeserializeAsync(byte[] data, Type type, object context = null, CancellationToken cancellationToken = default (CancellationToken))
+        public Task<object> DeserializeAsync(byte[] data, Type type, object context = null, CancellationToken cancellationToken = default)
         {
             return DeserializeAsync(new MemoryStream(data), type, context, cancellationToken);
         }

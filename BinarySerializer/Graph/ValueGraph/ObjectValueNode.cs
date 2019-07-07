@@ -300,14 +300,14 @@ namespace BinarySerialization.Graph.ValueGraph
 
             // let's figure out the actual value now
             object value;
-            IEnumerable<ValueNode> nonparameterizedChildren;
+            IEnumerable<ValueNode> nonparametricChildren;
 
             if (node.ConstructorParameterNames.Length == 0)
             {
                 // handle simple case of no parameterized constructors
                 value = node.CompiledConstructor();
 
-                nonparameterizedChildren = Children.ToList();
+                nonparametricChildren = Children.ToList();
             }
             else
             {
@@ -315,24 +315,24 @@ namespace BinarySerialization.Graph.ValueGraph
                 var serializableChildren = GetSerializableChildren();
 
                 // find children that can be initialized or partially initialized with construction based on matching name
-                var parameterizedChildren = node.ConstructorParameterNames.Join(serializableChildren,
+                var parametricChildren = node.ConstructorParameterNames.Join(serializableChildren,
                         parameter => parameter.ToLower(),
                         serializableChild => serializableChild.Name.ToLower(),
                         (parameter, serializableChild) => serializableChild)
                     .ToList();
 
                 // get constructor arguments based on child selector
-                var parameterValues = parameterizedChildren.Select(childValueSelector).ToArray();
+                var parameterValues = parametricChildren.Select(childValueSelector).ToArray();
 
                 // construct our value
                 value = node.Constructor.Invoke(parameterValues);
 
                 // get remaining children that weren't used during construction
-                nonparameterizedChildren = Children.Except(parameterizedChildren).ToList();
+                nonparametricChildren = Children.Except(parametricChildren).ToList();
             }
 
             // set any children not used during construction
-            foreach (var child in nonparameterizedChildren)
+            foreach (var child in nonparametricChildren)
             {
                 var setter = child.TypeNode.ValueSetter;
 

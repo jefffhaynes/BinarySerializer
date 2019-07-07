@@ -107,7 +107,7 @@ namespace BinarySerialization
                     }
                     else
                     {
-                        remainder = remainder << 1;
+                        remainder <<= 1;
                     }
                 }
 
@@ -131,7 +131,7 @@ namespace BinarySerialization
                     reflection |= (uint) (1 << (bitCount - 1 - bit));
                 }
 
-                value = value >> 1;
+                value >>= 1;
             }
 
             return reflection;

@@ -7,9 +7,9 @@ using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal class PrimitveArrayValueNode : PrimitiveCollectionValueNode
+    internal class PrimitiveArrayValueNode : PrimitiveCollectionValueNode
     {
-        public PrimitveArrayValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
+        public PrimitiveArrayValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
         }
 

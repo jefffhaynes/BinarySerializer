@@ -255,14 +255,14 @@ namespace BinarySerialization.Graph.ValueGraph
         }
 
         public Task SerializeAsync(BoundedStream stream, object value, SerializedType serializedType,
-            FieldLength length = null, CancellationToken cancellationToken = default(CancellationToken))
+            FieldLength length = null, CancellationToken cancellationToken = default)
         {
             var writer = new AsyncBinaryWriter(stream, GetFieldEncoding());
             return SerializeAsync(writer, value, serializedType, length, cancellationToken);
         }
 
         public async Task SerializeAsync(AsyncBinaryWriter writer, object value, SerializedType serializedType,
-            FieldLength length = null, CancellationToken cancellationToken = default(CancellationToken))
+            FieldLength length = null, CancellationToken cancellationToken = default)
         {
             var constLength = GetConstLength(length);
 

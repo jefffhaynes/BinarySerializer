@@ -123,10 +123,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 return;
             }
 
-            PrimitiveCollectionSerializeOverride(stream, boundValue, childSerializer, childSerializedType, itemLength,
-                count);
+            await PrimitiveCollectionSerializeOverrideAsync(stream, boundValue, childSerializer, childSerializedType, itemLength,
+                count, cancellationToken);
 
-            SerializeTermination(stream, eventShuttle);
+            await SerializeTerminationAsync(stream, eventShuttle, cancellationToken);
         }
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)

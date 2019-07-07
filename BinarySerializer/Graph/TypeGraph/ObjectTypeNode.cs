@@ -217,7 +217,7 @@ namespace BinarySerialization.Graph.TypeGraph
             // get corresponding parameter names
             ConstructorParameterNames = bestConstructor.Value.Select(child => child.Name).ToArray();
 
-            // if this is a parameterless constructor, go ahead and compile it.  
+            // if this is a nonparametric constructor, go ahead and compile it.  
             // we can't compile constructors with parameters since we don't have them yet.
             if (ConstructorParameterNames.Length == 0)
             {
