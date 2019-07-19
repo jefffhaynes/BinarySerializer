@@ -4,9 +4,9 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Fixes issue with field scaling</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixes issue with field scaling, minor fixes</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/jefffhaynes/BinarySerializer</PackageProjectUrl>
-    <PackageLicenseUrl>https://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/jefffhaynes/BinarySerializer</RepositoryUrl>
     <AssemblyVersion>8.3.1.0</AssemblyVersion>
@@ -17,6 +17,7 @@
     <Company />
     <RootNamespace>BinarySerialization</RootNamespace>
     <PackageIconUrl>https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/bs.png</PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>

@@ -246,7 +246,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     }
 
                     writer.Write(value.ToString());
-                        break;
+                    break;
                 }
 
                 default:
