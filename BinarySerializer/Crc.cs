@@ -1,9 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BinarySerialization
 {
     internal abstract class Crc<T>
     {
+        private const int BitsPerByte = 8;
+
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly int TableSize = (int) Math.Pow(2, BitsPerByte);
+
         private static readonly Dictionary<T, T[]> Tables = new Dictionary<T, T[]>();
         
         // ReSharper disable once StaticMemberInGenericType
@@ -53,12 +59,12 @@ namespace BinarySerialization
 
                 if (IsDataReflected)
                 {
-                    b = (byte) Reflect(b, 8);
+                    b = (byte) Reflect(b, BitsPerByte);
                 }
 
-                var data = (byte) (b ^ (remainder >> (Width - 8)));
+                var data = (byte) (b ^ (remainder >> (Width - BitsPerByte)));
 
-                remainder = ToUInt32(_table[data]) ^ (remainder << 8);
+                remainder = ToUInt32(_table[data]) ^ (remainder << BitsPerByte);
             }
 
             _crc = FromUInt32(remainder);
@@ -83,11 +89,11 @@ namespace BinarySerialization
 
         private T[] BuildTable(T polynomial)
         {
-            var table = new T[256];
+            var table = new T[TableSize];
 
             var poly = ToUInt32(polynomial);
 
-            var padWidth = Width - 8;
+            var padWidth = Width - BitsPerByte;
 
             var topBit = 1 << (Width - 1);
             
@@ -98,7 +104,7 @@ namespace BinarySerialization
                 var remainder = dividend << padWidth;
                 
                 // Perform modulo-2 division, a bit at a time.
-                for (uint bit = 8; bit > 0; bit--)
+                for (uint bit = BitsPerByte; bit > 0; bit--)
                 {
                     // Try to divide the current data bit.
                     if ((remainder & topBit) != 0)
