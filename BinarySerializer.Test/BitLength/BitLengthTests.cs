@@ -18,7 +18,7 @@ namespace BinarySerialization.Test.BitLength
                 Internal2 = new InternalBitLengthClass {Value = 0b10101010}
             };
 
-            var actual = Roundtrip(expected, new byte[] {0xb7, 0x7b, 0xef, 0xdf, 0xa0});
+            var actual = Roundtrip(expected, new byte[] {0x7d, 0xef, 0xf6, 0xfd, 0xaa});
             Assert.Equal(expected.A, actual.A);
             Assert.Equal(expected.B, actual.B);
             Assert.Equal(expected.C, actual.C);

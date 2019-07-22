@@ -321,15 +321,15 @@ namespace BinarySerialization
                     var lastByteIndex = length.BitCount == 0 ? length.ByteCount - 1 : length.ByteCount;
                     var bitCount = length.BitCount == 0 ? BitsPerByte : length.BitCount;
 
-                    await WriteBitsAsync(buffer[lastByteIndex], bitCount, cancellationToken)
-                        .ConfigureAwait(false);
-
                     // collect bits in this, the bottom bounded stream
                     for (long i = 0; i < lastByteIndex; i++)
                     {
-                        await WriteBitsAsync(buffer[lastByteIndex - (i + 1)], BitsPerByte, cancellationToken)
+                        await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken)
                             .ConfigureAwait(false);
                     }
+
+                    await WriteBitsAsync(buffer[lastByteIndex], bitCount, cancellationToken)
+                        .ConfigureAwait(false);
                 }
             }
 
@@ -386,9 +386,9 @@ namespace BinarySerialization
                 return;
             }
 
-            var remaining = BitsPerByte - (count + _bitOffset);
+            //var remaining = BitsPerByte - (count + _bitOffset);
 
-            var shiftedValue = remaining > 0 ? value << remaining : value >> -remaining;
+            var shiftedValue = _bitOffset > 0 ? value << _bitOffset : value >> -_bitOffset;
             _bitBuffer |= (byte) shiftedValue;
             _bitOffset += count;
 
@@ -396,7 +396,7 @@ namespace BinarySerialization
             {
                 var data = new[] {_bitBuffer};
                 await WriteByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
-                _bitBuffer = (byte) (value << (remaining + BitsPerByte));
+                _bitBuffer = (byte) (value << (_bitOffset + BitsPerByte));
             }
 
             _bitOffset %= BitsPerByte;
