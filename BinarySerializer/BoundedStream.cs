@@ -386,8 +386,6 @@ namespace BinarySerialization
                 return;
             }
 
-            //var remaining = BitsPerByte - (count + _bitOffset);
-
             var shiftedValue = _bitOffset > 0 ? value << _bitOffset : value >> -_bitOffset;
             _bitBuffer |= (byte) shiftedValue;
             _bitOffset += count;
@@ -449,17 +447,19 @@ namespace BinarySerialization
                     var lastByteIndex = length.BitCount == 0 ? length.ByteCount - 1 : length.ByteCount;
                     var bitCount = length.BitCount == 0 ? BitsPerByte : length.BitCount;
 
-                    var readBitCount = ReadBits(bitCount, out var value);
-
-                    buffer[lastByteIndex] = value;
-                    readLength += FieldLength.FromBitCount(readBitCount);
+                    byte value;
+                    int readBitCount;
 
                     for (long i = 0; i < lastByteIndex; i++)
                     {
                         readBitCount = ReadBits(BitsPerByte, out value);
-                        buffer[lastByteIndex - (i + 1)] = value;
+                        buffer[i] = value;
                         readLength += FieldLength.FromBitCount(readBitCount);
                     }
+
+                    readBitCount = ReadBits(bitCount, out value);
+                    buffer[lastByteIndex] = value;
+                    readLength += FieldLength.FromBitCount(readBitCount);
                 }
             }
 
@@ -499,19 +499,21 @@ namespace BinarySerialization
                     var bitCount = length.BitCount == 0 ? BitsPerByte : length.BitCount;
 
                     var value = new byte[1];
-                    var readBitCount =
-                        await ReadBitsAsync(bitCount, value, cancellationToken).ConfigureAwait(false);
-                    buffer[lastByteIndex] = value[0];
-                    readLength += FieldLength.FromBitCount(readBitCount);
+                    int readBitCount;
 
                     for (long i = 0; i < lastByteIndex; i++)
                     {
                         readBitCount = await ReadBitsAsync(BitsPerByte, value, cancellationToken)
                             .ConfigureAwait(false);
 
-                        buffer[lastByteIndex - (i + 1)] = value[0];
+                        buffer[i] = value[0];
                         readLength += FieldLength.FromBitCount(readBitCount);
                     }
+
+                    readBitCount =
+                        await ReadBitsAsync(bitCount, value, cancellationToken).ConfigureAwait(false);
+                    buffer[lastByteIndex] = value[0];
+                    readLength += FieldLength.FromBitCount(readBitCount);
                 }
             }
 
@@ -560,7 +562,7 @@ namespace BinarySerialization
                 _bitBuffer = (byte)(_bitBuffer << count);
             }
 
-            value = (byte)(value >> (BitsPerByte - count));
+            //value = (byte)(value >> (BitsPerByte - count));
 
             _bitOffset -= count;
 
@@ -583,6 +585,8 @@ namespace BinarySerialization
 
             if (count > _bitOffset)
             {
+                // need more bits
+
                 var data = new byte[1];
                 var read = await ReadByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
 
@@ -593,15 +597,18 @@ namespace BinarySerialization
 
                 _bitBuffer = data[0];
                 value[0] |= (byte)(_bitBuffer >> _bitOffset);
-                _bitBuffer = (byte)(_bitBuffer << (count - _bitOffset));
+                _bitBuffer = (byte)(_bitBuffer >> (count - _bitOffset));
                 _bitOffset += BitsPerByte;
             }
             else
             {
-                _bitBuffer = (byte)(_bitBuffer << count);
+                _bitBuffer = (byte)(_bitBuffer >> count);
             }
 
-            value[0] = (byte)(value[0] >> (BitsPerByte - count));
+            var mask = (byte)(0xff >> (BitsPerByte - count));
+            value[0] &= mask;
+
+            //value[0] = (byte)(value[0] >> (BitsPerByte - count));
 
             _bitOffset -= count;
 

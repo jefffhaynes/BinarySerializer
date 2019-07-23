@@ -61,7 +61,7 @@ namespace BinarySerialization.Test.BitLength
                 new BitLengthBoolClass {Value = false}
             };
 
-            var actual = Roundtrip(expected, new byte[]{0xaa});
+            var actual = Roundtrip(expected, new byte[]{0x55});
 
             for (int i = 0; i < expected.Count; i++)
             {

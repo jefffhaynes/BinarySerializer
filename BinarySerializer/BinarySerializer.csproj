@@ -4,14 +4,14 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Fixes issue with field scaling, minor fixes</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixes bitfield bit ordering</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/jefffhaynes/BinarySerializer</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/jefffhaynes/BinarySerializer</RepositoryUrl>
-    <AssemblyVersion>8.3.1.0</AssemblyVersion>
-    <FileVersion>8.3.1.0</FileVersion>
-    <Version>8.3.1</Version>
+    <AssemblyVersion>8.4.0.0</AssemblyVersion>
+    <FileVersion>8.4.0.0</FileVersion>
+    <Version>8.4</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />
