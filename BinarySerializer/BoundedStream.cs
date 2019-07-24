@@ -283,12 +283,12 @@ namespace BinarySerialization
                     var lastByteIndex = length.BitCount == 0 ? length.ByteCount - 1 : length.ByteCount;
                     var bitCount = length.BitCount == 0 ? BitsPerByte : length.BitCount;
 
-                    WriteBits(buffer[lastByteIndex], bitCount);
-
                     for (long i = 0; i < lastByteIndex; i++)
                     {
-                        WriteBits(buffer[lastByteIndex - (i + 1)], BitsPerByte);
+                        WriteBits(buffer[i], BitsPerByte);
                     }
+
+                    WriteBits(buffer[lastByteIndex], bitCount);
                 }
             }
 
@@ -362,17 +362,15 @@ namespace BinarySerialization
                 return;
             }
 
-            var remaining = BitsPerByte - (count + _bitOffset);
-
-            var shiftedValue = remaining > 0 ? value << remaining : value >> -remaining;
-            _bitBuffer |= (byte) shiftedValue;
+            var shiftedValue = _bitOffset > 0 ? value << _bitOffset : value >> -_bitOffset;
+            _bitBuffer |= (byte)shiftedValue;
             _bitOffset += count;
 
             if (_bitOffset >= BitsPerByte)
             {
-                var data = new[] {_bitBuffer};
+                var data = new[] { _bitBuffer };
                 WriteByteAligned(data, data.Length);
-                _bitBuffer = (byte) (value << (remaining + BitsPerByte));
+                _bitBuffer = (byte)(value << (_bitOffset + BitsPerByte));
             }
 
             _bitOffset %= BitsPerByte;
@@ -544,8 +542,10 @@ namespace BinarySerialization
 
             if (count > _bitOffset)
             {
+                // need more bits
+
                 var data = new byte[1];
-                int read = ReadByteAligned(data, data.Length);
+                var read = ReadByteAligned(data, data.Length);
 
                 if (read == 0)
                 {
@@ -554,15 +554,15 @@ namespace BinarySerialization
 
                 _bitBuffer = data[0];
                 value |= (byte)(_bitBuffer >> _bitOffset);
-                _bitBuffer = (byte)(_bitBuffer << (count - _bitOffset));
+                _bitBuffer = (byte)(_bitBuffer >> (count - _bitOffset));
                 _bitOffset += BitsPerByte;
             }
             else
             {
-                _bitBuffer = (byte)(_bitBuffer << count);
+                _bitBuffer = (byte)(_bitBuffer >> count);
             }
 
-            //value = (byte)(value >> (BitsPerByte - count));
+            value &= (byte)(0xff >> (BitsPerByte - count));
 
             _bitOffset -= count;
 
@@ -605,10 +605,7 @@ namespace BinarySerialization
                 _bitBuffer = (byte)(_bitBuffer >> count);
             }
 
-            var mask = (byte)(0xff >> (BitsPerByte - count));
-            value[0] &= mask;
-
-            //value[0] = (byte)(value[0] >> (BitsPerByte - count));
+            value[0] &= (byte)(0xff >> (BitsPerByte - count));
 
             _bitOffset -= count;
 
