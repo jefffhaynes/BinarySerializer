@@ -170,16 +170,26 @@ namespace BinarySerialization
             return BitConverter.ToDouble(b, 0);
         }
 
-        public FieldLength Read(byte[] data, FieldLength fieldLength)
+        public void Read(byte[] data, FieldLength fieldLength)
         {
             var length = fieldLength ?? data.Length;
-            return InputStream.Read(data, length);
+            var readLength = InputStream.Read(data, length);
+
+            if (readLength != length)
+            {
+                throw new EndOfStreamException();
+            }
         }
 
-        public Task<FieldLength> ReadAsync(byte[] data, FieldLength fieldLength, CancellationToken cancellationToken)
+        public async Task ReadAsync(byte[] data, FieldLength fieldLength, CancellationToken cancellationToken)
         {
             var length = fieldLength ?? data.Length;
-            return InputStream.ReadAsync(data, length, cancellationToken);
+            var readLength = await InputStream.ReadAsync(data, length, cancellationToken);
+
+            if (readLength != length)
+            {
+                throw new EndOfStreamException();
+            }
         }
 
         public async Task<byte[]> ReadBytesAsync(int count, CancellationToken cancellationToken)
