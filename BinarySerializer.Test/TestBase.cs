@@ -109,7 +109,7 @@ namespace BinarySerialization.Test
                 var e = expected[i];
                 var a = actual[i];
 
-                Assert.True(e == a, $"Value at position {i} does not match expected value.  Expected {e}, got {a}");
+                Assert.True(e == a, $"Value at position {i} does not match expected value.  Expected 0x{e:X2}, got 0x{a:X2}");
             }
 
             Assert.True(expected.Length == actual.Length, $"Sequence lengths do not match.  Expected {expected.Length}, got {actual.Length}");

@@ -357,45 +357,78 @@ namespace BinarySerialization
 
         private void WriteBits(byte value, int count)
         {
-            if (count == 0)
+            var copied = 0;
+            while (copied < count)
             {
-                return;
+                var headroom = BitsPerByte - _bitOffset;
+                var remaining = count - copied;
+                var copyLength = Math.Min(remaining, headroom);
+                var shift = copied - _bitOffset;
+
+                if (shift < 0)
+                {
+                    _bitBuffer = (byte)(_bitBuffer | value << -shift);
+                }
+                else
+                {
+                    _bitBuffer = (byte)(_bitBuffer | value >> shift);
+                }
+
+                _bitOffset += copyLength;
+
+                if (_bitOffset == BitsPerByte)
+                {
+                    FlushBits();
+                }
+
+                copied += copyLength;
             }
-
-            var shiftedValue = _bitOffset > 0 ? value << _bitOffset : value >> -_bitOffset;
-            _bitBuffer |= (byte)shiftedValue;
-            _bitOffset += count;
-
-            if (_bitOffset >= BitsPerByte)
-            {
-                var data = new[] { _bitBuffer };
-                WriteByteAligned(data, data.Length);
-                _bitBuffer = (byte)(value << (_bitOffset + BitsPerByte));
-            }
-
-            _bitOffset %= BitsPerByte;
         }
 
+        private void FlushBits()
+        {
+            var data = new[] { _bitBuffer };
+            WriteByteAligned(data, data.Length);
+            _bitBuffer = 0;
+            _bitOffset = 0;
+        }
 
         private async Task WriteBitsAsync(byte value, int count, CancellationToken cancellationToken)
         {
-            if (count == 0)
+            var copied = 0;
+            while (copied < count)
             {
-                return;
+                var headroom = BitsPerByte - _bitOffset;
+                var remaining = count - copied;
+                var copyLength = Math.Min(remaining, headroom);
+                var shift = copied - _bitOffset;
+
+                if (shift < 0)
+                {
+                    _bitBuffer = (byte)(_bitBuffer | value << -shift);
+                }
+                else
+                {
+                    _bitBuffer = (byte)(_bitBuffer | value >> shift);
+                }
+
+                _bitOffset += copyLength;
+
+                if (_bitOffset == BitsPerByte)
+                {
+                    await FlushBitsAsync(cancellationToken).ConfigureAwait(false);
+                }
+
+                copied += copyLength;
             }
+        }
 
-            var shiftedValue = _bitOffset > 0 ? value << _bitOffset : value >> -_bitOffset;
-            _bitBuffer |= (byte) shiftedValue;
-            _bitOffset += count;
-
-            if (_bitOffset >= BitsPerByte)
-            {
-                var data = new[] {_bitBuffer};
-                await WriteByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
-                _bitBuffer = (byte) (value << (_bitOffset + BitsPerByte));
-            }
-
-            _bitOffset %= BitsPerByte;
+        private async Task FlushBitsAsync(CancellationToken cancellationToken)
+        {
+            var data = new[] { _bitBuffer };
+            await WriteByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
+            _bitBuffer = 0;
+            _bitOffset = 0;
         }
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
@@ -519,7 +552,6 @@ namespace BinarySerialization
             return readLength;
         }
 
-
         protected virtual int ReadByteAligned(byte[] buffer, int length)
         {
             return Source.Read(buffer, 0, length);
@@ -532,84 +564,76 @@ namespace BinarySerialization
 
         private int ReadBits(int count, out byte value)
         {
-            if (count == 0)
+            byte b = 0;
+            var copied = 0;
+            while (copied < count)
             {
-                value = 0;
-                return 0;
-            }
-
-            value = _bitBuffer;
-
-            if (count > _bitOffset)
-            {
-                // need more bits
-
-                var data = new byte[1];
-                var read = ReadByteAligned(data, data.Length);
-
-                if (read == 0)
+                if (_bitOffset == 0)
                 {
-                    return 0;
+                    var data = new byte[1];
+                    ReadByteAligned(data, data.Length);
+                    _bitBuffer = data[0];
+                    _bitOffset = BitsPerByte;
                 }
 
-                _bitBuffer = data[0];
-                value |= (byte)(_bitBuffer >> _bitOffset);
-                _bitBuffer = (byte)(_bitBuffer >> (count - _bitOffset));
-                _bitOffset += BitsPerByte;
+                var remaining = count - copied;
+                var copyLength = Math.Min(remaining, _bitOffset);
+                var shift = copied - (BitsPerByte - _bitOffset);
+
+                if (shift < 0)
+                {
+                    b = (byte)(b | _bitBuffer >> -shift);
+                }
+                else
+                {
+                    b = (byte)(b | _bitBuffer << shift);
+                }
+
+                _bitOffset -= copyLength;
+                copied += copyLength;
             }
-            else
-            {
-                _bitBuffer = (byte)(_bitBuffer >> count);
-            }
 
-            value &= (byte)(0xff >> (BitsPerByte - count));
+            // mask
+            value = (byte)(b & (byte)(0xff >> (BitsPerByte - count)));
 
-            _bitOffset -= count;
-
-            return count;
+            return copied;
         }
 
         private async Task<int> ReadBitsAsync(int count, byte[] value, CancellationToken cancellationToken)
         {
-            if (count == 0)
+            byte b = 0;
+            var copied = 0;
+            while (copied < count)
             {
-                return 0;
-            }
-
-            if (value.Length != 1)
-            {
-                throw new ArgumentException();
-            }
-
-            value[0] = _bitBuffer;
-
-            if (count > _bitOffset)
-            {
-                // need more bits
-
-                var data = new byte[1];
-                var read = await ReadByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
-
-                if (read == 0)
+                if (_bitOffset == 0)
                 {
-                    return 0;
+                    var data = new byte[1];
+                    await ReadByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
+                    _bitBuffer = data[0];
+                    _bitOffset = BitsPerByte;
                 }
 
-                _bitBuffer = data[0];
-                value[0] |= (byte)(_bitBuffer >> _bitOffset);
-                _bitBuffer = (byte)(_bitBuffer >> (count - _bitOffset));
-                _bitOffset += BitsPerByte;
+                var remaining = count - copied;
+                var copyLength = Math.Min(remaining, _bitOffset);
+                var shift = copied - (BitsPerByte - _bitOffset);
+
+                if (shift < 0)
+                {
+                    b = (byte)(b | _bitBuffer >> -shift);
+                }
+                else
+                {
+                    b = (byte)(b | _bitBuffer << shift);
+                }
+
+                _bitOffset -= copyLength;
+                copied += copyLength;
             }
-            else
-            {
-                _bitBuffer = (byte)(_bitBuffer >> count);
-            }
 
-            value[0] &= (byte)(0xff >> (BitsPerByte - count));
+            // mask
+            value[0] = (byte)(b & (byte)(0xff >> (BitsPerByte - count)));
 
-            _bitOffset -= count;
-
-            return count;
+            return copied;
         }
 
         private FieldLength ClampLength(FieldLength length)
