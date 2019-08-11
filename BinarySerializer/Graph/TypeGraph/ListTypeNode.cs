@@ -27,7 +27,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         protected override Type GetChildType()
         {
-            var genericArguments = Type.GetHierarchyGenericArguments().ToList();
+            var genericArguments = Type.GetHierarchyGenericArguments().Distinct().ToList();
 
             if (genericArguments.Count != 1)
             {
