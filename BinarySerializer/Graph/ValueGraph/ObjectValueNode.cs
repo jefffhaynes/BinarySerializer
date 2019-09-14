@@ -84,14 +84,12 @@ namespace BinarySerialization.Graph.ValueGraph
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             ThrowIfUnordered();
-            ResolveValueType();
             ObjectSerializeOverride(stream, eventShuttle);
         }
 
         internal override Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             ThrowIfUnordered();
-            ResolveValueType();
             return ObjectSerializeOverrideAsync(stream, eventShuttle, cancellationToken);
         }
 
@@ -355,8 +353,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             if (_valueType != null &&
                 (TypeNode.SubtypeBindings != null || parent.ItemSubtypeBindings != null ||
-                 TypeNode.SubtypeFactoryBinding != null || parent.ItemSubtypeFactoryBinding != null
-                 || TypeNode.SubtypeDefaultAttribute != null))
+                 TypeNode.SubtypeFactoryBinding != null || parent.ItemSubtypeFactoryBinding != null))
             {
                 var typeNode = (ObjectTypeNode) TypeNode;
                 var subType = typeNode.GetSubTypeNode(_valueType);
