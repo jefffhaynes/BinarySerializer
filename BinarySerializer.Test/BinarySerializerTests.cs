@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BinarySerialization.Test
@@ -69,6 +70,13 @@ namespace BinarySerialization.Test
                 DisclaimerLength = disclaimerStream.Length,
                 Disclaimer = disclaimerStream
             };
+        }
+
+        [Fact]
+        public void ParallelCerealTest()
+        {
+            var runs = Enumerable.Range(0, 1000);
+            Parallel.ForEach(runs, i => CerealTest());
         }
 
         [Fact]
