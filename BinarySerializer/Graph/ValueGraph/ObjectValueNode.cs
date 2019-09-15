@@ -84,14 +84,12 @@ namespace BinarySerialization.Graph.ValueGraph
         internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
             ThrowIfUnordered();
-            ResolveValueType();
             ObjectSerializeOverride(stream, eventShuttle);
         }
 
         internal override Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             ThrowIfUnordered();
-            ResolveValueType();
             return ObjectSerializeOverrideAsync(stream, eventShuttle, cancellationToken);
         }
 
