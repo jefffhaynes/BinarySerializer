@@ -67,5 +67,14 @@ namespace BinarySerialization.Test.Enums
 
             Assert.Equal(expected.Field, actual.Field);
         }
+
+        [Fact]
+        public void NegativeEnumTest()
+        {
+            var expected = new NegativeEnumClass {Value = NegativeEnum.A};
+            var actual = Roundtrip(expected, new[] {(byte) 0xff, (byte) 0xff});
+
+            Assert.Equal(expected.Value, actual.Value);
+        }
     }
 }
