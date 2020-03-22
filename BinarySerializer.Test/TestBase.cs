@@ -26,17 +26,17 @@ namespace BinarySerialization.Test
             Serializer.MemberDeserialized += OnMemberDeserialized;
         }
 
-        public T Roundtrip<T>(T o)
+        public T Roundtrip<T>(T o, object context = null)
         {
             PrintSerialize(typeof(T));
 
             var stream = new MemoryStream();
-            Serialize(stream, o);
+            Serialize(stream, o, context);
 
             stream.Position = 0;
 
             PrintDeserialize(typeof(T));
-            return Deserialize<T>(stream);
+            return Deserialize<T>(stream, context);
         }
 
         protected T Roundtrip<T>(T o, long expectedLength)
@@ -150,26 +150,26 @@ namespace BinarySerialization.Test
             return Deserialize<T>(new MemoryStream(data));
         }
 
-        protected T Deserialize<T>(Stream stream)
+        protected T Deserialize<T>(Stream stream, object context = null)
         {
 #if TESTASYNC
-            var task = Serializer.DeserializeAsync<T>(stream);
+            var task = Serializer.DeserializeAsync<T>(stream, context);
             task.ConfigureAwait(false);
             task.Wait();
             return task.Result;
 #else
-            return Serializer.Deserialize<T>(stream);
+            return Serializer.Deserialize<T>(stream, context);
 #endif
         }
 
-        protected void Serialize(Stream stream, object o)
+        protected void Serialize(Stream stream, object o, object context = null)
         {
 #if TESTASYNC
-            var task = Serializer.SerializeAsync(stream, o);
+            var task = Serializer.SerializeAsync(stream, o, context);
             task.ConfigureAwait(false);
             task.Wait();
 #else
-            Serializer.Serialize(stream, o);
+            Serializer.Serialize(stream, o, context);
 #endif
         }
 
