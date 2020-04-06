@@ -220,5 +220,24 @@ namespace BinarySerialization.Test.Subtype
             var actual = Roundtrip(forward, new byte[]{0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0});
             Assert.Equal(typeof(SubclassA), actual.Value.GetType());
         }
+
+        [Fact]
+        public void UnorderedSubtypeTest()
+        {
+            var expected = new UnorderedSubtype();
+
+#if TESTASYNC
+            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+#else
+            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+#endif
+        }
+
+        [Fact]
+        public void IgnoredSubtypeTest()
+        {
+            var expected = new IgnoredSubtype();
+            Roundtrip(expected);
+        }
     }
 }
