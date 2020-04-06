@@ -16,8 +16,8 @@
     <Authors>Jeff Haynes</Authors>
     <Company />
     <RootNamespace>BinarySerialization</RootNamespace>
-    <PackageIconUrl>https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/bs.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>bs.png</PackageIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -41,5 +41,11 @@
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Threading" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\BinarySerializer.Docs\bs.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>

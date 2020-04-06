@@ -8,7 +8,7 @@ namespace BinarySerialization.Test.Issues.Issue78
     public class Issue78Tests
     {
         [Fact]
-        public void CrcThreadSafteyTest()
+        public void CrcThreadSafetyTest()
         {
             var serializer = new BinarySerializer();
             var frame = new Frame { Payload = new Payload { Number = 42, String = "Hello World" } };
@@ -17,7 +17,7 @@ namespace BinarySerialization.Test.Issues.Issue78
 
             List<ushort> crcs = new List<ushort>();
 
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 ThreadPool.QueueUserWorkItem(state =>
                 {

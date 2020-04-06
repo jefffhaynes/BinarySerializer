@@ -9,6 +9,10 @@
     <DefineConstants>TRACE;DEBUG;TESTASYNC</DefineConstants>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;TESTASYNC</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <None Remove="Issues\Issue94\tst.file" />
   </ItemGroup>

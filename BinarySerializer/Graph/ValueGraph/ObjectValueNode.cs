@@ -96,7 +96,6 @@ namespace BinarySerialization.Graph.ValueGraph
 
         internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
         {
-            ThrowIfUnordered();
             ResolveValueType();
 
             // skip over if null (this may happen if subtypes are unknown during deserialization)
@@ -121,6 +120,7 @@ namespace BinarySerialization.Graph.ValueGraph
         internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
+            ThrowIfUnordered();
             ResolveValueType();
 
             // skip over if null (this may happen if subtypes are unknown during deserialization)
