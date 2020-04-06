@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Xunit;
 
 namespace BinarySerialization.Test.Unknown
@@ -46,17 +45,6 @@ namespace BinarySerialization.Test.Unknown
             var data = stream.ToArray();
 
             Assert.Equal((byte) childClass.Subfield.Length, data[0]);
-        }
-
-        [Fact]
-        public void ObjectSerializationShouldThrow()
-        {
-            var unknownTypeClass = new UnknownTypeClass {Field = new object()};
-#if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(unknownTypeClass));
-#else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(unknownTypeClass));
-#endif
         }
     }
 }

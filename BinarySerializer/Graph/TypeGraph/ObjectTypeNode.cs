@@ -166,8 +166,10 @@ namespace BinarySerialization.Graph.TypeGraph
         /// </summary>
         private void InitializeConstructors()
         {
+            var typeInfo = Type.GetTypeInfo();
+
             // if abstract we will never be constructed, nothing to do
-            if (Type.GetTypeInfo().IsAbstract)
+            if (typeInfo.IsAbstract || typeInfo.IsInterface)
             {
                 return;
             }
@@ -227,6 +229,11 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private IEnumerable<TypeNode> GenerateChildren(Type parentType)
         {
+            if (parentType == typeof(object))
+            {
+                return Enumerable.Empty<TypeNode>();
+            }
+
             IEnumerable<MemberInfo> properties = parentType.GetProperties(MemberBindingFlags);
             IEnumerable<MemberInfo> fields = parentType.GetFields(MemberBindingFlags);
             var all = properties.Union(fields);

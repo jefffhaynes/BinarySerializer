@@ -14,6 +14,7 @@ namespace BinarySerialization.Graph.ValueGraph
     {
         private object _cachedValue;
         private Type _valueType;
+        private TypeNode _subTypeNode;
 
         public ObjectValueNode(ValueNode parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
@@ -51,10 +52,10 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 // always check for user-defined subtypes, whether they exist or not. 
                 // In the trivial case we get the value type node back.
-                var subType = typeNode.GetSubTypeNode(valueType);
+                _subTypeNode = typeNode.GetSubTypeNode(valueType);
 
                 // create all child serializers
-                Children = subType.Children.Select(child => child.CreateSerializer(this)).ToList();
+                Children = _subTypeNode.Children.Select(child => child.CreateSerializer(this)).ToList();
 
                 // initialize all children from the corresponding set value fields
                 foreach (var child in Children)
@@ -527,14 +528,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void ThrowIfUnordered()
         {
-            var objectTypeNode = (ObjectTypeNode)TypeNode;
+            var objectTypeNode = (ObjectTypeNode) (_subTypeNode ?? TypeNode);
             var unorderedChild = objectTypeNode.UnorderedChildren?.FirstOrDefault();
             if (unorderedChild != null)
             {
                 throw new InvalidOperationException(
                     $"'{unorderedChild.Name}' does not have a FieldOrder attribute.  " +
                     "All serializable fields or properties in a class with more than one member must specify a FieldOrder attribute.");
-
             }
         }
     }

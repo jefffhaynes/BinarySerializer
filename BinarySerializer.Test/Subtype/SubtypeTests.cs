@@ -224,7 +224,10 @@ namespace BinarySerialization.Test.Subtype
         [Fact]
         public void UnorderedSubtypeTest()
         {
-            var expected = new UnorderedSubtype();
+            var expected = new SuperclassContainerWithNoBinding
+            {
+                Superclass = new UnorderedSubtype()
+            };
 
 #if TESTASYNC
             Assert.Throws<AggregateException>(() => Roundtrip(expected));
@@ -236,7 +239,11 @@ namespace BinarySerialization.Test.Subtype
         [Fact]
         public void IgnoredSubtypeTest()
         {
-            var expected = new IgnoredSubtype();
+            var expected = new SuperclassContainerWithNoBinding
+            {
+                Superclass = new IgnoredSubtype()
+            };
+
             Roundtrip(expected);
         }
     }
