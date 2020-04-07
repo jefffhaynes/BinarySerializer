@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Xunit;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue148
 {
