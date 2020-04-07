@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BinarySerialization.Test.Issues.Issue148
+﻿namespace BinarySerialization.Test.Issues.Issue148
 {
     public class HeaderClass
     {

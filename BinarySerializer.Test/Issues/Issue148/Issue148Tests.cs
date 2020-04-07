@@ -12,10 +12,10 @@ namespace BinarySerialization.Test.Issues.Issue148
             {
                 Header = new HeaderClass
                 {
-                    ITEM1 = 1,
-                    ITEM2 = 0x7f,
-                    ITEM3 = 1,
-                    ITEM4 = 0x7
+                    ITEM1 = 1,     // 0b1
+                    ITEM2 = 0x7f,  // 0b1111111
+                    ITEM3 = 1,     // 0b1
+                    ITEM4 = 0x7    // 0b111
                 }
             };
 
