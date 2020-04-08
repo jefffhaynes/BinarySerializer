@@ -102,6 +102,7 @@ namespace BinarySerialization.Graph.ValueGraph
             if (_valueType != null)
             {
                 GenerateChildren();
+                ThrowIfUnordered();
 
                 try
                 {
@@ -120,13 +121,13 @@ namespace BinarySerialization.Graph.ValueGraph
         internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
-            ThrowIfUnordered();
             ResolveValueType();
 
             // skip over if null (this may happen if subtypes are unknown during deserialization)
             if (_valueType != null)
             {
                 GenerateChildren();
+                ThrowIfUnordered();
 
                 try
                 {
@@ -399,8 +400,8 @@ namespace BinarySerialization.Graph.ValueGraph
             var typeNode = (ObjectTypeNode) TypeNode;
 
             // generate correct children for this subtype
-            var subType = typeNode.GetSubTypeNode(_valueType);
-            Children = new List<ValueNode>(subType.Children.Select(child => child.CreateSerializer(this)));
+            _subTypeNode = typeNode.GetSubTypeNode(_valueType);
+            Children = new List<ValueNode>(_subTypeNode.Children.Select(child => child.CreateSerializer(this)));
         }
 
         private void SkipPadding(BoundedStream stream)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
+﻿using Xunit;
 
 namespace BinarySerialization.Test.Issues.Issue140
 {
@@ -15,7 +12,7 @@ namespace BinarySerialization.Test.Issues.Issue140
                 Domain = new Domain()
             };
 
-            var actual = Roundtrip(expected);
+            Roundtrip(expected);
         }
     }
 }
