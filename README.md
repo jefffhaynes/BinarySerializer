@@ -47,7 +47,7 @@ public class Person
     public byte NameLength { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("NameLength")]
+    [FieldLength(nameof(NameLength))]
     public string Name { get; set; }
 }
 ```
