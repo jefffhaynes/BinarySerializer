@@ -8,11 +8,14 @@ namespace BinarySerialization
 {
     public class AsyncBinaryReader : BinaryReader
     {
+        private Encoding _encoding;
+
         public BoundedStream InputStream { get; }
         
         public AsyncBinaryReader(BoundedStream input, Encoding encoding) : base(input, encoding)
         {
             InputStream = input;
+            _encoding = encoding;
         }
 
         public override byte ReadByte()
@@ -30,9 +33,23 @@ namespace BinarySerialization
             return b[0];
         }
 
-        public Task<char> ReadCharAsync(CancellationToken cancellationToken)
+        public async Task<char> ReadCharAsync(CancellationToken cancellationToken)
         {
-            return Task.FromResult(base.ReadChar());
+            var decoder = _encoding.GetDecoder();
+
+            int read;
+
+            var chars = new char[1];
+
+            do
+            {
+                var b = await ReadByteAsync(cancellationToken);
+                var data = new[] {b};
+
+                read = decoder.GetChars(data, 0, data.Length, chars, 0, false);
+            } while (read < chars.Length);
+
+            return chars[0];
         }
 
         public override sbyte ReadSByte()
