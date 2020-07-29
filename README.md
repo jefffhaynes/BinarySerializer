@@ -1,7 +1,11 @@
+[![.NET Core](https://github.com/jefffhaynes/BinarySerializer/workflows/.NET%20Core/badge.svg)](https://github.com/jefffhaynes/BinarySerializer/actions)
+[![NuGet](https://img.shields.io/nuget/v/binaryserializer)](https://nuget.org/packages/BinarySerializer/)
+[![NuGet](https://img.shields.io/nuget/dt/binaryserializer)](http://nuget.org/packages/BinarySerializer/)
+
 BinarySerializer
 ================
 
-A .NET declarative serialization framework for controlling formatting of data at the byte and bit level, BinarySerializer is designed to make working with formats and protocols fast and simple using types, bindings, converters, and code.  The .NET Standard Library is available on [nuget](https://www.nuget.org/packages/BinarySerializer).  The [Portable Class Library](https://www.nuget.org/packages/BinarySerializer/6.0.3) is still available but no longer maintained.
+A .NET declarative serialization framework for controlling formatting of data at the byte and bit level, BinarySerializer is designed to make working with formats and protocols fast and simple using types, bindings, converters, and code.
 
 ### Field Ordering ###
 
@@ -43,7 +47,7 @@ public class Person
     public byte NameLength { get; set; }
 
     [FieldOrder(1)]
-    [FieldLength("NameLength")]
+    [FieldLength(nameof(NameLength))]
     public string Name { get; set; }
 }
 ```
@@ -59,7 +63,7 @@ await serializer.SerializeAsync(stream, person);
 
 Note that it is not necessary that NameLength contain the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
 
-Length can also be specified at an object level.  See the [FieldLength](#fieldlengthattribute) section for more examples.
+Length can also be specified for complex objects.  See the [FieldLength](#fieldlengthattribute) section for more examples.
 
 
 Attributes
