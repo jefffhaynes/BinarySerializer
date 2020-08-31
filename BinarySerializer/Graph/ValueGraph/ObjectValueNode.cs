@@ -297,7 +297,7 @@ namespace BinarySerialization.Graph.ValueGraph
             // see if it's possible to construct at all
             if (node.Constructor == null)
             {
-                throw new InvalidOperationException("No public constructors.");
+                throw new InvalidOperationException($"No public constructors found for {node}.");
             }
 
             // let's figure out the actual value now
