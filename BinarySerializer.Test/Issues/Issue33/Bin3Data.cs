@@ -31,7 +31,9 @@
         /// </summary>
         [FieldOrder(3)]
         [FieldLength(6)]
+#pragma warning disable 618
         [SerializeAs(SerializedType = SerializedType.NullTerminatedString)]
+#pragma warning restore 618
         public BinOccupancy OccupancyString { get; set; }
     }
 }
