@@ -1,12 +1,13 @@
 ﻿using System.IO;
 using System.Threading;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.ReaderWriterTests
 {
+    [TestClass]
     public class AsyncBinaryReaderTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         // ReSharper disable once InconsistentNaming
         public async void ReadCharAsyncASCIITest()
         {
@@ -18,10 +19,10 @@ namespace BinarySerialization.Test.ReaderWriterTests
             var boundedStream = new BoundedStream(stream, string.Empty);
             var reader = new AsyncBinaryReader(boundedStream, encoding);
             var actual = await reader.ReadCharAsync(CancellationToken.None);
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         // ReSharper disable once InconsistentNaming
         public async void ReadCharAsyncUTF8Test()
         {
@@ -33,10 +34,10 @@ namespace BinarySerialization.Test.ReaderWriterTests
             var boundedStream = new BoundedStream(stream, string.Empty);
             var reader = new AsyncBinaryReader(boundedStream, encoding);
             var actual = await reader.ReadCharAsync(CancellationToken.None);
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         // ReSharper disable once InconsistentNaming
         public async void ReadCharAsyncUTF16Test()
         {
@@ -48,7 +49,7 @@ namespace BinarySerialization.Test.ReaderWriterTests
             var boundedStream = new BoundedStream(stream, string.Empty);
             var reader = new AsyncBinaryReader(boundedStream, encoding);
             var actual = await reader.ReadCharAsync(CancellationToken.None);
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
     }
 }

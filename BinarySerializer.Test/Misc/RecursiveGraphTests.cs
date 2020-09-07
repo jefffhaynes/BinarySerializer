@@ -1,11 +1,11 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Misc
 {
-    
+    [TestClass]
     public class RecursiveGraphTests : TestBase
     {
-        //[Fact]
+        //[TestMethod]
         //public void RecursiveGraphTest()
         //{
         //    var expected = new RecursiveGraphClass();

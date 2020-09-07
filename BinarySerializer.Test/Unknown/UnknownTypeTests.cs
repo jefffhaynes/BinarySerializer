@@ -1,12 +1,12 @@
 ﻿using System.IO;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Unknown
 {
-    
+    [TestClass]
     public class UnknownTypeTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void UnknownTypeSerializationTest()
         {
             var unknownTypeClass = new UnknownTypeClass {Field = "hello"};
@@ -17,7 +17,7 @@ namespace BinarySerialization.Test.Unknown
             serializer.Serialize(stream, unknownTypeClass);
         }
 
-        [Fact]
+        [TestMethod]
         public void SubtypesOnUnknownTypeFieldShouldThrowBindingException()
         {
             var unknownTypeClass = new InvalidUnknownTypeClass {Field = "hello"};
@@ -25,10 +25,10 @@ namespace BinarySerialization.Test.Unknown
             var serializer = new BinarySerializer();
 
             var stream = new MemoryStream();
-            Assert.Throws<BindingException>(() => serializer.Serialize(stream, unknownTypeClass));
+            Assert.ThrowsException<BindingException>(() => serializer.Serialize(stream, unknownTypeClass));
         }
 
-        [Fact]
+        [TestMethod]
         public void BindingAcrossUnknownBoundaryTest()
         {
             var childClass = new BindingAcrossUnknownBoundaryChildClass {Subfield = "hello"};
@@ -44,7 +44,7 @@ namespace BinarySerialization.Test.Unknown
 
             var data = stream.ToArray();
 
-            Assert.Equal((byte) childClass.Subfield.Length, data[0]);
+            Assert.AreEqual((byte) childClass.Subfield.Length, data[0]);
         }
     }
 }

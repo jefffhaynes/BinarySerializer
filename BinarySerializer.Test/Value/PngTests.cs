@@ -1,11 +1,12 @@
 ﻿using System.IO;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Value
 {
+    [TestClass]
     public class PngTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void DeserializePng()
         {
             using (var stream = new FileStream("Value\\image.png", FileMode.Open, FileAccess.Read))

@@ -1,10 +1,11 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue76
 {
+    [TestClass]
     public class Issue76Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void TestExample()
         {
             var expected = new byte[]

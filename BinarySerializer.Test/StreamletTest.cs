@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test
 {
-    
+    [TestClass]
     public class StreamletTest
     {
         private static readonly byte[] SourceData = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -21,13 +21,13 @@ namespace BinarySerialization.Test
             var sourceBalance = source.Length - offset;
             var expectedRead = Math.Min(sourceBalance, length);
 
-            Assert.Equal(expectedRead, read);
+            Assert.AreEqual(expectedRead, read);
 
             var expectedSequence = SourceData.Skip(offset).Take(read);
             var sequence = block.Take(read);
-            Assert.True(expectedSequence.SequenceEqual(sequence));
+            Assert.IsTrue(expectedSequence.SequenceEqual(sequence));
 
-            Assert.Equal(offset + read, source.Position);
+            Assert.AreEqual(offset + read, source.Position);
         }
 
         private void AssertSeek(int offset, int length, int seekOffset, SeekOrigin seekOrigin)
@@ -55,23 +55,23 @@ namespace BinarySerialization.Test
                     throw new NotSupportedException();
             }
 
-            Assert.Equal(sourcePosition, source.Position);
-            Assert.Equal(position, streamlet.Position);
+            Assert.AreEqual(sourcePosition, source.Position);
+            Assert.AreEqual(position, streamlet.Position);
         }
 
-        [Fact]
+        [TestMethod]
         public void ReadFullTest()
         {
             AssertRead(0, SourceData.Length);
         }
 
-        [Fact]
+        [TestMethod]
         public void ReadPartialTest()
         {
             AssertRead(0, 4);
         }
 
-        [Fact]
+        [TestMethod]
         public void ReadPartialOffsetTest()
         {
             AssertRead(2, 4);

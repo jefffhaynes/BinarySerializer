@@ -1,11 +1,12 @@
-﻿using Xunit;
+﻿
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Misc
 {
-    
+    [TestClass]
     public class AsbtractClassTests : TestBase
     {
-        //[Fact]
+        //[TestMethod]
         //public void AbstractClassTest()
         //{
         //    var container = new AbstractClassContainer {Content = new DerivedClass()};

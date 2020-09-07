@@ -1,10 +1,11 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue148
 {
+    [TestClass]
     public class Issue148Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void RoundtripTest()
         {
             var expected = new ProtocolClass
@@ -20,23 +21,23 @@ namespace BinarySerialization.Test.Issues.Issue148
 
             var actual = Roundtrip(expected, new byte[] {0xff, 0x0f});
 
-            Assert.Equal(expected.Header.ITEM1, actual.Header.ITEM1);
-            Assert.Equal(expected.Header.ITEM2, actual.Header.ITEM2);
-            Assert.Equal(expected.Header.ITEM3, actual.Header.ITEM3);
-            Assert.Equal(expected.Header.ITEM4, actual.Header.ITEM4);
-            Assert.Equal(expected.Body, actual.Body);
+            Assert.AreEqual(expected.Header.ITEM1, actual.Header.ITEM1);
+            Assert.AreEqual(expected.Header.ITEM2, actual.Header.ITEM2);
+            Assert.AreEqual(expected.Header.ITEM3, actual.Header.ITEM3);
+            Assert.AreEqual(expected.Header.ITEM4, actual.Header.ITEM4);
+            Assert.AreEqual(expected.Body, actual.Body);
         }
 
-        [Fact]
+        [TestMethod]
         public void ProtocolClassTest()
         {
             var bytes = new byte[] {0xff, 0x0f};
             BinarySerializer serializer = new BinarySerializer();
             var protocol = serializer.Deserialize<ProtocolClass>(bytes);
-            Assert.Equal(0x01, protocol.Header.ITEM1);
-            Assert.Equal(0x7f, protocol.Header.ITEM2);
-            Assert.Equal(0x01, protocol.Header.ITEM3);
-            Assert.Equal(0x07, protocol.Header.ITEM4);
+            Assert.AreEqual(0x01, protocol.Header.ITEM1);
+            Assert.AreEqual(0x7f, protocol.Header.ITEM2);
+            Assert.AreEqual(0x01, protocol.Header.ITEM3);
+            Assert.AreEqual(0x07, protocol.Header.ITEM4);
         }
     }
 }

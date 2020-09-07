@@ -1,11 +1,11 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue30
 {
-    
+    [TestClass]
     public class Issue30Tests
     {
-        [Fact]
+        [TestMethod]
         public void Test()
         {
             var binSerializer = new MessageSerializer();

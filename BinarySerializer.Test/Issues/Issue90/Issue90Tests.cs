@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue90
 {
+    [TestClass]
     public class Issue90Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void RoundtripTest()
         {
             var expected = new TxpTextureAtlas

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Reflection;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Custom
 {
@@ -23,7 +23,7 @@ namespace BinarySerialization.Test.Custom
         {
             var attributes = memberInfo.CustomAttributes;
             var customAttribute = attributes.Single();
-            Assert.Equal(typeof(CustomAttribute), customAttribute.AttributeType);
+            Assert.AreEqual(typeof(CustomAttribute), customAttribute.AttributeType);
         }
     }
 }

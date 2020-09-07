@@ -1,20 +1,20 @@
 ﻿using System;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Misc
 {
-    
+    [TestClass]
     public class MismatchBindingTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void MismatchBindingTest()
         {
             var expected = new MismatchBindingClass {Name1 = "Alice", Name2 = "Bob"};
 
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(expected));
 #endif
         }
     }

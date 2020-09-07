@@ -1,11 +1,11 @@
-﻿using System.IO;
-using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Misc
 {
+    [TestClass]
     public class MiscTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public async void DontFlushTooMuchTest()
         {
             var serializer = new BinarySerializer();

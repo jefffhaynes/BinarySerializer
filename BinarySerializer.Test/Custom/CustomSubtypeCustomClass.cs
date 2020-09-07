@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Custom
 {
@@ -12,8 +12,8 @@ namespace BinarySerialization.Test.Custom
             BinarySerializationContext serializationContext)
         {
             var boundedStream = (BoundedStream) stream;
-            Assert.Equal(0, boundedStream.Position);
-            Assert.Equal(100, (int) boundedStream.MaxLength.ByteCount);
+            Assert.AreEqual(0, boundedStream.Position);
+            Assert.AreEqual(100, (int) boundedStream.MaxLength.ByteCount);
 
             var varuint = new Varuint {Value = Value};
             varuint.Serialize(stream, endianness, serializationContext);

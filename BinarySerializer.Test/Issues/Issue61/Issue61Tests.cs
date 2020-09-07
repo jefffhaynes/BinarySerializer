@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue61
 {
-    
+    [TestClass]
     public class Issue61Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void ListOfObjectsTest()
         {
             var expected = new List<Message>
@@ -18,7 +18,7 @@ namespace BinarySerialization.Test.Issues.Issue61
             };
 
             var actual = Roundtrip(expected);
-            Assert.Single(actual);
+            Assert.AreEqual(1, actual.Count);
         }
     }
 }

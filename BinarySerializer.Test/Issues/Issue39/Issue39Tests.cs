@@ -1,17 +1,17 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue39
 {
-    
+    [TestClass]
     public class Issue39Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void DeserializeOnesAndZeros()
         {
             byte[] data = {0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x1};
             var inputsStateFrameData = Deserialize<InputsStateFrameData>(data);
-            Assert.False(inputsStateFrameData.Inputs[0]);
-            Assert.True(inputsStateFrameData.Inputs[1]);
+            Assert.IsFalse(inputsStateFrameData.Inputs[0]);
+            Assert.IsTrue(inputsStateFrameData.Inputs[1]);
         }
     }
 }

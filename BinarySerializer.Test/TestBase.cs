@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test
 {
@@ -48,7 +48,7 @@ namespace BinarySerialization.Test
             stream.Position = 0;
             var data = stream.ToArray();
 
-            Assert.Equal(expectedLength, data.Length);
+            Assert.AreEqual(expectedLength, data.Length);
 
             PrintDeserialize(typeof(T));
             return Deserialize<T>(stream);
@@ -64,7 +64,7 @@ namespace BinarySerialization.Test
             stream.Position = 0;
             var data = stream.ToArray();
 
-            Assert.Equal(expectedLength, data.Length);
+            Assert.AreEqual(expectedLength, data.Length);
 
             PrintDeserialize(typeof(T));
             return DeserializeBe<T>(stream);
@@ -109,10 +109,10 @@ namespace BinarySerialization.Test
                 var e = expected[i];
                 var a = actual[i];
 
-                Assert.True(e == a, $"Value at position {i} does not match expected value.  Expected 0x{e:X2}, got 0x{a:X2}");
+                Assert.IsTrue(e == a, $"Value at position {i} does not match expected value.  Expected 0x{e:X2}, got 0x{a:X2}");
             }
 
-            Assert.True(expected.Length == actual.Length, $"Sequence lengths do not match.  Expected {expected.Length}, got {actual.Length}");
+            Assert.IsTrue(expected.Length == actual.Length, $"Sequence lengths do not match.  Expected {expected.Length}, got {actual.Length}");
         }
 
         protected T RoundtripReverse<T>(byte[] data)

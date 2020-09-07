@@ -1,10 +1,11 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue106
 {
+    [TestClass]
     public class Issue106Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void Test()
         {
             var expected = new Buffer
@@ -16,10 +17,10 @@ namespace BinarySerialization.Test.Issues.Issue106
             };
 
             var actual = Roundtrip(expected, new byte[] {0x41, 0x80, 0xFF});
-            Assert.Equal(expected.Field1, actual.Field1);
-            Assert.Equal(expected.Field2, actual.Field2);
-            Assert.Equal(expected.Field3, actual.Field3);
-            Assert.Equal(expected.Field4, actual.Field4);
+            Assert.AreEqual(expected.Field1, actual.Field1);
+            Assert.AreEqual(expected.Field2, actual.Field2);
+            Assert.AreEqual(expected.Field3, actual.Field3);
+            Assert.AreEqual(expected.Field4, actual.Field4);
         }
     }
 }

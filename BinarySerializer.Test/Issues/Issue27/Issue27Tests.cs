@@ -1,12 +1,12 @@
 ﻿using System.IO;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue27
 {
-    
+    [TestClass]
     public class Issue27Tests
     {
-        [Fact]
+        [TestMethod]
         public void TestPrematureStreamTermination()
         {
             var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Little};
@@ -15,7 +15,7 @@ namespace BinarySerialization.Test.Issues.Issue27
             using (var stream = new MemoryStream(inBytes))
             {
                 var actualObj = serializer.Deserialize<LoadCarrierData>(stream);
-                Assert.Null(actualObj);
+                Assert.IsNull(actualObj);
             }
         }
     }

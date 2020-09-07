@@ -1,12 +1,12 @@
 ﻿using System.IO;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue50
 {
-    
+    [TestClass]
     public class Issue50Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void RoundtripTest()
         {
             var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Big};
@@ -20,7 +20,7 @@ namespace BinarySerialization.Test.Issues.Issue50
             
             var actual = serializer.Deserialize<MsgHeader>(stream);
 
-            Assert.Equal(expected.PayloadType, actual.PayloadType);
+            Assert.AreEqual(expected.PayloadType, actual.PayloadType);
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue82
 {
+    [TestClass]
     public class Issue82Tests : TestBase 
     {
-        [Fact]
+        [TestMethod]
         public void TestVersionConverter()
         {
             var expected = new SerializeWhenClass
@@ -14,10 +15,10 @@ namespace BinarySerialization.Test.Issues.Issue82
             };
 
             var actual = Roundtrip(expected);
-            Assert.Equal(expected.Value, actual.Value);
+            Assert.AreEqual(expected.Value, actual.Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void TestVersionConverterMiss()
         {
             var expected = new SerializeWhenClass
@@ -27,7 +28,7 @@ namespace BinarySerialization.Test.Issues.Issue82
             };
 
             var actual = Roundtrip(expected);
-            Assert.False(actual.Value);
+            Assert.IsFalse(actual.Value);
         }
     }
 }

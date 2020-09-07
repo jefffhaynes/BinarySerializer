@@ -1,11 +1,11 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.WhenNot
 {
-    
+    [TestClass]
     public class WhenNotTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void SimpleTest()
         {
             var expected = new WhenNotClass
@@ -15,11 +15,11 @@ namespace BinarySerialization.Test.WhenNot
             };
 
             var data = Serialize(expected);
-            Assert.Single(data);
+            Assert.AreEqual(1, data.Length);
 
             expected.ExcludeValue = false;
             data = Serialize(expected);
-            Assert.Equal(5, data.Length);
+            Assert.AreEqual(5, data.Length);
         }
     }
 }

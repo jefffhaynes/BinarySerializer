@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Until
 {
-    
+    [TestClass]
     public class UntilTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void TestUntilConst()
         {
             var expected = new UntilTestClass<string>
@@ -16,18 +16,18 @@ namespace BinarySerialization.Test.Until
             };
             var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.Items.Count, actual.Items.Count);
-            Assert.Equal(expected.AfterItems, actual.AfterItems);
+            Assert.AreEqual(expected.Items.Count, actual.Items.Count);
+            Assert.AreEqual(expected.AfterItems, actual.AfterItems);
         }
 
-        [Fact]
+        [TestMethod]
         public void PrimitiveTestUntilConst()
         {
             var expected = new UntilTestClass<int> {Items = new List<int> {3, 2, 1}, AfterItems = "a whole awful lot"};
             var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.Items.Count, actual.Items.Count);
-            Assert.Equal(expected.AfterItems, actual.AfterItems);
+            Assert.AreEqual(expected.Items.Count, actual.Items.Count);
+            Assert.AreEqual(expected.AfterItems, actual.AfterItems);
         }
     }
 }

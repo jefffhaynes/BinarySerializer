@@ -1,23 +1,22 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue38
 {
-    
+    [TestClass]
     public class Issue38Tests : TestBase
     {
-        //[Fact]
+        //[TestMethod]
         public void ConstructOnceTest()
         {
             var expected = new ConstructOnceClass();
             Roundtrip(expected);
 
-            Assert.Equal(1, ConstructOnceClass.Count);
+            Assert.AreEqual(1, ConstructOnceClass.Count);
         }
 
-        //[Fact]
+        //[TestMethod]
         public void DeserializeMessageTest()
         {
             var serializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Little};
@@ -37,7 +36,7 @@ namespace BinarySerialization.Test.Issues.Issue38
             using (var stream = new MemoryStream(inBytes))
             {
                 var actualObj = serializer.Deserialize<MachineState1>(stream);
-                Assert.Null(actualObj);
+                Assert.IsNull(actualObj);
             }
         }
     }

@@ -2,24 +2,24 @@
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Value
 {
-    
+    [TestClass]
     public class ValueTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void FieldValueTest()
         {
             var expected = new FieldValueClass {Value = 33};
             var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.Value, actual.Value);
-            Assert.Equal(actual.Value, actual.ValueCopy);
+            Assert.AreEqual(expected.Value, actual.Value);
+            Assert.AreEqual(actual.Value, actual.ValueCopy);
         }
 
-        [Fact]
+        [TestMethod]
         public void Crc16Test()
         {
             var expected = new FieldCrc16Class
@@ -44,10 +44,10 @@ namespace BinarySerialization.Test.Value
             };
 
             var actual = Roundtrip(expected, expectedData);
-            Assert.Equal(0xcd79, actual.Crc);
+            Assert.AreEqual(0xcd79, actual.Crc);
         }
 
-        [Fact]
+        [TestMethod]
         public void CrcTestOneWay()
         {
             var expected = new FieldCrc16OneWayClass
@@ -72,13 +72,13 @@ namespace BinarySerialization.Test.Value
             };
 
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(expected, expectedData));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(expected, expectedData));
 #else
-            Assert.Throws<InvalidOperationException>(() =>  Roundtrip(expected, expectedData));
+            Assert.ThrowsException<InvalidOperationException>(() =>  Roundtrip(expected, expectedData));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void CrcTestOneWayToSource()
         {
             var expected = new FieldCrc16OneWayToSourceClass
@@ -104,10 +104,10 @@ namespace BinarySerialization.Test.Value
 
             var actual = Deserialize<FieldCrc16OneWayToSourceClass>(data);
 
-            Assert.Equal(expected.Internal.Value, actual.Internal.Value);
+            Assert.AreEqual(expected.Internal.Value, actual.Internal.Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void Crc32Test()
         {
             var expected = new FieldCrc32Class
@@ -132,10 +132,10 @@ namespace BinarySerialization.Test.Value
             };
 
             var actual = Roundtrip(expected, expectedData);
-            Assert.Equal(0xF8344DDF, actual.Crc);
+            Assert.AreEqual(0xF8344DDF, actual.Crc);
         }
 
-        [Fact]
+        [TestMethod]
         public void Crc16StreamTest()
         {
             var expected = new StreamValueClass
@@ -144,10 +144,10 @@ namespace BinarySerialization.Test.Value
             };
 
             var actual = Roundtrip(expected);
-            Assert.Equal(0xdb9, actual.Crc);
+            Assert.AreEqual(0xdb9, actual.Crc);
         }
 
-        [Fact]
+        [TestMethod]
         public void FieldValueExtensionTest()
         {
             var expected = new FieldSha256Class
@@ -160,20 +160,20 @@ namespace BinarySerialization.Test.Value
             var expectedHash =
                 SHA256.Create().ComputeHash(new MemoryStream(System.Text.Encoding.ASCII.GetBytes(expected.Value)));
 
-            Assert.True(expectedHash.SequenceEqual(actual.Hash));
+            Assert.IsTrue(expectedHash.SequenceEqual(actual.Hash));
         }
 
-        [Fact]
+        [TestMethod]
         public void EasyMistakeCrcTest()
         {
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(new EasyMistakeCrcClass()));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(new EasyMistakeCrcClass()));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(new EasyMistakeCrcClass()));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(new EasyMistakeCrcClass()));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void ChecksumTest()
         {
             var expected = new FieldChecksumClass
@@ -183,35 +183,35 @@ namespace BinarySerialization.Test.Value
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(0xEC, actual.Checksum);
-            Assert.Equal(0x14, actual.ModuloChecksum);
-            Assert.Equal(0x62, actual.XorChecksum);
+            Assert.AreEqual(0xEC, actual.Checksum);
+            Assert.AreEqual(0x14, actual.ModuloChecksum);
+            Assert.AreEqual(0x62, actual.XorChecksum);
         }
 
-        [Fact]
+        [TestMethod]
         public void MultiValueFieldTest()
         {
             var expected = new FieldCrc16MultiFieldClass {Value1 = 0x1, Value2 = 0x0201, Value3 = 0x2};
             var actual = Roundtrip(expected);
 
-            Assert.Equal(actual.Crc2, actual.Crc);
+            Assert.AreEqual(actual.Crc2, actual.Crc);
         }
 
-        [Fact]
+        [TestMethod]
         public void NestedCrcTest()
         {
             var expected = new NestedCrcClass {Value = "hello"};
             var actual = Roundtrip(expected);
-            Assert.Equal(0xd26e, actual.Crc);
+            Assert.AreEqual(0xd26e, actual.Crc);
         }
 
-        [Fact]
+        [TestMethod]
         public void OuterCrcTest()
         {
             var value = new OuterCrcClass {NestedCrc = new NestedCrcClass {Value = "hello"}};
             var actual = Roundtrip(value);
-            Assert.Equal(0xd26e, actual.NestedCrc.Crc);
-            Assert.Equal(0x91f8, actual.Crc);
+            Assert.AreEqual(0xd26e, actual.NestedCrc.Crc);
+            Assert.AreEqual(0x91f8, actual.Crc);
         }
     }
 }

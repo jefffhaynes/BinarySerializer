@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.BitLength
 {
+    [TestClass]
     public class BitLengthTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void LengthTest()
         {
             var expected = new BitLengthClass
@@ -19,14 +20,14 @@ namespace BinarySerialization.Test.BitLength
             };
 
             var actual = Roundtrip(expected, new byte[] {0x7d, 0xef, 0xf6, 0xfd, 0xaa});
-            Assert.Equal(expected.A, actual.A);
-            Assert.Equal(expected.B, actual.B);
-            Assert.Equal(expected.C, actual.C);
-            Assert.Equal(expected.Internal.Value, actual.Internal.Value);
-            Assert.Equal(0b1010, actual.Internal2.Value);
+            Assert.AreEqual(expected.A, actual.A);
+            Assert.AreEqual(expected.B, actual.B);
+            Assert.AreEqual(expected.C, actual.C);
+            Assert.AreEqual(expected.Internal.Value, actual.Internal.Value);
+            Assert.AreEqual(0b1010, actual.Internal2.Value);
         }
 
-        //[Fact]
+        //[TestMethod]
         public void LengthTestBE()
         {
             var expected = new BitLengthClass
@@ -39,14 +40,14 @@ namespace BinarySerialization.Test.BitLength
             };
 
             var actual = RoundtripBigEndian(expected, new byte[] { 0x7d, 0xef, 0xf6, 0xfd, 0xaa });
-            Assert.Equal(expected.A, actual.A);
-            Assert.Equal(expected.B, actual.B);
-            Assert.Equal(expected.C, actual.C);
-            Assert.Equal(expected.Internal.Value, actual.Internal.Value);
-            Assert.Equal(0b1010, actual.Internal2.Value);
+            Assert.AreEqual(expected.A, actual.A);
+            Assert.AreEqual(expected.B, actual.B);
+            Assert.AreEqual(expected.C, actual.C);
+            Assert.AreEqual(expected.Internal.Value, actual.Internal.Value);
+            Assert.AreEqual(0b1010, actual.Internal2.Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void TestBitLengthValue()
         {
             var expected = new BitLengthValueClass
@@ -61,12 +62,12 @@ namespace BinarySerialization.Test.BitLength
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.Value.Value, actual.Value.Value);
-            Assert.Equal(expected.Value.Value2, actual.Value.Value2);
-            Assert.Equal(actual.Crc2, actual.Crc);
+            Assert.AreEqual(expected.Value.Value, actual.Value.Value);
+            Assert.AreEqual(expected.Value.Value2, actual.Value.Value2);
+            Assert.AreEqual(actual.Crc2, actual.Crc);
         }
 
-        [Fact]
+        [TestMethod]
         public void BitLengthBoolTest()
         {
             var expected = new List<BitLengthBoolClass>
@@ -85,11 +86,11 @@ namespace BinarySerialization.Test.BitLength
 
             for (int i = 0; i < expected.Count; i++)
             {
-                Assert.Equal(expected[i].Value, actual[i].Value);
+                Assert.AreEqual(expected[i].Value, actual[i].Value);
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void BoundBitLengthTest()
         {
             var expected = new BoundBitLengthClass
@@ -102,10 +103,10 @@ namespace BinarySerialization.Test.BitLength
             };
 
             var actual = Roundtrip(expected);
-            Assert.Equal(8, actual.BitLength);
-            Assert.Equal(expected.Items.Count, actual.Items.Count);
-            Assert.Equal(expected.Items[0].Value, actual.Items[0].Value);
-            Assert.Equal(expected.Items[1].Value, actual.Items[1].Value);
+            Assert.AreEqual(8, actual.BitLength);
+            Assert.AreEqual(expected.Items.Count, actual.Items.Count);
+            Assert.AreEqual(expected.Items[0].Value, actual.Items[0].Value);
+            Assert.AreEqual(expected.Items[1].Value, actual.Items[1].Value);
         }
     }
 }

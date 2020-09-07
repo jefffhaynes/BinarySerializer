@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Subtype
 {
+    [TestClass]
     public class SubtypeTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void SubtypeTest()
         {
             var expected = new SubtypeClass {Field = new SubclassB {SomethingForClassB = 33}, Field2 = new SubclassA()};
             var actual = Roundtrip(expected);
 
-            Assert.Equal(SubclassType.B, actual.Subtype);
-            Assert.IsAssignableFrom<SubclassB>(actual.Field);
+            Assert.AreEqual(SubclassType.B, actual.Subtype);
+            Assert.IsTrue(actual.Field is SubclassB);
         }
 
-        [Fact]
+        [TestMethod]
         public void SubSubtypeTest()
         {
             var expected = new SubtypeClass
@@ -31,16 +32,16 @@ namespace BinarySerialization.Test.Subtype
             };
             var actual = Roundtrip(expected);
 
-            Assert.Equal(SubclassType.C, actual.Subtype);
-            Assert.IsAssignableFrom<SubSubclassC>(actual.Field);
-            Assert.Equal(actual.Field.SomeSuperStuff, expected.Field.SomeSuperStuff);
-            Assert.Equal(((SubSubclassC) actual.Field).SomethingForClassB,
+            Assert.AreEqual(SubclassType.C, actual.Subtype);
+            Assert.IsTrue(actual.Field is SubSubclassC);
+            Assert.AreEqual(actual.Field.SomeSuperStuff, expected.Field.SomeSuperStuff);
+            Assert.AreEqual(((SubSubclassC) actual.Field).SomethingForClassB,
                 ((SubSubclassC) expected.Field).SomethingForClassB);
-            Assert.Equal(((SubSubclassC) actual.Field).SomethingForClassC,
+            Assert.AreEqual(((SubSubclassC) actual.Field).SomethingForClassC,
                 ((SubSubclassC) expected.Field).SomethingForClassC);
         }
 
-        [Fact]
+        [TestMethod]
         public void RecoverableMissingSubtypeTest()
         {
             var expected = new RecoverableMissingSubtypeClass<SuperclassContainer>
@@ -64,44 +65,44 @@ namespace BinarySerialization.Test.Subtype
 
             var actualItems = actual.Items;
 
-            Assert.Equal(typeof (SubclassA), actualItems[0].Value.GetType());
-            Assert.Null(actualItems[1].Value);
-            Assert.Equal(typeof (SubSubclassC), actualItems[2].Value.GetType());
+            Assert.AreEqual(typeof (SubclassA), actualItems[0].Value.GetType());
+            Assert.IsNull(actualItems[1].Value);
+            Assert.AreEqual(typeof (SubSubclassC), actualItems[2].Value.GetType());
         }
 
-        [Fact]
+        [TestMethod]
         public void MissingSubtypeTest()
         {
             var expected = new IncompleteSubtypeClass { Field = new SubclassB() };
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(expected));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void SubtypeDefaultTest()
         {
             var data = new byte[] {0x0, 0x1, 0x2, 0x3, 0x4, 0x5};
             var actual = Deserialize<DefaultSubtypeContainerClass>(data);
-            Assert.Equal(typeof(DefaultSubtypeClass), actual.Value.GetType());
+            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
         }
 
-        [Fact]
+        [TestMethod]
         public void InvalidSubtypeDefaultTest()
         {
             var data = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5 };
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() =>
+            Assert.ThrowsException<AggregateException>(() =>
 #else
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.ThrowsException<InvalidOperationException>(() =>
 #endif
             Deserialize<InvalidDefaultSubtypeContainerClass>(data));
 
         }
 
-        [Fact]
+        [TestMethod]
         public void DefaultSubtypeForwardTest()
         {
             var expected = new DefaultSubtypeContainerClass
@@ -111,11 +112,11 @@ namespace BinarySerialization.Test.Subtype
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(1, actual.Indicator);
-            Assert.Equal(typeof(SubclassA), actual.Value.GetType());
+            Assert.AreEqual(1, actual.Indicator);
+            Assert.AreEqual(typeof(SubclassA), actual.Value.GetType());
         }
 
-        [Fact]
+        [TestMethod]
         public void DefaultSubtypeAllowOnSerialize()
         {
             var expected = new DefaultSubtypeContainerClass
@@ -126,11 +127,11 @@ namespace BinarySerialization.Test.Subtype
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(33, actual.Indicator);
-            Assert.Equal(typeof(DefaultSubtypeClass), actual.Value.GetType());
+            Assert.AreEqual(33, actual.Indicator);
+            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
         }
 
-        [Fact]
+        [TestMethod]
         public void AncestorSubtypeBindingTest()
         {
             var expected = new AncestorSubtypeBindingContainerClass
@@ -143,73 +144,73 @@ namespace BinarySerialization.Test.Subtype
             };
 
             var actual = Roundtrip(expected);
-            Assert.Equal(((AncestorSubtypeBindingClass) expected.AncestorSubtypeBindingClass).InnerClass.Value,
+            Assert.AreEqual(((AncestorSubtypeBindingClass) expected.AncestorSubtypeBindingClass).InnerClass.Value,
                 ((AncestorSubtypeBindingClass) actual.AncestorSubtypeBindingClass).InnerClass.Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void SubtypeAsSourceTest()
         {
             var expected = new SubtypeAsSourceClass {Superclass = new SubclassA(), Name = "Alice"};
             var actual = Roundtrip(expected);
-            Assert.Equal(expected.Name, actual.Name);
+            Assert.AreEqual(expected.Name, actual.Name);
         }
 
-        [Fact]
+        [TestMethod]
         public void IncompatibleBindingsTest()
         {
             var expected = new IncompatibleBindingsClass();
 
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(expected));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void InvalidSubtypeTest()
         {
             var expected = new InvalidSubtypeClass();
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(expected));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void NonUniqueSubtypesTest()
         {
             var expected = new NonUniqueSubtypesClass();
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(expected));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void NonUniqueSubtypeValuesTest()
         {
             var expected = new NonUniqueSubtypeValuesClass();
 
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(expected));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void DefaultSubtypeOnlyTest()
         {
             var actual = Deserialize<SubtypeDefaultOnlyClass>(new byte[] {0x4, 0x1, 0x2, 0x3, 0x4, 05});
-            Assert.Equal(0x4, actual.Key);
-            Assert.Equal(typeof(DefaultSubtypeClass), actual.Value.GetType());
+            Assert.AreEqual(0x4, actual.Key);
+            Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
         }
 
-        [Fact]
+        [TestMethod]
         public void MultipleBindingModesTest()
         {
             var forward = new MixedBindingModesClass
@@ -218,10 +219,10 @@ namespace BinarySerialization.Test.Subtype
             };
 
             var actual = Roundtrip(forward, new byte[]{0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0});
-            Assert.Equal(typeof(SubclassA), actual.Value.GetType());
+            Assert.AreEqual(typeof(SubclassA), actual.Value.GetType());
         }
 
-        [Fact]
+        [TestMethod]
         public void UnorderedSubtypeTest()
         {
             var expected = new SuperclassContainerWithNoBinding
@@ -230,13 +231,13 @@ namespace BinarySerialization.Test.Subtype
             };
 
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(expected));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(expected));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(expected));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void IgnoredSubtypeTest()
         {
             var expected = new SuperclassContainerWithNoBinding

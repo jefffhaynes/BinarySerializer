@@ -1,12 +1,12 @@
 using System.IO;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue55
 {
-    
+    [TestClass]
     public class Issue55Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void Test()
         {
 
@@ -31,7 +31,7 @@ namespace BinarySerialization.Test.Issues.Issue55
 
             Roundtrip(source);
 
-            var serializer = new BinarySerialization.BinarySerializer();
+            var serializer = new BinarySerializer();
             var outputStream = new MemoryStream();
             serializer.Serialize(outputStream, source);
 

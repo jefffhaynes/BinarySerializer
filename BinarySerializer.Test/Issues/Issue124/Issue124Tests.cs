@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue124
 {
+    [TestClass]
     public class Issue124Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void Test()
         {
             var expected = new ApplicationMessage

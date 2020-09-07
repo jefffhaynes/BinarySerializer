@@ -1,12 +1,12 @@
-﻿using BinarySerialization.Test;
-using Xunit;
+﻿using BinarySerializer.Test.Issues.Issue57;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BinarySerializer.Test.Issues.Issue57
+namespace BinarySerialization.Test.Issues.Issue57
 {
-    
+    [TestClass]
     public class Issue57Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void RoundtripFloat()
         {
             var expected = new BigEndianFloatClass
@@ -15,7 +15,7 @@ namespace BinarySerializer.Test.Issues.Issue57
             };
 
             var actual = Roundtrip(expected, sizeof(float));
-            Assert.Equal(expected.Value, actual.Value);
+            Assert.AreEqual(expected.Value, actual.Value);
         }
     }
 }

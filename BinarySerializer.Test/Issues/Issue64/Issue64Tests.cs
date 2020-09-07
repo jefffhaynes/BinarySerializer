@@ -1,11 +1,11 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue64
 {
-    
+    [TestClass]
     public class Issue64Tests : TestBase
     {
-        //[Fact]
+        //[TestMethod]
         public void AlignmentTest()
         {
             byte[] data = {

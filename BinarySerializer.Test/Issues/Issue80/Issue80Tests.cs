@@ -1,23 +1,24 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue80
 {
+    [TestClass]
     public class Issue80Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void Test0Xff()
         {
             var expected = new CustomField();
             var actual = Roundtrip(expected, new byte[] {0xff});
-            Assert.Null(actual.Value);
+            Assert.IsNull(actual.Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void TestNormal()
         {
             var expected = new CustomField {Value = "hi"};
             var actual = Roundtrip(expected);
-            Assert.Equal(expected.Value, actual.Value);
+            Assert.AreEqual(expected.Value, actual.Value);
         }
     }
 }

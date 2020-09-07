@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.UntilItem
 {
-    
+    [TestClass]
     public class UntilItemTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void UntilItemConstTest()
         {
             var items = new List<UntilItemClass>
@@ -36,11 +36,11 @@ namespace BinarySerialization.Test.UntilItem
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.Items.Count, actual.Items.Count);
-            Assert.Equal(expected.ItemsLastItemExcluded.Count - 1, actual.ItemsLastItemExcluded.Count);
+            Assert.AreEqual(expected.Items.Count, actual.Items.Count);
+            Assert.AreEqual(expected.ItemsLastItemExcluded.Count - 1, actual.ItemsLastItemExcluded.Count);
         }
 
-        [Fact]
+        [TestMethod]
         public void UntilItemBoundTest()
         {
             var items = new List<UntilItemClass>
@@ -70,11 +70,11 @@ namespace BinarySerialization.Test.UntilItem
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.BoundItems.Count, actual.BoundItems.Count);
-            Assert.Equal(expected.BoundItems[2].LastItem, actual.SerializeUntilField);
+            Assert.AreEqual(expected.BoundItems.Count, actual.BoundItems.Count);
+            Assert.AreEqual(expected.BoundItems[2].LastItem, actual.SerializeUntilField);
         }
 
-        [Fact]
+        [TestMethod]
         public void UntilItemEnumTest()
         {
             var items = new List<UntilItemClass>
@@ -104,10 +104,10 @@ namespace BinarySerialization.Test.UntilItem
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.EnumTerminationItems.Count, actual.EnumTerminationItems.Count);
+            Assert.AreEqual(expected.EnumTerminationItems.Count, actual.EnumTerminationItems.Count);
         }
 
-        [Fact]
+        [TestMethod]
         public void UntilItemDeferredTest()
         {
             var expected = new UntilItemContainerDeferred
@@ -141,9 +141,9 @@ namespace BinarySerialization.Test.UntilItem
                 2,0,0,0,0,0
             });
 
-            Assert.Equal(expected.Sections.Count, actual.Sections.Count);
-            Assert.Equal(expected.Sections[0].Items.Count, actual.Sections[0].Items.Count);
-            Assert.Equal(expected.Sections[1].Items.Count, actual.Sections[1].Items.Count);
+            Assert.AreEqual(expected.Sections.Count, actual.Sections.Count);
+            Assert.AreEqual(expected.Sections[0].Items.Count, actual.Sections[0].Items.Count);
+            Assert.AreEqual(expected.Sections[1].Items.Count, actual.Sections[1].Items.Count);
         }
     }
 }

@@ -1,11 +1,11 @@
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Misc
 {
-    
+    [TestClass]
     public class NullTrailingMemberTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void NullTrailingMemberTest()
         {
             var container = new NullTrailingMemberClassContainer();

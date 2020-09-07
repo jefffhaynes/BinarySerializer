@@ -1,74 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Length
 {
     
     public class LengthTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void ConstLengthTest()
         {
             var actual = Roundtrip(new ConstLengthClass {Field = "FieldValue"}, 6);
-            Assert.Equal("Fie", actual.Field);
+            Assert.AreEqual("Fie", actual.Field);
         }
 
-        [Fact]
+        [TestMethod]
         public void NullStringConstLengthTest()
         {
             var actual = Roundtrip(new ConstLengthClass(), 6);
-            Assert.Equal(string.Empty, actual.Field);
-            Assert.Equal(System.Text.Encoding.ASCII.GetString(new byte[] {0, 0, 0}), actual.Field2);
+            Assert.AreEqual(string.Empty, actual.Field);
+            Assert.AreEqual(System.Text.Encoding.ASCII.GetString(new byte[] {0, 0, 0}), actual.Field2);
         }
 
-        [Fact]
+        [TestMethod]
         public void LengthBindingTest()
         {
             var expected = new BoundLengthClass<string> {Field = "FieldValue"};
             var actual = Roundtrip(expected);
-            Assert.Equal(expected.Field.Length, actual.FieldLengthField);
-            Assert.Equal(expected.Field, actual.Field);
+            Assert.AreEqual(expected.Field.Length, actual.FieldLengthField);
+            Assert.AreEqual(expected.Field, actual.Field);
         }
 
-        [Fact]
+        [TestMethod]
         public void LengthBindingTest2()
         {
             var expected = new BoundLengthClass<byte[]> {Field = System.Text.Encoding.ASCII.GetBytes("FieldValue")};
             var actual = Roundtrip(expected);
-            Assert.Equal(expected.Field.Length, actual.FieldLengthField);
-            Assert.True(expected.Field.SequenceEqual(actual.Field));
+            Assert.AreEqual(expected.Field.Length, actual.FieldLengthField);
+            Assert.IsTrue(expected.Field.SequenceEqual(actual.Field));
         }
 
-        [Fact]
+        [TestMethod]
         public void CollectionConstLengthTest()
         {
             var expected = new ConstCollectionLengthClass {Field = new List<string>(TestSequence)};
             var actual = Roundtrip(expected);
-            Assert.Equal(TestSequence.Length, actual.Field.Count);
-            Assert.True(expected.Field.SequenceEqual(actual.Field));
+            Assert.AreEqual(TestSequence.Length, actual.Field.Count);
+            Assert.IsTrue(expected.Field.SequenceEqual(actual.Field));
         }
 
-        [Fact]
+        [TestMethod]
         public void CollectionLengthTest()
         {
             var expected = new BoundLengthClass<List<string>> {Field = new List<string>(TestSequence)};
             var actual = Roundtrip(expected);
-            Assert.Equal(expected.Field.Count*2, actual.FieldLengthField);
-            Assert.Equal(TestSequence.Length, actual.Field.Count);
+            Assert.AreEqual(expected.Field.Count*2, actual.FieldLengthField);
+            Assert.AreEqual(TestSequence.Length, actual.Field.Count);
         }
 
-        [Fact]
+        [TestMethod]
         public void EmptyCollectionLengthTest()
         {
             var expected = new BoundLengthClass<List<string>> {Field = new List<string>()};
             var actual = Roundtrip(expected);
-            Assert.Equal(expected.Field.Count*2, actual.FieldLengthField);
-            Assert.Empty(actual.Field);
+            Assert.AreEqual(expected.Field.Count*2, actual.FieldLengthField);
+            Assert.AreEqual(0, actual.Field.Count);
         }
 
-        [Fact]
+        [TestMethod]
         public void ComplexFieldLengthTest()
         {
             var expected = new BoundLengthClass<ConstLengthClass>
@@ -76,11 +76,11 @@ namespace BinarySerialization.Test.Length
                 Field = new ConstLengthClass {Field = "FieldValue"}
             };
             var actual = Roundtrip(expected);
-            Assert.Equal(3, actual.Field.Field.Length);
-            Assert.Equal(6, actual.FieldLengthField);
+            Assert.AreEqual(3, actual.Field.Field.Length);
+            Assert.AreEqual(6, actual.FieldLengthField);
         }
 
-        [Fact]
+        [TestMethod]
         public void ContainedCollectionTest()
         {
             var expected = new BoundLengthClass<ContainedCollection>
@@ -96,10 +96,10 @@ namespace BinarySerialization.Test.Length
             };
 
             var actual = Roundtrip(expected);
-            Assert.Equal(2, actual.Field.Collection.Count);
+            Assert.AreEqual(2, actual.Field.Collection.Count);
         }
 
-        [Fact]
+        [TestMethod]
         public void PaddedLengthTest()
         {
             var expected = new PaddedLengthClassClass
@@ -116,13 +116,13 @@ namespace BinarySerialization.Test.Length
 
             var actual = Roundtrip(expected, 40);
 
-            Assert.Equal(expected.InnerClass.Value, actual.InnerClass.Value);
-            Assert.Equal(expected.InnerClass.Value.Length, actual.InnerClass.ValueLength);
-            Assert.Equal(expected.InnerClass2.Value, actual.InnerClass2.Value);
-            Assert.Equal(expected.InnerClass2.Value.Length, actual.InnerClass2.ValueLength);
+            Assert.AreEqual(expected.InnerClass.Value, actual.InnerClass.Value);
+            Assert.AreEqual(expected.InnerClass.Value.Length, actual.InnerClass.ValueLength);
+            Assert.AreEqual(expected.InnerClass2.Value, actual.InnerClass2.Value);
+            Assert.AreEqual(expected.InnerClass2.Value.Length, actual.InnerClass2.ValueLength);
         }
 
-        [Fact]
+        [TestMethod]
         public void EmbeddedConstrainedCollectionTest()
         {
             var expected = new EmbeddedConstrainedCollectionClass
@@ -143,7 +143,7 @@ namespace BinarySerialization.Test.Length
             Roundtrip(expected, 10);
         }
 
-        [Fact]
+        [TestMethod]
         public void BoundItemTest()
         {
             var expected = new BoundItemContainerClass
@@ -158,43 +158,43 @@ namespace BinarySerialization.Test.Length
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.Items[0].Name, actual.Items[0].Name);
-            Assert.Equal(expected.Items[1].Name, actual.Items[1].Name);
-            Assert.Equal(expected.Items[2].Name, actual.Items[2].Name);
+            Assert.AreEqual(expected.Items[0].Name, actual.Items[0].Name);
+            Assert.AreEqual(expected.Items[1].Name, actual.Items[1].Name);
+            Assert.AreEqual(expected.Items[2].Name, actual.Items[2].Name);
         }
 
-        [Fact]
+        [TestMethod]
         public void MultibindingTest()
         {
             var expected = new MultibindingClass {Value = "hi"};
             var actual = Roundtrip(expected, new byte[] {0x02, (byte) 'h', (byte) 'i', 0x02});
 
-            Assert.Equal(2, actual.Length);
-            Assert.Equal(2, actual.Length2);
+            Assert.AreEqual(2, actual.Length);
+            Assert.AreEqual(2, actual.Length2);
         }
 
-        [Fact]
+        [TestMethod]
         public void EmptyClassTest()
         {
             var expected = new EmptyClass {Internal = new EmptyInternalClass()};
             var actual = Roundtrip(expected);
 
-            Assert.NotNull(actual);
-            Assert.NotNull(actual.Internal);
+            Assert.IsNotNull(actual);
+            Assert.IsNotNull(actual.Internal);
         }
 
-        [Fact]
+        [TestMethod]
 
         public void InvalidForwardBindingTest()
         {
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(new InvalidForwardBindingClass()));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(new InvalidForwardBindingClass()));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(new InvalidForwardBindingClass()));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(new InvalidForwardBindingClass()));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void InterfaceAncestoryBindingTest()
         {
             var expected = new LengthSourceClass
@@ -207,10 +207,10 @@ namespace BinarySerialization.Test.Length
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(expected.Internal.Value, actual.Internal.Value);
+            Assert.AreEqual(expected.Internal.Value, actual.Internal.Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void AncestorBindingCollectionItemTest()
         {
             var expected = new AncestorBindingCollectionClass
@@ -227,31 +227,31 @@ namespace BinarySerialization.Test.Length
             Roundtrip(expected);
         }
 
-        [Fact]
+        [TestMethod]
         public void PrimitiveNullByteArrayLengthTest()
         {
             PrimitiveNullArrayLengthTest<byte>();
         }
 
-        [Fact]
+        [TestMethod]
         public void PrimitiveNullSByteArrayLengthTest()
         {
             PrimitiveNullArrayLengthTest<sbyte>();
         }
 
-        [Fact]
+        [TestMethod]
         public void PrimitiveNullShortArrayLengthTest()
         {
             PrimitiveNullArrayLengthTest<short>();
         }
 
-        [Fact]
+        [TestMethod]
         public void PrimitiveNullUShortArrayLengthTest()
         {
             PrimitiveNullArrayLengthTest<ushort>();
         }
 
-        [Fact]
+        [TestMethod]
         public void OneWayLengthBindingTest()
         {
             var expected = new OneWayLengthBindingClass {Value = "hi"};

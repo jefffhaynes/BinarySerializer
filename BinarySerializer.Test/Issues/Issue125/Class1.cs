@@ -1,4 +1,4 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue125
 {
@@ -21,7 +21,7 @@ namespace BinarySerialization.Test.Issues.Issue125
 
     public class Issue125Tests : TestBase
     {
-        //[Fact]
+        //[TestMethod]
         public void TestMethod1()
         {
             var b = new byte[]
@@ -30,11 +30,11 @@ namespace BinarySerialization.Test.Issues.Issue125
             };
 
             var c = Deserialize<TestClass>(b);
-            Assert.Equal(0x80, c.Body[0]);
-            Assert.Equal(0x00, c.Body[1]);
+            Assert.AreEqual(0x80, c.Body[0]);
+            Assert.AreEqual(0x00, c.Body[1]);
         }
 
-        [Fact]
+        [TestMethod]
         public void TestMethod2()
         {
             var b = new byte[]
@@ -43,8 +43,8 @@ namespace BinarySerialization.Test.Issues.Issue125
             };
 
             var c = Deserialize<TestClass2>(b);
-            Assert.Equal(0x80, c.Body[0]);
-            Assert.Equal(0x00, c.Body[1]);
+            Assert.AreEqual(0x80, c.Body[0]);
+            Assert.AreEqual(0x00, c.Body[1]);
         }
     }
 }

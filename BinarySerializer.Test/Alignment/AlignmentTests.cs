@@ -1,11 +1,11 @@
-﻿using Xunit;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Alignment
 {
-    
+    [TestClass]
     public class AlignmentTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void AlignmentTest()
         {
             var actual = RoundtripReverse<AlignmentClass>(new byte[]
@@ -14,11 +14,11 @@ namespace BinarySerialization.Test.Alignment
                 (byte) 'h', (byte) 'i', 0, 0
             });
 
-            Assert.Equal(2, actual.Length);
-            Assert.Equal("hi", actual.Value);
+            Assert.AreEqual(2, actual.Length);
+            Assert.AreEqual("hi", actual.Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void BoundAlignmentTest()
         {
             var actual = RoundtripReverse<BoundAlignmentClass>(new byte[]
@@ -27,12 +27,12 @@ namespace BinarySerialization.Test.Alignment
                 (byte) 'h', (byte) 'i', 0, 0
             });
 
-            Assert.Equal(2, actual.Length);
-            Assert.Equal(4, actual.Alignment);
-            Assert.Equal("hi", actual.Value);
+            Assert.AreEqual(2, actual.Length);
+            Assert.AreEqual(4, actual.Alignment);
+            Assert.AreEqual("hi", actual.Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void LeftAlignmentTest()
         {
             var actual = RoundtripReverse<LeftAlignmentClass>(new byte[]
@@ -42,12 +42,12 @@ namespace BinarySerialization.Test.Alignment
                 0x3
             });
 
-            Assert.Equal((byte)1, actual.Header);
-            Assert.Equal((byte)2, actual.Value);
-            Assert.Equal((byte)3, actual.Trailer);
+            Assert.AreEqual((byte)1, actual.Header);
+            Assert.AreEqual((byte)2, actual.Value);
+            Assert.AreEqual((byte)3, actual.Trailer);
         }
 
-        [Fact]
+        [TestMethod]
         public void RightAlignmentTest()
         {
             var actual = RoundtripReverse<RightAlignmentClass>(new byte[]
@@ -57,12 +57,12 @@ namespace BinarySerialization.Test.Alignment
                 0x3
             });
 
-            Assert.Equal((byte)1, actual.Header);
-            Assert.Equal((byte)2, actual.Value);
-            Assert.Equal((byte)3, actual.Trailer);
+            Assert.AreEqual((byte)1, actual.Header);
+            Assert.AreEqual((byte)2, actual.Value);
+            Assert.AreEqual((byte)3, actual.Trailer);
         }
 
-        [Fact]
+        [TestMethod]
         public void MixedAlignmentTest()
         {
             var actual = RoundtripReverse<MixedAlignmentClass>(new byte[]
@@ -72,9 +72,9 @@ namespace BinarySerialization.Test.Alignment
                 0x3
             });
 
-            Assert.Equal((byte)1, actual.Header);
-            Assert.Equal((byte)2, actual.Value);
-            Assert.Equal((byte)3, actual.Trailer);
+            Assert.AreEqual((byte)1, actual.Header);
+            Assert.AreEqual((byte)2, actual.Value);
+            Assert.AreEqual((byte)3, actual.Trailer);
         }
     }
 }

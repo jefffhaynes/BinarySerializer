@@ -1,20 +1,20 @@
 ﻿using System;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue29
 {
-    
+    [TestClass]
     public class Issue29Tests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void TestDefaultSerialization()
         {
             var carrierData = new LoadCarrierData(LoadCarrierType.Unknown, null);
 
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(carrierData, 2));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(carrierData, 2));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(carrierData, 2));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(carrierData, 2));
 #endif
         }
     }

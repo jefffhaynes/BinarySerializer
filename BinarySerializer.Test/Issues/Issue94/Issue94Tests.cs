@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 #pragma warning disable 649
 
 namespace BinarySerialization.Test.Issues.Issue94
 {
+    [TestClass]
     public class Issue94Tests : TestBase
     {
         class MainClass
@@ -22,7 +23,7 @@ namespace BinarySerialization.Test.Issues.Issue94
             [FieldOrder(2), FieldEncoding("ASCII"), FieldOffset(0)] public string String;
         }
 
-        [Fact]
+        [TestMethod]
         public void Test()
         {
             using (var file = new FileStream(@"Issues\Issue94\tst.file", FileMode.Open, FileAccess.Read))

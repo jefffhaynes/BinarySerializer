@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.ItemSubtype
 {
     
     public class ItemSubtypeTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void ItemSubtypeTest()
         {
             var expected = new ItemSubtypeClass
@@ -22,14 +22,14 @@ namespace BinarySerialization.Test.ItemSubtype
 
             var actual = Roundtrip(expected, new byte[] {2, 1, 2, 3});
 
-            Assert.Equal(2, actual.Indicator);
-            Assert.Equal(3, actual.Items.Count);
-            Assert.Equal(expected.Items[0].GetType(), actual.Items[0].GetType());
-            Assert.Equal(expected.Items[1].GetType(), actual.Items[1].GetType());
-            Assert.Equal(expected.Items[2].GetType(), actual.Items[2].GetType());
+            Assert.AreEqual(2, actual.Indicator);
+            Assert.AreEqual(3, actual.Items.Count);
+            Assert.AreEqual(expected.Items[0].GetType(), actual.Items[0].GetType());
+            Assert.AreEqual(expected.Items[1].GetType(), actual.Items[1].GetType());
+            Assert.AreEqual(expected.Items[2].GetType(), actual.Items[2].GetType());
         }
 
-        [Fact]
+        [TestMethod]
         public void CustomItemSubtypeTest()
         {
             var expected = new ItemSubtypeClass
@@ -44,25 +44,25 @@ namespace BinarySerialization.Test.ItemSubtype
             var data = new byte[] {3}.Concat(CustomItem.Data).Concat(CustomItem.Data).ToArray();
             var actual = Roundtrip(expected, data);
 
-            Assert.Equal(3, actual.Indicator);
-            Assert.Equal(2, actual.Items.Count);
-            Assert.Equal(expected.Items[0].GetType(), actual.Items[0].GetType());
-            Assert.Equal(expected.Items[1].GetType(), actual.Items[1].GetType());
+            Assert.AreEqual(3, actual.Indicator);
+            Assert.AreEqual(2, actual.Items.Count);
+            Assert.AreEqual(expected.Items[0].GetType(), actual.Items[0].GetType());
+            Assert.AreEqual(expected.Items[1].GetType(), actual.Items[1].GetType());
         }
 
 
-        [Fact]
+        [TestMethod]
         public void DefaultItemSubtypeTest()
         {
             var data = new byte[] {4, 0, 1, 2, 3 };
             var actual = Deserialize<ItemSubtypeClass>(data);
 
-            Assert.Equal(4, actual.Indicator);
-            Assert.Single(actual.Items);
-            Assert.Equal(typeof(DefaultItemType), actual.Items[0].GetType());
+            Assert.AreEqual(4, actual.Indicator);
+            Assert.AreEqual(1, actual.Items.Count);
+            Assert.AreEqual(typeof(DefaultItemType), actual.Items[0].GetType());
         }
 
-        [Fact]
+        [TestMethod]
         public void ItemSubtypeFactoryTest()
         {
             var expected = new ItemSubtypeFactoryClass
@@ -76,10 +76,10 @@ namespace BinarySerialization.Test.ItemSubtype
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(3, actual.Key);
+            Assert.AreEqual(3, actual.Key);
         }
 
-        [Fact]
+        [TestMethod]
         public void ItemSubtypeMixedTest()
         {
             var expected = new ItemSubtypeMixedClass
@@ -93,18 +93,18 @@ namespace BinarySerialization.Test.ItemSubtype
 
             var actual = Roundtrip(expected);
 
-            Assert.Equal(2, actual.Key);
+            Assert.AreEqual(2, actual.Key);
         }
 
-        [Fact]
+        [TestMethod]
         public void ItemSubtypeFactoryWithDefaultTest()
         {
             var data = new byte[] { 4, 0, 1, 2, 3 };
             var actual = Deserialize<ItemSubtypeFactoryWithDefaultClass>(data);
 
-            Assert.Equal(4, actual.Key);
-            Assert.Single(actual.Items);
-            Assert.Equal(typeof(DefaultItemType), actual.Items[0].GetType());
+            Assert.AreEqual(4, actual.Key);
+            Assert.AreEqual(1, actual.Items.Count);
+            Assert.AreEqual(typeof(DefaultItemType), actual.Items[0].GetType());
         }
     }
 }

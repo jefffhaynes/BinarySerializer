@@ -1,50 +1,50 @@
 ﻿using System;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Order
 {
-    
+    [TestClass]
     public class OrderTests : TestBase
     {
-        [Fact]
+        [TestMethod]
         public void OrderTest()
         {
             var order = new OrderClass {First = 1, Second = 2, Name = "Alice"};
             Roundtrip(order, new byte[] {0x1, 0x2, 0x5, 0x41, 0x6c, 0x69, 0x63, 0x65});
         }
 
-        [Fact]
+        [TestMethod]
         public void SingleMemberOrderShouldntThrowTest()
         {
             var order = new SingleMemberOrderClass();
             Roundtrip(order);
         }
 
-        [Fact]
+        [TestMethod]
         public void MultipleMembersNoOrderAttributeShouldThrowTest()
         {
             var order = new MutlipleMembersNoOrderClass();
 
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(order));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(order));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(order));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(order));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void MultipleMembersDuplicateOrderAttributeShouldThrowTest()
         {
             var order = new MutlipleMembersDuplicateOrderClass();
 
 #if TESTASYNC
-            Assert.Throws<AggregateException>(() => Roundtrip(order));
+            Assert.ThrowsException<AggregateException>(() => Roundtrip(order));
 #else
-            Assert.Throws<InvalidOperationException>(() => Roundtrip(order));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(order));
 #endif
         }
 
-        [Fact]
+        [TestMethod]
         public void BaseClassComesBeforeDerivedClassTest()
         {
             var order = new OrderDerivedClass {First = 1, Second = 2};
