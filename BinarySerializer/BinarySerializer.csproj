@@ -4,14 +4,14 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Better message for missing constructors</PackageReleaseNotes>
+    <PackageReleaseNotes>Better handling of untyped fields</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/jefffhaynes/BinarySerializer</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/jefffhaynes/BinarySerializer</RepositoryUrl>
-    <AssemblyVersion>8.5.3.0</AssemblyVersion>
-    <FileVersion>8.5.3.0</FileVersion>
-    <Version>8.5.3</Version>
+    <AssemblyVersion>8.6.0.0</AssemblyVersion>
+    <FileVersion>8.6.0.0</FileVersion>
+    <Version>8.6</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />
