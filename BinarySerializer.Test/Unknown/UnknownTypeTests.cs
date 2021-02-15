@@ -46,5 +46,25 @@ namespace BinarySerialization.Test.Unknown
 
             Assert.AreEqual((byte) childClass.Subfield.Length, data[0]);
         }
+
+        [TestMethod]
+        public void UnknownSubtypeTest()
+        {
+            var s = "hello";
+
+            var expected = new UnknownSubtypeContainer
+            {
+                Unknown = new ClassB
+                {
+                    Value = s
+                }
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.IsInstanceOfType(actual.Unknown, typeof(ClassB));
+            var value = (ClassB) actual.Unknown;
+            Assert.AreEqual(s, value.Value);
+        }
     }
 }

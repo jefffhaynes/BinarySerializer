@@ -270,7 +270,7 @@ namespace BinarySerialization.Graph.ValueGraph
         /// </summary>
         /// <param name="childValueSelector"></param>
         /// <returns></returns>
-        private object GetValue(Func<ValueNode, object> childValueSelector)
+        protected object GetValue(Func<ValueNode, object> childValueSelector)
         {
             if (_valueType == null)
             {

@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using BinarySerialization.Graph.TypeGraph;
 
 namespace BinarySerialization.Graph.ValueGraph
 {
-    internal class UnknownValueNode : ValueNode
+    internal class UnknownValueNode : ObjectValueNode
     {
         private object _cachedValue;
+        private Type _valueType;
 
         public UnknownValueNode(ValueNode parent, string name, TypeNode typeNode) : base(parent, name, typeNode)
         {
@@ -15,7 +14,16 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public override object Value
         {
-            get => _cachedValue;
+            get
+            {
+                /* For creating serialization contexts quickly */
+                if (_cachedValue != null)
+                {
+                    return _cachedValue;
+                }
+
+                return GetValue(child => child.Value);
+            }
 
             set
             {
@@ -24,15 +32,15 @@ namespace BinarySerialization.Graph.ValueGraph
                     return;
                 }
 
-                var valueType = value.GetType();
+                _valueType = value.GetType();
 
-                if (valueType == typeof(object))
+                if (_valueType == typeof(object))
                 {
                     throw new InvalidOperationException("Unable to serialize object.");
                 }
 
                 /* Create graph as if parent were creating it */
-                var unknownTypeGraph = new RootTypeNode(TypeNode.Parent, valueType);
+                var unknownTypeGraph = new RootTypeNode(TypeNode.Parent, _valueType);
                 var unknownSerializer = (RootValueNode) unknownTypeGraph.CreateSerializer(Parent);
                 unknownSerializer.EndiannessCallback = GetFieldEndianness;
                 unknownSerializer.EncodingCallback = GetFieldEncoding;
@@ -43,32 +51,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        protected override Type GetValueTypeOverride()
         {
-            foreach (var child in Children)
-            {
-                child.Serialize(stream, eventShuttle);
-            }
-        }
-
-        internal override async Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle, CancellationToken cancellationToken)
-        {
-            foreach (var child in Children)
-            {
-                await child.SerializeAsync(stream, eventShuttle, true, cancellationToken).ConfigureAwait(false);
-            }
-        }
-
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
-        {
-            throw new InvalidOperationException("Deserializing object fields not supported.");
-        }
-
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
-            CancellationToken cancellationToken)
-        {
-            DeserializeOverride(stream, eventShuttle);
-            return Task.CompletedTask;
+            return _valueType;
         }
     }
 }
