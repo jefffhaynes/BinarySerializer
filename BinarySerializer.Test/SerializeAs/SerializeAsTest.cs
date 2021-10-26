@@ -22,5 +22,14 @@ namespace BinarySerialization.Test.SerializeAs
 
             Assert.AreEqual(expected.Value, actual.Value);
         }
+
+        [TestMethod]
+        public void SerializeAsWithPaddingValue()
+        {
+            var expected = new PaddingValueClass { Value = "hi" };
+            var actual = Roundtrip(expected, new byte[] { 0x68, 0x69, 0x33, 0x33, 0x33 });
+
+            Assert.AreEqual(expected.Value, actual.Value.Trim((char) 0x33));
+        }
     }
 }

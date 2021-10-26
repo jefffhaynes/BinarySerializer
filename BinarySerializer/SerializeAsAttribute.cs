@@ -29,8 +29,13 @@ namespace BinarySerialization
         public SerializedType SerializedType { get; set; }
 
         /// <summary>
-        /// Specify the string terminator when the serialized type is TerminatedString.  Null (zero) by default.
+        /// Specifies the string terminator when the serialized type is TerminatedString.  Null (zero) by default.
         /// </summary>
         public char StringTerminator { get; set; }
+
+        /// <summary>
+        /// Specifies padding value to be used when serializing fixed-size fields.
+        /// </summary>
+        public byte PaddingValue { get; set; }
     }
 }

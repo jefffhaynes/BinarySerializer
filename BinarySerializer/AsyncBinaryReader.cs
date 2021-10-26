@@ -8,7 +8,7 @@ namespace BinarySerialization
 {
     public class AsyncBinaryReader : BinaryReader
     {
-        private Encoding _encoding;
+        private readonly Encoding _encoding;
 
         public BoundedStream InputStream { get; }
         

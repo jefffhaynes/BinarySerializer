@@ -9,11 +9,13 @@ namespace BinarySerialization
     internal class AsyncBinaryWriter : BinaryWriter
     {
         private readonly Encoding _encoding;
+        private readonly byte _paddingValue;
 
-        public AsyncBinaryWriter(BoundedStream output, Encoding encoding) : base(output, encoding)
+        public AsyncBinaryWriter(BoundedStream output, Encoding encoding, byte paddingValue) : base(output, encoding)
         {
             OutputStream = output;
             _encoding = encoding;
+            _paddingValue = paddingValue;
         }
 
         public BoundedStream OutputStream { get; }
@@ -160,17 +162,27 @@ namespace BinarySerialization
             OutputStream.Write(data, length);
         }
 
-        private static void Resize(ref byte[] data, FieldLength length)
+        private void Resize(ref byte[] data, FieldLength length)
         {
             if (length == null)
             {
                 return;
             }
 
+            var dataLength = data.Length;
             var totalByteCount = (int) length.TotalByteCount;
-            if (data.Length != totalByteCount)
+
+            if (dataLength != totalByteCount)
             {
                 Array.Resize(ref data, totalByteCount);
+
+                if (_paddingValue != default)
+                {
+                    for (int i = dataLength; i < totalByteCount; i++)
+                    {
+                        data[i] = _paddingValue;
+                    }
+                }
             }
         }
     }

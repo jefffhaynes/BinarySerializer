@@ -105,7 +105,7 @@ namespace BinarySerialization.Graph.ValueGraph
         public void Serialize(BoundedStream stream, object value, SerializedType serializedType,
             FieldLength length = null)
         {
-            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding());
+            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), TypeNode.PaddingValue);
             Serialize(writer, value, serializedType, length);
         }
 
@@ -257,7 +257,7 @@ namespace BinarySerialization.Graph.ValueGraph
         public Task SerializeAsync(BoundedStream stream, object value, SerializedType serializedType,
             FieldLength length = null, CancellationToken cancellationToken = default)
         {
-            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding());
+            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), TypeNode.PaddingValue);
             return SerializeAsync(writer, value, serializedType, length, cancellationToken);
         }
 

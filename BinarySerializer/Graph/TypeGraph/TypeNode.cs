@@ -78,10 +78,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
             Name = memberInfo.Name;
 
-            var propertyInfo = memberInfo as PropertyInfo;
-            var fieldInfo = memberInfo as FieldInfo;
-            
-            if (propertyInfo != null)
+            if (memberInfo is PropertyInfo propertyInfo)
             {
                 Type = subType ?? propertyInfo.PropertyType;
 
@@ -114,7 +111,7 @@ namespace BinarySerialization.Graph.TypeGraph
                     }
                 }
             }
-            else if (fieldInfo != null)
+            else if (memberInfo is FieldInfo fieldInfo)
             {
                 Type = subType ?? fieldInfo.FieldType;
 
@@ -161,6 +158,8 @@ namespace BinarySerialization.Graph.TypeGraph
                     AreStringsTerminated = true;
                     StringTerminator = serializeAsAttribute.StringTerminator;
                 }
+
+                PaddingValue = serializeAsAttribute.PaddingValue;
             }
 
             IsNullable = NullableUnderlyingType != null;
@@ -249,7 +248,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 {
                     SubtypeFactoryBinding = GetBinding(subtypeFactoryAttribute);
                     SubtypeFactory =
-                        (ISubtypeFactory) subtypeFactoryAttribute.FactoryType.GetConstructor(new Type[0])?.Invoke(null);
+                        (ISubtypeFactory) subtypeFactoryAttribute.FactoryType.GetConstructor(Type.EmptyTypes)?.Invoke(null);
                 }
             }
 
@@ -288,7 +287,7 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 ItemSubtypeFactoryBinding = GetBinding(itemSubtypeFactoryAttribute);
                 ItemSubtypeFactory =
-                    (ISubtypeFactory) itemSubtypeFactoryAttribute.FactoryType.GetConstructor(new Type[0])?.Invoke(null);
+                    (ISubtypeFactory) itemSubtypeFactoryAttribute.FactoryType.GetConstructor(Type.EmptyTypes)?.Invoke(null);
             }
 
             ItemSubtypeDefaultAttribute = attributes.OfType<ItemSubtypeDefaultAttribute>().SingleOrDefault();
@@ -359,6 +358,8 @@ namespace BinarySerialization.Graph.TypeGraph
         public bool AreStringsTerminated { get; }
 
         public char StringTerminator { get; }
+
+        public byte PaddingValue { get; }
 
         public bool IsNullable { get; }
 
@@ -457,7 +458,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 return () => string.Empty;
             }
 
-            var constructor = type.GetConstructor(new Type[0]);
+            var constructor = type.GetConstructor(Type.EmptyTypes);
             return CreateCompiledConstructor(constructor);
         }
 
