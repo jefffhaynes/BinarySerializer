@@ -184,6 +184,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             var terminationItemChild =
                 (ValueValueNode) lastItem.GetChild(TypeNode.ItemSerializeUntilAttribute.ItemValuePath);
+
             return terminationItemChild.BoundValue;
         }
 
@@ -220,6 +221,7 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 itemTerminationValue = TypeNode.ItemSerializeUntilBinding.GetValue(this);
             }
+
             return itemTerminationValue;
         }
 
@@ -252,6 +254,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 itemLengths = enumerableItemLengthValue?.Cast<object>().Select(Convert.ToInt64) ??
                               GetInfiniteSequence(Convert.ToInt64(itemLengthValue));
             }
+
             return itemLengths;
         }
 
