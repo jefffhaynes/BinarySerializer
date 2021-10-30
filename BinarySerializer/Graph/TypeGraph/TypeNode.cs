@@ -359,7 +359,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public char StringTerminator { get; }
 
-        public byte PaddingValue { get; }
+        public byte? PaddingValue { get; }
 
         public bool IsNullable { get; }
 

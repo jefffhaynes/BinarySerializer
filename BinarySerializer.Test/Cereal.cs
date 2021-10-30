@@ -31,7 +31,6 @@ namespace BinarySerialization.Test
 
         [FieldOrder(7)]
         [FieldCount(nameof(OtherStuffCount))]
-        [SerializeAs(SerializedType.SizedString)]
         [ItemLength(3)]
         public List<string> OtherStuff { get; set; }
 

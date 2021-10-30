@@ -590,6 +590,17 @@ namespace BinarySerialization.Graph.ValueGraph
             return encoding;
         }
 
+
+        protected virtual byte GetFieldPaddingValue()
+        {
+            if (TypeNode.PaddingValue != null)
+            {
+                return TypeNode.PaddingValue.Value;
+            }
+
+            return Parent?.GetFieldPaddingValue() ?? default;
+        }
+
         protected virtual FieldLength MeasureOverride()
         {
             var nullStream = new NullStream();

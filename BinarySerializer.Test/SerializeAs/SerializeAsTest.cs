@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.SerializeAs
 {
@@ -30,6 +32,23 @@ namespace BinarySerialization.Test.SerializeAs
             var actual = Roundtrip(expected, new byte[] { 0x68, 0x69, 0x33, 0x33, 0x33 });
 
             Assert.AreEqual(expected.Value, actual.Value.Trim((char) 0x33));
+        }
+
+        [TestMethod]
+        public void CollectionPaddingValue()
+        {
+            var expected = new CollectionPaddingValue
+            {
+                Items = new List<string>
+                {
+                    "a", "b"
+                }
+            };
+
+            var actual = Roundtrip(expected, new[]{(byte) 'a', (byte)' ',(byte) 'b', (byte)' '});
+
+            var actualItems = actual.Items.Select(i => i.Trim()).ToList();
+            CollectionAssert.AreEqual(expected.Items, actualItems);
         }
     }
 }
