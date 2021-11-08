@@ -172,17 +172,21 @@ namespace BinarySerialization
             var dataLength = data.Length;
             var totalByteCount = (int) length.TotalByteCount;
 
-            if (dataLength != totalByteCount)
+            if (dataLength == totalByteCount)
             {
-                Array.Resize(ref data, totalByteCount);
+                return;
+            }
 
-                if (_paddingValue != default)
-                {
-                    for (int i = dataLength; i < totalByteCount; i++)
-                    {
-                        data[i] = _paddingValue;
-                    }
-                }
+            Array.Resize(ref data, totalByteCount);
+
+            if (_paddingValue == default)
+            {
+                return;
+            }
+
+            for (int i = dataLength; i < totalByteCount; i++)
+            {
+                data[i] = _paddingValue;
             }
         }
     }

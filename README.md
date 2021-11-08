@@ -58,7 +58,7 @@ await serializer.SerializeAsync(stream, person);
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/LengthBinding.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/LengthBinding.png" />
 </p>
 
 Note that it is not necessary that NameLength contain the length of the Name field as that value will be computed during serialization and updated in the serialized graph.  During deserialization the NameLength value will be used to correctly deserialize the Name field.
@@ -152,7 +152,7 @@ public class Person
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/LengthBinding.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/LengthBinding.png" />
 </p>
 
 In some cases it may be desirable to limit a collection of items by the total serialized length.  Note that we are *not* restricting the number of items in the collection here, but the serialized length in bytes.  To restrict the number of items in a collection use the FieldCount attribute.
@@ -170,7 +170,7 @@ public class Directory
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/CollectionLengthBinding.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/CollectionLengthBinding.png" />
 </p>
 
 To enforce the size of an entire object, write:
@@ -282,7 +282,7 @@ public class Directory
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/CountBinding.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/CountBinding.png" />
 </p>
 
 ### FieldAlignmentAttribute ###
@@ -533,7 +533,7 @@ public class Packet
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/SubtypeBinding.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/SubtypeBinding.png" />
 </p>
 
 It is not necessary that FrameType be correct during serialization; it will be updated with the appropriate value based on the instantiated type.  During deserialization the FrameType field will be used to construct the correct type.
@@ -711,7 +711,7 @@ public ReceivedSignalStrengthIndicator RSSI { get; set; }
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/WhenBinding.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/WhenBinding.png" />
 </p>
 
 ### SerializeWhenNotAttribute ###
@@ -728,7 +728,7 @@ public List<DirectoryRecord> Records { get; set; }
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/Until.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/Until.png" />
 </p>
 
 Note that a significant disadvantage of this approach is that the DirectoryRecord object cannot start with a null!  In general, it's best avoid this approach when defining formats.  However, in some cases you may not have a choice (this exact construct appears in the ISO 9660 specification).
@@ -750,7 +750,7 @@ public class Manifest
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/ItemLengthBinding.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/ItemLengthBinding.png" />
 </p>
 
 In this case, the collection deserialization terminates correctly if this is the only thing in the object graph.  However, if this is part of a larger graph, we might need to also declare a count.
@@ -772,7 +772,7 @@ public class Manifest
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/ItemLengthAndCountBinding.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/ItemLengthAndCountBinding.png" />
 </p>
 
 Lastly, ItemLength can be used to form jagged arrays of values by binding to sources that implement IEnumerable such as in the following example.
@@ -833,7 +833,7 @@ public class ToyChest
 ```
 
 <p align="center">
-  <img src="https://github.com/jefffhaynes/BinarySerializer/blob/master/BinarySerializer.Docs/ItemUntil.png" />
+  <img src="https://raw.githubusercontent.com/jefffhaynes/BinarySerializer/master/BinarySerializer.Docs/ItemUntil.png" />
 </p>
 
 This attribute can be used to break many blocks into multiple sections using the LastItemMode property.
