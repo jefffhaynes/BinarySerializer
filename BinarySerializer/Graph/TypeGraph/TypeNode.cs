@@ -171,7 +171,7 @@ namespace BinarySerialization.Graph.TypeGraph
                              serializedType == SerializedType.TerminatedString ||
                              serializedType == SerializedType.SizedString;
             }
-
+            
             // setup bindings
             FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
             FieldBitLengthBindings = GetBindings<FieldBitLengthAttribute>(attributes);
@@ -443,7 +443,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public static bool IsValueType(Type type)
         {
-            return type.GetTypeInfo().IsPrimitive || type == typeof(string) || type == typeof(byte[]);
+            return type.GetTypeInfo().IsValueType || type == typeof(string) || type == typeof(byte[]);
         }
 
         protected Func<object> CreateCompiledConstructor()

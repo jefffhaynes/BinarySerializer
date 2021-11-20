@@ -4,14 +4,14 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Adds support for PaddingValue in collection items</PackageReleaseNotes>
+    <PackageReleaseNotes>Better error message for user-defined structs</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/jefffhaynes/BinarySerializer</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/jefffhaynes/BinarySerializer</RepositoryUrl>
-    <AssemblyVersion>8.6.1.1</AssemblyVersion>
-    <FileVersion>8.6.1.1</FileVersion>
-    <Version>8.6.1.1</Version>
+    <AssemblyVersion>8.6.1.2</AssemblyVersion>
+    <FileVersion>8.6.1.2</FileVersion>
+    <Version>8.6.1.2</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />

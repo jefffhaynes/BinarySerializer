@@ -16,6 +16,9 @@ namespace BinarySerialization.Graph.ValueGraph
         private const string LengthPrefixedStringsCannotHaveConstLengthMessage =
             "Length-prefixed strings cannot have a const length.";
 
+        private const string TypeNotSupportedMessage =
+            "Type not supported.  Note that user-defined structs are not supported.";
+
 
         public ValueValueNode(ValueNode parent, string name, TypeNode typeNode)
             : base(parent, name, typeNode)
@@ -250,7 +253,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(TypeNotSupportedMessage);
             }
         }
 
@@ -403,7 +406,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 default:
-                    throw new NotSupportedException();
+
+                    throw new NotSupportedException(TypeNotSupportedMessage);
             }
         }
 
@@ -482,7 +486,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(TypeNotSupportedMessage);
             }
 
             _value = ConvertToFieldType(value);
@@ -558,7 +562,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(TypeNotSupportedMessage);
             }
 
             _value = ConvertToFieldType(value);
