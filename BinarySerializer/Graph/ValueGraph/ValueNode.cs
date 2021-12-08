@@ -57,13 +57,8 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private bool ShouldSerialize(Func<Binding, object> bindingValueSelector)
         {
-            if (TypeNode.SerializeWhenBindings != null &&
-                !TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(bindingValueSelector(binding))))
-            {
-                return false;
-            }
-
-            return TypeNode.SerializeWhenNotBindings == null || !TypeNode.SerializeWhenNotBindings.All(binding => binding.IsSatisfiedBy(bindingValueSelector(binding)));
+            return TypeNode.SerializeWhenBindings == null || 
+                   TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(bindingValueSelector(binding)));
         }
 
         public virtual void Bind()

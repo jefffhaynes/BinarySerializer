@@ -4,36 +4,73 @@ namespace BinarySerialization.Graph
 {
     internal class ConditionalBinding : Binding
     {
+        private readonly object _conditionalValue;
         private readonly Type _conditionalValueType;
+        private readonly ComparisonOperator _comparisonOperator;
 
-        public ConditionalBinding(ConditionalAttribute attribute, int level)
+        public ConditionalBinding(SerializeWhenAttribute attribute, int level)
             : base(attribute, level)
         {
-            ConditionalValue = attribute.Value;
+            _conditionalValue = attribute.Value;
 
-            if (ConditionalValue != null)
+            if (_conditionalValue != null)
             {
-                _conditionalValueType = ConditionalValue.GetType();
+                _conditionalValueType = _conditionalValue.GetType();
             }
-        }
 
-        public object ConditionalValue { get; }
+            _comparisonOperator = attribute.Operator;
+        }
 
         public bool IsSatisfiedBy(object value)
         {
-            if (ConditionalValue == null && value == null)
+            switch (_comparisonOperator)
+            {
+                case ComparisonOperator.Equal:
+                    return AreEqual(value);
+                case ComparisonOperator.NotEqual:
+                    return !AreEqual(value);
+                case ComparisonOperator.LessThan:
+                    return Compare(value, (lhs, rhs) => lhs < rhs);
+                case ComparisonOperator.GreaterThan:
+                    return Compare(value, (lhs, rhs) => lhs > rhs);
+                case ComparisonOperator.LessThanOrEqual:
+                    return Compare(value, (lhs, rhs) => lhs <= rhs);
+                case ComparisonOperator.GreaterThanOrEqual:
+                    return Compare(value, (lhs, rhs) => lhs >= rhs);
+                default: throw new NotSupportedException();
+            }
+        }
+
+        private bool AreEqual(object value)
+        {
+            if (_conditionalValue == null && value == null)
             {
                 return true;
             }
 
-            if (ConditionalValue == null || value == null)
+            if (_conditionalValue == null || value == null)
             {
                 return false;
             }
 
             var convertedValue = value.ConvertTo(_conditionalValueType);
 
-            return convertedValue.Equals(ConditionalValue);
+            return convertedValue.Equals(_conditionalValue);
+        }
+
+        private bool Compare(object value, Func<double, double, bool> comparator)
+        {
+            if (value == null || _conditionalValue == null)
+            {
+                throw new InvalidOperationException("Unable to compare null values");
+            }
+
+            var convertedValue = value.ConvertTo(_conditionalValueType);
+
+            var lhs = Convert.ToDouble(convertedValue);
+            var rhs = Convert.ToDouble(_conditionalValue);
+
+            return comparator(lhs, rhs);
         }
     }
 }

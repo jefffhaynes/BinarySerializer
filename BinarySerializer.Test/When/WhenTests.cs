@@ -28,10 +28,12 @@ namespace BinarySerialization.Test.When
         {
             var expected = new WhenIntTestClass
             {
-                WhatToDo = 1,
+                WhatToDo = 2,
                 SerializeThis = 100,
                 DontSerializeThis = 200,
-                SerializeThisNoMatterWhat = 300
+                SerializeThisNoMatterWhat = 300,
+                SerializeThis2 = 400,
+                DontSerializeThis2 = 500
             };
 
             var actual = Roundtrip(expected);
@@ -39,6 +41,8 @@ namespace BinarySerialization.Test.When
             Assert.AreEqual(expected.SerializeThis, actual.SerializeThis);
             Assert.AreNotEqual(expected.DontSerializeThis, actual.DontSerializeThis);
             Assert.AreEqual(expected.SerializeThisNoMatterWhat, actual.SerializeThisNoMatterWhat);
+            Assert.AreEqual(expected.SerializeThis2, actual.SerializeThis2);
+            Assert.AreNotEqual(expected.DontSerializeThis2, actual.DontSerializeThis2);
         }
 
         [TestMethod]
