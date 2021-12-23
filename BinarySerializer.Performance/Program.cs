@@ -85,7 +85,7 @@ namespace BinarySerializer.Performance
                 stopwatch.Start();
                 for (int i = 0; i < iterations; i++)
                 {
-                    ser.Serialize(ms, obj);
+                    await ser.SerializeAsync(ms, obj);
                 }
                 stopwatch.Stop();
                 Console.WriteLine("BSA SER: {0}", stopwatch.Elapsed);
@@ -93,7 +93,7 @@ namespace BinarySerializer.Performance
             }
 
             var dataStream = new MemoryStream();
-            ser.Serialize(dataStream, obj);
+            await ser.SerializeAsync(dataStream, obj);
             byte[] data = dataStream.ToArray();
 
             using (var ms = new MemoryStream(data))
