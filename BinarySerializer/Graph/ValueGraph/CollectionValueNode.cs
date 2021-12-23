@@ -91,6 +91,11 @@ namespace BinarySerialization.Graph.ValueGraph
                     {
                         child.Deserialize(childStream, eventShuttle);
 
+                        if (child.Value == null)
+                        {
+                            break;
+                        }
+
                         if (IsTerminated(child, itemTerminationValue))
                         {
                             ProcessLastItem(streamResetter, child);
