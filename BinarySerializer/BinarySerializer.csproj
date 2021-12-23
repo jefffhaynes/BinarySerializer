@@ -4,14 +4,14 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Additional comparison operator support in conditional serialization</PackageReleaseNotes>
+    <PackageReleaseNotes>Bug fix for end-of-stream during collection deserialization</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/jefffhaynes/BinarySerializer</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/jefffhaynes/BinarySerializer</RepositoryUrl>
-    <AssemblyVersion>8.6.2</AssemblyVersion>
-    <FileVersion>8.6.2</FileVersion>
-    <Version>8.6.2</Version>
+    <AssemblyVersion>8.6.2.1</AssemblyVersion>
+    <FileVersion>8.6.2.1</FileVersion>
+    <Version>8.6.2.1</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />

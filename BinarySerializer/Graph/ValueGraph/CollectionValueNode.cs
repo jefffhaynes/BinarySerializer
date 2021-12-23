@@ -140,6 +140,11 @@ namespace BinarySerialization.Graph.ValueGraph
                         await child.DeserializeAsync(childStream, eventShuttle, cancellationToken)
                             .ConfigureAwait(false);
 
+                        if (child.Value == null)
+                        {
+                            break;
+                        }
+
                         if (IsTerminated(child, itemTerminationValue))
                         {
                             ProcessLastItem(streamResetter, child);
