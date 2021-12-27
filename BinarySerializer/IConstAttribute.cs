@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization
+﻿namespace BinarySerialization;
+
+internal interface IConstAttribute : IBindableFieldAttribute
 {
-    internal interface IConstAttribute : IBindableFieldAttribute
-    {
-        object GetConstValue();
-    }
+    object GetConstValue();
 }

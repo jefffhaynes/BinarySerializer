@@ -1,14 +1,11 @@
-﻿using System;
+﻿namespace BinarySerialization;
 
-namespace BinarySerialization
+/// <summary>
+///     Represents an binding exception.
+/// </summary>
+public class BindingException : Exception
 {
-    /// <summary>
-    ///     Represents an binding exception.
-    /// </summary>
-    public class BindingException : Exception
+    internal BindingException(string message) : base(message)
     {
-        internal BindingException(string message) : base(message)
-        {
-        }
     }
 }

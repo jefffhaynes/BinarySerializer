@@ -1,67 +1,63 @@
-﻿using System;
-using System.Reflection;
+﻿namespace BinarySerialization.Graph.TypeGraph;
 
-namespace BinarySerialization.Graph.TypeGraph
+internal abstract class CollectionTypeNode : ContainerTypeNode
 {
-    internal abstract class CollectionTypeNode : ContainerTypeNode
+    private Lazy<TypeNode> _lazyChild;
+
+    protected CollectionTypeNode(TypeNode parent, Type type) : base(parent, type)
     {
-        private Lazy<TypeNode> _lazyChild;
+        Construct();
+    }
 
-        protected CollectionTypeNode(TypeNode parent, Type type) : base(parent, type)
+    protected CollectionTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+        memberInfo)
+    {
+        Construct();
+    }
+
+    public Func<object> CompiledConstructor { get; private set; }
+
+    public Type ChildType { get; set; }
+
+    public TypeNode Child => _lazyChild.Value;
+
+    public Func<object> CompiledChildConstructor { get; protected set; }
+
+    public TypeNode TerminationChild { get; private set; }
+
+    public object TerminationValue { get; private set; }
+
+    protected abstract Type GetChildType();
+
+    private void Construct()
+    {
+        CompiledConstructor = CreateCompiledConstructor();
+
+        ChildType = GetChildType();
+        CompiledChildConstructor = CreateCompiledConstructor(ChildType);
+
+        TerminationChild = GetTerminationChild(out var terminationValue);
+        TerminationValue = terminationValue;
+
+        _lazyChild = new Lazy<TypeNode>(() => GenerateChild(ChildType));
+    }
+
+    private TypeNode GetTerminationChild(out object terminationValue)
+    {
+        if (SerializeUntilAttribute == null)
         {
-            Construct();
+            terminationValue = null;
+            return null;
         }
 
-        protected CollectionTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
-            memberInfo)
+        terminationValue = SerializeUntilAttribute.ConstValue;
+
+        TypeNode terminationChild = null;
+        if (terminationValue != null)
         {
-            Construct();
+            terminationChild = GenerateChild(terminationValue.GetType());
         }
 
-        public Func<object> CompiledConstructor { get; private set; }
-
-        public Type ChildType { get; set; }
-
-        public TypeNode Child => _lazyChild.Value;
-
-        public Func<object> CompiledChildConstructor { get; protected set; }
-
-        public TypeNode TerminationChild { get; private set; }
-
-        public object TerminationValue { get; private set; }
-
-        protected abstract Type GetChildType();
-
-        private void Construct()
-        {
-            CompiledConstructor = CreateCompiledConstructor();
-
-            ChildType = GetChildType();
-            CompiledChildConstructor = CreateCompiledConstructor(ChildType);
-
-            TerminationChild = GetTerminationChild(out var terminationValue);
-            TerminationValue = terminationValue;
-
-            _lazyChild = new Lazy<TypeNode>(() => GenerateChild(ChildType));
-        }
-
-        private TypeNode GetTerminationChild(out object terminationValue)
-        {
-            if (SerializeUntilAttribute == null)
-            {
-                terminationValue = null;
-                return null;
-            }
-
-            terminationValue = SerializeUntilAttribute.ConstValue;
-
-            TypeNode terminationChild = null;
-            if (terminationValue != null)
-            {
-                terminationChild = GenerateChild(terminationValue.GetType());
-            }
-
-            return terminationChild;
-        }
+        return terminationChild;
     }
 }

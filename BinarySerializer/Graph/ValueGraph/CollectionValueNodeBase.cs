@@ -1,8 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using BinarySerialization.Graph.TypeGraph;
-
-namespace BinarySerialization.Graph.ValueGraph
+﻿namespace BinarySerialization.Graph.ValueGraph
 {
     internal abstract class CollectionValueNodeBase : ValueNode
     {

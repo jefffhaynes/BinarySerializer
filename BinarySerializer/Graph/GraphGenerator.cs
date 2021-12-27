@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Concurrent;
-using BinarySerialization.Graph.TypeGraph;
+﻿namespace BinarySerialization.Graph;
 
-namespace BinarySerialization.Graph
+internal class GraphGenerator
 {
-    internal class GraphGenerator
-    {
-        private readonly ConcurrentDictionary<Type, RootTypeNode> _graphCache =
-            new ConcurrentDictionary<Type, RootTypeNode>();
+    private readonly ConcurrentDictionary<Type, RootTypeNode> _graphCache =
+        new ConcurrentDictionary<Type, RootTypeNode>();
 
-        public RootTypeNode GenerateGraph(Type valueType)
-        {
-            return _graphCache.GetOrAdd(valueType, type => new RootTypeNode(type));
-        }
+    public RootTypeNode GenerateGraph(Type valueType)
+    {
+        return _graphCache.GetOrAdd(valueType, type => new RootTypeNode(type));
     }
 }

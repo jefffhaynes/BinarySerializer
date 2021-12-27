@@ -1,23 +1,19 @@
-﻿using System;
-using System.Text;
+﻿namespace BinarySerialization;
 
-namespace BinarySerialization
+internal static class EncodingHelper
 {
-    internal static class EncodingHelper
+    public static Encoding GetEncoding(string name)
     {
-        public static Encoding GetEncoding(string name)
+        if (name.Equals("UTF-16", StringComparison.OrdinalIgnoreCase))
         {
-            if (name.Equals("UTF-16", StringComparison.OrdinalIgnoreCase))
-            {
-                return new UnicodeEncoding(false, false);
-            }
-
-            if (name.Equals("UTF-8", StringComparison.OrdinalIgnoreCase))
-            {
-                return new UTF8Encoding(false);
-            }
-
-            return Encoding.GetEncoding(name);
+            return new UnicodeEncoding(false, false);
         }
+
+        if (name.Equals("UTF-8", StringComparison.OrdinalIgnoreCase))
+        {
+            return new UTF8Encoding(false);
+        }
+
+        return Encoding.GetEncoding(name);
     }
 }

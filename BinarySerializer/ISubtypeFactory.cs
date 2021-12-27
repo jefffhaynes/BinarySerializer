@@ -1,10 +1,7 @@
-﻿using System;
+﻿namespace BinarySerialization;
 
-namespace BinarySerialization
+public interface ISubtypeFactory
 {
-    public interface ISubtypeFactory
-    {
-        bool TryGetKey(Type valueType, out object key);
-        bool TryGetType(object key, out Type type);
-    }
+    bool TryGetKey(Type valueType, out object key);
+    bool TryGetType(object key, out Type type);
 }

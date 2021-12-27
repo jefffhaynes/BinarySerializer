@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BinarySerialization.Test.Issues.Issue49
+﻿namespace BinarySerialization.Test.Issues.Issue49
 {
     public class MessageHeader
     {

@@ -1,14 +1,11 @@
-﻿using BinarySerialization;
+﻿namespace BinarySerializer.Performance;
 
-namespace BinarySerializer.Performance
+public enum Color
 {
-    public enum Color
-    {
-        [SerializeAsEnum("r")]
-        Red,
-        [SerializeAsEnum("g")]
-        Green,
-        [SerializeAsEnum("b")]
-        Blue
-    }
+    [SerializeAsEnum("r")]
+    Red,
+    [SerializeAsEnum("g")]
+    Green,
+    [SerializeAsEnum("b")]
+    Blue
 }

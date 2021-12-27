@@ -1,225 +1,217 @@
-﻿using System;
-using System.Collections;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using BinarySerialization.Graph.TypeGraph;
+﻿namespace BinarySerialization.Graph.ValueGraph;
 
-namespace BinarySerialization.Graph.ValueGraph
+internal class ValueValueNode : ValueNode
 {
-    internal class ValueValueNode : ValueNode
+    private object _cachedValue;
+    private object _value;
+
+    private const string LengthPrefixedStringsCannotHaveConstLengthMessage =
+        "Length-prefixed strings cannot have a const length.";
+
+    private const string TypeNotSupportedMessage =
+        "Type not supported.  Note that user-defined structs are not supported.";
+
+
+    public ValueValueNode(ValueNode parent, string name, TypeNode typeNode)
+        : base(parent, name, typeNode)
     {
-        private object _cachedValue;
-        private object _value;
+    }
 
-        private const string LengthPrefixedStringsCannotHaveConstLengthMessage =
-            "Length-prefixed strings cannot have a const length.";
+    public override object Value
+    {
+        get => GetValue(TypeNode.GetSerializedType());
+        set => _cachedValue = value;
+    }
 
-        private const string TypeNotSupportedMessage =
-            "Type not supported.  Note that user-defined structs are not supported.";
-
-
-        public ValueValueNode(ValueNode parent, string name, TypeNode typeNode)
-            : base(parent, name, typeNode)
+    public override object BoundValue
+    {
+        get
         {
-        }
+            object value;
 
-        public override object Value
-        {
-            get => GetValue(TypeNode.GetSerializedType());
-            set => _cachedValue = value;
-        }
-
-        public override object BoundValue
-        {
-            get
+            if (Bindings.Count == 0)
             {
-                object value;
+                value = Value;
+            }
+            else
+            {
+                value = Bindings[0].Invoke();
 
-                if (Bindings.Count == 0)
+                if (value == UnsetValue)
                 {
                     value = Value;
                 }
-                else
+
+                if (Bindings.Count != 1)
                 {
-                    value = Bindings[0].Invoke();
-
-                    if (value == UnsetValue)
-                    {
-                        value = Value;
-                    }
-
-                    if (Bindings.Count != 1)
-                    {
-                        var targetValues = Bindings.Select(binding =>
-                            {
-                                var bindingValue = binding();
-                                return bindingValue == UnsetValue ? Value : bindingValue;
-                            }).ToArray();
-
-                        if (targetValues.Any(targetValue => !Equals(value, targetValue)))
+                    var targetValues = Bindings.Select(binding =>
                         {
-                            throw new BindingException(
-                                "Multiple bindings to a single source must have equivalent target values.");
-                        }
-                    }
+                            var bindingValue = binding();
+                            return bindingValue == UnsetValue ? Value : bindingValue;
+                        }).ToArray();
 
-                    // handle case where we might be binding to a list or array
-                    if (value is IEnumerable enumerableValue)
+                    if (targetValues.Any(targetValue => !Equals(value, targetValue)))
                     {
-                        // handle special cases
-                        if (TypeNode.Type == typeof(byte[]) || TypeNode.Type == typeof(string))
-                        {
-                            var data = enumerableValue.Cast<object>().Select(Convert.ToByte).ToArray();
-
-                            if (TypeNode.Type == typeof(byte[]))
-                            {
-                                value = data;
-                            }
-                            else if (TypeNode.Type == typeof(string))
-                            {
-                                value = GetFieldEncoding().GetString(data, 0, data.Length);
-                            }
-                        }
-                        else
-                        {
-                            value = GetScalar(enumerableValue);
-                        }
+                        throw new BindingException(
+                            "Multiple bindings to a single source must have equivalent target values.");
                     }
                 }
 
-                return ConvertToFieldType(value);
-            }
-        }
-
-        public object GetValue(SerializedType serializedType)
-        {
-            if (_cachedValue != null)
-            {
-                return _cachedValue;
-            }
-
-            var scaledValue = GetValue(_value, serializedType);
-            return UnscaleValue(scaledValue);
-        }
-
-
-        public void Serialize(BoundedStream stream, object value, SerializedType serializedType,
-            FieldLength length = null)
-        {
-            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), GetFieldPaddingValue());
-            Serialize(writer, value, serializedType, length);
-        }
-
-        public void Serialize(AsyncBinaryWriter writer, object value, SerializedType serializedType, FieldLength length = null)
-        {
-            var constLength = GetConstLength(length);
-
-            if (value == null)
-            {
-                /* In the special case of sized strings, don't allow nulls */
-                if (serializedType == SerializedType.SizedString)
+                // handle case where we might be binding to a list or array
+                if (value is IEnumerable enumerableValue)
                 {
-                    value = string.Empty;
+                    // handle special cases
+                    if (TypeNode.Type == typeof(byte[]) || TypeNode.Type == typeof(string))
+                    {
+                        var data = enumerableValue.Cast<object>().Select(Convert.ToByte).ToArray();
+
+                        if (TypeNode.Type == typeof(byte[]))
+                        {
+                            value = data;
+                        }
+                        else if (TypeNode.Type == typeof(string))
+                        {
+                            value = GetFieldEncoding().GetString(data, 0, data.Length);
+                        }
+                    }
+                    else
+                    {
+                        value = GetScalar(enumerableValue);
+                    }
                 }
-                else
+            }
+
+            return ConvertToFieldType(value);
+        }
+    }
+
+    public object GetValue(SerializedType serializedType)
+    {
+        if (_cachedValue != null)
+        {
+            return _cachedValue;
+        }
+
+        var scaledValue = GetValue(_value, serializedType);
+        return UnscaleValue(scaledValue);
+    }
+
+
+    public void Serialize(BoundedStream stream, object value, SerializedType serializedType,
+        FieldLength length = null)
+    {
+        var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), GetFieldPaddingValue());
+        Serialize(writer, value, serializedType, length);
+    }
+
+    public void Serialize(AsyncBinaryWriter writer, object value, SerializedType serializedType, FieldLength length = null)
+    {
+        var constLength = GetConstLength(length);
+
+        if (value == null)
+        {
+            /* In the special case of sized strings, don't allow nulls */
+            if (serializedType == SerializedType.SizedString)
+            {
+                value = string.Empty;
+            }
+            else
+            {
+                // see if we're dealing with a const length field
+                if (constLength == null)
                 {
-                    // see if we're dealing with a const length field
-                    if (constLength == null)
-                    {
-                        return;
-                    }
-
-                    // see if we're dealing with something that needs to be padded
-                    if (serializedType != SerializedType.ByteArray &&
-                        serializedType != SerializedType.TerminatedString)
-                    {
-                        return;
-                    }
-
-                    var data = new byte[constLength.TotalByteCount];
-
-                    if (serializedType == SerializedType.TerminatedString && data.Length > 0)
-                    {
-                        var terminatorData = GetNullTermination();
-                        Array.Copy(terminatorData, data, terminatorData.Length);
-                    }
-
-                    writer.Write(data, constLength);
-
                     return;
                 }
-            }
 
-            var outputStream = writer.OutputStream;
-            var maxLength = GetMaxLength(outputStream, serializedType);
-
-            var scaledValue = ScaleValue(value);
-            var convertedValue = GetValue(scaledValue, serializedType);
-
-            switch (serializedType)
-            {
-                case SerializedType.Int1:
-                    {
-                        writer.Write(Convert.ToSByte(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.UInt1:
-                    {
-                        writer.Write(Convert.ToByte(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.Int2:
-                    {
-                        writer.Write(Convert.ToInt16(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.UInt2:
-                    {
-                        writer.Write(Convert.ToUInt16(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.Int4:
-                    {
-                        writer.Write(Convert.ToInt32(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.UInt4:
-                    {
-                        writer.Write(Convert.ToUInt32(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.Int8:
-                    {
-                        writer.Write(Convert.ToInt64(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.UInt8:
-                    {
-                        writer.Write(Convert.ToUInt64(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.Float4:
-                    {
-                        writer.Write(Convert.ToSingle(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.Float8:
-                    {
-                        writer.Write(Convert.ToDouble(convertedValue), constLength);
-                        break;
-                    }
-                case SerializedType.ByteArray:
+                // see if we're dealing with something that needs to be padded
+                if (serializedType != SerializedType.ByteArray &&
+                    serializedType != SerializedType.TerminatedString)
                 {
-                    var data = (byte[]) value;
+                    return;
+                }
+
+                var data = new byte[constLength.TotalByteCount];
+
+                if (serializedType == SerializedType.TerminatedString && data.Length > 0)
+                {
+                    var terminatorData = GetNullTermination();
+                    Array.Copy(terminatorData, data, terminatorData.Length);
+                }
+
+                writer.Write(data, constLength);
+
+                return;
+            }
+        }
+
+        var outputStream = writer.OutputStream;
+        var maxLength = GetMaxLength(outputStream, serializedType);
+
+        var scaledValue = ScaleValue(value);
+        var convertedValue = GetValue(scaledValue, serializedType);
+
+        switch (serializedType)
+        {
+            case SerializedType.Int1:
+                {
+                    writer.Write(Convert.ToSByte(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.UInt1:
+                {
+                    writer.Write(Convert.ToByte(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.Int2:
+                {
+                    writer.Write(Convert.ToInt16(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.UInt2:
+                {
+                    writer.Write(Convert.ToUInt16(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.Int4:
+                {
+                    writer.Write(Convert.ToInt32(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.UInt4:
+                {
+                    writer.Write(Convert.ToUInt32(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.Int8:
+                {
+                    writer.Write(Convert.ToInt64(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.UInt8:
+                {
+                    writer.Write(Convert.ToUInt64(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.Float4:
+                {
+                    writer.Write(Convert.ToSingle(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.Float8:
+                {
+                    writer.Write(Convert.ToDouble(convertedValue), constLength);
+                    break;
+                }
+            case SerializedType.ByteArray:
+                {
+                    var data = (byte[])value;
 
                     var dataLength = GetArrayLength(data, constLength, maxLength);
 
                     writer.Write(data, dataLength);
                     break;
                 }
-                case SerializedType.TerminatedString:
+            case SerializedType.TerminatedString:
                 {
                     var encoding = GetFieldEncoding();
                     var data = encoding.GetBytes(value.ToString());
@@ -228,20 +220,20 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     writer.Write(data, dataLength);
 
-                    var stringTerminatorData = encoding.GetBytes(new[] {TypeNode.StringTerminator});
+                    var stringTerminatorData = encoding.GetBytes(new[] { TypeNode.StringTerminator });
                     writer.Write(stringTerminatorData, stringTerminatorData.Length);
                     break;
                 }
-                case SerializedType.SizedString:
+            case SerializedType.SizedString:
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
-                        
+
                     var dataLength = GetArrayLength(data, constLength, maxLength);
 
                     writer.Write(data, dataLength);
                     break;
                 }
-                case SerializedType.LengthPrefixedString:
+            case SerializedType.LengthPrefixedString:
                 {
                     if (constLength != null)
                     {
@@ -252,130 +244,130 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 }
 
-                default:
-                    throw new NotSupportedException(TypeNotSupportedMessage);
-            }
+            default:
+                throw new NotSupportedException(TypeNotSupportedMessage);
         }
+    }
 
-        public Task SerializeAsync(BoundedStream stream, object value, SerializedType serializedType,
-            FieldLength length = null, CancellationToken cancellationToken = default)
+    public Task SerializeAsync(BoundedStream stream, object value, SerializedType serializedType,
+        FieldLength length = null, CancellationToken cancellationToken = default)
+    {
+        var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), GetFieldPaddingValue());
+        return SerializeAsync(writer, value, serializedType, length, cancellationToken);
+    }
+
+    public async Task SerializeAsync(AsyncBinaryWriter writer, object value, SerializedType serializedType,
+        FieldLength length = null, CancellationToken cancellationToken = default)
+    {
+        var constLength = GetConstLength(length);
+
+        if (value == null)
         {
-            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), GetFieldPaddingValue());
-            return SerializeAsync(writer, value, serializedType, length, cancellationToken);
-        }
-
-        public async Task SerializeAsync(AsyncBinaryWriter writer, object value, SerializedType serializedType,
-            FieldLength length = null, CancellationToken cancellationToken = default)
-        {
-            var constLength = GetConstLength(length);
-
-            if (value == null)
+            /* In the special case of sized strings, don't allow nulls */
+            if (serializedType == SerializedType.SizedString)
             {
-                /* In the special case of sized strings, don't allow nulls */
-                if (serializedType == SerializedType.SizedString)
+                value = string.Empty;
+            }
+            else
+            {
+                // see if we're dealing with a const length field
+                if (constLength == null)
                 {
-                    value = string.Empty;
-                }
-                else
-                {
-                    // see if we're dealing with a const length field
-                    if (constLength == null)
-                    {
-                        return;
-                    }
-
-                    // see if we're dealing with something that needs to be padded
-                    if (serializedType != SerializedType.ByteArray &&
-                        serializedType != SerializedType.TerminatedString)
-                    {
-                        return;
-                    }
-
-                    var data = new byte[constLength.TotalByteCount];
-
-                    if (serializedType == SerializedType.TerminatedString && data.Length > 0)
-                    {
-                        var terminatorData = GetNullTermination();
-                        Array.Copy(terminatorData, data, terminatorData.Length);
-                    }
-
-                    await writer.WriteAsync(data, constLength, cancellationToken).ConfigureAwait(false);
-
                     return;
                 }
+
+                // see if we're dealing with something that needs to be padded
+                if (serializedType != SerializedType.ByteArray &&
+                    serializedType != SerializedType.TerminatedString)
+                {
+                    return;
+                }
+
+                var data = new byte[constLength.TotalByteCount];
+
+                if (serializedType == SerializedType.TerminatedString && data.Length > 0)
+                {
+                    var terminatorData = GetNullTermination();
+                    Array.Copy(terminatorData, data, terminatorData.Length);
+                }
+
+                await writer.WriteAsync(data, constLength, cancellationToken).ConfigureAwait(false);
+
+                return;
             }
+        }
 
-            var outputStream = writer.OutputStream;
-            var maxLength = GetMaxLength(outputStream, serializedType);
+        var outputStream = writer.OutputStream;
+        var maxLength = GetMaxLength(outputStream, serializedType);
 
-            var scaledValue = ScaleValue(value);
-            var convertedValue = GetValue(scaledValue, serializedType);
-            
-            switch (serializedType)
-            {
-                case SerializedType.Int1:
+        var scaledValue = ScaleValue(value);
+        var convertedValue = GetValue(scaledValue, serializedType);
+
+        switch (serializedType)
+        {
+            case SerializedType.Int1:
                 {
                     await writer.WriteAsync(Convert.ToSByte(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.UInt1:
+            case SerializedType.UInt1:
                 {
                     await writer.WriteAsync(Convert.ToByte(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.Int2:
+            case SerializedType.Int2:
                 {
                     await writer.WriteAsync(Convert.ToInt16(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.UInt2:
+            case SerializedType.UInt2:
                 {
                     await writer.WriteAsync(Convert.ToUInt16(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.Int4:
+            case SerializedType.Int4:
                 {
                     await writer.WriteAsync(Convert.ToInt32(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.UInt4:
+            case SerializedType.UInt4:
                 {
                     await writer.WriteAsync(Convert.ToUInt32(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.Int8:
+            case SerializedType.Int8:
                 {
                     await writer.WriteAsync(Convert.ToInt64(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.UInt8:
+            case SerializedType.UInt8:
                 {
                     await writer.WriteAsync(Convert.ToUInt64(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.Float4:
+            case SerializedType.Float4:
                 {
                     await writer.WriteAsync(Convert.ToSingle(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.Float8:
+            case SerializedType.Float8:
                 {
                     await writer.WriteAsync(Convert.ToDouble(convertedValue), constLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.ByteArray:
+            case SerializedType.ByteArray:
                 {
-                    var data = (byte[]) value;
+                    var data = (byte[])value;
 
                     var dataLength = GetArrayLength(data, constLength, maxLength);
 
                     await writer.WriteAsync(data, dataLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.TerminatedString:
+            case SerializedType.TerminatedString:
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
-                        
+
                     var dataLength = GetNullTerminatedArrayLength(data, constLength, maxLength);
 
                     await writer.WriteAsync(data, dataLength, cancellationToken).ConfigureAwait(false);
@@ -386,7 +378,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     break;
                 }
-                case SerializedType.SizedString:
+            case SerializedType.SizedString:
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
                     var dataLength = GetArrayLength(data, constLength, maxLength);
@@ -394,7 +386,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     await writer.WriteAsync(data, dataLength, cancellationToken).ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.LengthPrefixedString:
+            case SerializedType.LengthPrefixedString:
                 {
                     if (constLength != null)
                     {
@@ -405,507 +397,506 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 }
 
-                default:
+            default:
 
-                    throw new NotSupportedException(TypeNotSupportedMessage);
-            }
+                throw new NotSupportedException(TypeNotSupportedMessage);
         }
+    }
 
-        public void Deserialize(BoundedStream stream, SerializedType serializedType, FieldLength length = null)
+    public void Deserialize(BoundedStream stream, SerializedType serializedType, FieldLength length = null)
+    {
+        var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
+        Deserialize(reader, serializedType, length);
+    }
+
+    public Task DeserializeAsync(BoundedStream stream, SerializedType serializedType, FieldLength length,
+        CancellationToken cancellationToken)
+    {
+        var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
+        return DeserializeAsync(reader, serializedType, length, cancellationToken);
+    }
+
+    public void Deserialize(BinaryReader reader, SerializedType serializedType, FieldLength length = null)
+    {
+        var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
+
+        object value;
+        switch (serializedType)
         {
-            var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
-            Deserialize(reader, serializedType, length);
-        }
-
-        public Task DeserializeAsync(BoundedStream stream, SerializedType serializedType, FieldLength length,
-            CancellationToken cancellationToken)
-        {
-            var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
-            return DeserializeAsync(reader, serializedType, length, cancellationToken);
-        }
-
-        public void Deserialize(BinaryReader reader, SerializedType serializedType, FieldLength length = null)
-        {
-            var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
-
-            object value;
-            switch (serializedType)
-            {
-                case SerializedType.Int1:
-                    value = reader.ReadSByte();
-                    break;
-                case SerializedType.UInt1:
-                    value = reader.ReadByte();
-                    break;
-                case SerializedType.Int2:
-                    value = reader.ReadInt16();
-                    break;
-                case SerializedType.UInt2:
-                    value = reader.ReadUInt16();
-                    break;
-                case SerializedType.Int4:
-                    value = reader.ReadInt32();
-                    break;
-                case SerializedType.UInt4:
-                    value = reader.ReadUInt32();
-                    break;
-                case SerializedType.Int8:
-                    value = reader.ReadInt64();
-                    break;
-                case SerializedType.UInt8:
-                    value = reader.ReadUInt64();
-                    break;
-                case SerializedType.Float4:
-                    value = reader.ReadSingle();
-                    break;
-                case SerializedType.Float8:
-                    value = reader.ReadDouble();
-                    break;
-                case SerializedType.ByteArray:
+            case SerializedType.Int1:
+                value = reader.ReadSByte();
+                break;
+            case SerializedType.UInt1:
+                value = reader.ReadByte();
+                break;
+            case SerializedType.Int2:
+                value = reader.ReadInt16();
+                break;
+            case SerializedType.UInt2:
+                value = reader.ReadUInt16();
+                break;
+            case SerializedType.Int4:
+                value = reader.ReadInt32();
+                break;
+            case SerializedType.UInt4:
+                value = reader.ReadUInt32();
+                break;
+            case SerializedType.Int8:
+                value = reader.ReadInt64();
+                break;
+            case SerializedType.UInt8:
+                value = reader.ReadUInt64();
+                break;
+            case SerializedType.Float4:
+                value = reader.ReadSingle();
+                break;
+            case SerializedType.Float8:
+                value = reader.ReadDouble();
+                break;
+            case SerializedType.ByteArray:
                 {
-                    value = reader.ReadBytes((int) effectiveLengthValue.ByteCount);
+                    value = reader.ReadBytes((int)effectiveLengthValue.ByteCount);
                     break;
                 }
-                case SerializedType.TerminatedString:
+            case SerializedType.TerminatedString:
                 {
                     var data = ReadTerminated(reader, effectiveLengthValue, TypeNode.StringTerminator);
                     value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
                 }
-                case SerializedType.SizedString:
+            case SerializedType.SizedString:
                 {
-                    var data = reader.ReadBytes((int) effectiveLengthValue.ByteCount);
+                    var data = reader.ReadBytes((int)effectiveLengthValue.ByteCount);
                     value = GetString(data);
 
                     break;
                 }
-                case SerializedType.LengthPrefixedString:
+            case SerializedType.LengthPrefixedString:
                 {
                     value = reader.ReadString();
                     break;
                 }
 
-                default:
-                    throw new NotSupportedException(TypeNotSupportedMessage);
-            }
-
-            _value = ConvertToFieldType(value);
-
-            // check computed values (CRCs, etc.)
-            CheckComputedValues();
+            default:
+                throw new NotSupportedException(TypeNotSupportedMessage);
         }
 
-        public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, FieldLength length,
-            CancellationToken cancellationToken)
-        {
-            var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
+        _value = ConvertToFieldType(value);
 
-            object value;
-            switch (serializedType)
-            {
-                case SerializedType.Int1:
-                    value = await reader.ReadSByteAsync(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.UInt1:
-                    value = await reader.ReadByteAsync(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.Int2:
-                    value = await reader.ReadInt16Async(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.UInt2:
-                    value = await reader.ReadUInt16Async(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.Int4:
-                    value = await reader.ReadInt32Async(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.UInt4:
-                    value = await reader.ReadUInt32Async(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.Int8:
-                    value = await reader.ReadInt64Async(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.UInt8:
-                    value = await reader.ReadUInt64Async(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.Float4:
-                    value = await reader.ReadSingleAsync(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.Float8:
-                    value = await reader.ReadDoubleAsync(cancellationToken).ConfigureAwait(false);
-                    break;
-                case SerializedType.ByteArray:
+        // check computed values (CRCs, etc.)
+        CheckComputedValues();
+    }
+
+    public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, FieldLength length,
+        CancellationToken cancellationToken)
+    {
+        var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
+
+        object value;
+        switch (serializedType)
+        {
+            case SerializedType.Int1:
+                value = await reader.ReadSByteAsync(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.UInt1:
+                value = await reader.ReadByteAsync(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.Int2:
+                value = await reader.ReadInt16Async(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.UInt2:
+                value = await reader.ReadUInt16Async(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.Int4:
+                value = await reader.ReadInt32Async(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.UInt4:
+                value = await reader.ReadUInt32Async(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.Int8:
+                value = await reader.ReadInt64Async(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.UInt8:
+                value = await reader.ReadUInt64Async(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.Float4:
+                value = await reader.ReadSingleAsync(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.Float8:
+                value = await reader.ReadDoubleAsync(cancellationToken).ConfigureAwait(false);
+                break;
+            case SerializedType.ByteArray:
                 {
-                    value = await reader.ReadBytesAsync((int) effectiveLengthValue.ByteCount, cancellationToken)
+                    value = await reader.ReadBytesAsync((int)effectiveLengthValue.ByteCount, cancellationToken)
                         .ConfigureAwait(false);
                     break;
                 }
-                case SerializedType.TerminatedString:
+            case SerializedType.TerminatedString:
                 {
-                    var data = await ReadTerminatedAsync(reader, (int) effectiveLengthValue.ByteCount, TypeNode.StringTerminator,
+                    var data = await ReadTerminatedAsync(reader, (int)effectiveLengthValue.ByteCount, TypeNode.StringTerminator,
                             cancellationToken)
                         .ConfigureAwait(false);
                     value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
                 }
-                case SerializedType.SizedString:
+            case SerializedType.SizedString:
                 {
-                    var data = await reader.ReadBytesAsync((int) effectiveLengthValue.ByteCount, cancellationToken)
+                    var data = await reader.ReadBytesAsync((int)effectiveLengthValue.ByteCount, cancellationToken)
                         .ConfigureAwait(false);
                     value = GetString(data);
 
                     break;
                 }
-                case SerializedType.LengthPrefixedString:
+            case SerializedType.LengthPrefixedString:
                 {
                     value = reader.ReadString();
                     break;
                 }
 
-                default:
-                    throw new NotSupportedException(TypeNotSupportedMessage);
-            }
-
-            _value = ConvertToFieldType(value);
-
-            // check computed values (CRCs, etc.)
-            CheckComputedValues();
+            default:
+                throw new NotSupportedException(TypeNotSupportedMessage);
         }
 
-        public override string ToString()
+        _value = ConvertToFieldType(value);
+
+        // check computed values (CRCs, etc.)
+        CheckComputedValues();
+    }
+
+    public override string ToString()
+    {
+        if (Name != null)
         {
-            if (Name != null)
+            return $"{Name}: {Value}";
+        }
+
+        return Value?.ToString() ?? base.ToString();
+    }
+
+    internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+    {
+        Serialize(stream, BoundValue, TypeNode.GetSerializedType());
+    }
+
+    internal override Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        CancellationToken cancellationToken)
+    {
+        return SerializeAsync(stream, BoundValue, TypeNode.GetSerializedType(), null, cancellationToken);
+    }
+
+    internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+    {
+        if (EndOfStream(stream))
+        {
+            if (TypeNode.IsNullable)
             {
-                return $"{Name}: {Value}";
+                return;
             }
 
-            return Value?.ToString() ?? base.ToString();
+            throw new EndOfStreamException();
         }
 
-        internal override void SerializeOverride(BoundedStream stream, EventShuttle eventShuttle)
-        {
-            Serialize(stream, BoundValue, TypeNode.GetSerializedType());
-        }
+        Deserialize(stream, TypeNode.GetSerializedType());
+    }
 
-        internal override Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
-            CancellationToken cancellationToken)
+    internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        CancellationToken cancellationToken)
+    {
+        if (EndOfStream(stream))
         {
-            return SerializeAsync(stream, BoundValue, TypeNode.GetSerializedType(), null, cancellationToken);
-        }
-
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
-        {
-            if (EndOfStream(stream))
+            if (TypeNode.IsNullable)
             {
-                if (TypeNode.IsNullable)
-                {
-                    return;
-                }
-
-                throw new EndOfStreamException();
+                return Task.CompletedTask;
             }
 
-            Deserialize(stream, TypeNode.GetSerializedType());
+            throw new EndOfStreamException();
         }
 
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
-            CancellationToken cancellationToken)
+        return DeserializeAsync(stream, TypeNode.GetSerializedType(), null, cancellationToken);
+    }
+
+    protected override long CountOverride()
+    {
+        // handle special case of byte[]
+        var boundValue = BoundValue as byte[];
+        return boundValue?.Length ?? base.CountOverride();
+    }
+
+    protected override FieldLength MeasureOverride()
+    {
+        // handle special case of byte[]
+        var boundValue = BoundValue as byte[];
+        return boundValue?.Length ?? base.MeasureOverride();
+    }
+
+    private object ScaleValue(object value)
+    {
+        if (TypeNode.FieldScaleBindings == null)
         {
-            if (EndOfStream(stream))
-            {
-                if (TypeNode.IsNullable)
-                {
-                    return Task.CompletedTask;
-                }
-
-                throw new EndOfStreamException();
-            }
-
-            return DeserializeAsync(stream, TypeNode.GetSerializedType(), null, cancellationToken);
+            return value;
         }
 
-        protected override long CountOverride()
+        var scale = TypeNode.FieldScaleBindings.GetValue(this);
+
+        var scaledValue = Convert.ToDouble(value) * Convert.ToDouble(scale);
+
+        return ConvertToFieldType(scaledValue);
+    }
+
+    private object UnscaleValue(object value)
+    {
+        if (TypeNode.FieldScaleBindings == null)
         {
-            // handle special case of byte[]
-            var boundValue = BoundValue as byte[];
-            return boundValue?.Length ?? base.CountOverride();
+            return value;
         }
 
-        protected override FieldLength MeasureOverride()
+        var scale = TypeNode.FieldScaleBindings.GetValue(this);
+
+        var unscaledValue = Convert.ToDouble(value) / Convert.ToDouble(scale);
+
+        return ConvertToFieldType(unscaledValue);
+    }
+
+    private FieldLength GetConstLength(FieldLength length)
+    {
+        // prioritization of field length specifiers
+        var constLength = length ?? // explicit length passed from parent
+                          GetConstFieldLength() ?? // calculated length from this field
+                          GetConstFieldCount(); // explicit field count (used for byte arrays and strings)
+
+        return constLength;
+    }
+
+    private byte[] GetNullTermination()
+    {
+        return GetFieldEncoding().GetBytes(new[] { TypeNode.StringTerminator });
+    }
+
+    private static FieldLength GetMaxLength(BoundedStream stream, SerializedType serializedType)
+    {
+        FieldLength maxLength = null;
+
+        if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
+            serializedType == SerializedType.TerminatedString)
         {
-            // handle special case of byte[]
-            var boundValue = BoundValue as byte[];
-            return boundValue?.Length ?? base.MeasureOverride();
+            // try to get bounded length
+            maxLength = stream.AvailableForWriting;
         }
 
-        private object ScaleValue(object value)
+        return maxLength;
+    }
+
+    private static FieldLength GetArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
+    {
+        FieldLength length = data.Length;
+
+        if (constLength != null)
         {
-            if (TypeNode.FieldScaleBindings == null)
-            {
-                return value;
-            }
-
-            var scale = TypeNode.FieldScaleBindings.GetValue(this);
-
-            var scaledValue = Convert.ToDouble(value) * Convert.ToDouble(scale);
-
-            return ConvertToFieldType(scaledValue);
+            length = constLength;
         }
 
-        private object UnscaleValue(object value)
+        if (maxLength != null && length > maxLength)
         {
-            if (TypeNode.FieldScaleBindings == null)
-            {
-                return value;
-            }
-
-            var scale = TypeNode.FieldScaleBindings.GetValue(this);
-
-            var unscaledValue = Convert.ToDouble(value) / Convert.ToDouble(scale);
-
-            return ConvertToFieldType(unscaledValue);
+            length = maxLength;
         }
 
-        private FieldLength GetConstLength(FieldLength length)
-        {
-            // prioritization of field length specifiers
-            var constLength = length ?? // explicit length passed from parent
-                              GetConstFieldLength() ?? // calculated length from this field
-                              GetConstFieldCount(); // explicit field count (used for byte arrays and strings)
+        return length;
+    }
 
-            return constLength;
+    private FieldLength GetNullTerminatedArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
+    {
+        FieldLength length = data.Length;
+        var nullTermination = GetNullTermination();
+        var nullTerminationLength = new FieldLength(nullTermination.Length);
+
+        if (constLength != null)
+        {
+            length = constLength - nullTerminationLength;
         }
 
-        private byte[] GetNullTermination()
+        if (maxLength != null && length > maxLength)
         {
-            return GetFieldEncoding().GetBytes(new[] { TypeNode.StringTerminator });
+            length = maxLength - nullTerminationLength;
         }
 
-        private static FieldLength GetMaxLength(BoundedStream stream, SerializedType serializedType)
-        {
-            FieldLength maxLength = null;
+        return length;
+    }
 
-            if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
+    private object GetScalar(IEnumerable enumerable)
+    {
+        var childLengths = enumerable.Cast<object>().Select(ConvertToFieldType).ToList();
+
+        if (childLengths.Count == 0)
+        {
+            return 0;
+        }
+
+        var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
+
+        if (childLengthGroups.Count > 1)
+        {
+            throw new InvalidOperationException(
+                "Unable to update scalar binding source because not all enumerable items have equal lengths.");
+        }
+
+        var childLengthGroup = childLengthGroups.Single();
+
+        return childLengthGroup.Key;
+    }
+
+    private object GetString(byte[] data)
+    {
+        object value;
+        var untrimmed = GetFieldEncoding().GetString(data, 0, data.Length);
+        if (TypeNode.AreStringsTerminated)
+        {
+            var terminatorIndex = untrimmed.IndexOf(TypeNode.StringTerminator);
+            value = terminatorIndex != -1 ? untrimmed.Substring(0, terminatorIndex) : untrimmed;
+        }
+        else
+        {
+            value = untrimmed;
+        }
+        return value;
+    }
+
+    private FieldLength GetEffectiveLengthValue(BinaryReader reader, SerializedType serializedType, FieldLength length)
+    {
+        var effectiveLength = length ?? GetFieldLength() ?? GetFieldCount();
+
+        if (effectiveLength == null)
+        {
+            if (serializedType == SerializedType.ByteArray ||
+                serializedType == SerializedType.SizedString ||
                 serializedType == SerializedType.TerminatedString)
             {
                 // try to get bounded length
-                maxLength = stream.AvailableForWriting;
-            }
+                var baseStream = (BoundedStream)reader.BaseStream;
 
-            return maxLength;
+                effectiveLength = baseStream.AvailableForReading;
+            }
         }
 
-        private static FieldLength GetArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
+        var effectiveLengthValue = effectiveLength ?? FieldLength.Zero;
+        return effectiveLengthValue;
+    }
+
+    private object GetValue(object value, SerializedType serializedType)
+    {
+        if (value == null)
         {
-            FieldLength length = data.Length;
-
-            if (constLength != null)
-            {
-                length = constLength;
-            }
-
-            if (maxLength != null && length > maxLength)
-            {
-                length = maxLength;
-            }
-
-            return length;
+            return null;
         }
 
-        private FieldLength GetNullTerminatedArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
+        // only resolve endianness if it matters
+        if (serializedType == SerializedType.Int2 || serializedType == SerializedType.UInt2 ||
+            serializedType == SerializedType.Int4 || serializedType == SerializedType.UInt4 ||
+            serializedType == SerializedType.Int8 || serializedType == SerializedType.UInt8 ||
+            serializedType == SerializedType.Float4 || serializedType == SerializedType.Float8)
         {
-            FieldLength length = data.Length;
-            var nullTermination = GetNullTermination();
-            var nullTerminationLength = new FieldLength(nullTermination.Length);
-
-            if (constLength != null)
+            if (GetFieldEndianness() != Endianness.Big)
             {
-                length = constLength - nullTerminationLength;
+                return value;
             }
 
-            if (maxLength != null && length > maxLength)
+            switch (serializedType)
             {
-                length = maxLength - nullTerminationLength;
-            }
+                case SerializedType.Int2:
+                    return Bytes.Reverse(Convert.ToInt16(value));
+                case SerializedType.UInt2:
+                    var value2 = Bytes.Reverse(Convert.ToUInt16(value));
 
-            return length;
+                    // handle special case of char
+                    return ConvertToFieldType(value2);
+                case SerializedType.Int4:
+                    return Bytes.Reverse(Convert.ToInt32(value));
+                case SerializedType.UInt4:
+                    return Bytes.Reverse(Convert.ToUInt32(value));
+                case SerializedType.Int8:
+                    return Bytes.Reverse(Convert.ToInt64(value));
+                case SerializedType.UInt8:
+                    return Bytes.Reverse(Convert.ToUInt64(value));
+                case SerializedType.Float4:
+                    return Bytes.Reverse(Convert.ToSingle(value));
+                case SerializedType.Float8:
+                    return Bytes.Reverse(Convert.ToDouble(value));
+            }
         }
 
-        private object GetScalar(IEnumerable enumerable)
+        return value;
+    }
+
+    private object ConvertToFieldType(object value)
+    {
+        return value.ConvertTo(TypeNode.Type);
+    }
+
+    private void CheckComputedValues()
+    {
+        bool isMatch = true;
+        string expected = null;
+        string actual = null;
+
+        var value = Value;
+        var boundValue = BoundValue;
+
+        if (boundValue != null && Bindings.Count > 0)
         {
-            var childLengths = enumerable.Cast<object>().Select(ConvertToFieldType).ToList();
-
-            if (childLengths.Count == 0)
+            // check special case of arrays
+            if (boundValue is byte[] boundValueArray && value is byte[] valueArray)
             {
-                return 0;
-            }
-
-            var childLengthGroups = childLengths.GroupBy(childLength => childLength).ToList();
-
-            if (childLengthGroups.Count > 1)
-            {
-                throw new InvalidOperationException(
-                    "Unable to update scalar binding source because not all enumerable items have equal lengths.");
-            }
-
-            var childLengthGroup = childLengthGroups.Single();
-
-            return childLengthGroup.Key;
-        }
-
-        private object GetString(byte[] data)
-        {
-            object value;
-            var untrimmed = GetFieldEncoding().GetString(data, 0, data.Length);
-            if (TypeNode.AreStringsTerminated)
-            {
-                var terminatorIndex = untrimmed.IndexOf(TypeNode.StringTerminator);
-                value = terminatorIndex != -1 ? untrimmed.Substring(0, terminatorIndex) : untrimmed;
-            }
-            else
-            {
-                value = untrimmed;
-            }
-            return value;
-        }
-
-        private FieldLength GetEffectiveLengthValue(BinaryReader reader, SerializedType serializedType, FieldLength length)
-        {
-            var effectiveLength = length ?? GetFieldLength() ?? GetFieldCount();
-
-            if (effectiveLength == null)
-            {
-                if (serializedType == SerializedType.ByteArray ||
-                    serializedType == SerializedType.SizedString ||
-                    serializedType == SerializedType.TerminatedString)
+                if (!boundValueArray.SequenceEqual(valueArray))
                 {
-                    // try to get bounded length
-                    var baseStream = (BoundedStream) reader.BaseStream;
-
-                    effectiveLength = baseStream.AvailableForReading;
-                }
-            }
-
-            var effectiveLengthValue = effectiveLength ?? FieldLength.Zero;
-            return effectiveLengthValue;
-        }
-
-        private object GetValue(object value, SerializedType serializedType)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-
-            // only resolve endianness if it matters
-            if (serializedType == SerializedType.Int2 || serializedType == SerializedType.UInt2 ||
-                serializedType == SerializedType.Int4 || serializedType == SerializedType.UInt4 ||
-                serializedType == SerializedType.Int8 || serializedType == SerializedType.UInt8 ||
-                serializedType == SerializedType.Float4 || serializedType == SerializedType.Float8)
-            {
-                if (GetFieldEndianness() != Endianness.Big)
-                {
-                    return value;
-                }
-
-                switch (serializedType)
-                {
-                    case SerializedType.Int2:
-                        return Bytes.Reverse(Convert.ToInt16(value));
-                    case SerializedType.UInt2:
-                        var value2 = Bytes.Reverse(Convert.ToUInt16(value));
-
-                        // handle special case of char
-                        return ConvertToFieldType(value2);
-                    case SerializedType.Int4:
-                        return Bytes.Reverse(Convert.ToInt32(value));
-                    case SerializedType.UInt4:
-                        return Bytes.Reverse(Convert.ToUInt32(value));
-                    case SerializedType.Int8:
-                        return Bytes.Reverse(Convert.ToInt64(value));
-                    case SerializedType.UInt8:
-                        return Bytes.Reverse(Convert.ToUInt64(value));
-                    case SerializedType.Float4:
-                        return Bytes.Reverse(Convert.ToSingle(value));
-                    case SerializedType.Float8:
-                        return Bytes.Reverse(Convert.ToDouble(value));
-                }
-            }
-
-            return value;
-        }
-
-        private object ConvertToFieldType(object value)
-        {
-            return value.ConvertTo(TypeNode.Type);
-        }
-
-        private void CheckComputedValues()
-        {
-            bool isMatch = true;
-            string expected = null;
-            string actual = null;
-
-            var value = Value;
-            var boundValue = BoundValue;
-
-            if (boundValue != null && Bindings.Count > 0)
-            {
-                // check special case of arrays
-                if (boundValue is byte[] boundValueArray && value is byte[] valueArray)
-                {
-                    if (!boundValueArray.SequenceEqual(valueArray))
-                    {
-                        expected = BitConverter.ToString(boundValueArray);
-                        actual = BitConverter.ToString(valueArray);
-                        isMatch = false;
-                    }
-                }
-                else if (!boundValue.Equals(value))
-                {
-                    expected = boundValue.ToString();
-                    actual = value.ToString();
+                    expected = BitConverter.ToString(boundValueArray);
+                    actual = BitConverter.ToString(valueArray);
                     isMatch = false;
                 }
             }
-
-            if (!isMatch)
+            else if (!boundValue.Equals(value))
             {
-                throw new InvalidDataException($"Deserialized value does not match computed value.  Expected {expected} but got {actual}.  To suppress this check, change binding mode to OneWayToSource.");
+                expected = boundValue.ToString();
+                actual = value.ToString();
+                isMatch = false;
             }
         }
 
-        private byte[] ReadTerminated(BinaryReader reader, FieldLength maxLength, char terminator)
+        if (!isMatch)
         {
-            var buffer = new MemoryStream();
-            using (var writer = new StreamWriter(buffer, GetFieldEncoding()))
-            {
-                var byteLength = maxLength.ByteCount;
-
-                char c;
-                while (byteLength-- > 0 && (c = reader.ReadChar()) != terminator)
-                {
-                    writer.Write(c);
-                }
-            }
-
-            return buffer.ToArray();
+            throw new InvalidDataException($"Deserialized value does not match computed value.  Expected {expected} but got {actual}.  To suppress this check, change binding mode to OneWayToSource.");
         }
+    }
 
-        private async Task<byte[]> ReadTerminatedAsync(AsyncBinaryReader reader, int maxLength, char terminator,
-            CancellationToken cancellationToken)
+    private byte[] ReadTerminated(BinaryReader reader, FieldLength maxLength, char terminator)
+    {
+        var buffer = new MemoryStream();
+        using (var writer = new StreamWriter(buffer, GetFieldEncoding()))
         {
-            var buffer = new MemoryStream();
-            using (var writer = new StreamWriter(buffer, GetFieldEncoding()))
-            {
-                char b;
-                while (maxLength-- > 0 &&
-                       (b = await reader.ReadCharAsync(cancellationToken).ConfigureAwait(false)) != terminator)
-                {
-                    await writer.WriteAsync(b);
-                }
-            }
+            var byteLength = maxLength.ByteCount;
 
-            return buffer.ToArray();
+            char c;
+            while (byteLength-- > 0 && (c = reader.ReadChar()) != terminator)
+            {
+                writer.Write(c);
+            }
         }
+
+        return buffer.ToArray();
+    }
+
+    private async Task<byte[]> ReadTerminatedAsync(AsyncBinaryReader reader, int maxLength, char terminator,
+        CancellationToken cancellationToken)
+    {
+        var buffer = new MemoryStream();
+        using (var writer = new StreamWriter(buffer, GetFieldEncoding()))
+        {
+            char b;
+            while (maxLength-- > 0 &&
+                   (b = await reader.ReadCharAsync(cancellationToken).ConfigureAwait(false)) != terminator)
+            {
+                await writer.WriteAsync(b);
+            }
+        }
+
+        return buffer.ToArray();
     }
 }

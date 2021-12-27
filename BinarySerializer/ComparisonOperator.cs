@@ -1,12 +1,11 @@
-﻿namespace BinarySerialization
+﻿namespace BinarySerialization;
+
+public enum ComparisonOperator
 {
-    public enum ComparisonOperator
-    {
-        Equal,
-        NotEqual,
-        LessThan,
-        GreaterThan,
-        LessThanOrEqual,
-        GreaterThanOrEqual
-    }
+    Equal,
+    NotEqual,
+    LessThan,
+    GreaterThan,
+    LessThanOrEqual,
+    GreaterThanOrEqual
 }
