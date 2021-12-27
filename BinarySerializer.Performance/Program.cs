@@ -111,11 +111,9 @@ class Program
         stopwatch.Start();
         var data = Enumerable.Range(0, iterations).AsParallel().Select(i =>
         {
-            using (var ms = new MemoryStream())
-            {
-                ser.Serialize(ms, obj);
-                return ms.ToArray();
-            }
+            using var ms = new MemoryStream();
+            ser.Serialize(ms, obj);
+            return ms.ToArray();
         }).ToArray();
 
         stopwatch.Stop();

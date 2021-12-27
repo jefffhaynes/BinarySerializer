@@ -11,9 +11,7 @@ public class LargeArrayTests
 
         ser.Deserialize<IntArray64K>(data);
 
-        using (var ms = new MemoryStream(data))
-        {
-            ser.Deserialize<IntArray64K>(ms);
-        }
+        using var ms = new MemoryStream(data);
+        ser.Deserialize<IntArray64K>(ms);
     }
 }

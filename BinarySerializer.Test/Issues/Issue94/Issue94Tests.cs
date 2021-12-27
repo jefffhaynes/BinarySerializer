@@ -22,9 +22,7 @@ public class Issue94Tests : TestBase
     [TestMethod]
     public void Test()
     {
-        using (var file = new FileStream(@"Issues\Issue94\tst.file", FileMode.Open, FileAccess.Read))
-        {
-            var db = Deserialize<MainClass>(file);
-        }
+        using var file = new FileStream(@"Issues\Issue94\tst.file", FileMode.Open, FileAccess.Read);
+        var db = Deserialize<MainClass>(file);
     }
 }

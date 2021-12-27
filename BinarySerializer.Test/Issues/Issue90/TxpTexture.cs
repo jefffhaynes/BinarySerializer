@@ -11,10 +11,10 @@ public class TxpTexture : TxpBase
     public int Version = 0x1010101;
 
     [FieldOrder(3), FieldCount("MipMapCount")]
-    public List<int> OffsetTable = new List<int>();
+    public List<int> OffsetTable = new();
 
     [FieldOrder(4), FieldCount("MipMapCount")]
-    public List<TxpMipmap> Mipmaps = new List<TxpMipmap>();
+    public List<TxpMipmap> Mipmaps = new();
 
     //[Ignore] public int Size => 12 + OffsetTable.Count * 4 + Mipmaps.Sum(mip => mip?.Size ?? 0);
 

@@ -35,9 +35,9 @@ public class BinarySerializer : IBinarySerializer
     private const Endianness DefaultEndianness = Endianness.Little;
     private static readonly Encoding DefaultEncoding = new UTF8Encoding(false);
 
-    private static readonly GraphGenerator GraphGenerator = new GraphGenerator();
+    private static readonly GraphGenerator GraphGenerator = new();
 
-    private readonly EventShuttle _eventShuttle = new EventShuttle();
+    private readonly EventShuttle _eventShuttle = new();
 
     /// <summary>
     ///     Default constructor.

@@ -158,7 +158,7 @@ internal class Binding : IBinding
 
             parent = parent.Parent;
 
-            if (!(parent is RootValueNode))
+            if (parent is not RootValueNode)
             {
                 level++;
             }

@@ -4,8 +4,8 @@ public class FieldLength : IEquatable<FieldLength>
 {
     private const int BitsPerByte = 8;
 
-    public static readonly FieldLength Zero = new FieldLength(0);
-    public static readonly FieldLength MaxValue = new FieldLength(long.MaxValue);
+    public static readonly FieldLength Zero = new(0);
+    public static readonly FieldLength MaxValue = new(long.MaxValue);
 
     public FieldLength(long byteCount, long bitCount = 0)
     {
@@ -27,7 +27,7 @@ public class FieldLength : IEquatable<FieldLength>
 
     public bool Equals(FieldLength other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
@@ -42,7 +42,7 @@ public class FieldLength : IEquatable<FieldLength>
 
     public override bool Equals(object obj)
     {
-        if (ReferenceEquals(null, obj))
+        if (obj is null)
         {
             return false;
         }

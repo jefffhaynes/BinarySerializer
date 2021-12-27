@@ -21,22 +21,16 @@ internal class ConditionalBinding : Binding
 
     public bool IsSatisfiedBy(object value)
     {
-        switch (_comparisonOperator)
+        return _comparisonOperator switch
         {
-            case ComparisonOperator.Equal:
-                return AreEqual(value);
-            case ComparisonOperator.NotEqual:
-                return !AreEqual(value);
-            case ComparisonOperator.LessThan:
-                return Compare(value, (lhs, rhs) => lhs < rhs);
-            case ComparisonOperator.GreaterThan:
-                return Compare(value, (lhs, rhs) => lhs > rhs);
-            case ComparisonOperator.LessThanOrEqual:
-                return Compare(value, (lhs, rhs) => lhs <= rhs);
-            case ComparisonOperator.GreaterThanOrEqual:
-                return Compare(value, (lhs, rhs) => lhs >= rhs);
-            default: throw new NotSupportedException();
-        }
+            ComparisonOperator.Equal => AreEqual(value),
+            ComparisonOperator.NotEqual => !AreEqual(value),
+            ComparisonOperator.LessThan => Compare(value, (lhs, rhs) => lhs < rhs),
+            ComparisonOperator.GreaterThan => Compare(value, (lhs, rhs) => lhs > rhs),
+            ComparisonOperator.LessThanOrEqual => Compare(value, (lhs, rhs) => lhs <= rhs),
+            ComparisonOperator.GreaterThanOrEqual => Compare(value, (lhs, rhs) => lhs >= rhs),
+            _ => throw new NotSupportedException(),
+        };
     }
 
     private bool AreEqual(object value)

@@ -19,7 +19,7 @@ internal abstract class PrimitiveCollectionValueNode : CollectionValueNodeBase
             {
                 value = Bindings[0].Invoke();
 
-                if (!(value is IEnumerable enumerableValue))
+                if (value is not IEnumerable enumerableValue)
                 {
                     throw new InvalidOperationException(
                         "Complex types cannot be binding sources for scalar values.");

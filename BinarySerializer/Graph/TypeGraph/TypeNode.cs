@@ -3,7 +3,7 @@
 internal abstract class TypeNode : Node<TypeNode>
 {
     public static readonly Dictionary<Type, SerializedType> DefaultSerializedTypes =
-        new Dictionary<Type, SerializedType>
+        new()
         {
                 {typeof(bool), SerializedType.Int1},
                 {typeof(sbyte), SerializedType.Int1},
@@ -22,7 +22,7 @@ internal abstract class TypeNode : Node<TypeNode>
         };
 
     public static readonly Dictionary<SerializedType, object> SerializedTypeDefault =
-        new Dictionary<SerializedType, object>
+        new()
         {
                 {SerializedType.Default, null},
                 {SerializedType.Int1, default(sbyte)},

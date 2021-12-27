@@ -5,8 +5,8 @@ public class TxpTextureAtlas : TxpBase
     public TxpTextureAtlas() => Magic = "TXP"; //TXP3
     [FieldOrder(1)] public int TextureCount;
     [FieldOrder(2)] public uint Version = 0x1010112;
-    [FieldOrder(3), FieldCount("TextureCount")] public List<int> OffsetTable = new List<int>();
-    [FieldOrder(4), FieldCount("TextureCount")] public List<TxpTexture> Textures = new List<TxpTexture>();
+    [FieldOrder(3), FieldCount("TextureCount")] public List<int> OffsetTable = new();
+    [FieldOrder(4), FieldCount("TextureCount")] public List<TxpTexture> Textures = new();
 
     //public void SetTextureOffsets()
     //{

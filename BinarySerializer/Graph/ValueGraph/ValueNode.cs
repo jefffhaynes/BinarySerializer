@@ -2,7 +2,7 @@
 
 internal abstract class ValueNode : Node<ValueNode>
 {
-    public static readonly object UnsetValue = new object();
+    public static readonly object UnsetValue = new();
 
     private bool _visited;
 

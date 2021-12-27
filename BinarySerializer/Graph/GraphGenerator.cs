@@ -3,7 +3,7 @@
 internal class GraphGenerator
 {
     private readonly ConcurrentDictionary<Type, RootTypeNode> _graphCache =
-        new ConcurrentDictionary<Type, RootTypeNode>();
+        new();
 
     public RootTypeNode GenerateGraph(Type valueType)
     {

@@ -53,16 +53,12 @@ internal abstract class ContainerTypeNode : TypeNode
 
     protected static Type GetMemberType(MemberInfo memberInfo)
     {
-        switch (memberInfo)
+        return memberInfo switch
         {
-            case PropertyInfo propertyInfo:
-                return propertyInfo.PropertyType;
-
-            case FieldInfo fieldInfo:
-                return fieldInfo.FieldType;
-        }
-
-        throw new NotSupportedException($"{memberInfo.GetType().Name} not supported");
+            PropertyInfo propertyInfo => propertyInfo.PropertyType,
+            FieldInfo fieldInfo => fieldInfo.FieldType,
+            _ => throw new NotSupportedException($"{memberInfo.GetType().Name} not supported"),
+        };
     }
 
     // ReSharper disable UnusedParameter.Local

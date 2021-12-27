@@ -5,10 +5,10 @@ internal class ObjectTypeNode : ContainerTypeNode
     private const BindingFlags MemberBindingFlags =
         BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
-    private readonly object _initializationLock = new object();
+    private readonly object _initializationLock = new();
 
     private readonly Lazy<IDictionary<Type, ObjectTypeNode>> _subTypesLazy =
-        new Lazy<IDictionary<Type, ObjectTypeNode>>(() => new Dictionary<Type, ObjectTypeNode>());
+        new(() => new Dictionary<Type, ObjectTypeNode>());
 
     private bool _isConstructed;
 

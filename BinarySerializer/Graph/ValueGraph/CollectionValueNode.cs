@@ -57,48 +57,46 @@ internal abstract class CollectionValueNode : CollectionValueNodeBase
         var itemTerminationValue = GetItemTerminationValue();
         var itemLengths = GetItemLengths();
 
-        using (var itemLengthEnumerator = itemLengths?.GetEnumerator())
-        {
-            var count = GetFieldCount() ?? long.MaxValue;
+        using var itemLengthEnumerator = itemLengths?.GetEnumerator();
+        var count = GetFieldCount() ?? long.MaxValue;
 
-            for (long i = 0; i < count && !EndOfStream(stream); i++)
+        for (long i = 0; i < count && !EndOfStream(stream); i++)
+        {
+            if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
             {
-                if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
+                break;
+            }
+
+            itemLengthEnumerator?.MoveNext();
+
+            // TODO this doesn't allow for deferred eval of endianness in the case of jagged arrays
+            // probably extremely rare but still...
+            var itemLength = itemLengthEnumerator?.Current;
+            var childStream = itemLength == null
+                ? new BoundedStream(stream, Name)
+                : new BoundedStream(stream, Name, () => itemLength);
+
+            var child = CreateChildSerializer();
+
+            using (var streamResetter = new StreamResetter(childStream))
+            {
+                child.Deserialize(childStream, eventShuttle);
+
+                if (child.Value == null)
                 {
                     break;
                 }
 
-                itemLengthEnumerator?.MoveNext();
-
-                // TODO this doesn't allow for deferred eval of endianness in the case of jagged arrays
-                // probably extremely rare but still...
-                var itemLength = itemLengthEnumerator?.Current;
-                var childStream = itemLength == null
-                    ? new BoundedStream(stream, Name)
-                    : new BoundedStream(stream, Name, () => itemLength);
-
-                var child = CreateChildSerializer();
-
-                using (var streamResetter = new StreamResetter(childStream))
+                if (IsTerminated(child, itemTerminationValue))
                 {
-                    child.Deserialize(childStream, eventShuttle);
-
-                    if (child.Value == null)
-                    {
-                        break;
-                    }
-
-                    if (IsTerminated(child, itemTerminationValue))
-                    {
-                        ProcessLastItem(streamResetter, child);
-                        break;
-                    }
-
-                    streamResetter.CancelReset();
+                    ProcessLastItem(streamResetter, child);
+                    break;
                 }
 
-                Children.Add(child);
+                streamResetter.CancelReset();
             }
+
+            Children.Add(child);
         }
     }
 
@@ -110,49 +108,47 @@ internal abstract class CollectionValueNode : CollectionValueNodeBase
         var itemTerminationValue = GetItemTerminationValue();
         var itemLengths = GetItemLengths();
 
-        using (var itemLengthEnumerator = itemLengths?.GetEnumerator())
-        {
-            var count = GetFieldCount() ?? long.MaxValue;
+        using var itemLengthEnumerator = itemLengths?.GetEnumerator();
+        var count = GetFieldCount() ?? long.MaxValue;
 
-            for (long i = 0; i < count && !EndOfStream(stream); i++)
+        for (long i = 0; i < count && !EndOfStream(stream); i++)
+        {
+            if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
             {
-                if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
+                break;
+            }
+
+            itemLengthEnumerator?.MoveNext();
+
+            // TODO this doesn't allow for deferred eval of endianness in the case of jagged arrays
+            // probably extremely rare but still...
+            var itemLength = itemLengthEnumerator?.Current;
+            var childStream = itemLength == null
+                ? new BoundedStream(stream, Name)
+                : new BoundedStream(stream, Name, () => itemLength);
+
+            var child = CreateChildSerializer();
+
+            using (var streamResetter = new StreamResetter(childStream))
+            {
+                await child.DeserializeAsync(childStream, eventShuttle, cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (child.Value == null)
                 {
                     break;
                 }
 
-                itemLengthEnumerator?.MoveNext();
-
-                // TODO this doesn't allow for deferred eval of endianness in the case of jagged arrays
-                // probably extremely rare but still...
-                var itemLength = itemLengthEnumerator?.Current;
-                var childStream = itemLength == null
-                    ? new BoundedStream(stream, Name)
-                    : new BoundedStream(stream, Name, () => itemLength);
-
-                var child = CreateChildSerializer();
-
-                using (var streamResetter = new StreamResetter(childStream))
+                if (IsTerminated(child, itemTerminationValue))
                 {
-                    await child.DeserializeAsync(childStream, eventShuttle, cancellationToken)
-                        .ConfigureAwait(false);
-
-                    if (child.Value == null)
-                    {
-                        break;
-                    }
-
-                    if (IsTerminated(child, itemTerminationValue))
-                    {
-                        ProcessLastItem(streamResetter, child);
-                        break;
-                    }
-
-                    streamResetter.CancelReset();
+                    ProcessLastItem(streamResetter, child);
+                    break;
                 }
 
-                Children.Add(child);
+                streamResetter.CancelReset();
             }
+
+            Children.Add(child);
         }
     }
 

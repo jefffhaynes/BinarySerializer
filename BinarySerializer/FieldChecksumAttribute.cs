@@ -64,16 +64,12 @@ public sealed class FieldChecksumAttribute : FieldValueAttributeBase
     {
         var checksum = (byte)state;
 
-        switch (Mode)
+        return Mode switch
         {
-            case ChecksumMode.TwosComplement:
-                return (byte)(0x100 - checksum);
-            case ChecksumMode.Modulo256:
-                return (byte)(checksum % 256);
-            case ChecksumMode.Xor:
-                return checksum;
-            default:
-                throw new ArgumentException();
-        }
+            ChecksumMode.TwosComplement => (byte)(0x100 - checksum),
+            ChecksumMode.Modulo256 => (byte)(checksum % 256),
+            ChecksumMode.Xor => checksum,
+            _ => throw new ArgumentException(),
+        };
     }
 }

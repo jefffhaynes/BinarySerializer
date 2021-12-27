@@ -17,7 +17,7 @@ internal class CustomValueNode : ObjectValueNode
             return;
         }
 
-        if (!(value is IBinarySerializable binarySerializable))
+        if (value is not IBinarySerializable binarySerializable)
         {
             throw new InvalidOperationException("Must implement IBinarySerializable");
         }

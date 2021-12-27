@@ -23,15 +23,13 @@
         {
             if (terminationChild != null)
             {
-                using (var streamResetter = new StreamResetter(stream))
-                {
-                    terminationChild.Deserialize(stream, eventShuttle);
+                using var streamResetter = new StreamResetter(stream);
+                terminationChild.Deserialize(stream, eventShuttle);
 
-                    if (terminationChild.Value.Equals(terminationValue))
-                    {
-                        streamResetter.CancelReset();
-                        return true;
-                    }
+                if (terminationChild.Value.Equals(terminationValue))
+                {
+                    streamResetter.CancelReset();
+                    return true;
                 }
             }
             return false;

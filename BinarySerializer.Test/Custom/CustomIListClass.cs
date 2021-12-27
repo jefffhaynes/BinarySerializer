@@ -2,7 +2,7 @@
 
 public class CustomIListClass : IList<string>, IBinarySerializable
 {
-    private readonly List<string> _list = new List<string>();
+    private readonly List<string> _list = new();
 
     public IEnumerator<string> GetEnumerator()
     {

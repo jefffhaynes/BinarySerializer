@@ -2,8 +2,8 @@
 
 public class ImmutableClass2 : IEquatable<ImmutableClass2>
 {
-    public static readonly ImmutableClass2 Broadcast = new ImmutableClass2(0xFFFF);
-    public static readonly ImmutableClass2 CoordinatorAddress = new ImmutableClass2(0);
+    public static readonly ImmutableClass2 Broadcast = new(0xFFFF);
+    public static readonly ImmutableClass2 CoordinatorAddress = new(0);
 
     public ImmutableClass2()
     {

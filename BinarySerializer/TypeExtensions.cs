@@ -3,7 +3,7 @@
 internal static class TypeExtensions
 {
     internal static readonly Dictionary<Type, Func<object, object>> TypeConverters =
-        new Dictionary<Type, Func<object, object>>
+        new()
         {
                 {typeof(char), o => Convert.ToChar(o)},
                 {typeof(byte), o => Convert.ToByte(o)},

@@ -2,9 +2,9 @@
 
 public abstract class TestBase
 {
-    protected static readonly BinarySerializer Serializer = new BinarySerializer();
+    protected static readonly BinarySerializer Serializer = new();
 
-    protected static readonly BinarySerializer SerializerBe = new BinarySerializer
+    protected static readonly BinarySerializer SerializerBe = new()
     {
         Endianness = BinarySerialization.Endianness.Big
     };
@@ -131,11 +131,9 @@ public abstract class TestBase
 
     protected T Deserialize<T>(string filename)
     {
-        using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
-        {
-            PrintDeserialize(typeof(T));
-            return Deserialize<T>(stream);
-        }
+        using var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
+        PrintDeserialize(typeof(T));
+        return Deserialize<T>(stream);
     }
 
     protected T Deserialize<T>(byte[] data)

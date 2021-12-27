@@ -30,7 +30,7 @@ public class Issue148Tests : TestBase
     public void ProtocolClassTest()
     {
         var bytes = new byte[] { 0xff, 0x0f };
-        BinarySerializer serializer = new BinarySerializer();
+        BinarySerializer serializer = new();
         var protocol = serializer.Deserialize<ProtocolClass>(bytes);
         Assert.AreEqual(0x01, protocol.Header.ITEM1);
         Assert.AreEqual(0x7f, protocol.Header.ITEM2);

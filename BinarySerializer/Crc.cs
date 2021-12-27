@@ -7,10 +7,10 @@ internal abstract class Crc<T>
     // ReSharper disable once StaticMemberInGenericType
     private static readonly int TableSize = (int)Math.Pow(2, BitsPerByte);
 
-    private static readonly Dictionary<T, T[]> Tables = new Dictionary<T, T[]>();
+    private static readonly Dictionary<T, T[]> Tables = new();
 
     // ReSharper disable once StaticMemberInGenericType
-    private static readonly object TableLock = new object();
+    private static readonly object TableLock = new();
 
     private readonly T _initialValue;
     private readonly T[] _table;

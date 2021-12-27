@@ -13,11 +13,9 @@ public class MessageSerializer
     {
         message.ComplementHeader();
 
-        using (var memoryStream = new MemoryStream())
-        {
-            _binSerializer.Serialize(memoryStream, message);
-            return memoryStream.ToArray();
-        }
+        using var memoryStream = new MemoryStream();
+        _binSerializer.Serialize(memoryStream, message);
+        return memoryStream.ToArray();
     }
 
     public object BinaryDeserializeMessage(byte[] binBytes, Type type)
