@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Issues.Issue151
+﻿namespace BinarySerialization.Test.Issues.Issue151;
+
+public abstract class dPayload
 {
-    public abstract class dPayload
-    {
-    }
 }

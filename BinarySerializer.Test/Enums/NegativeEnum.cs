@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.Enums
+﻿namespace BinarySerialization.Test.Enums;
+
+public enum NegativeEnum : short
 {
-    public enum NegativeEnum : short
-    {
-        A = -1,
-        B = 0,
-        C = 1
-    }
+    A = -1,
+    B = 0,
+    C = 1
 }

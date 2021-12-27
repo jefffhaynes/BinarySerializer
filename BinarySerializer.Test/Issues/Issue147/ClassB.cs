@@ -1,19 +1,18 @@
-﻿namespace BinarySerialization.Test.Issues.Issue147
+﻿namespace BinarySerialization.Test.Issues.Issue147;
+
+class ClassB
 {
-    class ClassB
-    {
-        [FieldOrder(1)]
-        // ReSharper disable once UnusedMember.Global
-        // ReSharper disable once InconsistentNaming
+    [FieldOrder(1)]
+    // ReSharper disable once UnusedMember.Global
+    // ReSharper disable once InconsistentNaming
 #pragma warning disable CS0649
-        public int XXX;
+    public int XXX;
 #pragma warning restore CS0649
 
-        [FieldOrder(2)]
-        // ReSharper disable once UnusedMember.Global
-        // ReSharper disable once InconsistentNaming
+    [FieldOrder(2)]
+    // ReSharper disable once UnusedMember.Global
+    // ReSharper disable once InconsistentNaming
 #pragma warning disable CS0649
-        public int YYY;
+    public int YYY;
 #pragma warning restore CS0649
-    }
 }

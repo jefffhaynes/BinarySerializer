@@ -1,0 +1,15 @@
+﻿global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using System.Collections.Generic;
+global using System.IO;
+global using System;
+global using BinarySerialization;
+global using System.Diagnostics;
+global using System.Collections.ObjectModel;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using BinarySerialization.Test.Converters;
+global using System.Security.Cryptography;
+global using System.Threading;
+global using System.Text;
+global using System.Reflection;
+global using System.Collections;

@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Issues.Issue24
+﻿namespace BinarySerialization.Test.Issues.Issue24;
+
+public class Bin1Data
 {
-    public class Bin1Data
-    {
-        public int Value { get; set; }
-    }
+    public int Value { get; set; }
 }

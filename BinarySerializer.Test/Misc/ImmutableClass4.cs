@@ -1,22 +1,21 @@
-﻿namespace BinarySerialization.Test.Misc
+﻿namespace BinarySerialization.Test.Misc;
+
+public class ImmutableClass4
 {
-    public class ImmutableClass4
+    public ImmutableClass4(int header, int? responseId = null)
     {
-        public ImmutableClass4(int header, int? responseId = null)
-        {
-            Header = header;
-            ResponseId = responseId;
-        }
-
-        public ImmutableClass4(int header)
-        {
-            Header = header;
-        }
-
-        [FieldOrder(0)]
-        public int Header { get; }
-
-        [Ignore]
-        public int? ResponseId { get; }
+        Header = header;
+        ResponseId = responseId;
     }
+
+    public ImmutableClass4(int header)
+    {
+        Header = header;
+    }
+
+    [FieldOrder(0)]
+    public int Header { get; }
+
+    [Ignore]
+    public int? ResponseId { get; }
 }

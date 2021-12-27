@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.Length;
 
-namespace BinarySerialization.Test.Length
+public class ConstCollectionLengthClass
 {
-    public class ConstCollectionLengthClass
-    {
-        [FieldLength(6)]
-        public List<string> Field { get; set; }
-    }
+    [FieldLength(6)]
+    public List<string> Field { get; set; }
 }

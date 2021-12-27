@@ -1,11 +1,10 @@
-﻿namespace BinarySerialization.Test.Unknown
-{
-    public class BindingAcrossUnknownBoundaryClass
-    {
-        [FieldOrder(0)]
-        public byte SubfieldLength { get; set; }
+﻿namespace BinarySerialization.Test.Unknown;
 
-        [FieldOrder(1)]
-        public object Field { get; set; }
-    }
+public class BindingAcrossUnknownBoundaryClass
+{
+    [FieldOrder(0)]
+    public byte SubfieldLength { get; set; }
+
+    [FieldOrder(1)]
+    public object Field { get; set; }
 }

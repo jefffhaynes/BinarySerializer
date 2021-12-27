@@ -1,9 +1,8 @@
-namespace BinarySerialization.Test.Enums
+namespace BinarySerialization.Test.Enums;
+
+public enum NamedEnumValues
 {
-    public enum NamedEnumValues
-    {
-        [SerializeAsEnum("Alpha")] A,
-        [SerializeAsEnum("Bravo")] B,
-        [SerializeAsEnum] C
-    }
+    [SerializeAsEnum("Alpha")] A,
+    [SerializeAsEnum("Bravo")] B,
+    [SerializeAsEnum] C
 }

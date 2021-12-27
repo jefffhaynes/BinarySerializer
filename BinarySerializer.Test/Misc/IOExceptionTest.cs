@@ -1,17 +1,13 @@
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+namespace BinarySerialization.Test.Misc;
 
-namespace BinarySerialization.Test.Misc
+[TestClass]
+public class IOExceptionTest
 {
-    [TestClass]
-    public class IOExceptionTest
+    [TestMethod]
+    public void ShouldThrowIOExceptionNotInvalidOperationExceptionTest()
     {
-        [TestMethod]
-        public void ShouldThrowIOExceptionNotInvalidOperationExceptionTest()
-        {
-            var stream = new UnreadableStream();
-            var serializer = new BinarySerializer();
-            Assert.ThrowsException<IOException>(() => serializer.Deserialize<int>(stream));
-        }
+        var stream = new UnreadableStream();
+        var serializer = new BinarySerializer();
+        Assert.ThrowsException<IOException>(() => serializer.Deserialize<int>(stream));
     }
 }

@@ -1,10 +1,7 @@
-﻿using BinarySerialization;
+﻿namespace BinarySerializer.Test.Issues.Issue57;
 
-namespace BinarySerializer.Test.Issues.Issue57
+public class BigEndianFloatClass
 {
-    public class BigEndianFloatClass
-    {
-        [FieldEndianness(Endianness.Big)]
-        public float Value { get; set; }
-    }
+    [FieldEndianness(Endianness.Big)]
+    public float Value { get; set; }
 }

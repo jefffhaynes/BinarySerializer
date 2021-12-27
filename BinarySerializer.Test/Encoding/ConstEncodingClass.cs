@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Encoding
+﻿namespace BinarySerialization.Test.Encoding;
+
+public class ConstEncodingClass
 {
-    public class ConstEncodingClass
-    {
-        [FieldEncoding("windows-1256")]
-        public string Value { get; set; }
-    }
+    [FieldEncoding("windows-1256")]
+    public string Value { get; set; }
 }

@@ -1,30 +1,26 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace BinarySerialization.Test.Misc;
 
-namespace BinarySerialization.Test.Misc
+public struct Sample
 {
-    public struct Sample
-    {
-        [FieldOrder(0)]
-        public float A;
+    [FieldOrder(0)]
+    public float A;
 
-        [FieldOrder(1)]
-        public float B;
-    }
+    [FieldOrder(1)]
+    public float B;
+}
 
-    [TestClass]
-    public class StructTests : TestBase
+[TestClass]
+public class StructTests : TestBase
+{
+    [TestMethod]
+    public void TestStruct()
     {
-        [TestMethod]
-        public void TestStruct()
-        {
-            var expected = new Sample();
+        var expected = new Sample();
 
 #if TESTASYNC
-            Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
+        Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
 #else
             Assert.ThrowsException<NotSupportedException>(() => Roundtrip(expected));
 #endif
-        }
     }
 }

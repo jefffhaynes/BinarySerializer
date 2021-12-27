@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.Length;
 
-namespace BinarySerialization.Test.Length
+public class EmbeddedConstrainedCollectionInnerClass
 {
-    public class EmbeddedConstrainedCollectionInnerClass
-    {
-        public List<string> Items { get; set; }
-    }
+    public List<string> Items { get; set; }
 }

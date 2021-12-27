@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.BitLength
+﻿namespace BinarySerialization.Test.BitLength;
+
+public class BitLengthBoolClass
 {
-    public class BitLengthBoolClass
-    {
-        [FieldBitLength(1)]
-        public bool Value { get; set; }
-    }
+    [FieldBitLength(1)]
+    public bool Value { get; set; }
 }

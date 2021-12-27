@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Unknown
+﻿namespace BinarySerialization.Test.Unknown;
+
+public class InvalidUnknownTypeClass
 {
-    public class InvalidUnknownTypeClass
-    {
-        [Subtype("", 0, typeof (int))]
-        public object Field { get; set; }
-    }
+    [Subtype("", 0, typeof(int))]
+    public object Field { get; set; }
 }

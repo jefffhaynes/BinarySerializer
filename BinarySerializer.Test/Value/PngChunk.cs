@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Value
+﻿namespace BinarySerialization.Test.Value;
+
+public abstract class PngChunk
 {
-    public abstract class PngChunk
-    {
-    }
 }

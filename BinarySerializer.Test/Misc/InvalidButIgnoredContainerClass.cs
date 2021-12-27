@@ -1,10 +1,9 @@
-﻿namespace BinarySerialization.Test.Misc
-{
-    public class InvalidButIgnoredContainerClass
-    {
-        public int A;
+﻿namespace BinarySerialization.Test.Misc;
 
-        [Ignore]
-        public InvalidButIgnoredTypeClass InvalidButIgnored;
-    }
+public class InvalidButIgnoredContainerClass
+{
+    public int A;
+
+    [Ignore]
+    public InvalidButIgnoredTypeClass InvalidButIgnored;
 }

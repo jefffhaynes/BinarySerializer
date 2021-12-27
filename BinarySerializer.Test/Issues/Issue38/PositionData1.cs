@@ -1,19 +1,18 @@
-﻿namespace BinarySerialization.Test.Issues.Issue38
+﻿namespace BinarySerialization.Test.Issues.Issue38;
+
+/// <summary>
+///     the position data structure
+/// </summary>
+public class PositionData1
 {
+    #region public properties  
+
     /// <summary>
-    ///     the position data structure
+    ///     Gets or sets the adress of position
     /// </summary>
-    public class PositionData1
-    {
-        #region public properties  
+    [FieldOrder(0)]
+    [SerializeAs(SerializedType = SerializedType.UInt4)]
+    public uint Address { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the adress of position
-        /// </summary>
-        [FieldOrder(0)]
-        [SerializeAs(SerializedType = SerializedType.UInt4)]
-        public uint Address { get; set; }
-
-        #endregion
-    }
+    #endregion
 }

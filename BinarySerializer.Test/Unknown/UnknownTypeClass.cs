@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Unknown
+﻿namespace BinarySerialization.Test.Unknown;
+
+public class UnknownTypeClass
 {
-    public class UnknownTypeClass
-    {
-        public object Field { get; set; }
-    }
+    public object Field { get; set; }
 }

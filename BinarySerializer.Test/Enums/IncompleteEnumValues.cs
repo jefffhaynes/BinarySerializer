@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Enums
+﻿namespace BinarySerialization.Test.Enums;
+
+public enum IncompleteEnumValues
 {
-    public enum IncompleteEnumValues
-    {
-        A,
-        B
-    }
+    A,
+    B
 }

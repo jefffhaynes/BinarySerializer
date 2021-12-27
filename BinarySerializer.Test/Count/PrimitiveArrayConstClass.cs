@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Count
+﻿namespace BinarySerialization.Test.Count;
+
+public class PrimitiveArrayConstClass<TValue>
 {
-    public class PrimitiveArrayConstClass<TValue>
-    {
-        [FieldCount(5)]
-        public TValue[] Array { get; set; }
-    }
+    [FieldCount(5)]
+    public TValue[] Array { get; set; }
 }

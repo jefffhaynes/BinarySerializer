@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test
+﻿namespace BinarySerialization.Test;
+
+public class Zinc : Chemical
 {
-    public class Zinc : Chemical
+    public Zinc() : base("Zn")
     {
-        public Zinc() : base("Zn")
-        {
-        }
     }
 }

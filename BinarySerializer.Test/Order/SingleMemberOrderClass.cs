@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Order
+﻿namespace BinarySerialization.Test.Order;
+
+public class SingleMemberOrderClass
 {
-    public class SingleMemberOrderClass
-    {
-        public int Field { get; set; }
-    }
+    public int Field { get; set; }
 }

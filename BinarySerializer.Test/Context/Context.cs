@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.Context
-{
-    public class Context
-    {
-        public bool SerializeCondtion { get; set; }
+﻿namespace BinarySerialization.Test.Context;
 
-        public int UnorderedField { get; set; }
-    }
+public class Context
+{
+    public bool SerializeCondtion { get; set; }
+
+    public int UnorderedField { get; set; }
 }

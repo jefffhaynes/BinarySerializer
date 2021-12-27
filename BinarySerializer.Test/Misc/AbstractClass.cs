@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Misc
+﻿namespace BinarySerialization.Test.Misc;
+
+public abstract class AbstractClass
 {
-    public abstract class AbstractClass
-    {
-    }
 }

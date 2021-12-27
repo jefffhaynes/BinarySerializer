@@ -1,11 +1,10 @@
-﻿namespace BinarySerialization.Test.Encoding
+﻿namespace BinarySerialization.Test.Encoding;
+
+public class EncodingClass
 {
-    public class EncodingClass
-    {
-        [FieldEncoding("windows-1256")]
+    [FieldEncoding("windows-1256")]
 #pragma warning disable 618
-        [SerializeAs(SerializedType.NullTerminatedString)]
+    [SerializeAs(SerializedType.NullTerminatedString)]
 #pragma warning restore 618
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }

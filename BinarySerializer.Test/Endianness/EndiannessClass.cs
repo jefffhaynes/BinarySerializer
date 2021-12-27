@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Endianness
+﻿namespace BinarySerialization.Test.Endianness;
+
+public class EndiannessClass
 {
-    public class EndiannessClass
-    {
-        public short Short { get; set; }
-    }
+    public short Short { get; set; }
 }

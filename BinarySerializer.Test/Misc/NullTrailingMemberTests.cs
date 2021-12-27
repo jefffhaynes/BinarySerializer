@@ -1,20 +1,17 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+namespace BinarySerialization.Test.Misc;
 
-namespace BinarySerialization.Test.Misc
+[TestClass]
+public class NullTrailingMemberTests : TestBase
 {
-    [TestClass]
-    public class NullTrailingMemberTests : TestBase
+    [TestMethod]
+    public void NullTrailingMemberTest()
     {
-        [TestMethod]
-        public void NullTrailingMemberTest()
-        {
-            var container = new NullTrailingMemberClassContainer();
+        var container = new NullTrailingMemberClassContainer();
 
-            Roundtrip(container, 12);
+        Roundtrip(container, 12);
 
-            container.Inner.OptionalParameter = 5;
+        container.Inner.OptionalParameter = 5;
 
-            Roundtrip(container, 13);
-        }
+        Roundtrip(container, 13);
     }
 }

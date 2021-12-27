@@ -1,12 +1,11 @@
-﻿namespace BinarySerialization.Test.Misc
+﻿namespace BinarySerialization.Test.Misc;
+
+public class ImmutableNoPublicConstructorClass
 {
-    public class ImmutableNoPublicConstructorClass
+    private ImmutableNoPublicConstructorClass()
     {
-        private ImmutableNoPublicConstructorClass()
-        {
-        }
-        
-        // ReSharper disable once UnassignedGetOnlyAutoProperty
-        public byte Value { get; }
     }
+
+    // ReSharper disable once UnassignedGetOnlyAutoProperty
+    public byte Value { get; }
 }

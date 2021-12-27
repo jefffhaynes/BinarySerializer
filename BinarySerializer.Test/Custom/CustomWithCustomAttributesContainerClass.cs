@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Custom
+﻿namespace BinarySerialization.Test.Custom;
+
+public class CustomWithCustomAttributesContainerClass
 {
-    public class CustomWithCustomAttributesContainerClass
-    {
-        [Custom]
-        public CustomWithCustomAttributes Value { get; set; }
-    }
+    [Custom]
+    public CustomWithCustomAttributes Value { get; set; }
 }

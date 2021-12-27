@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Subtype
+﻿namespace BinarySerialization.Test.Subtype;
+
+public class DefaultSubtypeClass : Superclass
 {
-    public class DefaultSubtypeClass : Superclass
-    {
-        public byte[] Data { get; set; }
-    }
+    public byte[] Data { get; set; }
 }

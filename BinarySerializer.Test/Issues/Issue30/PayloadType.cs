@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.Issues.Issue30
+﻿namespace BinarySerialization.Test.Issues.Issue30;
+
+public enum PayloadType : uint
 {
-    public enum PayloadType : uint
-    {
-        UnDefined = 0,
-        INIT = 1,
-        STAMR = 100
-    }
+    UnDefined = 0,
+    INIT = 1,
+    STAMR = 100
 }

@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.SerializeAs
+﻿namespace BinarySerialization.Test.SerializeAs;
+
+public class SizedStringClass<TValue>
 {
-    public class SizedStringClass<TValue>
-    {
-        [SerializeAs(SerializedType.SizedString)]
-        [FieldLength(2)]
-        public TValue Value { get; set; }
-    }
+    [SerializeAs(SerializedType.SizedString)]
+    [FieldLength(2)]
+    public TValue Value { get; set; }
 }

@@ -1,7 +1,6 @@
-namespace BinarySerialization.Test.Enums
+namespace BinarySerialization.Test.Enums;
+
+public class NamedEnumClass
 {
-    public class NamedEnumClass
-    {
-        public NamedEnumValues Field { get; set; }
-    }
+    public NamedEnumValues Field { get; set; }
 }

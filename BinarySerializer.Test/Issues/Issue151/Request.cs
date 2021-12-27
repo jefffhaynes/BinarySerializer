@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Issues.Issue151
+﻿namespace BinarySerialization.Test.Issues.Issue151;
+
+public class Request : dPayload
 {
-    public class Request : dPayload
-    {
-        [FieldOrder(0)]
-        public byte[] EID { get; set; } // Size is equal to PayloadLength 
-    }
+    [FieldOrder(0)]
+    public byte[] EID { get; set; } // Size is equal to PayloadLength 
 }

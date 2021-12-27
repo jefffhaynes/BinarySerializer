@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Value
+﻿namespace BinarySerialization.Test.Value;
+
+public class PngUnknownChunk : PngChunk
 {
-    public class PngUnknownChunk : PngChunk
-    {
-        public byte[] Data { get; set; }
-    }
+    public byte[] Data { get; set; }
 }

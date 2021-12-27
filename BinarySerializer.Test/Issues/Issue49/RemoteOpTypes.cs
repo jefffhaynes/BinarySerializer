@@ -1,19 +1,18 @@
-﻿namespace BinarySerialization.Test.Issues.Issue49
+﻿namespace BinarySerialization.Test.Issues.Issue49;
+
+public enum RemoteOpTypes
 {
-    public enum RemoteOpTypes
-    {
-        Invoke,
-        Command,
-        Result
-    }
+    Invoke,
+    Command,
+    Result
+}
 
-    public enum RemoteInvokeAction
-    {
-        
-    }
+public enum RemoteInvokeAction
+{
 
-    public enum MessageType
-    {
-        
-    }
+}
+
+public enum MessageType
+{
+
 }

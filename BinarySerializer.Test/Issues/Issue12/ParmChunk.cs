@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Issues.Issue12
+﻿namespace BinarySerialization.Test.Issues.Issue12;
+
+public class ParmChunk : Chunk
 {
-    public class ParmChunk : Chunk
-    {
-        public string Stuff { get; set; }
-    }
+    public string Stuff { get; set; }
 }

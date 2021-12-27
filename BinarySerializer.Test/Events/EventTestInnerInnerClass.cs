@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Events
+﻿namespace BinarySerialization.Test.Events;
+
+public class EventTestInnerInnerClass
 {
-    public class EventTestInnerInnerClass
-    {
-        public ushort Value { get; set; }
-    }
+    public ushort Value { get; set; }
 }

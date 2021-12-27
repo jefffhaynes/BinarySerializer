@@ -1,7 +1,6 @@
-namespace BinarySerialization.Test.Subtype
+namespace BinarySerialization.Test.Subtype;
+
+public abstract class Superclass
 {
-    public abstract class Superclass
-    {
-        public int SomeSuperStuff { get; set; }
-    }
+    public int SomeSuperStuff { get; set; }
 }

@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.Issues.Issue151
+﻿namespace BinarySerialization.Test.Issues.Issue151;
+
+public enum dPayloadType
 {
-    public enum dPayloadType
-    {
-        GenericNACK,
-        Request,
-        UserData
-    }
+    GenericNACK,
+    Request,
+    UserData
 }

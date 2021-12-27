@@ -1,13 +1,12 @@
-﻿namespace BinarySerialization.Test.Issues.Issue76
-{
-    public class PacketContent
-    {
-        [FieldOrder(0)]
-        [SerializeAs(SerializedType.TerminatedString, StringTerminator = (char)0x20)]
-        public CommandClass CommandClass { get; set; }
+﻿namespace BinarySerialization.Test.Issues.Issue76;
 
-        [FieldOrder(1)]
-        [Subtype("CommandClass", CommandClass.Smn, typeof(SmnCommandContainer))]
-        public CommandContainer Payload { get; set; }
-    }
+public class PacketContent
+{
+    [FieldOrder(0)]
+    [SerializeAs(SerializedType.TerminatedString, StringTerminator = (char)0x20)]
+    public CommandClass CommandClass { get; set; }
+
+    [FieldOrder(1)]
+    [Subtype("CommandClass", CommandClass.Smn, typeof(SmnCommandContainer))]
+    public CommandContainer Payload { get; set; }
 }

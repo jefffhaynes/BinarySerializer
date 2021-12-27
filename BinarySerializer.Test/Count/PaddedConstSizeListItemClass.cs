@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Count
+﻿namespace BinarySerialization.Test.Count;
+
+public class PaddedConstSizeListItemClass
 {
-    public class PaddedConstSizeListItemClass
-    {
-        public byte Value { get; set; }
-    }
+    public byte Value { get; set; }
 }

@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Issues.Issue12
+﻿namespace BinarySerialization.Test.Issues.Issue12;
+
+public class SnaxChunk : Chunk
 {
-    public class SnaxChunk : Chunk
-    {
-    }
 }

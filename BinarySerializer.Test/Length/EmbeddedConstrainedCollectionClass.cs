@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Length
+﻿namespace BinarySerialization.Test.Length;
+
+public class EmbeddedConstrainedCollectionClass
 {
-    public class EmbeddedConstrainedCollectionClass
-    {
-        [FieldLength(10)]
-        public EmbeddedConstrainedCollectionInnerClass Inner { get; set; }
-    }
+    [FieldLength(10)]
+    public EmbeddedConstrainedCollectionInnerClass Inner { get; set; }
 }

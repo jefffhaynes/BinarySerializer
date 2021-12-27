@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.Scale
+﻿namespace BinarySerialization.Test.Scale;
+
+public class ScaledValueClass
 {
-    public class ScaledValueClass
-    {
-        [FieldScale(2)]
-        [SerializeAs(SerializedType.Int4)]
-        public double Value { get; set; }
-    }
+    [FieldScale(2)]
+    [SerializeAs(SerializedType.Int4)]
+    public double Value { get; set; }
 }

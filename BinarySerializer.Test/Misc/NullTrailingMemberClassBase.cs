@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Misc
+﻿namespace BinarySerialization.Test.Misc;
+
+public class NullTrailingMemberClassBase
 {
-    public class NullTrailingMemberClassBase
-    {
-        public int BaseValue { get; set; }
-    }
+    public int BaseValue { get; set; }
 }

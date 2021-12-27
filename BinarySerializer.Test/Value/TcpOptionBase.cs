@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Value
+﻿namespace BinarySerialization.Test.Value;
+
+public abstract class TcpOptionBase
 {
-    public abstract class TcpOptionBase
-    {
-    }
 }

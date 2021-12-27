@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.Issues.Issue140;
 
-namespace BinarySerialization.Test.Issues.Issue140
+public interface IDomain
 {
-    public interface IDomain
-    {
-        List<ILabel> Labels { get; }
-        string Name { get; }
-    }
+    List<ILabel> Labels { get; }
+    string Name { get; }
 }

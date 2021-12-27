@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Issues.Issue12
+﻿namespace BinarySerialization.Test.Issues.Issue12;
+
+public class DescChunk : Chunk
 {
-    public class DescChunk : Chunk
-    {
-        public string Description { get; set; }
-    }
+    public string Description { get; set; }
 }

@@ -1,7 +1,6 @@
-namespace BinarySerialization.Test.Subtype
+namespace BinarySerialization.Test.Subtype;
+
+public class SubclassA : Superclass
 {
-    public class SubclassA : Superclass
-    {
-        public byte SomethingForClassA { get; set; }
-    }
+    public byte SomethingForClassA { get; set; }
 }

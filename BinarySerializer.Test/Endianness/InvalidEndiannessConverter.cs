@@ -1,17 +1,14 @@
-﻿using System;
+﻿namespace BinarySerialization.Test.Endianness;
 
-namespace BinarySerialization.Test.Endianness
+public class InvalidEndiannessConverter : IValueConverter
 {
-    public class InvalidEndiannessConverter : IValueConverter
+    public object Convert(object value, object parameter, BinarySerializationContext context)
     {
-        public object Convert(object value, object parameter, BinarySerializationContext context)
-        {
-            return 0;
-        }
+        return 0;
+    }
 
-        public object ConvertBack(object value, object parameter, BinarySerializationContext context)
-        {
-            throw new NotImplementedException();
-        }
+    public object ConvertBack(object value, object parameter, BinarySerializationContext context)
+    {
+        throw new NotImplementedException();
     }
 }

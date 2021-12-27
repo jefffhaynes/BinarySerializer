@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test
-{
-    public enum CerealShape
-    {
-        [SerializeAsEnum("CIR")] Circular,
+﻿namespace BinarySerialization.Test;
 
-        [SerializeAsEnum("SQR")] Square
-    }
+public enum CerealShape
+{
+    [SerializeAsEnum("CIR")] Circular,
+
+    [SerializeAsEnum("SQR")] Square
 }

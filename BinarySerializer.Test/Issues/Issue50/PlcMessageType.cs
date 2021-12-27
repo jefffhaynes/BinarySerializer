@@ -1,15 +1,14 @@
-﻿namespace BinarySerialization.Test.Issues.Issue50
+﻿namespace BinarySerialization.Test.Issues.Issue50;
+
+public enum PlcMessageType : ushort
 {
-    public enum PlcMessageType : ushort
-    {
-        Nok = 0,
+    Nok = 0,
 
-        Ack = 1,
+    Ack = 1,
 
-        Alive = 2,
+    Alive = 2,
 
-        Data = 3,
+    Data = 3,
 
-        AckAlive = 4
-    }
+    AckAlive = 4
 }

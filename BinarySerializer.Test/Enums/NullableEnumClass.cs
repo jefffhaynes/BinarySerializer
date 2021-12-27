@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Enums
+﻿namespace BinarySerialization.Test.Enums;
+
+public class NullableEnumClass
 {
-    public class NullableEnumClass
-    {
-        public BaseTypeEnumValues? Field { get; set; }
-    }
+    public BaseTypeEnumValues? Field { get; set; }
 }

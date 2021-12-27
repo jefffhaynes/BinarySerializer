@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.ItemLength;
 
-namespace BinarySerialization.Test.ItemLength
+public class LimitedItemLengthClassClass
 {
-    public class LimitedItemLengthClassClass
-    {
-        [ItemLength(3)]
-        public List<LimitedItemLengthClassInnerClass> InnerClasses { get; set; }
-    }
+    [ItemLength(3)]
+    public List<LimitedItemLengthClassInnerClass> InnerClasses { get; set; }
 }

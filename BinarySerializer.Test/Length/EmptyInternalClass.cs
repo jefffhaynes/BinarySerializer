@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Length
+﻿namespace BinarySerialization.Test.Length;
+
+public class EmptyInternalClass
 {
-    public class EmptyInternalClass
-    {
-    }
 }

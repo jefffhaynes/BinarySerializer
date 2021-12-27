@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Custom
+﻿namespace BinarySerialization.Test.Custom;
+
+public class CustomSubtypeBaseClass
 {
-    public class CustomSubtypeBaseClass
-    {
-    }
 }

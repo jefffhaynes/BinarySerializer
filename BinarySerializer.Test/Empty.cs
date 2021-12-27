@@ -1,9 +1,7 @@
-﻿
-namespace BinarySerialization.Test
+﻿namespace BinarySerialization.Test;
+
+public class Empty
 {
-    public class Empty
-    {
-        [FieldLength(24)]
-        public byte[] Filler { get; set; }
-    }
+    [FieldLength(24)]
+    public byte[] Filler { get; set; }
 }

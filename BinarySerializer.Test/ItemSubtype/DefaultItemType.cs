@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.ItemSubtype
+﻿namespace BinarySerialization.Test.ItemSubtype;
+
+public class DefaultItemType : IItemSubtype
 {
-    public class DefaultItemType : IItemSubtype
-    {
-        public byte[] Data { get; set; }
-    }
+    public byte[] Data { get; set; }
 }

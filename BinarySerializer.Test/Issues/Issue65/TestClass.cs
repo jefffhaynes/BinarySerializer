@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Issues.Issue65
+﻿namespace BinarySerialization.Test.Issues.Issue65;
+
+public class TestClass
 {
-    public class TestClass
-    {
-        [FieldCount(5)]
-        public short[] ShortArray { get; set; }
-    }
+    [FieldCount(5)]
+    public short[] ShortArray { get; set; }
 }

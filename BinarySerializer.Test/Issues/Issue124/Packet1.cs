@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Issues.Issue124
+﻿namespace BinarySerialization.Test.Issues.Issue124;
+
+public class Packet1 : PacketBody
 {
-    public class Packet1 : PacketBody
-    {
-        [FieldBitLength(4)]
-        public int Value { get; set; }
-    }
+    [FieldBitLength(4)]
+    public int Value { get; set; }
 }

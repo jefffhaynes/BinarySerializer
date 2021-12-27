@@ -1,20 +1,19 @@
-﻿namespace BinarySerialization.Test.Issues.Issue33
+﻿namespace BinarySerialization.Test.Issues.Issue33;
+
+public enum BinOccupancy
 {
-    public enum BinOccupancy
-    {
-        /// <summary>
-        ///     The unknown.
-        /// </summary>
-        Unknown = 0,
+    /// <summary>
+    ///     The unknown.
+    /// </summary>
+    Unknown = 0,
 
-        /// <summary>
-        ///     The empty.
-        /// </summary>
-        Empty = 1,
+    /// <summary>
+    ///     The empty.
+    /// </summary>
+    Empty = 1,
 
-        /// <summary>
-        ///     The full.
-        /// </summary>
-        Full = 2
-    }
+    /// <summary>
+    ///     The full.
+    /// </summary>
+    Full = 2
 }

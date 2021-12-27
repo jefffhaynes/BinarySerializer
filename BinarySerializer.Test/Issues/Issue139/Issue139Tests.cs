@@ -1,15 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace BinarySerialization.Test.Issues.Issue139;
 
-namespace BinarySerialization.Test.Issues.Issue139
+[TestClass]
+public class Issue139Tests : TestBase
 {
-    [TestClass]
-    public class Issue139Tests : TestBase
+    [TestMethod]
+    public void Test()
     {
-        [TestMethod]
-        public void Test()
-        {
-            var expected = new Question();
-            var actual = Roundtrip(expected);
-        }
+        var expected = new Question();
+        var actual = Roundtrip(expected);
     }
 }

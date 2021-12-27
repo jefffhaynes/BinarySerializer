@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.ItemSubtype
+﻿namespace BinarySerialization.Test.ItemSubtype;
+
+public interface IItemSubtype
 {
-    public interface IItemSubtype
-    {
-    }
 }

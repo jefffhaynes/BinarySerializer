@@ -1,15 +1,14 @@
-﻿namespace BinarySerialization.Test.Issues.Issue38
+﻿namespace BinarySerialization.Test.Issues.Issue38;
+
+public class ConstructOnceClass
 {
-    public class ConstructOnceClass
+    public ConstructOnceClass()
     {
-        public ConstructOnceClass()
-        {
-            Count++;
-        }
-
-        [Ignore]
-        public static int Count { get; set; }
-
-        public int OtherStuff { get; set; }
+        Count++;
     }
+
+    [Ignore]
+    public static int Count { get; set; }
+
+    public int OtherStuff { get; set; }
 }

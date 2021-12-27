@@ -1,12 +1,11 @@
-﻿namespace BinarySerialization.Test.Offset
-{
-    public class BoundOffsetClass
-    {
-        [FieldOrder(0)]
-        public int FieldOffsetField { get; set; }
+﻿namespace BinarySerialization.Test.Offset;
 
-        [FieldOrder(1)]
-        [FieldOffset("FieldOffsetField")]
-        public string Field { get; set; }
-    }
+public class BoundOffsetClass
+{
+    [FieldOrder(0)]
+    public int FieldOffsetField { get; set; }
+
+    [FieldOrder(1)]
+    [FieldOffset("FieldOffsetField")]
+    public string Field { get; set; }
 }

@@ -1,29 +1,28 @@
-﻿namespace BinarySerialization.Test.Issues.Issue76
+﻿namespace BinarySerialization.Test.Issues.Issue76;
+
+public enum CommandClass
 {
-    public enum CommandClass
-    {
-        [SerializeAsEnum("sRN")]
-        Srn,
+    [SerializeAsEnum("sRN")]
+    Srn,
 
-        [SerializeAsEnum("sWN")]
-        Swn,
+    [SerializeAsEnum("sWN")]
+    Swn,
 
-        [SerializeAsEnum("sMN")]
-        Smn,
+    [SerializeAsEnum("sMN")]
+    Smn,
 
-        [SerializeAsEnum("sEN")]
-        Sen,
+    [SerializeAsEnum("sEN")]
+    Sen,
 
-        [SerializeAsEnum("sRA")]
-        Sra,
+    [SerializeAsEnum("sRA")]
+    Sra,
 
-        [SerializeAsEnum("sWA")]
-        Swa,
+    [SerializeAsEnum("sWA")]
+    Swa,
 
-        [SerializeAsEnum("sEA")]
-        Sea,
+    [SerializeAsEnum("sEA")]
+    Sea,
 
-        [SerializeAsEnum("sSN")]
-        Ssn
-    }
+    [SerializeAsEnum("sSN")]
+    Ssn
 }

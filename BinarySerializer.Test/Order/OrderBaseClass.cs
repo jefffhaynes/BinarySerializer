@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Order
+﻿namespace BinarySerialization.Test.Order;
+
+public class OrderBaseClass
 {
-    public class OrderBaseClass
-    {
-        public byte First { get; set; }
-    }
+    public byte First { get; set; }
 }

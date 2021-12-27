@@ -1,11 +1,10 @@
-﻿namespace BinarySerialization.Test.Order
-{
-    public class MutlipleMembersDuplicateOrderClass
-    {
-        [FieldOrder(3)]
-        public int First { get; set; }
+﻿namespace BinarySerialization.Test.Order;
 
-        [FieldOrder(3)]
-        public int Second { get; set; }
-    }
+public class MutlipleMembersDuplicateOrderClass
+{
+    [FieldOrder(3)]
+    public int First { get; set; }
+
+    [FieldOrder(3)]
+    public int Second { get; set; }
 }

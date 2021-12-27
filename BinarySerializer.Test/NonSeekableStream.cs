@@ -1,72 +1,68 @@
-﻿using System;
-using System.IO;
+﻿namespace BinarySerialization.Test;
 
-namespace BinarySerialization.Test
+/// <summary>
+///     Makes underlying stream appear as non-seekable.
+/// </summary>
+internal class NonSeekableStream : Stream
 {
-    /// <summary>
-    ///     Makes underlying stream appear as non-seekable.
-    /// </summary>
-    internal class NonSeekableStream : Stream
+    private readonly Stream _stream;
+
+    public NonSeekableStream()
     {
-        private readonly Stream _stream;
+    }
 
-        public NonSeekableStream()
+    public NonSeekableStream(Stream stream)
+    {
+        _stream = stream;
+    }
+
+    public override bool CanRead => _stream.CanRead;
+
+    public override bool CanSeek => false;
+
+    public override bool CanWrite
+    {
+        get
         {
+            if (_stream == null)
+                return true;
+
+            return _stream.CanWrite;
         }
+    }
 
-        public NonSeekableStream(Stream stream)
-        {
-            _stream = stream;
-        }
+    public override long Length
+    {
+        get { throw new NotSupportedException(); }
+    }
 
-        public override bool CanRead => _stream.CanRead;
+    public override long Position
+    {
+        get { throw new NotSupportedException(); }
+        set { throw new NotSupportedException(); }
+    }
 
-        public override bool CanSeek => false;
+    public override void Flush()
+    {
+    }
 
-        public override bool CanWrite
-        {
-            get
-            {
-                if (_stream == null)
-                    return true;
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        throw new NotSupportedException();
+    }
 
-                return _stream.CanWrite;
-            }
-        }
+    public override void SetLength(long value)
+    {
+        throw new NotSupportedException();
+    }
 
-        public override long Length
-        {
-            get { throw new NotSupportedException(); }
-        }
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        return _stream.Read(buffer, offset, count);
+    }
 
-        public override long Position
-        {
-            get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
-        }
-
-        public override void Flush()
-        {
-        }
-
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override void SetLength(long value)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            return _stream.Read(buffer, offset, count);
-        }
-
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            _stream?.Write(buffer, offset, count);
-        }
+    public override void Write(byte[] buffer, int offset, int count)
+    {
+        _stream?.Write(buffer, offset, count);
     }
 }

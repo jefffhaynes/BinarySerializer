@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.Unknown
+﻿namespace BinarySerialization.Test.Unknown;
+
+public class BindingAcrossUnknownBoundaryChildClass
 {
-    public class BindingAcrossUnknownBoundaryChildClass
-    {
-        [FieldLength(nameof(BindingAcrossUnknownBoundaryClass.SubfieldLength), 
-            AncestorLevel = 2, RelativeSourceMode = RelativeSourceMode.FindAncestor)]
-        public string Subfield { get; set; }
-    }
+    [FieldLength(nameof(BindingAcrossUnknownBoundaryClass.SubfieldLength),
+        AncestorLevel = 2, RelativeSourceMode = RelativeSourceMode.FindAncestor)]
+    public string Subfield { get; set; }
 }

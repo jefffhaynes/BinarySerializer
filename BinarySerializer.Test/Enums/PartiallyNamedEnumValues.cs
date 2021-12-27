@@ -1,9 +1,8 @@
-namespace BinarySerialization.Test.Enums
+namespace BinarySerialization.Test.Enums;
+
+public enum PartiallyNamedEnumValues
 {
-    public enum PartiallyNamedEnumValues
-    {
-        [SerializeAsEnum] A,
-        [SerializeAsEnum] B,
-        C
-    }
+    [SerializeAsEnum] A,
+    [SerializeAsEnum] B,
+    C
 }

@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.Misc
-{
-    public class InvalidButIgnoredTypeClass
-    {
-        public int A;
+﻿namespace BinarySerialization.Test.Misc;
 
-        public int B;
-    }
+public class InvalidButIgnoredTypeClass
+{
+    public int A;
+
+    public int B;
 }

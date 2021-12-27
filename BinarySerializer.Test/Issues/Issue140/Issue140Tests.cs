@@ -1,19 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace BinarySerialization.Test.Issues.Issue140;
 
-namespace BinarySerialization.Test.Issues.Issue140
+[TestClass]
+public class Issue140Tests : TestBase
 {
-    [TestClass]
-    public class Issue140Tests : TestBase
+    [TestMethod]
+    public void Test()
     {
-        [TestMethod]
-        public void Test()
+        var expected = new Question
         {
-            var expected = new Question
-            {
-                Domain = new Domain()
-            };
+            Domain = new Domain()
+        };
 
-            Roundtrip(expected);
-        }
+        Roundtrip(expected);
     }
 }

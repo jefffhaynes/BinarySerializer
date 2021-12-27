@@ -1,13 +1,10 @@
-﻿using System;
+﻿namespace BinarySerialization.Test.Issues.Issue21;
 
-namespace BinarySerialization.Test.Issues.Issue21
+public class FailingClass
 {
-    public class FailingClass
-    {
-        [FieldOrder(0)]
-        public byte EncodedDataType { get; set; }
+    [FieldOrder(0)]
+    public byte EncodedDataType { get; set; }
 
-        [Ignore]
-        public Type DataType => typeof (bool);
-    }
+    [Ignore]
+    public Type DataType => typeof(bool);
 }

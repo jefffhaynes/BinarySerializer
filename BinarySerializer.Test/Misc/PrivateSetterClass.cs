@@ -1,12 +1,11 @@
-﻿namespace BinarySerialization.Test.Misc
-{
-    public class PrivateSetterClass
-    {
-        public PrivateSetterClass()
-        {
-            Value = 33;
-        }
+﻿namespace BinarySerialization.Test.Misc;
 
-        public int Value { get; }
+public class PrivateSetterClass
+{
+    public PrivateSetterClass()
+    {
+        Value = 33;
     }
+
+    public int Value { get; }
 }

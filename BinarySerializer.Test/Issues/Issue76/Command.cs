@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Issues.Issue76
+﻿namespace BinarySerialization.Test.Issues.Issue76;
+
+public abstract class Command
 {
-    public abstract class Command
-    {
-    }
 }

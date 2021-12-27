@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.ItemLength
+﻿namespace BinarySerialization.Test.ItemLength;
+
+public class LimitedItemLengthClassInnerClass
 {
-    public class LimitedItemLengthClassInnerClass
-    {
-        public string Value { get; set; }
-    }
+    public string Value { get; set; }
 }

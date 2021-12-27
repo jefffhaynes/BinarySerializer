@@ -1,12 +1,11 @@
-﻿namespace BinarySerialization.Test.Endianness
+﻿namespace BinarySerialization.Test.Endianness;
+
+public class DeferredEndiannessEvaluationClass
 {
-    public class DeferredEndiannessEvaluationClass
-    {
-        [FieldOrder(0)]
-        [FieldEndianness(nameof(Endianness), typeof(EndiannessConverter))]
-        public ushort Value { get; set; }
-        
-        [FieldOrder(1)]
-        public uint Endianness { get; set; }
-    }
+    [FieldOrder(0)]
+    [FieldEndianness(nameof(Endianness), typeof(EndiannessConverter))]
+    public ushort Value { get; set; }
+
+    [FieldOrder(1)]
+    public uint Endianness { get; set; }
 }

@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Misc
+﻿namespace BinarySerialization.Test.Misc;
+
+public class DontFlushTooMuchInternalClass
 {
-    public class DontFlushTooMuchInternalClass
-    {
-        public int Value { get; set; }
-    }
+    public int Value { get; set; }
 }

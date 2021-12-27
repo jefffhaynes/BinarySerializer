@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.Subtype;
 
-namespace BinarySerialization.Test.Subtype
+public class RecoverableMissingSubtypeClass<T>
 {
-    public class RecoverableMissingSubtypeClass<T>
-    {
-        public List<T> Items { get; set; }
-    }
+    public List<T> Items { get; set; }
 }

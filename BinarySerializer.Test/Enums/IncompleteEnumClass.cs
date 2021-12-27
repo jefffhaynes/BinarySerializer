@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Enums
+﻿namespace BinarySerialization.Test.Enums;
+
+public class IncompleteEnumClass
 {
-    public class IncompleteEnumClass
-    {
-        public IncompleteEnumValues Field { get; set; }
-    }
+    public IncompleteEnumValues Field { get; set; }
 }

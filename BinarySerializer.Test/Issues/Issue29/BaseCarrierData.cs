@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Issues.Issue29
+﻿namespace BinarySerialization.Test.Issues.Issue29;
+
+public class BaseCarrierData
 {
-    public class BaseCarrierData
-    {
-    }
 }

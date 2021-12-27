@@ -1,15 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace BinarySerialization.Test.Issues.Issue103;
 
-namespace BinarySerialization.Test.Issues.Issue103
+[TestClass]
+public class Issue103Tests : TestBase
 {
-    [TestClass]
-    public class Issue103Tests : TestBase
+    [TestMethod]
+    public void Test()
     {
-        [TestMethod]
-        public void Test()
-        {
-            var expected = new MultipleFieldsCrc32 {Msgs = "a"};
-            var actual = Roundtrip(expected);
-        }
+        var expected = new MultipleFieldsCrc32 { Msgs = "a" };
+        var actual = Roundtrip(expected);
     }
 }

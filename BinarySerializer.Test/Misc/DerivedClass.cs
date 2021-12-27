@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Misc
+﻿namespace BinarySerialization.Test.Misc;
+
+public class DerivedClass : AbstractClass
 {
-    public class DerivedClass : AbstractClass
-    {
-        public int Value { get; set; }
-    }
+    public int Value { get; set; }
 }

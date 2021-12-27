@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.SerializeAs
+﻿namespace BinarySerialization.Test.SerializeAs;
+
+class PaddingValueClass
 {
-    class PaddingValueClass
-    {
-        [FieldLength(5)]
-        [SerializeAs(PaddingValue = 0x33)]
-        public string Value { get; set; }
-    }
+    [FieldLength(5)]
+    [SerializeAs(PaddingValue = 0x33)]
+    public string Value { get; set; }
 }

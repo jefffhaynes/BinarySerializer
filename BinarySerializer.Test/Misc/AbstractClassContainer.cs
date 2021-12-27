@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Misc
+﻿namespace BinarySerialization.Test.Misc;
+
+public class AbstractClassContainer
 {
-    public class AbstractClassContainer
-    {
-        public AbstractClass Content { get; set; }
-    }
+    public AbstractClass Content { get; set; }
 }

@@ -1,4 +1,3 @@
-namespace BinarySerialization.Test.Issues.Issue55
-{
-    public class Chunk { }
-}
+namespace BinarySerialization.Test.Issues.Issue55;
+
+public class Chunk { }

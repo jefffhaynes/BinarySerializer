@@ -1,9 +1,8 @@
-namespace BinarySerialization.Test.Subtype
+namespace BinarySerialization.Test.Subtype;
+
+public enum SubclassType : byte
 {
-    public enum SubclassType : byte
-    {
-        A,
-        B,
-        C
-    }
+    A,
+    B,
+    C
 }

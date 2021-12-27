@@ -1,19 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace BinarySerialization.Test.Misc;
 
-namespace BinarySerialization.Test.Misc
+[TestClass]
+public class MiscTests : TestBase
 {
-    [TestClass]
-    public class MiscTests : TestBase
+    [TestMethod]
+    public async void DontFlushTooMuchTest()
     {
-        [TestMethod]
-        public async void DontFlushTooMuchTest()
-        {
-            var serializer = new BinarySerializer();
-            var expected = new DontFlushTooMuchClass();
-            var stream = new UnflushableStream();
-            
-            serializer.Serialize(stream, expected);
-            await serializer.SerializeAsync(stream, expected);
-        }
+        var serializer = new BinarySerializer();
+        var expected = new DontFlushTooMuchClass();
+        var stream = new UnflushableStream();
+
+        serializer.Serialize(stream, expected);
+        await serializer.SerializeAsync(stream, expected);
     }
 }

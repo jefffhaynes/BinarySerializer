@@ -1,20 +1,17 @@
-﻿using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace BinarySerialization.Test.Issues.Issue12;
 
-namespace BinarySerialization.Test.Issues.Issue12
+[TestClass]
+public class Issue12Tests : TestBase
 {
-    [TestClass]
-    public class Issue12Tests : TestBase
+    [TestMethod]
+    public void Roundtrip12()
     {
-        [TestMethod]
-        public void Roundtrip12()
+        var expected = new ChunkContainer
         {
-            var expected = new ChunkContainer
+            Chunk = new FormChunk
             {
-                Chunk = new FormChunk
-                {
-                    TypeId = "PTCH",
-                    Chunks = new List<ChunkContainer>
+                TypeId = "PTCH",
+                Chunks = new List<ChunkContainer>
                     {
                         new ChunkContainer
                         {
@@ -29,11 +26,11 @@ namespace BinarySerialization.Test.Issues.Issue12
                             }
                         }
                     }
-                }
-            };
+            }
+        };
 
-            Roundtrip(expected, new[]
-            {
+        Roundtrip(expected, new[]
+        {
                 (byte) 'F', (byte) 'O', (byte) 'R', (byte) 'M',
                 (byte) 0, (byte) 0, (byte) 0, (byte) 44,
                 (byte) 'P', (byte) 'T', (byte) 'C', (byte) 'H',
@@ -48,6 +45,5 @@ namespace BinarySerialization.Test.Issues.Issue12
                 (byte) 0, (byte) 0, (byte) 0, (byte) 6,
                 (byte) 'w', (byte) 'o', (byte) 'r', (byte) 'l', (byte) 'd', (byte) 's'
             });
-        }
     }
 }

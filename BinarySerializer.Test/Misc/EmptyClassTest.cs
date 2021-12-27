@@ -1,14 +1,11 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+namespace BinarySerialization.Test.Misc;
 
-namespace BinarySerialization.Test.Misc
+[TestClass]
+public class EmptyClassTest : TestBase
 {
-    [TestClass]
-    public class EmptyClassTest : TestBase
+    [TestMethod]
+    public void RoundtripEmptyClassTest()
     {
-        [TestMethod]
-        public void RoundtripEmptyClassTest()
-        {
-            Roundtrip(new EmptyClass());
-        }
+        Roundtrip(new EmptyClass());
     }
 }

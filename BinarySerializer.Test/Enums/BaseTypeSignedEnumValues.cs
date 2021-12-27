@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Enums
+﻿namespace BinarySerialization.Test.Enums;
+
+public enum BaseTypeSignedEnumValues : short
 {
-    public enum BaseTypeSignedEnumValues : short
-    {
-        PositiveValue = 1,
-        NegativeValue = unchecked ((short)0xFFFF)
-    }
+    PositiveValue = 1,
+    NegativeValue = unchecked((short)0xFFFF)
 }

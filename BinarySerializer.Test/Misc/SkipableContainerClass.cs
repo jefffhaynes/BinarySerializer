@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Misc
+﻿namespace BinarySerialization.Test.Misc;
+
+public class SkipableContainerClass
 {
-    public class SkipableContainerClass
-    {
-        public SkipableClass Skipable { get; set; }
-    }
+    public SkipableClass Skipable { get; set; }
 }

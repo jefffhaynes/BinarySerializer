@@ -1,8 +1,5 @@
-﻿using System;
+﻿namespace BinarySerialization.Test.Custom;
 
-namespace BinarySerialization.Test.Custom
+public class CustomAttribute : Attribute
 {
-    public class CustomAttribute : Attribute
-    {
-    }
 }

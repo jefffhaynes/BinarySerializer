@@ -1,18 +1,15 @@
-﻿using System;
+﻿namespace BinarySerialization.Test.Issues.Issue12;
 
-namespace BinarySerialization.Test.Issues.Issue12
+public class IsEvenConverter : IValueConverter
 {
-    public class IsEvenConverter : IValueConverter
+    public object Convert(object value, object parameter, BinarySerializationContext context)
     {
-        public object Convert(object value, object parameter, BinarySerializationContext context)
-        {
-            var intValue = System.Convert.ToInt32(value);
-            return intValue%2 == 0;
-        }
+        var intValue = System.Convert.ToInt32(value);
+        return intValue % 2 == 0;
+    }
 
-        public object ConvertBack(object value, object parameter, BinarySerializationContext context)
-        {
-            throw new NotImplementedException();
-        }
+    public object ConvertBack(object value, object parameter, BinarySerializationContext context)
+    {
+        throw new NotImplementedException();
     }
 }

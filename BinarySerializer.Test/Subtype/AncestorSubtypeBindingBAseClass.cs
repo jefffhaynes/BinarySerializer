@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Subtype
+﻿namespace BinarySerialization.Test.Subtype;
+
+public class AncestorSubtypeBindingBaseClass
 {
-    public class AncestorSubtypeBindingBaseClass
-    {
-    }
 }

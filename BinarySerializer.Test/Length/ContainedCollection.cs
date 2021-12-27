@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.Length;
 
-namespace BinarySerialization.Test.Length
+public class ContainedCollection
 {
-    public class ContainedCollection
-    {
-        public List<string> Collection { get; set; }
-    }
+    public List<string> Collection { get; set; }
 }

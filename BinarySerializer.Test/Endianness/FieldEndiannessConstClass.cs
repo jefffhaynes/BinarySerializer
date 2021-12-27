@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Endianness
+﻿namespace BinarySerialization.Test.Endianness;
+
+public class FieldEndiannessConstClass
 {
-    public class FieldEndiannessConstClass
-    {
-        [FieldEndianness(BinarySerialization.Endianness.Big)]
-        public int Value { get; set; }
-    }
+    [FieldEndianness(BinarySerialization.Endianness.Big)]
+    public int Value { get; set; }
 }

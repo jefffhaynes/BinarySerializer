@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.SerializeAs
+﻿namespace BinarySerialization.Test.SerializeAs;
+
+public class LengthPrefixedStringClass
 {
-    public class LengthPrefixedStringClass
-    {
-        [SerializeAs(SerializedType.LengthPrefixedString)]
-        public string Value { get; set; }
-    }
+    [SerializeAs(SerializedType.LengthPrefixedString)]
+    public string Value { get; set; }
 }

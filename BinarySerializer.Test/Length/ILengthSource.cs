@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Length
+﻿namespace BinarySerialization.Test.Length;
+
+public interface ILengthSource
 {
-    public interface ILengthSource
-    {
-        int Length { get; set; }
-    }
+    int Length { get; set; }
 }

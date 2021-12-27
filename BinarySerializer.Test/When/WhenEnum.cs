@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.When
+﻿namespace BinarySerialization.Test.When;
+
+public enum WhenEnum
 {
-    public enum WhenEnum
-    {
-        WhenOne = 1,
-        WhenTwo = 2
-    }
+    WhenOne = 1,
+    WhenTwo = 2
 }

@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.UntilItem
+﻿namespace BinarySerialization.Test.UntilItem;
+
+public enum UntilItemEnum : byte
 {
-    public enum UntilItemEnum : byte
-    {
-        Normal = 0,
-        End = 1,
-        Header = 2,
-    }
+    Normal = 0,
+    End = 1,
+    Header = 2,
 }

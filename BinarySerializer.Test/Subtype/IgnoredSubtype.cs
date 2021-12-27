@@ -1,11 +1,10 @@
-﻿namespace BinarySerialization.Test.Subtype
-{
-    public class IgnoredSubtype : Superclass
-    {
-        [Ignore]
-        public int A { get; set; }
+﻿namespace BinarySerialization.Test.Subtype;
 
-        [Ignore]
-        public int B { get; set; }
-    }
+public class IgnoredSubtype : Superclass
+{
+    [Ignore]
+    public int A { get; set; }
+
+    [Ignore]
+    public int B { get; set; }
 }

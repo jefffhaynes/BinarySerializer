@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.UntilItem;
 
-namespace BinarySerialization.Test.UntilItem
+public class Section
 {
-    public class Section
-    {
-        [FieldOrder(0)]
-        public UntilItemSimpleClass Header { get; set; }
+    [FieldOrder(0)]
+    public UntilItemSimpleClass Header { get; set; }
 
-        [FieldOrder(1)]
-        [ItemSerializeUntil(nameof(UntilItemSimpleClass.Type), UntilItemEnum.Header, LastItemMode = LastItemMode.Defer)]
-        public List<UntilItemSimpleClass> Items { get; set; } 
-    }
+    [FieldOrder(1)]
+    [ItemSerializeUntil(nameof(UntilItemSimpleClass.Type), UntilItemEnum.Header, LastItemMode = LastItemMode.Defer)]
+    public List<UntilItemSimpleClass> Items { get; set; }
 }

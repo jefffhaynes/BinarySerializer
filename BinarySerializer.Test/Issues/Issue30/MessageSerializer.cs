@@ -1,31 +1,27 @@
-﻿using System;
-using System.IO;
+﻿namespace BinarySerialization.Test.Issues.Issue30;
 
-namespace BinarySerialization.Test.Issues.Issue30
+public class MessageSerializer
 {
-    public class MessageSerializer
+    private readonly BinarySerializer _binSerializer;
+
+    public MessageSerializer()
     {
-        private readonly BinarySerializer _binSerializer;
+        _binSerializer = new BinarySerializer { Endianness = BinarySerialization.Endianness.Big };
+    }
 
-        public MessageSerializer()
+    public byte[] BinarySerializeMessage<T>(IMessage<T> message) where T : class, IPayload
+    {
+        message.ComplementHeader();
+
+        using (var memoryStream = new MemoryStream())
         {
-            _binSerializer = new BinarySerializer {Endianness = BinarySerialization.Endianness.Big};
+            _binSerializer.Serialize(memoryStream, message);
+            return memoryStream.ToArray();
         }
+    }
 
-        public byte[] BinarySerializeMessage<T>(IMessage<T> message) where T : class, IPayload
-        {
-            message.ComplementHeader();
-
-            using (var memoryStream = new MemoryStream())
-            {
-                _binSerializer.Serialize(memoryStream, message);
-                return memoryStream.ToArray();
-            }
-        }
-
-        public object BinaryDeserializeMessage(byte[] binBytes, Type type)
-        {
-            return _binSerializer.Deserialize(binBytes, type);
-        }
+    public object BinaryDeserializeMessage(byte[] binBytes, Type type)
+    {
+        return _binSerializer.Deserialize(binBytes, type);
     }
 }

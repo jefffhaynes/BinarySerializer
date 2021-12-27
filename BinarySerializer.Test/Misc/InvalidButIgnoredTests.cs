@@ -1,17 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿namespace BinarySerialization.Test.Misc;
 
-namespace BinarySerialization.Test.Misc
+[TestClass]
+public class InvalidButIgnoredTests : TestBase
 {
-    [TestClass]
-    public class InvalidButIgnoredTests : TestBase
+    [TestMethod]
+    public void InvalidButIgnoredTest()
     {
-        [TestMethod]
-        public void InvalidButIgnoredTest()
+        Roundtrip(new InvalidButIgnoredContainerClass
         {
-            Roundtrip(new InvalidButIgnoredContainerClass
-            {
-                InvalidButIgnored = new InvalidButIgnoredTypeClass()
-            });
-        }
+            InvalidButIgnored = new InvalidButIgnoredTypeClass()
+        });
     }
 }

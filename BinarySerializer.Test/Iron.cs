@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test
+﻿namespace BinarySerialization.Test;
+
+public class Iron : Chemical
 {
-    public class Iron : Chemical
+    public Iron() : base("Fe")
     {
-        public Iron() : base("Fe")
-        {
-        }
     }
 }

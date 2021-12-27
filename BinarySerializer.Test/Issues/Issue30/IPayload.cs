@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Issues.Issue30
+﻿namespace BinarySerialization.Test.Issues.Issue30;
+
+public interface IPayload
 {
-    public interface IPayload
-    {
-        PayloadType GetPayloadType();
-        uint GetPayloadLength();
-    }
+    PayloadType GetPayloadType();
+    uint GetPayloadLength();
 }

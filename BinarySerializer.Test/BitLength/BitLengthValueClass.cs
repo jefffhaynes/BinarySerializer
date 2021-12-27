@@ -1,19 +1,18 @@
-﻿namespace BinarySerialization.Test.BitLength
+﻿namespace BinarySerialization.Test.BitLength;
+
+public class BitLengthValueClass
 {
-    public class BitLengthValueClass
-    {
-        [FieldOrder(0)]
-        [FieldCrc16(nameof(Crc))]
-        public InternalBitLengthValueClass Value { get; set; }
+    [FieldOrder(0)]
+    [FieldCrc16(nameof(Crc))]
+    public InternalBitLengthValueClass Value { get; set; }
 
-        [FieldOrder(1)]
-        public ushort Crc { get; set; }
+    [FieldOrder(1)]
+    public ushort Crc { get; set; }
 
-        [FieldOrder(2)]
-        [FieldCrc16(nameof(Crc2))]
-        public byte Value2 { get; set; }
+    [FieldOrder(2)]
+    [FieldCrc16(nameof(Crc2))]
+    public byte Value2 { get; set; }
 
-        [FieldOrder(3)]
-        public ushort Crc2 { get; set; }
-    }
+    [FieldOrder(3)]
+    public ushort Crc2 { get; set; }
 }

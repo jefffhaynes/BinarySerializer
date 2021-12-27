@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test
+﻿namespace BinarySerialization.Test;
+
+public class CalciumCarbonate : Chemical
 {
-    public class CalciumCarbonate : Chemical
+    public CalciumCarbonate() : base("CaCO3")
     {
-        public CalciumCarbonate() : base("CaCO3")
-        {
-        }
     }
 }

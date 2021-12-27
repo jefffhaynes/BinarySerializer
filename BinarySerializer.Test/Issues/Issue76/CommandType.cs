@@ -1,15 +1,14 @@
-﻿namespace BinarySerialization.Test.Issues.Issue76
+﻿namespace BinarySerialization.Test.Issues.Issue76;
+
+public enum CommandType
 {
-    public enum CommandType
-    {
-        SetAccessMode,
+    SetAccessMode,
 
-        [SerializeAsEnum("mLMPsetscancfg")]
-        SetScanConfig,
+    [SerializeAsEnum("mLMPsetscancfg")]
+    SetScanConfig,
 
-        [SerializeAsEnum("LMDscandatacfg")]
-        ScanDataConfig
+    [SerializeAsEnum("LMDscandatacfg")]
+    ScanDataConfig
 
-        // etc
-    }
+    // etc
 }

@@ -1,6 +1,5 @@
-namespace BinarySerialization.Test.Subtype
+namespace BinarySerialization.Test.Subtype;
+
+public class UnspecifiedSubclass : SubclassB
 {
-    public class UnspecifiedSubclass : SubclassB
-    {
-    }
 }

@@ -1,9 +1,8 @@
-﻿namespace BinarySerialization.Test.Order
-{
-    public class MutlipleMembersNoOrderClass
-    {
-        public int First { get; set; }
+﻿namespace BinarySerialization.Test.Order;
 
-        public int Second { get; set; }
-    }
+public class MutlipleMembersNoOrderClass
+{
+    public int First { get; set; }
+
+    public int Second { get; set; }
 }

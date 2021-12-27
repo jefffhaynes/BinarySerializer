@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Issues.Issue98
+﻿namespace BinarySerialization.Test.Issues.Issue98;
+
+public class AbstractOrder
 {
-    public class AbstractOrder
-    {
-        [SerializeAs(SerializedType.UInt2)]
-        public virtual string RequestId { get; set; }
-    }
+    [SerializeAs(SerializedType.UInt2)]
+    public virtual string RequestId { get; set; }
 }

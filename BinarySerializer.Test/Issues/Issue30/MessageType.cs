@@ -1,8 +1,7 @@
-﻿namespace BinarySerialization.Test.Issues.Issue30
+﻿namespace BinarySerialization.Test.Issues.Issue30;
+
+public enum MessageType : ushort
 {
-    public enum MessageType : ushort
-    {
-        Nok = 0,
-        Ack = 1
-    }
+    Nok = 0,
+    Ack = 1
 }

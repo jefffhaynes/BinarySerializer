@@ -1,15 +1,12 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.ItemSubtype;
 
-namespace BinarySerialization.Test.ItemSubtype
+public class ItemSubtypeFactoryWithDefaultClass
 {
-    public class ItemSubtypeFactoryWithDefaultClass
-    {
-        [FieldOrder(0)]
-        public byte Key { get; set; }
+    [FieldOrder(0)]
+    public byte Key { get; set; }
 
-        [FieldOrder(1)]
-        [ItemSubtypeFactory(nameof(Key), typeof(ItemSubtypeFactory))]
-        [ItemSubtypeDefault(typeof(DefaultItemType))]
-        public List<IItemSubtype> Items { get; set; }
-    }
+    [FieldOrder(1)]
+    [ItemSubtypeFactory(nameof(Key), typeof(ItemSubtypeFactory))]
+    [ItemSubtypeDefault(typeof(DefaultItemType))]
+    public List<IItemSubtype> Items { get; set; }
 }

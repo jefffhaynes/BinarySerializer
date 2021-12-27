@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.UntilItem;
 
-namespace BinarySerialization.Test.UntilItem
+public class UntilItemContainerDeferred
 {
-    public class UntilItemContainerDeferred
-    {
-        public List<Section> Sections { get; set; }
-    }
+    public List<Section> Sections { get; set; }
 }

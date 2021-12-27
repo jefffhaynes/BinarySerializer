@@ -1,7 +1,6 @@
-﻿namespace BinarySerialization.Test.Issues.Issue76
+﻿namespace BinarySerialization.Test.Issues.Issue76;
+
+public enum UserLevel : byte
 {
-    public enum UserLevel : byte
-    {
-        AuthorizedClient = 0x3
-    }
+    AuthorizedClient = 0x3
 }

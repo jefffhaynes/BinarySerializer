@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test.Misc;
 
-namespace BinarySerialization.Test.Misc
+public class DictionaryMemberClass
 {
-    public class DictionaryMemberClass
+    public DictionaryMemberClass()
     {
-        public DictionaryMemberClass()
-        {
-            Field = new Dictionary<string, string>();
-        }
-
-        public Dictionary<string, string> Field { get; set; }
+        Field = new Dictionary<string, string>();
     }
+
+    public Dictionary<string, string> Field { get; set; }
 }

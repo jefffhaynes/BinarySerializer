@@ -1,6 +1,5 @@
-﻿namespace BinarySerialization.Test.Issues.Issue124
+﻿namespace BinarySerialization.Test.Issues.Issue124;
+
+public class PacketBody
 {
-    public class PacketBody
-    {
-    }
 }

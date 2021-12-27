@@ -1,9 +1,8 @@
-namespace BinarySerialization.Test.Enums
+namespace BinarySerialization.Test.Enums;
+
+public enum BaseTypeEnumValues : byte
 {
-    public enum BaseTypeEnumValues : byte
-    {
-        A,
-        B,
-        C
-    }
+    A,
+    B,
+    C
 }

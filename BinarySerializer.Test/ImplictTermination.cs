@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace BinarySerialization.Test;
 
-namespace BinarySerialization.Test
+public class ImplictTermination
 {
-    public class ImplictTermination
-    {
-        public List<byte> Data { get; set; }
-    }
+    public List<byte> Data { get; set; }
 }
