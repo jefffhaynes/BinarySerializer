@@ -579,7 +579,7 @@ public class FileSpec
     [FieldOffset(4, SeekOrigin.Current), false] // Skip unused 4 bytes first, same as declaring uint Padding
     public uint FileChecksum { get; set; }
 }
-````
+```
 
 ### SubtypeAttribute ###
 
