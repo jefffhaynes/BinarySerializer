@@ -84,6 +84,7 @@ There are a number of attributes that can be used to control the serialization o
 * [FieldChecksum](#fieldchecksumattribute)
 * [FieldCrc16](#fieldcrc16attribute)
 * [FieldCrc32](#fieldcrc32attribute)
+* [FieldPosition](#fieldpositionattribute)
 * [FieldOffset](#fieldoffsetattribute)
 * [Subtype](#subtypeattribute)
 * [SubtypeFactory](#subtypefactoryattribute)
@@ -509,9 +510,82 @@ public class Packet
 
 The FieldCrc32 is identical to the FieldCrc16 with the difference that it operates on an unsigned 32-bit field and with appropriate default algorithm values.
 
+### FieldPositionAttribute ###
+
+The FieldPosition attribute can be used to jump to an address or offset in the current stream. 
+It uses the `stream.Seek()` method and it will keep it position and advance on the stream, 
+unless you state the otherwise with `Rewind=true` which will reset position to where it was before the jump.
+
+```c#
+public class FileSpec
+{
+    [FieldOrder(0)]
+    [FieldLength(12)]
+    [SerializeAs(SerializedType.TerminatedString)]
+    public string FileVersion { get; set; } = "FileMarking";
+
+    [FieldOrder(1)]
+    public uint FileVersion { get; set; }
+
+    [FieldOrder(2)]
+    public uint HeaderAddress { get; set; }
+
+    [FieldOrder(3)]
+    public uint SettingsAddress { get; set; }
+
+    [FieldOrder(4)]
+    public uint PreviewAddress { get; set; }
+
+    [FieldOrder(5)]
+    public uint LayersAddress { get; set; }
+
+    [FieldOrder(6)]
+    [FieldPosition(nameof(HeaderAddress))]
+    public uint HeaderField1 { get; set; }
+
+    [FieldOrder(7)]
+    public uint HeaderField2 { get; set; }
+
+    [FieldOrder(8)]
+    public uint HeaderField3 { get; set; }
+
+    [FieldOrder(9)]
+    [FieldPosition(nameof(SettingsAddress))]
+    public uint SettingsField1 { get; set; }
+
+    [FieldOrder(10)]
+    public uint SettingsField2 { get; set; }
+
+    [FieldOrder(11)]
+    [FieldPosition(nameof(PreviewAddress))]
+    public uint PreviewSize { get; set; }
+
+    [FieldOrder(12)]
+    [FieldCount(nameof(PreviewSize))]
+    public byte[] PreviewData {get; set; }
+
+    [FieldOrder(13)]
+    [FieldPosition(nameof(LayersAddress))]
+    public uint LayerCount { get; set; }
+
+    [FieldOrder(14)]
+    [FieldCount(nameof(LayerCount))]
+    public Layer[] Layers { get; set; }
+
+    [FieldOrder(15)]
+    [FieldPosition(4, SeekOrigin.Current)] // Skip unused 4 bytes first, same as declaring uint Padding
+    public uint FileChecksum { get; set; }
+}
+````
+
+**Note:** `SeekOrigin.End` is highly inadvisable since you don't have the stream total size while on serialization.   
+If you want to use the `SeekOrigin.End` make sure it's only to deserialize a object or else you will need to set it correct size first with `stream.SetLength()`
+
 ### FieldOffsetAttribute ###
 
 The FieldOffset attribute should be used sparingly but can be used if an absolute offset is required.  In most cases implicit offset (e.g. just define the structure) is preferable.  After moving to the offset the serializer will reset to the origin so subsequent fields must manage their own offsets.  This attribute is not supported when serializing to non-seekable streams.
+
+**Note:** This attribute is obsolete, use `[FieldPosition(offset, true)]` instead.
 
 ### SubtypeAttribute ###
 

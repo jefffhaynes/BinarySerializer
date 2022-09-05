@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -141,6 +142,13 @@ namespace BinarySerialization.Graph.TypeGraph
                 Order = fieldOrderAttribute.Order;
             }
 
+            var positionAttribute = attributes.OfType<FieldPositionAttribute>().SingleOrDefault();
+            if (positionAttribute != null)
+            {
+                PositionSeekOrigin = positionAttribute.SeekOrigin;
+                PositionRewind = positionAttribute.Rewind;
+            }
+
             var serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
             if (serializeAsAttribute != null)
             {
@@ -176,6 +184,7 @@ namespace BinarySerialization.Graph.TypeGraph
             FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
             FieldBitLengthBindings = GetBindings<FieldBitLengthAttribute>(attributes);
             FieldCountBindings = GetBindings<FieldCountAttribute>(attributes);
+            FieldPositionBindings = GetBindings<FieldPositionAttribute>(attributes);
             FieldOffsetBindings = GetBindings<FieldOffsetAttribute>(attributes);
             FieldScaleBindings = GetBindings<FieldScaleAttribute>(attributes);
             FieldEndiannessBindings = GetBindings<FieldEndiannessAttribute>(attributes);
@@ -322,6 +331,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public BindingCollection FieldBitLengthBindings { get; }
         public BindingCollection ItemLengthBindings { get; }
         public BindingCollection FieldCountBindings { get; }
+        public BindingCollection FieldPositionBindings { get; }
         public BindingCollection FieldOffsetBindings { get; }
         public BindingCollection FieldScaleBindings { get; }
         public BindingCollection LeftFieldAlignmentBindings { get; }
@@ -354,6 +364,9 @@ namespace BinarySerialization.Graph.TypeGraph
         public bool IsIgnored { get; }
 
         public int? Order { get; }
+
+        public SeekOrigin PositionSeekOrigin { get; } = SeekOrigin.Begin;
+        public bool PositionRewind { get; }
 
         public bool AreStringsTerminated { get; }
 

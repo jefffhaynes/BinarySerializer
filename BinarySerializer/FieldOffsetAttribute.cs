@@ -5,6 +5,7 @@ namespace BinarySerialization
     /// <summary>
     ///     Specifies an absolute offset of a member in the stream.
     /// </summary>
+    [Obsolete("Use FieldPosition with Rewind = true")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class FieldOffsetAttribute : FieldBindingBaseAttribute, IConstAttribute
     {

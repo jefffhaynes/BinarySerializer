@@ -197,9 +197,26 @@ namespace BinarySerialization.Graph.ValueGraph
                     AlignLeft(stream, true);
                 }
 
+                var positionOffset = GetFieldPosition();
                 var offset = GetFieldOffset();
-
-                if (offset != null)
+                if (positionOffset != null)
+                {
+                    if (TypeNode.PositionRewind)
+                    {
+                        using (new StreamResetter(stream))
+                        {
+                            stream.Seek(positionOffset.Value, TypeNode.PositionSeekOrigin);
+                            SerializeInternal(stream, GetConstFieldLength, eventShuttle, measuring);
+                        }
+                    }
+                    else
+                    {
+                        stream.Seek(positionOffset.Value, TypeNode.PositionSeekOrigin);
+                        SerializeInternal(stream, GetConstFieldLength, eventShuttle, measuring);
+                    }
+                    
+                }
+                else if (offset != null)
                 {
                     using (new StreamResetter(stream))
                     {
@@ -211,6 +228,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     SerializeInternal(stream, GetConstFieldLength, eventShuttle, measuring);
                 }
+
 
                 if (align)
                 {
@@ -251,9 +269,27 @@ namespace BinarySerialization.Graph.ValueGraph
                     AlignLeft(stream, true);
                 }
 
+                var positionOffset = GetFieldPosition();
                 var offset = GetFieldOffset();
-
-                if (offset != null)
+                if (positionOffset != null)
+                {
+                    if (TypeNode.PositionRewind)
+                    {
+                        using (new StreamResetter(stream))
+                        {
+                            stream.Seek(positionOffset.Value, TypeNode.PositionSeekOrigin);
+                            await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken)
+                                .ConfigureAwait(false);
+                        }
+                    }
+                    else
+                    {
+                        stream.Seek(positionOffset.Value, TypeNode.PositionSeekOrigin);
+                        await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                }
+                else if (offset != null)
                 {
                     using (new StreamResetter(stream))
                     {
@@ -267,6 +303,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken)
                         .ConfigureAwait(false);
                 }
+
 
                 if (align)
                 {
@@ -313,10 +350,28 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 AlignLeft(stream);
 
+                var positionOffset = GetFieldPosition();
                 var offset = GetFieldOffset();
-
-                if (offset != null)
+                if (positionOffset != null)
                 {
+                    if (TypeNode.PositionRewind)
+                    {
+                        using (new StreamResetter(stream))
+                        {
+                            stream.Seek(positionOffset.Value, TypeNode.PositionSeekOrigin);
+                            DeserializeInternal(stream, GetFieldLength, eventShuttle);
+                        }
+                    }
+                    else
+                    {
+                        stream.Seek(positionOffset.Value, TypeNode.PositionSeekOrigin);
+                        DeserializeInternal(stream, GetFieldLength, eventShuttle);
+                    }
+
+                }
+                else if (offset != null)
+                {
+
                     using (new StreamResetter(stream))
                     {
                         stream.Position = offset.Value;
@@ -364,9 +419,28 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 AlignLeft(stream);
 
+                var positionOffset = GetFieldPosition();
                 var offset = GetFieldOffset();
+                if (positionOffset != null)
+                {
+                    if (TypeNode.PositionRewind)
+                    {
+                        using (new StreamResetter(stream))
+                        {
+                            stream.Seek(positionOffset.Value, TypeNode.PositionSeekOrigin);
+                            await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken)
+                                .ConfigureAwait(false);
+                        }
+                    }
+                    else
+                    {
+                        stream.Seek(positionOffset.Value, TypeNode.PositionSeekOrigin);
+                        await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
 
-                if (offset != null)
+                }
+                else if (offset != null)
                 {
                     using (new StreamResetter(stream))
                     {
@@ -523,6 +597,11 @@ namespace BinarySerialization.Graph.ValueGraph
         protected FieldLength GetConstFieldItemLength()
         {
             return GetConstNumericValue(TypeNode.ItemLengthBindings);
+        }
+
+        protected long? GetFieldPosition()
+        {
+            return GetNumericValue(TypeNode.FieldPositionBindings);
         }
 
         protected long? GetFieldOffset()
