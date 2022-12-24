@@ -4,7 +4,7 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Bug fix for end-of-stream during collection deserialization</PackageReleaseNotes>
+    <PackageReleaseNotes>Configuration for end of stream behavior</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/jefffhaynes/BinarySerializer</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
