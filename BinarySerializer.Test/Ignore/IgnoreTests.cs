@@ -24,5 +24,14 @@ namespace BinarySerialization.Test.Ignore
 
             Assert.AreEqual(expected.Value, actual.Value);
         }
+
+        [TestMethod]
+        public void IgnoreMemberTest()
+        {
+            var expected = new IgnoreMemberClass { IgnoreMe = "ignore me" };
+            var actual = Roundtrip(expected);
+
+            Assert.IsNull(actual.IgnoreMe);
+        }
     }
 }

@@ -126,8 +126,9 @@ namespace BinarySerialization.Graph.TypeGraph
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
             var attributes = memberInfo.GetCustomAttributes(true).ToList();
+            var parentAttributeNames = parentType.GetTypeInfo().GetCustomAttributes<IgnoreMemberAttribute>().Select(attribute => attribute.Name);
 
-            IsIgnored = attributes.OfType<IgnoreAttribute>().Any();
+            IsIgnored = parentAttributeNames.Any(name => name == Name) || attributes.OfType<IgnoreAttribute>().Any();
 
             /* Don't go any further if we're ignoring this. */
             if (IsIgnored)

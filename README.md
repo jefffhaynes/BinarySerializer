@@ -72,6 +72,7 @@ Attributes
 There are a number of attributes that can be used to control the serialization of fields.
 
 * [Ignore](#ignoreattribute)
+* [IgnoreMember](#ignorememberattribute)
 * [FieldOrder](#fieldorderattribute)
 * [FieldLength](#fieldlengthattribute)
 * [FieldBitLength](#fieldbitlengthattribute)
@@ -102,6 +103,10 @@ There are a number of attributes that can be used to control the serialization o
 ### IgnoreAttribute ###
 
 Any field or property with an Ignore attribute will not be included in serialization or deserialization.  These fields can still be used in bindings, however properties will be treated as normal fields.  If some calculation on a binding source is required, this can be accomplished with a binding converter.
+
+### IgnoreMemberAttribute ###
+
+Similar to ```IgnoreAttribute``` but can be used on containing type definitions to reference members by name.
 
 ### FieldOrderAttribute ###
 
@@ -235,6 +240,8 @@ If age is null during serialization, the framework will update EntryLength to be
 ### FieldBitLengthAttribute ###
 
 The FieldBitLength attribute is similar to the length attribute but can be used to specify field lengths in terms of bits.  Note that if the bit values do not add to a byte-aligned length, remaining bits will be dropped from the final serialized stream.  There are also some limitations on non-byte-aligned field lengths when used in combination with other attributes.
+
+**WARNING: There are known issues when using bit fields in big endian mode.  Results are undefined.**
 
 ```c#
 public class Header
