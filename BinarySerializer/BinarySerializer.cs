@@ -69,6 +69,11 @@ namespace BinarySerialization
         public Encoding Encoding { get; set; }
 
         /// <summary>
+        /// Configuration options to control serialization and deserialization.
+        /// </summary>
+        public SerializationOptions Options { get; set; }
+
+        /// <summary>
         ///     Occurs after a member has been serialized.
         /// </summary>
         public event EventHandler<MemberSerializedEventArgs> MemberSerialized
@@ -219,7 +224,7 @@ namespace BinarySerialization
         public object Deserialize(Stream stream, Type type, object context = null)
         {
             var serializer = CreateSerializer(type, context);
-            serializer.Deserialize(new BoundedStream(stream, "root"), _eventShuttle);
+            serializer.Deserialize(new BoundedStream(stream, "root"), Options, _eventShuttle);
 
             return serializer.Value;
         }
@@ -236,7 +241,7 @@ namespace BinarySerialization
             CancellationToken cancellationToken)
         {
             var serializer = CreateSerializer(type, context);
-            await serializer.DeserializeAsync(new BoundedStream(stream, "root"), _eventShuttle, cancellationToken)
+            await serializer.DeserializeAsync(new BoundedStream(stream, "root"), Options, _eventShuttle, cancellationToken)
                 .ConfigureAwait(false);
 
             return serializer.Value;

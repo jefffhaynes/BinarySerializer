@@ -24,7 +24,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return value;
         }
 
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             var enumInfo = GetEnumInfo();
             Deserialize(stream, enumInfo.SerializedType, enumInfo.EnumValueLength);
@@ -38,7 +38,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return SerializeAsync(stream, value, enumInfo.SerializedType, enumInfo.EnumValueLength, cancellationToken);
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             var enumInfo = GetEnumInfo();

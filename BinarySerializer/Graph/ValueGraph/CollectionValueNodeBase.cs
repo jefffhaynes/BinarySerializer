@@ -22,14 +22,14 @@ namespace BinarySerialization.Graph.ValueGraph
             return typeNode.TerminationValue;
         }
 
-        protected static bool IsTerminated(BoundedStream stream, ValueNode terminationChild, object terminationValue,
+        protected static bool IsTerminated(BoundedStream stream, ValueNode terminationChild, object terminationValue, SerializationOptions options,
             EventShuttle eventShuttle)
         {
             if (terminationChild != null)
             {
                 using (var streamResetter = new StreamResetter(stream))
                 {
-                    terminationChild.Deserialize(stream, eventShuttle);
+                    terminationChild.Deserialize(stream, options, eventShuttle);
 
                     if (terminationChild.Value.Equals(terminationValue))
                     {

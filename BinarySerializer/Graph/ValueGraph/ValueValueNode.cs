@@ -592,7 +592,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return SerializeAsync(stream, BoundValue, TypeNode.GetSerializedType(), null, cancellationToken);
         }
 
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             if (EndOfStream(stream))
             {
@@ -607,7 +607,7 @@ namespace BinarySerialization.Graph.ValueGraph
             Deserialize(stream, TypeNode.GetSerializedType());
         }
 
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal override Task DeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             if (EndOfStream(stream))

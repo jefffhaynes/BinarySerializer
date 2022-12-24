@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.ReaderWriterTests
@@ -9,7 +10,7 @@ namespace BinarySerialization.Test.ReaderWriterTests
     {
         [TestMethod]
         // ReSharper disable once InconsistentNaming
-        public async void ReadCharAsyncASCIITest()
+        public async Task ReadCharAsyncASCIITest()
         {
             var encoding = System.Text.Encoding.ASCII;
 
@@ -24,7 +25,7 @@ namespace BinarySerialization.Test.ReaderWriterTests
 
         [TestMethod]
         // ReSharper disable once InconsistentNaming
-        public async void ReadCharAsyncUTF8Test()
+        public async Task ReadCharAsyncUTF8Test()
         {
             var encoding = System.Text.Encoding.UTF8;
 
@@ -39,7 +40,7 @@ namespace BinarySerialization.Test.ReaderWriterTests
 
         [TestMethod]
         // ReSharper disable once InconsistentNaming
-        public async void ReadCharAsyncUTF16Test()
+        public async Task ReadCharAsyncUTF16Test()
         {
             var encoding = System.Text.Encoding.Unicode;
 
