@@ -64,14 +64,10 @@ namespace BinarySerialization.Graph.ValueGraph
                     {
                         child.Value = child.TypeNode.ValueGetter?.Invoke(value);
                     }
-                    catch (Exception)
+                    catch (Exception) when (child.TypeNode.IsIgnored)
                     {
                         // we want to include ignored fields so we can bind to them but we don't
                         // need to throw exceptions if something isn't right inside an ignored property
-                        if (!child.TypeNode.IsIgnored)
-                        {
-                            throw;
-                        }
                     }
                 }
 
