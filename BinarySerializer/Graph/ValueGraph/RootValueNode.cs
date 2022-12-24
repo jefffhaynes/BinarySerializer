@@ -78,17 +78,17 @@ namespace BinarySerialization.Graph.ValueGraph
             return Child.SerializeAsync(stream, eventShuttle, true, cancellationToken);
         }
 
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             Child = ((RootTypeNode) TypeNode).Child.CreateSerializer(this);
-            Child.Deserialize(stream, eventShuttle);
+            Child.Deserialize(stream, options, eventShuttle);
         }
 
-        internal override Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal override Task DeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             Child = ((RootTypeNode) TypeNode).Child.CreateSerializer(this);
-            return Child.DeserializeAsync(stream, eventShuttle, cancellationToken);
+            return Child.DeserializeAsync(stream, options, eventShuttle, cancellationToken);
         }
 
         protected override Endianness GetFieldEndianness()

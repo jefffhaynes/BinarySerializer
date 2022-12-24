@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;net46</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;net462</TargetFrameworks>
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
@@ -9,9 +9,9 @@
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/jefffhaynes/BinarySerializer</RepositoryUrl>
-    <AssemblyVersion>8.6.2.2</AssemblyVersion>
-    <FileVersion>8.6.2.2</FileVersion>
-    <Version>8.6.2.2</Version>
+    <AssemblyVersion>8.6.3</AssemblyVersion>
+    <FileVersion>8.6.3</FileVersion>
+    <Version>8.6.3</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />

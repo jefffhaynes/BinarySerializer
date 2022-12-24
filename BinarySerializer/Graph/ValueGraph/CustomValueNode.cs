@@ -30,7 +30,7 @@ namespace BinarySerialization.Graph.ValueGraph
             binarySerializable.Serialize(stream, GetFieldEndianness(), serializationContext);
         }
 
-        protected override void ObjectDeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        protected override void ObjectDeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             var serializationContext = CreateLazySerializationContext();
             var binarySerializable = CreateBinarySerializable();
@@ -38,10 +38,10 @@ namespace BinarySerialization.Graph.ValueGraph
             Value = binarySerializable;
         }
 
-        protected override Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        protected override Task ObjectDeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
-            ObjectDeserializeOverride(stream, eventShuttle);
+            ObjectDeserializeOverride(stream, options, eventShuttle);
             return Task.CompletedTask;
         }
 

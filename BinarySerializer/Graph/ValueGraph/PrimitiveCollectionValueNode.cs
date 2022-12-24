@@ -129,16 +129,16 @@ namespace BinarySerialization.Graph.ValueGraph
             await SerializeTerminationAsync(stream, eventShuttle, cancellationToken);
         }
 
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
-            var items = DeserializeCollection(stream, eventShuttle).ToList();
+            var items = DeserializeCollection(stream, options, eventShuttle).ToList();
             CreateFinalCollection(items);
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
-            var items = await DeserializeCollectionAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
+            var items = await DeserializeCollectionAsync(stream, options, eventShuttle, cancellationToken).ConfigureAwait(false);
             CreateFinalCollection(items);
         }
 
@@ -172,7 +172,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private IEnumerable<object> DeserializeCollection(BoundedStream stream, EventShuttle eventShuttle)
+        private IEnumerable<object> DeserializeCollection(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             /* Create single serializer to do all the work */
             var childSerializer = (ValueValueNode) CreateChildSerializer();
@@ -187,7 +187,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             for (long i = 0; i < count && !EndOfStream(stream); i++)
             {
-                if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
+                if (IsTerminated(stream, terminationChild, terminationValue, options, eventShuttle))
                 {
                     break;
                 }
@@ -197,7 +197,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private async Task<List<object>> DeserializeCollectionAsync(BoundedStream stream, EventShuttle eventShuttle,
+        private async Task<List<object>> DeserializeCollectionAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             var list = new List<object>();
@@ -215,7 +215,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             for (long i = 0; i < count && !EndOfStream(stream); i++)
             {
-                if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
+                if (IsTerminated(stream, terminationChild, terminationValue, options, eventShuttle))
                 {
                     break;
                 }
