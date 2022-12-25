@@ -61,6 +61,16 @@ namespace BinarySerialization.Graph.ValueGraph
                    TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(bindingValueSelector(binding)));
         }
 
+        public bool ShouldSerialize()
+        {
+            return ShouldSerialize(binding => binding.GetBoundValue(this));
+        }
+
+        public bool ShouldDeserialize()
+        {
+            return ShouldSerialize(binding => binding.GetValue(this));
+        }
+
         public virtual void Bind()
         {
             var typeNode = TypeNode;
@@ -187,11 +197,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetBoundValue(this)))
-                {
-                    return;
-                }
-
                 if (align)
                 {
                     AlignLeft(stream, true);
@@ -241,11 +246,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetBoundValue(this)))
-                {
-                    return;
-                }
-
                 if (align)
                 {
                     AlignLeft(stream, true);
@@ -306,11 +306,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetValue(this)))
-                {
-                    return;
-                }
-
                 AlignLeft(stream);
 
                 var offset = GetFieldOffset();
@@ -357,11 +352,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetValue(this)))
-                {
-                    return;
-                }
-
                 AlignLeft(stream);
 
                 var offset = GetFieldOffset();
