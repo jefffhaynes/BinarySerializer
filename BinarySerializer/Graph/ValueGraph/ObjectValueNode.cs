@@ -156,10 +156,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in serializableChildren)
             {
+                if (!child.ShouldSerialize())
+                {
+                    continue;
+                }
+
                 EmitBeginSerialization(stream, child, lazyContext, eventShuttle);
-
                 child.Serialize(stream, eventShuttle);
-
                 EmitEndSerialization(stream, child, lazyContext, eventShuttle);
             }
         }
@@ -187,10 +190,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in serializableChildren)
             {
+                if (!child.ShouldSerialize())
+                {
+                    continue;
+                }
+
                 EmitBeginSerialization(stream, child, lazyContext, eventShuttle);
-
                 await child.SerializeAsync(stream, eventShuttle, true, cancellationToken).ConfigureAwait(false);
-
                 EmitEndSerialization(stream, child, lazyContext, eventShuttle);
             }
         }
@@ -214,10 +220,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in GetSerializableChildren())
             {
+                if (!child.ShouldDeserialize())
+                {
+                    continue;
+                }
+
                 EmitBeginDeserialization(stream, child, lazyContext, eventShuttle);
-
                 child.Deserialize(stream, options, eventShuttle);
-
                 EmitEndDeserialization(stream, child, lazyContext, eventShuttle);
             }
         }
@@ -243,10 +252,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in GetSerializableChildren())
             {
+                if (!child.ShouldDeserialize())
+                {
+                    continue;
+                }
+
                 EmitBeginDeserialization(stream, child, lazyContext, eventShuttle);
-
                 await child.DeserializeAsync(stream, options, eventShuttle, cancellationToken).ConfigureAwait(false);
-
                 EmitEndDeserialization(stream, child, lazyContext, eventShuttle);
             }
         }
@@ -364,17 +376,6 @@ namespace BinarySerialization.Graph.ValueGraph
             return false;
         }
 
-        private void EmitEndSerialization(BoundedStream stream, ValueNode child,
-            LazyBinarySerializationContext lazyContext,
-            EventShuttle eventShuttle)
-        {
-            if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
-            {
-                eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, lazyContext,
-                    stream.GlobalPosition, stream.RelativePosition);
-            }
-        }
-
         private void EmitBeginSerialization(BoundedStream stream, ValueNode child,
             LazyBinarySerializationContext lazyContext,
             EventShuttle eventShuttle)
@@ -382,6 +383,17 @@ namespace BinarySerialization.Graph.ValueGraph
             if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
             {
                 eventShuttle.OnMemberSerializing(this, child.Name, lazyContext,
+                    stream.GlobalPosition, stream.RelativePosition);
+            }
+        }
+
+        private void EmitEndSerialization(BoundedStream stream, ValueNode child,
+            LazyBinarySerializationContext lazyContext,
+            EventShuttle eventShuttle)
+        {
+            if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
+            {
+                eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, lazyContext,
                     stream.GlobalPosition, stream.RelativePosition);
             }
         }
