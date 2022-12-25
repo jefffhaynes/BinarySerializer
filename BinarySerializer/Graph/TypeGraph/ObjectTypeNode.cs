@@ -229,7 +229,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private IEnumerable<TypeNode> GenerateChildren(Type parentType)
         {
-            if (parentType == typeof(object))
+            if (parentType == typeof(object) || parentType.GetTypeInfo().IsInterface)
             {
                 return Enumerable.Empty<TypeNode>();
             }
