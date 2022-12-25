@@ -9,9 +9,9 @@
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/jefffhaynes/BinarySerializer</RepositoryUrl>
-    <AssemblyVersion>8.6.3.1</AssemblyVersion>
-    <FileVersion>8.6.3.1</FileVersion>
-    <Version>8.6.3.1</Version>
+    <AssemblyVersion>8.6.3.2</AssemblyVersion>
+    <FileVersion>8.6.3.2</FileVersion>
+    <Version>8.6.3.2</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jeff Haynes</Authors>
     <Company />
