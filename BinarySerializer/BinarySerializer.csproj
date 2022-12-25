@@ -4,7 +4,7 @@
     <Description>A declarative serialization framework for controlling formatting of data using field bindings.</Description>
     <AssemblyName>BinarySerializer</AssemblyName>
     <PackageTags>Serialization;Serializer;Binary;Format;Protocol</PackageTags>
-    <PackageReleaseNotes>Fixes issue with events firing for non-serialized fields</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixes issue when using interfaces in object graph</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/jefffhaynes/BinarySerializer</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
