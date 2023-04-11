@@ -101,8 +101,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 catch (EndOfStreamException) when (!options.HasFlag(SerializationOptions.ThrowOnEndOfStream))
                 {
-                    // this is ok but we can't consider this object fully formed.
-                    _valueType = null;
+                    if (!options.HasFlag(SerializationOptions.AllowIncompleteObjects))
+                    {
+                        _valueType = null;
+                    }
                 }
             }
 
@@ -126,8 +128,10 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 catch (EndOfStreamException) when (!options.HasFlag(SerializationOptions.ThrowOnEndOfStream))
                 {
-                    // this is ok but we can't consider this object fully formed.
-                    _valueType = null;
+                    if (!options.HasFlag(SerializationOptions.AllowIncompleteObjects))
+                    {
+                        _valueType = null;
+                    }
                 }
             }
 
