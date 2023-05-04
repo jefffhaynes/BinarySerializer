@@ -430,9 +430,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var bitLength = GetNumericValue(TypeNode.FieldBitLengthBindings);
+            var bitOrder = (BitOrder?)GetNumericValue(TypeNode.FieldBitOrderBindings);
+            if (!bitOrder.HasValue)
+                bitOrder = (BitOrder?)GetConstNumericValue(TypeNode.FieldBitOrderBindings);
+            if (!bitOrder.HasValue)
+                bitOrder = BitOrder.LsbFirst;
             if (bitLength != null)
             {
-                return FieldLength.FromBitCount((int) bitLength);
+                return FieldLength.FromBitCount((int) bitLength, bitOrder.Value);
             }
 
             var parent = Parent;
@@ -461,9 +466,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var bitLength = GetConstNumericValue(TypeNode.FieldBitLengthBindings);
+            var bitOrder = (BitOrder?)GetNumericValue(TypeNode.FieldBitOrderBindings);
+            if (!bitOrder.HasValue)
+                bitOrder = (BitOrder?)GetConstNumericValue(TypeNode.FieldBitOrderBindings);
+            if (!bitOrder.HasValue)
+                bitOrder = BitOrder.LsbFirst;
             if (bitLength != null)
             {
-                return FieldLength.FromBitCount((int) bitLength);
+                return FieldLength.FromBitCount((int) bitLength, bitOrder.Value);
             }
 
             return Parent?.GetConstFieldItemLength();
