@@ -76,6 +76,7 @@ There are a number of attributes that can be used to control the serialization o
 * [FieldOrder](#fieldorderattribute)
 * [FieldLength](#fieldlengthattribute)
 * [FieldBitLength](#fieldbitlengthattribute)
+* [FieldBitOrder](#fieldbitorderattribute)
 * [FieldCount](#fieldcountattribute)
 * [FieldAlignment](#fieldalignmentattribute)
 * [FieldScale](#fieldscaleattribute)
@@ -252,6 +253,48 @@ public class Header
 
     [FieldOrder(1)]
     [FieldBitLength(5)]
+    public int Length { get; set; }
+}
+```
+
+### FieldBitOrderAttribute ###
+
+The FieldBitOrder attribute is used alongside the FieldBitLength attribute, or bitwise data members.  It determines the order (within the byte) at which the bits are allocated for the field.
+NOTE: It does not change the significance of the bits within the field value, just where in the raw data stream they are allocated to/from.
+
+**WARNING: There are known issues when using bit fields in big endian mode.  Results are undefined.**
+**WARNING: Do NOT mix BitOrder.MsbFirst and BitOrder.LsbFirst within the same byte.  Results are undefined.**
+
+```c#
+
+// This will allocate fields as per:
+// [7..5] => Type
+// [4..0] => Length
+public class HeaderForward
+{
+    [FieldOrder(0)]
+    [FieldBitLength(3)]
+    [FieldBitOrder(BitOrder.MsbFirst)]
+    public HeaderType Type { get; set; }
+
+    [FieldOrder(1)]
+    [FieldBitLength(5)]
+    [FieldBitOrder(BitOrder.MsbFirst)]
+    public int Length { get; set; }
+}
+
+// This will allocate fields as per
+// [0..2] => Type  (default allocation is LsbFirst, so not required for this behaviour)
+// [3..7] => Length
+public class HeaderBackward
+{
+    [FieldOrder(0)]
+    [FieldBitLength(3)]
+    public HeaderType Type { get; set; }
+
+    [FieldOrder(1)]
+    [FieldBitLength(5)]
+    [FieldBitOrder(BitOrder.LsbFirst)]
     public int Length { get; set; }
 }
 ```
