@@ -362,17 +362,19 @@ namespace BinarySerialization
             {
                 var headroom = BitsPerByte - _bitBufferCount;
                 var remaining = count - copied;
+                byte mask = (byte) (((1 << count) - 1) ^ ((1 << copied) -1)); // generate bit mask for all bits within [count..copied]
                 var copyLength = Math.Min(remaining, headroom);
                 var shift = msbFirst ?
                                 copied - (BitsPerByte - (copyLength + _bitBufferCount))
                                 : copied - _bitBufferCount;
+
                 if (shift < 0)
                 {
-                    _bitBuffer = (byte)(_bitBuffer | value << -shift);
+                    _bitBuffer = (byte)(_bitBuffer | (value & mask) << -shift);
                 }
                 else
                 {
-                    _bitBuffer = (byte)(_bitBuffer | value >> shift);
+                    _bitBuffer = (byte)(_bitBuffer | (value & mask) >> shift);
                 }
 
                 _bitBufferCount += copyLength;
@@ -401,6 +403,7 @@ namespace BinarySerialization
             {
                 var headroom = BitsPerByte - _bitBufferCount;
                 var remaining = count - copied;
+                byte mask = (byte)(((1 << count) - 1) ^ ((1 << copied) - 1)); // generate bit mask for all bits below 1<<count
                 var copyLength = Math.Min(remaining, headroom);
                 var shift = msbFirst ?
                                 copied - (BitsPerByte - (copyLength + _bitBufferCount))
@@ -408,11 +411,11 @@ namespace BinarySerialization
 
                 if (shift < 0)
                 {
-                    _bitBuffer = (byte)(_bitBuffer | value << -shift);
+                    _bitBuffer = (byte)(_bitBuffer | (value & mask) << -shift);
                 }
                 else
                 {
-                    _bitBuffer = (byte)(_bitBuffer | value >> shift);
+                    _bitBuffer = (byte)(_bitBuffer | (value & mask) >> shift);
                 }
 
                 _bitBufferCount += copyLength;
