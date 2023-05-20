@@ -21,6 +21,6 @@ namespace BinarySerialization.Test.BitLength
 
         [FieldOrder(4)]
         [FieldBitLength(8)]
-        public InternalBitLengthClass Internal2 { get; set; }
+        public InternalBitLengthValueClass Internal2 { get; set; }
     }
 }
