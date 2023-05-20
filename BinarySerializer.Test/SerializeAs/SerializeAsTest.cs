@@ -50,5 +50,24 @@ namespace BinarySerialization.Test.SerializeAs
             var actualItems = actual.Items.Select(i => i.Trim()).ToList();
             CollectionAssert.AreEqual(expected.Items, actualItems);
         }
+
+        [TestMethod]
+        public void SerializeAsTerminatedStringWithPadding()
+        {
+            var expected = new TerminatedSizedStringClass { Value = "hi" };
+            var actual = Roundtrip(expected, new byte[] { 0x68, 0x69, 0x0A, 0x0D, 0x0D });
+
+            Assert.AreEqual(expected.Value, actual.Value);
+        }
+
+        [TestMethod]
+        public void SerializeAsTerminatedStringWithTruncation()
+        {
+            var expected = new TerminatedSizedStringClass { Value = "hi test" };
+            var actual = Roundtrip(expected, new byte[] { 0x68, 0x69, 0x20, 0x74, 0x0A });
+
+            // we expect to have truncated to only have 4 characters (and the terminator)
+            Assert.AreEqual(expected.Value.Substring(0,4), actual.Value);
+        }
     }
 }

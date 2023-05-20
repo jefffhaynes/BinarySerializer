@@ -133,16 +133,19 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     // see if we're dealing with something that needs to be padded
                     if (serializedType != SerializedType.ByteArray &&
-                        serializedType != SerializedType.TerminatedString)
+                        serializedType != SerializedType.TerminatedString &&
+                        serializedType != SerializedType.TerminatedSizedString)
                     {
                         return;
                     }
 
                     var data = new byte[constLength.TotalByteCount];
 
-                    if (serializedType == SerializedType.TerminatedString && data.Length > 0)
+                    if ((serializedType == SerializedType.TerminatedString ||
+                        serializedType == SerializedType.TerminatedSizedString)
+                        && data.Length > 0)
                     {
-                        var terminatorData = GetNullTermination();
+                        var terminatorData = GetTermination();
                         Array.Copy(terminatorData, data, terminatorData.Length);
                     }
 
@@ -224,7 +227,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     var encoding = GetFieldEncoding();
                     var data = encoding.GetBytes(value.ToString());
 
-                    var dataLength = GetNullTerminatedArrayLength(data, constLength, maxLength);
+                    var dataLength = GetTerminatedArrayLength(data, constLength, maxLength);
 
                     writer.Write(data, dataLength);
 
@@ -234,7 +237,8 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
                 case SerializedType.SizedString:
                 {
-                    var data = GetFieldEncoding().GetBytes(value.ToString());
+                    var encoding = GetFieldEncoding();
+                    var data = encoding.GetBytes(value.ToString());
                         
                     var dataLength = GetArrayLength(data, constLength, maxLength);
 
@@ -249,6 +253,25 @@ namespace BinarySerialization.Graph.ValueGraph
                     }
 
                     writer.Write(value.ToString());
+                    break;
+                }
+                case SerializedType.TerminatedSizedString:
+                {
+                    var encoding = GetFieldEncoding();
+                    var data = encoding.GetBytes(value.ToString());
+
+                    var dataLength = GetTerminatedArrayLength(data, constLength, maxLength);
+
+                    writer.Write(data, dataLength);
+
+                    var stringTerminatorData = encoding.GetBytes(new[] { TypeNode.StringTerminator });
+                    writer.Write(stringTerminatorData, stringTerminatorData.Length);
+
+                    var fillLength = maxLength < constLength ? maxLength : constLength;
+                    var padLength = fillLength - (dataLength + stringTerminatorData.Length);
+                    if (padLength > 0)
+                        writer.Write(GetFieldPaddingValue(), padLength);
+
                     break;
                 }
 
@@ -286,16 +309,19 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     // see if we're dealing with something that needs to be padded
                     if (serializedType != SerializedType.ByteArray &&
-                        serializedType != SerializedType.TerminatedString)
+                        serializedType != SerializedType.TerminatedString &&
+                        serializedType != SerializedType.TerminatedSizedString)
                     {
                         return;
                     }
 
                     var data = new byte[constLength.TotalByteCount];
 
-                    if (serializedType == SerializedType.TerminatedString && data.Length > 0)
+                    if ((serializedType == SerializedType.TerminatedString ||
+                        serializedType == SerializedType.TerminatedSizedString)
+                        && data.Length > 0)
                     {
-                        var terminatorData = GetNullTermination();
+                        var terminatorData = GetTermination();
                         Array.Copy(terminatorData, data, terminatorData.Length);
                     }
 
@@ -376,11 +402,11 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     var data = GetFieldEncoding().GetBytes(value.ToString());
                         
-                    var dataLength = GetNullTerminatedArrayLength(data, constLength, maxLength);
+                    var dataLength = GetTerminatedArrayLength(data, constLength, maxLength);
 
                     await writer.WriteAsync(data, dataLength, cancellationToken).ConfigureAwait(false);
 
-                    var stringTerminatorData = GetNullTermination();
+                    var stringTerminatorData = GetTermination();
                     await writer.WriteAsync(TypeNode.StringTerminator, stringTerminatorData.Length, cancellationToken)
                         .ConfigureAwait(false);
 
@@ -402,6 +428,25 @@ namespace BinarySerialization.Graph.ValueGraph
                     }
 
                     writer.Write(value.ToString());
+                    break;
+                }
+                case SerializedType.TerminatedSizedString:
+                {
+                    var encoding = GetFieldEncoding();
+                    var data = encoding.GetBytes(value.ToString());
+
+                    var dataLength = GetTerminatedArrayLength(data, constLength, maxLength);
+
+                    await writer.WriteAsync(data, dataLength, cancellationToken);
+
+                    var stringTerminatorData = encoding.GetBytes(new[] { TypeNode.StringTerminator });
+                    await writer.WriteAsync(stringTerminatorData, stringTerminatorData.Length, cancellationToken);
+
+                    var fillLength = maxLength < constLength ? maxLength : constLength;
+                    var padLength = fillLength - (dataLength + stringTerminatorData.Length);
+                    if (padLength > 0)
+                        await writer.WriteAsync(GetFieldPaddingValue(), padLength, cancellationToken);
+
                     break;
                 }
 
@@ -467,7 +512,8 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 }
                 case SerializedType.TerminatedString:
-                {
+                case SerializedType.TerminatedSizedString:
+                    {
                     var data = ReadTerminated(reader, effectiveLengthValue, TypeNode.StringTerminator);
                     value = GetFieldEncoding().GetString(data, 0, data.Length);
                     break;
@@ -540,7 +586,8 @@ namespace BinarySerialization.Graph.ValueGraph
                     break;
                 }
                 case SerializedType.TerminatedString:
-                {
+                case SerializedType.TerminatedSizedString:
+                    {
                     var data = await ReadTerminatedAsync(reader, (int) effectiveLengthValue.ByteCount, TypeNode.StringTerminator,
                             cancellationToken)
                         .ConfigureAwait(false);
@@ -675,7 +722,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return constLength;
         }
 
-        private byte[] GetNullTermination()
+        private byte[] GetTermination()
         {
             return GetFieldEncoding().GetBytes(new[] { TypeNode.StringTerminator });
         }
@@ -684,8 +731,10 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             FieldLength maxLength = null;
 
-            if (serializedType == SerializedType.ByteArray || serializedType == SerializedType.SizedString ||
-                serializedType == SerializedType.TerminatedString)
+            if (serializedType == SerializedType.ByteArray || 
+                serializedType == SerializedType.SizedString ||
+                serializedType == SerializedType.TerminatedString ||
+                serializedType == SerializedType.TerminatedSizedString)
             {
                 // try to get bounded length
                 maxLength = stream.AvailableForWriting;
@@ -711,20 +760,22 @@ namespace BinarySerialization.Graph.ValueGraph
             return length;
         }
 
-        private FieldLength GetNullTerminatedArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
+        private FieldLength GetTerminatedArrayLength(byte[] data, FieldLength constLength, FieldLength maxLength)
         {
             FieldLength length = data.Length;
-            var nullTermination = GetNullTermination();
-            var nullTerminationLength = new FieldLength(nullTermination.Length);
+            var termination = GetTermination();
+            var terminationLength = new FieldLength(termination.Length);
 
-            if (constLength != null)
+            if (constLength != null && 
+                constLength < length + terminationLength)
             {
-                length = constLength - nullTerminationLength;
+                length = constLength - terminationLength;
             }
 
-            if (maxLength != null && length > maxLength)
+            if (maxLength != null && 
+                maxLength < length + terminationLength)
             {
-                length = maxLength - nullTerminationLength;
+                length = maxLength - terminationLength;
             }
 
             return length;
@@ -776,7 +827,8 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 if (serializedType == SerializedType.ByteArray ||
                     serializedType == SerializedType.SizedString ||
-                    serializedType == SerializedType.TerminatedString)
+                    serializedType == SerializedType.TerminatedString ||
+                    serializedType == SerializedType.TerminatedSizedString)
                 {
                     // try to get bounded length
                     var baseStream = (BoundedStream) reader.BaseStream;

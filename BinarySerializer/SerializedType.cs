@@ -90,6 +90,12 @@ namespace BinarySerialization
         /// <summary>
         ///     An encoded string prefixed with a LEB128-encoded length.  This is equivalent to how BinaryWriter encodes a string.
         /// </summary>
-        LengthPrefixedString
+        LengthPrefixedString,
+
+        /// <summary>
+        ///     An encoded string with a terminator, which is null (zero) by default or can be specified by setting StringTerminator.
+        ///     Also has a maximum length storage available
+        /// </summary>
+        TerminatedSizedString,
     }
 }
