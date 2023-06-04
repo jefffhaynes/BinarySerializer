@@ -430,14 +430,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var bitLength = GetNumericValue(TypeNode.FieldBitLengthBindings);
-            var bitOrder = (BitOrder?)GetNumericValue(TypeNode.FieldBitOrderBindings);
-            if (!bitOrder.HasValue)
-                bitOrder = (BitOrder?)GetConstNumericValue(TypeNode.FieldBitOrderBindings);
-            if (!bitOrder.HasValue)
-                bitOrder = BitOrder.LsbFirst;
+            var bitOrder = ((BitOrder?)GetNumericValue(TypeNode.FieldBitOrderBindings) ?? 
+                           (BitOrder?)GetConstNumericValue(TypeNode.FieldBitOrderBindings)) ??
+                           BitOrder.LsbFirst;
+
+
             if (bitLength != null)
             {
-                return FieldLength.FromBitCount((int) bitLength, bitOrder.Value);
+                return FieldLength.FromBitCount((int) bitLength, bitOrder);
             }
 
             var parent = Parent;
@@ -460,23 +460,18 @@ namespace BinarySerialization.Graph.ValueGraph
         protected FieldLength GetConstFieldLength()
         {
             var length = GetConstNumericValue(TypeNode.FieldLengthBindings);
+
             if (length != null)
             {
                 return length;
             }
 
             var bitLength = GetConstNumericValue(TypeNode.FieldBitLengthBindings);
-            var bitOrder = (BitOrder?)GetNumericValue(TypeNode.FieldBitOrderBindings);
-            if (!bitOrder.HasValue)
-                bitOrder = (BitOrder?)GetConstNumericValue(TypeNode.FieldBitOrderBindings);
-            if (!bitOrder.HasValue)
-                bitOrder = BitOrder.LsbFirst;
-            if (bitLength != null)
-            {
-                return FieldLength.FromBitCount((int) bitLength, bitOrder.Value);
-            }
+            var bitOrder = ((BitOrder?)GetNumericValue(TypeNode.FieldBitOrderBindings) ??
+                           (BitOrder?)GetConstNumericValue(TypeNode.FieldBitOrderBindings)) ??
+                           BitOrder.LsbFirst;
 
-            return Parent?.GetConstFieldItemLength();
+            return bitLength != null ? FieldLength.FromBitCount((int) bitLength, bitOrder) : Parent?.GetConstFieldItemLength();
         }
 
         protected long? GetLeftFieldAlignment()
@@ -484,6 +479,7 @@ namespace BinarySerialization.Graph.ValueGraph
             // Field alignment cannot be determined from graph
             // so always go to a const or bound value
             var value = TypeNode.LeftFieldAlignmentBindings?.GetBoundValue(this);
+
             if (value == null)
             {
                 return null;
@@ -874,14 +870,15 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private void SkipPadding(BoundedStream stream)
         {
-            ProcessPadding(stream, (s, bytes, length) => s.Read(bytes, 0, (int)length.ByteCount));
+            ProcessPadding(stream, (s, bytes, length) => 
+                _ = s.Read(bytes, 0, (int)length.ByteCount));
         }
 
         private Task SkipPaddingAsync(BoundedStream stream, CancellationToken cancellationToken)
         {
             return ProcessPaddingAsync(stream,
                 async (s, bytes, length) =>
-                    await s.ReadAsync(bytes, 0, (int)length.ByteCount, cancellationToken).ConfigureAwait(false));
+                    _ = await s.ReadAsync(bytes, 0, (int)length.ByteCount, cancellationToken).ConfigureAwait(false));
         }
 
         private void ProcessPadding(BoundedStream stream, Action<BoundedStream, byte[], FieldLength> streamOperation)
