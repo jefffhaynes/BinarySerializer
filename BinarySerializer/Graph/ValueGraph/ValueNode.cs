@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -201,19 +201,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (offset != null)
                 {
-                    if (TypeNode.OffsetRewind)
+                    var rewindPosition = stream.Position;
+                    stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
+                    SerializeInternal(stream, GetConstFieldLength, eventShuttle, measuring);
+                    if (TypeNode.OffsetRewind) 
                     {
-                        using (new StreamResetter(stream))
-                        {
-                            stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
-                            SerializeInternal(stream, GetConstFieldLength, eventShuttle, measuring);
-                        }
-                    }
-                    else
-                    {
-                        stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
-                        SerializeInternal(stream, GetConstFieldLength, eventShuttle, measuring);
-                    }
+                        stream.Position = rewindPosition;
+                    }                    
                 }
                 else
                 {
