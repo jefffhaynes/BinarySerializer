@@ -212,7 +212,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     if (TypeNode.OffsetRewind) 
                     {
                         stream.Position = rewindPosition;
-                    }                    
+                    }
                 }
                 else
                 {
@@ -257,21 +257,14 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (offset != null)
                 {
-                    if (TypeNode.OffsetRewind)
-                    {
-                        using (new StreamResetter(stream))
-                        {
-                            stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
-                            await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken)
-                                .ConfigureAwait(false);
-                        }
-                    }
-                    else
-                    {
+                    var rewindPosition = stream.Position;
                         stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
                         await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken)
-                            .ConfigureAwait(false);
-                    }
+                                .ConfigureAwait(false);
+                        if (TypeNode.OffsetRewind) 
+                        {
+                            stream.Position = rewindPosition;
+                        }
                 }
                 else
                 {
