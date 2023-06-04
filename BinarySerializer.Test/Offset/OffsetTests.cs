@@ -8,17 +8,22 @@ namespace BinarySerialization.Test.Offset
         [TestMethod]
         public void ConstOffsetTest()
         {
-            var expected = new ConstOffsetClass {Field = "FieldValue"};
-            var actual = Roundtrip(expected, 100 + expected.Field.Length + 1);
-            Assert.AreEqual(expected.Field, actual.Field);
+            var stringVal = "FieldValue"; // 10 length
+            var expected = new ConstOffsetClass {FieldStringLength = (uint)stringVal.Length, FieldString = stringVal, FieldUint = 100};
+            var actual = Roundtrip(expected, 100 + expected.FieldStringLength);
+            Assert.AreEqual(expected.FieldStringLength, actual.FieldStringLength);
+            Assert.AreEqual(expected.FieldString, actual.FieldString);
+            Assert.AreEqual(expected.FieldUint, actual.FieldUint);
         }
 
         [TestMethod]
         public void BoundOffsetTest()
         {
-            var expected = new BoundOffsetClass {FieldOffsetField = 1000, Field = "FieldValue"};
-            var actual = Roundtrip(expected, expected.FieldOffsetField + expected.Field.Length + 1);
-            Assert.AreEqual(expected.Field, actual.Field);
+            var expected = new BoundOffsetClass {FieldOffsetField = 1000, FieldString = "FieldValue", FieldUint = 100};
+            var actual = Roundtrip(expected, expected.FieldOffsetField + expected.FieldString.Length + 1);
+            Assert.AreEqual(expected.FieldOffsetField, actual.FieldOffsetField);
+            Assert.AreEqual(expected.FieldString, actual.FieldString);
+            Assert.AreEqual(expected.FieldUint, actual.FieldUint);
         }
 
         [TestMethod]
