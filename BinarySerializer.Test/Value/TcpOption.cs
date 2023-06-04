@@ -1,4 +1,5 @@
-﻿namespace BinarySerialization.Test.Value
+﻿#pragma warning disable CS0618
+namespace BinarySerialization.Test.Value
 {
     public class TcpOption
     {

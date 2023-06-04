@@ -20,7 +20,7 @@ namespace BinarySerializer.Performance
                 Brand = "Brand",
                 Sort = new List<SortContainer>
                 {
-                    new SortContainer{Name = "some sort of beer"},
+                    new SortContainer {Name = "some sort of beer"},
                     new SortContainer {Name = "another beer"}
                 },
                 WeirdNumber = 3,

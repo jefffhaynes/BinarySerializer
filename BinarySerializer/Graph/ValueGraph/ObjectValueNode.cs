@@ -31,12 +31,7 @@ namespace BinarySerialization.Graph.ValueGraph
             get
             {
                 /* For creating serialization contexts quickly */
-                if (_cachedValue != null)
-                {
-                    return _cachedValue;
-                }
-
-                return GetValue(child => child.Value);
+                return _cachedValue ?? GetValue(child => child.Value);
             }
 
             set
@@ -64,14 +59,10 @@ namespace BinarySerialization.Graph.ValueGraph
                     {
                         child.Value = child.TypeNode.ValueGetter?.Invoke(value);
                     }
-                    catch (Exception)
+                    catch (Exception) when (child.TypeNode.IsIgnored)
                     {
                         // we want to include ignored fields so we can bind to them but we don't
                         // need to throw exceptions if something isn't right inside an ignored property
-                        if (!child.TypeNode.IsIgnored)
-                        {
-                            throw;
-                        }
                     }
                 }
 
@@ -94,7 +85,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return ObjectSerializeOverrideAsync(stream, eventShuttle, cancellationToken);
         }
 
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             ResolveValueType();
 
@@ -106,19 +97,21 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 try
                 {
-                    ObjectDeserializeOverride(stream, eventShuttle);
+                    ObjectDeserializeOverride(stream, options, eventShuttle);
                 }
-                catch (EndOfStreamException)
+                catch (EndOfStreamException) when (!options.HasFlag(SerializationOptions.ThrowOnEndOfStream))
                 {
-                    // this is ok but we can't consider this object fully formed.
-                    _valueType = null;
+                    if (!options.HasFlag(SerializationOptions.AllowIncompleteObjects))
+                    {
+                        _valueType = null;
+                    }
                 }
             }
 
             SkipPadding(stream);
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             ResolveValueType();
@@ -131,12 +124,14 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 try
                 {
-                    await ObjectDeserializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
+                    await ObjectDeserializeOverrideAsync(stream, options, eventShuttle, cancellationToken).ConfigureAwait(false);
                 }
-                catch (EndOfStreamException)
+                catch (EndOfStreamException) when (!options.HasFlag(SerializationOptions.ThrowOnEndOfStream))
                 {
-                    // this is ok but we can't consider this object fully formed.
-                    _valueType = null;
+                    if (!options.HasFlag(SerializationOptions.AllowIncompleteObjects))
+                    {
+                        _valueType = null;
+                    }
                 }
             }
 
@@ -149,7 +144,7 @@ namespace BinarySerialization.Graph.ValueGraph
             // treating all object members as object nodes.  In the case of sub-types we could later discover we
             // are actually a custom node because the specified subtype implements IBinarySerializable.
 
-            if (IsCustomNode(out ValueNode customValueNode))
+            if (IsCustomNode(out var customValueNode))
             {
                 // this is a little bit of a cheat, but another side-effect of this weird corner case
                 customValueNode.Value = _cachedValue;
@@ -165,10 +160,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in serializableChildren)
             {
+                if (!child.ShouldSerialize())
+                {
+                    continue;
+                }
+
                 EmitBeginSerialization(stream, child, lazyContext, eventShuttle);
-
                 child.Serialize(stream, eventShuttle);
-
                 EmitEndSerialization(stream, child, lazyContext, eventShuttle);
             }
         }
@@ -196,22 +194,25 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in serializableChildren)
             {
+                if (!child.ShouldSerialize())
+                {
+                    continue;
+                }
+
                 EmitBeginSerialization(stream, child, lazyContext, eventShuttle);
-
                 await child.SerializeAsync(stream, eventShuttle, true, cancellationToken).ConfigureAwait(false);
-
                 EmitEndSerialization(stream, child, lazyContext, eventShuttle);
             }
         }
 
-        protected virtual void ObjectDeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        protected virtual void ObjectDeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             // check to see if we are actually supposed to be a custom deserialization.  This is a side-effect of
             // treating all object members as object nodes.  In the case of sub-types we could later discover we
             // are actually a custom node because the specified subtype implements IBinarySerializable.
-            if (IsCustomNode(out ValueNode customValueNode))
+            if (IsCustomNode(out var customValueNode))
             {
-                customValueNode.DeserializeOverride(stream, eventShuttle);
+                customValueNode.DeserializeOverride(stream, options, eventShuttle);
 
                 // this is a cheat, but another side-effect of this weird corner case
                 _cachedValue = customValueNode.Value;
@@ -223,23 +224,26 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in GetSerializableChildren())
             {
+                if (!child.ShouldDeserialize())
+                {
+                    continue;
+                }
+
                 EmitBeginDeserialization(stream, child, lazyContext, eventShuttle);
-
-                child.Deserialize(stream, eventShuttle);
-
+                child.Deserialize(stream, options, eventShuttle);
                 EmitEndDeserialization(stream, child, lazyContext, eventShuttle);
             }
         }
 
-        protected virtual async Task ObjectDeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        protected virtual async Task ObjectDeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             // check to see if we are actually supposed to be a custom deserialization.  This is a side-effect of
             // treating all object members as object nodes.  In the case of sub-types we could later discover we
             // are actually a custom node because the specified subtype implements IBinarySerializable.
-            if (IsCustomNode(out ValueNode customValueNode))
+            if (IsCustomNode(out var customValueNode))
             {
-                await customValueNode.DeserializeOverrideAsync(stream, eventShuttle, cancellationToken)
+                await customValueNode.DeserializeOverrideAsync(stream, options, eventShuttle, cancellationToken)
                     .ConfigureAwait(false);
 
                 // this is a cheat, but another side-effect of this weird corner case
@@ -252,10 +256,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in GetSerializableChildren())
             {
+                if (!child.ShouldDeserialize())
+                {
+                    continue;
+                }
+
                 EmitBeginDeserialization(stream, child, lazyContext, eventShuttle);
-
-                await child.DeserializeAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
-
+                await child.DeserializeAsync(stream, options, eventShuttle, cancellationToken).ConfigureAwait(false);
                 EmitEndDeserialization(stream, child, lazyContext, eventShuttle);
             }
         }
@@ -373,17 +380,6 @@ namespace BinarySerialization.Graph.ValueGraph
             return false;
         }
 
-        private void EmitEndSerialization(BoundedStream stream, ValueNode child,
-            LazyBinarySerializationContext lazyContext,
-            EventShuttle eventShuttle)
-        {
-            if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
-            {
-                eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, lazyContext,
-                    stream.GlobalPosition, stream.RelativePosition);
-            }
-        }
-
         private void EmitBeginSerialization(BoundedStream stream, ValueNode child,
             LazyBinarySerializationContext lazyContext,
             EventShuttle eventShuttle)
@@ -391,6 +387,17 @@ namespace BinarySerialization.Graph.ValueGraph
             if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
             {
                 eventShuttle.OnMemberSerializing(this, child.Name, lazyContext,
+                    stream.GlobalPosition, stream.RelativePosition);
+            }
+        }
+
+        private void EmitEndSerialization(BoundedStream stream, ValueNode child,
+            LazyBinarySerializationContext lazyContext,
+            EventShuttle eventShuttle)
+        {
+            if (eventShuttle != null && eventShuttle.HasSerializationSubscribers)
+            {
+                eventShuttle.OnMemberSerialized(this, child.Name, child.BoundValue, lazyContext,
                     stream.GlobalPosition, stream.RelativePosition);
             }
         }
@@ -408,14 +415,11 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var length = GetFieldLength();
 
-            if (length != null)
+            if (length != null && length > stream.RelativePosition)
             {
-                if (length > stream.RelativePosition)
-                {
-                    var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int) padLength.TotalByteCount];
-                    stream.Read(pad, padLength);
-                }
+                var padLength = length - stream.RelativePosition;
+                var pad = new byte[(int) padLength.TotalByteCount];
+                stream.Read(pad, padLength);
             }
         }
 
@@ -423,14 +427,11 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             var length = GetFieldLength();
 
-            if (length != null)
+            if (length != null && length > stream.RelativePosition)
             {
-                if (length > stream.RelativePosition)
-                {
-                    var padLength = length - stream.RelativePosition;
-                    var pad = new byte[(int) padLength.TotalByteCount];
-                    return stream.ReadAsync(pad, padLength, cancellationToken);
-                }
+                var padLength = length - stream.RelativePosition;
+                var pad = new byte[(int) padLength.TotalByteCount];
+                return stream.ReadAsync(pad, padLength, cancellationToken);
             }
 
             return Task.CompletedTask;

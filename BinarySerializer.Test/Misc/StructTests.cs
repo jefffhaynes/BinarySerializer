@@ -23,7 +23,7 @@ namespace BinarySerialization.Test.Misc
 #if TESTASYNC
             Assert.ThrowsException<AggregateException>(() => Roundtrip(expected));
 #else
-            Assert.ThrowsException<NotSupportedException>(() => Roundtrip(expected));
+            Assert.ThrowsException<InvalidOperationException>(() => Roundtrip(expected));
 #endif
         }
     }

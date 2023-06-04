@@ -19,7 +19,7 @@ namespace BinarySerialization
 
         private byte _bitBuffer;
 
-        private int _bitOffset;
+        private int _bitBufferCount;
 
         internal BoundedStream(Stream source, string name, Func<FieldLength> maxLengthDelegate = null)
         {
@@ -273,7 +273,7 @@ namespace BinarySerialization
             }
             else
             {
-                if (length.BitCount == 0 && _bitOffset == 0)
+                if (length.BitCount == 0 && _bitBufferCount == 0)
                 {
                     // trivial byte-aligned case
                     WriteByteAligned(buffer, (int) length.ByteCount);
@@ -285,10 +285,10 @@ namespace BinarySerialization
 
                     for (long i = 0; i < lastByteIndex; i++)
                     {
-                        WriteBits(buffer[i], BitsPerByte);
+                        WriteBits(buffer[i], BitsPerByte, length.BitOrder == BitOrder.MsbFirst);
                     }
 
-                    WriteBits(buffer[lastByteIndex], bitCount);
+                    WriteBits(buffer[lastByteIndex], bitCount, length.BitOrder == BitOrder.MsbFirst);
                 }
             }
 
@@ -310,7 +310,7 @@ namespace BinarySerialization
             }
             else
             {
-                if (length.BitCount == 0 && _bitOffset == 0)
+                if (length.BitCount == 0 && _bitBufferCount == 0)
                 {
                     // trivial byte-aligned case, write to underlying stream
                     await WriteByteAlignedAsync(buffer, (int) length.ByteCount, cancellationToken)
@@ -324,11 +324,11 @@ namespace BinarySerialization
                     // collect bits in this, the bottom bounded stream
                     for (long i = 0; i < lastByteIndex; i++)
                     {
-                        await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken)
+                        await WriteBitsAsync(buffer[i], BitsPerByte, cancellationToken, length.BitOrder == BitOrder.MsbFirst)
                             .ConfigureAwait(false);
                     }
 
-                    await WriteBitsAsync(buffer[lastByteIndex], bitCount, cancellationToken)
+                    await WriteBitsAsync(buffer[lastByteIndex], bitCount, cancellationToken, length.BitOrder == BitOrder.MsbFirst)
                         .ConfigureAwait(false);
                 }
             }
@@ -355,28 +355,31 @@ namespace BinarySerialization
             }
         }
 
-        private void WriteBits(byte value, int count)
+        private void WriteBits(byte value, int count, bool msbFirst)
         {
             var copied = 0;
             while (copied < count)
             {
-                var headroom = BitsPerByte - _bitOffset;
+                var headroom = BitsPerByte - _bitBufferCount;
                 var remaining = count - copied;
+                byte mask = (byte) (((1 << count) - 1) ^ ((1 << copied) -1)); // generate bit mask for all bits within [count..copied]
                 var copyLength = Math.Min(remaining, headroom);
-                var shift = copied - _bitOffset;
+                var shift = msbFirst ?
+                                copied - (BitsPerByte - (copyLength + _bitBufferCount))
+                                : copied - _bitBufferCount;
 
                 if (shift < 0)
                 {
-                    _bitBuffer = (byte)(_bitBuffer | value << -shift);
+                    _bitBuffer = (byte)(_bitBuffer | (value & mask) << -shift);
                 }
                 else
                 {
-                    _bitBuffer = (byte)(_bitBuffer | value >> shift);
+                    _bitBuffer = (byte)(_bitBuffer | (value & mask) >> shift);
                 }
 
-                _bitOffset += copyLength;
+                _bitBufferCount += copyLength;
 
-                if (_bitOffset == BitsPerByte)
+                if (_bitBufferCount == BitsPerByte)
                 {
                     FlushBits();
                 }
@@ -390,31 +393,34 @@ namespace BinarySerialization
             var data = new[] { _bitBuffer };
             WriteByteAligned(data, data.Length);
             _bitBuffer = 0;
-            _bitOffset = 0;
+            _bitBufferCount = 0;
         }
 
-        private async Task WriteBitsAsync(byte value, int count, CancellationToken cancellationToken)
+        private async Task WriteBitsAsync(byte value, int count, CancellationToken cancellationToken, bool msbFirst)
         {
             var copied = 0;
             while (copied < count)
             {
-                var headroom = BitsPerByte - _bitOffset;
+                var headroom = BitsPerByte - _bitBufferCount;
                 var remaining = count - copied;
+                byte mask = (byte)(((1 << count) - 1) ^ ((1 << copied) - 1)); // generate bit mask for all bits below 1<<count
                 var copyLength = Math.Min(remaining, headroom);
-                var shift = copied - _bitOffset;
+                var shift = msbFirst ?
+                                copied - (BitsPerByte - (copyLength + _bitBufferCount))
+                                : copied - _bitBufferCount;
 
                 if (shift < 0)
                 {
-                    _bitBuffer = (byte)(_bitBuffer | value << -shift);
+                    _bitBuffer = (byte)(_bitBuffer | (value & mask) << -shift);
                 }
                 else
                 {
-                    _bitBuffer = (byte)(_bitBuffer | value >> shift);
+                    _bitBuffer = (byte)(_bitBuffer | (value & mask) >> shift);
                 }
 
-                _bitOffset += copyLength;
+                _bitBufferCount += copyLength;
 
-                if (_bitOffset == BitsPerByte)
+                if (_bitBufferCount == BitsPerByte)
                 {
                     await FlushBitsAsync(cancellationToken).ConfigureAwait(false);
                 }
@@ -428,7 +434,7 @@ namespace BinarySerialization
             var data = new[] { _bitBuffer };
             await WriteByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
             _bitBuffer = 0;
-            _bitOffset = 0;
+            _bitBufferCount = 0;
         }
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
@@ -466,7 +472,7 @@ namespace BinarySerialization
             }
             else
             {
-                if (length.BitCount == 0 && _bitOffset == 0)
+                if (length.BitCount == 0 && _bitBufferCount == 0)
                 {
                     // trivial byte-aligned case
                     readLength = ReadByteAligned(buffer, (int) length.ByteCount);
@@ -483,14 +489,14 @@ namespace BinarySerialization
 
                     for (long i = 0; i < lastByteIndex; i++)
                     {
-                        readBitCount = ReadBits(BitsPerByte, out value);
+                        readBitCount = ReadBits(BitsPerByte, out value, length.BitOrder==BitOrder.MsbFirst);
                         buffer[i] = value;
-                        readLength += FieldLength.FromBitCount(readBitCount);
+                        readLength += FieldLength.FromBitCount(readBitCount, length.BitOrder);
                     }
 
-                    readBitCount = ReadBits(bitCount, out value);
+                    readBitCount = ReadBits(bitCount, out value, length.BitOrder == BitOrder.MsbFirst);
                     buffer[lastByteIndex] = value;
-                    readLength += FieldLength.FromBitCount(readBitCount);
+                    readLength += FieldLength.FromBitCount(readBitCount, length.BitOrder);
                 }
             }
 
@@ -516,7 +522,7 @@ namespace BinarySerialization
             }
             else
             {
-                if (length.BitCount == 0 && _bitOffset == 0)
+                if (length.BitCount == 0 && _bitBufferCount == 0)
                 {
                     // trivial byte-aligned case
                     readLength = await ReadByteAlignedAsync(buffer, (int) length.ByteCount, cancellationToken)
@@ -534,17 +540,17 @@ namespace BinarySerialization
 
                     for (long i = 0; i < lastByteIndex; i++)
                     {
-                        readBitCount = await ReadBitsAsync(BitsPerByte, value, cancellationToken)
+                        readBitCount = await ReadBitsAsync(BitsPerByte, value, cancellationToken, length.BitOrder == BitOrder.MsbFirst)
                             .ConfigureAwait(false);
 
                         buffer[i] = value[0];
-                        readLength += FieldLength.FromBitCount(readBitCount);
+                        readLength += FieldLength.FromBitCount(readBitCount, length.BitOrder);
                     }
 
                     readBitCount =
-                        await ReadBitsAsync(bitCount, value, cancellationToken).ConfigureAwait(false);
+                        await ReadBitsAsync(bitCount, value, cancellationToken, length.BitOrder == BitOrder.MsbFirst).ConfigureAwait(false);
                     buffer[lastByteIndex] = value[0];
-                    readLength += FieldLength.FromBitCount(readBitCount);
+                    readLength += FieldLength.FromBitCount(readBitCount, length.BitOrder);
                 }
             }
 
@@ -562,23 +568,25 @@ namespace BinarySerialization
             return Source.ReadAsync(buffer, 0, length, cancellationToken);
         }
 
-        private int ReadBits(int count, out byte value)
+        private int ReadBits(int count, out byte value, bool msbFirst)
         {
             byte b = 0;
             var copied = 0;
             while (copied < count)
             {
-                if (_bitOffset == 0)
+                if (_bitBufferCount == 0)
                 {
                     var data = new byte[1];
                     ReadByteAligned(data, data.Length);
                     _bitBuffer = data[0];
-                    _bitOffset = BitsPerByte;
+                    _bitBufferCount = BitsPerByte;
                 }
 
                 var remaining = count - copied;
-                var copyLength = Math.Min(remaining, _bitOffset);
-                var shift = copied - (BitsPerByte - _bitOffset);
+                var copyLength = Math.Min(remaining, _bitBufferCount);
+                var shift = msbFirst ?
+                                copied - (_bitBufferCount - copyLength)
+                                : copied - (BitsPerByte - _bitBufferCount);
 
                 if (shift < 0)
                 {
@@ -589,7 +597,7 @@ namespace BinarySerialization
                     b = (byte)(b | _bitBuffer << shift);
                 }
 
-                _bitOffset -= copyLength;
+                _bitBufferCount -= copyLength;
                 copied += copyLength;
             }
 
@@ -599,23 +607,25 @@ namespace BinarySerialization
             return copied;
         }
 
-        private async Task<int> ReadBitsAsync(int count, byte[] value, CancellationToken cancellationToken)
+        private async Task<int> ReadBitsAsync(int count, byte[] value, CancellationToken cancellationToken, bool msbFirst)
         {
             byte b = 0;
             var copied = 0;
             while (copied < count)
             {
-                if (_bitOffset == 0)
+                if (_bitBufferCount == 0)
                 {
                     var data = new byte[1];
                     await ReadByteAlignedAsync(data, data.Length, cancellationToken).ConfigureAwait(false);
                     _bitBuffer = data[0];
-                    _bitOffset = BitsPerByte;
+                    _bitBufferCount = BitsPerByte;
                 }
 
                 var remaining = count - copied;
-                var copyLength = Math.Min(remaining, _bitOffset);
-                var shift = copied - (BitsPerByte - _bitOffset);
+                var copyLength = Math.Min(remaining, _bitBufferCount);
+                var shift = msbFirst ?
+                                copied - (_bitBufferCount - copyLength)
+                                : copied - (BitsPerByte - _bitBufferCount);
 
                 if (shift < 0)
                 {
@@ -626,7 +636,7 @@ namespace BinarySerialization
                     b = (byte)(b | _bitBuffer << shift);
                 }
 
-                _bitOffset -= copyLength;
+                _bitBufferCount -= copyLength;
                 copied += copyLength;
             }
 

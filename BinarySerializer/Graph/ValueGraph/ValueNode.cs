@@ -61,6 +61,16 @@ namespace BinarySerialization.Graph.ValueGraph
                    TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(bindingValueSelector(binding)));
         }
 
+        public bool ShouldSerialize()
+        {
+            return ShouldSerialize(binding => binding.GetBoundValue(this));
+        }
+
+        public bool ShouldDeserialize()
+        {
+            return ShouldSerialize(binding => binding.GetValue(this));
+        }
+
         public virtual void Bind()
         {
             var typeNode = TypeNode;
@@ -187,11 +197,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetBoundValue(this)))
-                {
-                    return;
-                }
-
                 if (align)
                 {
                     AlignLeft(stream, true);
@@ -243,11 +248,6 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetBoundValue(this)))
-                {
-                    return;
-                }
-
                 if (align)
                 {
                     AlignLeft(stream, true);
@@ -313,15 +313,10 @@ namespace BinarySerialization.Graph.ValueGraph
             throw new InvalidOperationException(message, e);
         }
 
-        internal void Deserialize(BoundedStream stream, EventShuttle eventShuttle)
+        internal void Deserialize(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetValue(this)))
-                {
-                    return;
-                }
-
                 AlignLeft(stream);
 
                 var offset = GetFieldOffset();
@@ -330,21 +325,13 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     if (TypeNode.OffsetRewind)
                     {
-                        using (new StreamResetter(stream))
-                        {
-                            stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
-                            DeserializeInternal(stream, GetFieldLength, eventShuttle);
-                        }
-                    }
-                    else
-                    {
-                        stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
-                        DeserializeInternal(stream, GetFieldLength, eventShuttle);
+                        stream.Position = offset.Value;
+                        DeserializeInternal(stream, GetFieldLength, options, eventShuttle);
                     }
                 }
                 else
                 {
-                    DeserializeInternal(stream, GetFieldLength, eventShuttle);
+                    DeserializeInternal(stream, GetFieldLength, options, eventShuttle);
                 }
 
                 AlignRight(stream);
@@ -371,16 +358,11 @@ namespace BinarySerialization.Graph.ValueGraph
             BindChecks();
         }
 
-        internal async Task DeserializeAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal async Task DeserializeAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle, 
             CancellationToken cancellationToken)
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetValue(this)))
-                {
-                    return;
-                }
-
                 AlignLeft(stream);
 
                 var offset = GetFieldOffset();
@@ -389,23 +371,14 @@ namespace BinarySerialization.Graph.ValueGraph
                 {
                     if (TypeNode.OffsetRewind)
                     {
-                        using (new StreamResetter(stream))
-                        {
-                            stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
-                            await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken)
-                                .ConfigureAwait(false);
-                        }
-                    }
-                    else
-                    {
-                        stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
-                        await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken)
+                        stream.Position = offset.Value;
+                        await DeserializeInternalAsync(stream, GetFieldLength, options, eventShuttle, cancellationToken)
                             .ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    await DeserializeInternalAsync(stream, GetFieldLength, eventShuttle, cancellationToken)
+                    await DeserializeInternalAsync(stream, GetFieldLength, options, eventShuttle, cancellationToken)
                         .ConfigureAwait(false);
                 }
 
@@ -449,10 +422,10 @@ namespace BinarySerialization.Graph.ValueGraph
         internal abstract Task SerializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
             CancellationToken cancellationToken);
 
-        internal abstract void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle);
+        internal abstract void DeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle);
 
-        internal abstract Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
-            CancellationToken cancellationToken);
+        internal abstract Task DeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, 
+            EventShuttle eventShuttle, CancellationToken cancellationToken);
 
         protected IEnumerable<ValueNode> GetSerializableChildren()
         {
@@ -468,9 +441,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var bitLength = GetNumericValue(TypeNode.FieldBitLengthBindings);
+            var bitOrder = (BitOrder?)GetNumericValue(TypeNode.FieldBitOrderBindings);
+            if (!bitOrder.HasValue)
+                bitOrder = (BitOrder?)GetConstNumericValue(TypeNode.FieldBitOrderBindings);
+            if (!bitOrder.HasValue)
+                bitOrder = BitOrder.LsbFirst;
             if (bitLength != null)
             {
-                return FieldLength.FromBitCount((int) bitLength);
+                return FieldLength.FromBitCount((int) bitLength, bitOrder.Value);
             }
 
             var parent = Parent;
@@ -499,9 +477,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             var bitLength = GetConstNumericValue(TypeNode.FieldBitLengthBindings);
+            var bitOrder = (BitOrder?)GetNumericValue(TypeNode.FieldBitOrderBindings);
+            if (!bitOrder.HasValue)
+                bitOrder = (BitOrder?)GetConstNumericValue(TypeNode.FieldBitOrderBindings);
+            if (!bitOrder.HasValue)
+                bitOrder = BitOrder.LsbFirst;
             if (bitLength != null)
             {
-                return FieldLength.FromBitCount((int) bitLength);
+                return FieldLength.FromBitCount((int) bitLength, bitOrder.Value);
             }
 
             return Parent?.GetConstFieldItemLength();
@@ -864,11 +847,11 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        private void DeserializeInternal(BoundedStream stream, Func<FieldLength> maxLengthDelegate, EventShuttle eventShuttle)
+        private void DeserializeInternal(BoundedStream stream, Func<FieldLength> maxLengthDelegate, SerializationOptions options, EventShuttle eventShuttle)
         {
             stream = PrepareStream(stream, maxLengthDelegate, false);
 
-            DeserializeOverride(stream, eventShuttle);
+            DeserializeOverride(stream, options, eventShuttle);
 
             SkipPadding(stream);
 
@@ -876,12 +859,12 @@ namespace BinarySerialization.Graph.ValueGraph
             FlushStream(stream);
         }
 
-        private async Task DeserializeInternalAsync(BoundedStream stream, Func<FieldLength> maxLengthDelegate,
+        private async Task DeserializeInternalAsync(BoundedStream stream, Func<FieldLength> maxLengthDelegate, SerializationOptions options,
             EventShuttle eventShuttle, CancellationToken cancellationToken)
         {
             stream = PrepareStream(stream, maxLengthDelegate, false);
 
-            await DeserializeOverrideAsync(stream, eventShuttle, cancellationToken).ConfigureAwait(false);
+            await DeserializeOverrideAsync(stream, options, eventShuttle, cancellationToken).ConfigureAwait(false);
 
             await SkipPaddingAsync(stream, cancellationToken).ConfigureAwait(false);
 

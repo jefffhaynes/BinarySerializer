@@ -127,8 +127,9 @@ namespace BinarySerialization.Graph.TypeGraph
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
 
             var attributes = memberInfo.GetCustomAttributes(true).ToList();
+            var parentAttributeNames = parentType.GetTypeInfo().GetCustomAttributes<IgnoreMemberAttribute>().Select(attribute => attribute.Name);
 
-            IsIgnored = attributes.OfType<IgnoreAttribute>().Any();
+            IsIgnored = parentAttributeNames.Any(name => name == Name) || attributes.OfType<IgnoreAttribute>().Any();
 
             /* Don't go any further if we're ignoring this. */
             if (IsIgnored)
@@ -183,6 +184,7 @@ namespace BinarySerialization.Graph.TypeGraph
             // setup bindings
             FieldLengthBindings = GetBindings<FieldLengthAttribute>(attributes);
             FieldBitLengthBindings = GetBindings<FieldBitLengthAttribute>(attributes);
+            FieldBitOrderBindings = GetBindings<FieldBitOrderAttribute>(attributes);
             FieldCountBindings = GetBindings<FieldCountAttribute>(attributes);
             FieldOffsetBindings = GetBindings<FieldOffsetAttribute>(attributes);
             FieldScaleBindings = GetBindings<FieldScaleAttribute>(attributes);
@@ -222,8 +224,10 @@ namespace BinarySerialization.Graph.TypeGraph
                         attribute => new ConditionalBinding(attribute, GetBindingLevel(attribute.Binding))).ToList());
             }
 
+#pragma warning disable CS0618
             var serializeWhenNotAttributes = attributes.OfType<SerializeWhenNotAttribute>().ToArray();
             SerializeWhenNotAttributes = new ReadOnlyCollection<SerializeWhenNotAttribute>(serializeWhenNotAttributes);
+#pragma warning restore CS0618
 
             if (SerializeWhenNotAttributes.Count > 0)
             {
@@ -328,6 +332,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public BindingCollection FieldLengthBindings { get; }
         public BindingCollection FieldBitLengthBindings { get; }
+        public BindingCollection FieldBitOrderBindings { get; }
         public BindingCollection ItemLengthBindings { get; }
         public BindingCollection FieldCountBindings { get; }
         public BindingCollection FieldOffsetBindings { get; }
@@ -355,7 +360,9 @@ namespace BinarySerialization.Graph.TypeGraph
         public ReadOnlyCollection<SubtypeBaseAttribute> ItemSubtypeAttributes { get; }
         public ItemSubtypeDefaultAttribute ItemSubtypeDefaultAttribute { get; }
         public ReadOnlyCollection<SerializeWhenAttribute> SerializeWhenAttributes { get; }
+#pragma warning disable CS0618
         public ReadOnlyCollection<SerializeWhenNotAttribute> SerializeWhenNotAttributes { get; }
+#pragma warning restore CS0618
         public SerializeUntilAttribute SerializeUntilAttribute { get; }
         public ItemSerializeUntilAttribute ItemSerializeUntilAttribute { get; }
 
