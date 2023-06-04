@@ -254,17 +254,16 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 var offset = GetFieldOffset();
-
                 if (offset != null)
                 {
                     var rewindPosition = stream.Position;
-                        stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
-                        await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken)
-                                .ConfigureAwait(false);
-                        if (TypeNode.OffsetRewind) 
-                        {
-                            stream.Position = rewindPosition;
-                        }
+                    stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
+                    await SerializeInternalAsync(stream, GetConstFieldLength, eventShuttle, cancellationToken)
+                            .ConfigureAwait(false);
+                    if (TypeNode.OffsetRewind) 
+                    {
+                        stream.Position = rewindPosition;
+                    }
                 }
                 else
                 {
@@ -316,10 +315,12 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (offset != null)
                 {
+                    var rewindPosition = stream.Position;
+                    stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
+                    DeserializeInternal(stream, GetFieldLength, options, eventShuttle);
                     if (TypeNode.OffsetRewind)
                     {
-                        stream.Position = offset.Value;
-                        DeserializeInternal(stream, GetFieldLength, options, eventShuttle);
+                        stream.Position = rewindPosition;
                     }
                 }
                 else
@@ -362,11 +363,13 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 if (offset != null)
                 {
+                    var rewindPosition = stream.Position;
+                    stream.Seek(offset.Value, TypeNode.OffsetSeekOrigin);
+                    await DeserializeInternalAsync(stream, GetFieldLength, options, eventShuttle, cancellationToken)
+                        .ConfigureAwait(false);
                     if (TypeNode.OffsetRewind)
                     {
-                        stream.Position = offset.Value;
-                        await DeserializeInternalAsync(stream, GetFieldLength, options, eventShuttle, cancellationToken)
-                            .ConfigureAwait(false);
+                        stream.Position = rewindPosition;
                     }
                 }
                 else
