@@ -9,7 +9,8 @@ namespace BinarySerialization.Test.Value
         [TestMethod]
         public void DeserializePng()
         {
-            using (var stream = new FileStream("Value\\image.png", FileMode.Open, FileAccess.Read))
+            string path = Path.Combine("Value", "image.png");
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 var data = new byte[stream.Length];
                 stream.Read(data, 0, data.Length);
