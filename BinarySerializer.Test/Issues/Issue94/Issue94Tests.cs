@@ -26,7 +26,8 @@ namespace BinarySerialization.Test.Issues.Issue94
         [TestMethod]
         public void Test()
         {
-            using (var file = new FileStream(@"Issues\Issue94\tst.file", FileMode.Open, FileAccess.Read))
+            string path = Path.Combine("Issues", "Issue94", "tst.file");
+            using (var file = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 var db = Deserialize<MainClass>(file);
             }
