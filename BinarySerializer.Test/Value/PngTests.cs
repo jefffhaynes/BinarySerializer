@@ -11,7 +11,8 @@ namespace BinarySerialization.Test.Value
         {
             byte[] data;
 
-            using (var stream = new FileStream("Value\\image.png", FileMode.Open, FileAccess.Read))
+            var path = Path.Combine("Value", "image.png");
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 data = new byte[stream.Length];
                 var read = stream.Read(data, 0, data.Length);
