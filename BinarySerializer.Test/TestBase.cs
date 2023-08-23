@@ -119,13 +119,7 @@ namespace BinarySerialization.Test
         {
             var o = Deserialize<T>(data);
 
-            PrintSerialize(typeof(T));
-            var stream = new MemoryStream();
-            Serialize(stream, o);
-
-            AssertEqual(data, stream.ToArray());
-
-            return o;
+            return Roundtrip(o, data);
         }
 
         protected byte[] Serialize(object o)
@@ -137,11 +131,9 @@ namespace BinarySerialization.Test
 
         protected T Deserialize<T>(string filename)
         {
-            using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
-            {
-                PrintDeserialize(typeof(T));
-                return Deserialize<T>(stream);
-            }
+            using var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            PrintDeserialize(typeof(T));
+            return Deserialize<T>(stream);
         }
 
         protected T Deserialize<T>(byte[] data)

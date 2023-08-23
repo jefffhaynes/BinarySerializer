@@ -55,11 +55,15 @@ namespace BinarySerialization.Graph.ValueGraph
         private readonly Dictionary<FieldValueAttributeBase, FieldValueAdapterStream> _fieldValueAttributeTaps;
         private readonly Dictionary<FieldValueAttributeBase, object> _fieldValueAttributeFinalValue;
 
-        private bool ShouldSerialize(Func<Binding, object> bindingValueSelector)
+        private bool ShouldSerializeImpl(Func<Binding, object> bindingValueSelector)
         {
             return TypeNode.SerializeWhenBindings == null || 
                    TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(bindingValueSelector(binding)));
         }
+
+        private bool ShouldSerialize => ShouldSerializeImpl(binding => binding.GetBoundValue(this));
+
+        private bool ShouldDeserialize => ShouldSerializeImpl(binding => binding.GetValue(this));
 
         public virtual void Bind()
         {
@@ -187,7 +191,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetBoundValue(this)))
+                if (!ShouldSerialize)
                 {
                     return;
                 }
@@ -241,7 +245,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetBoundValue(this)))
+                if (!ShouldSerialize)
                 {
                     return;
                 }
@@ -306,7 +310,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetValue(this)))
+                if (!ShouldDeserialize)
                 {
                     return;
                 }
@@ -357,7 +361,7 @@ namespace BinarySerialization.Graph.ValueGraph
         {
             try
             {
-                if (!ShouldSerialize(binding => binding.GetValue(this)))
+                if (!ShouldDeserialize)
                 {
                     return;
                 }
@@ -631,6 +635,11 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private object SubtypeBindingCallback(TypeNode typeNode)
         {
+            if (!ShouldSerialize)
+            {
+                return UnsetValue;
+            }
+
             var valueType = GetValueTypeOverride();
             if (valueType == null)
             {

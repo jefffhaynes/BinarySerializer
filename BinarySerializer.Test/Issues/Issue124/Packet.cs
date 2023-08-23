@@ -13,8 +13,8 @@
 
         [FieldOrder(3)]
         [SerializeWhenNot(nameof(NID_PACKET), null)]
-        [Subtype(nameof(NID_PACKET), NID_PACKETNUM.PACKET1, typeof(Packet1))]
-        [Subtype(nameof(NID_PACKET), NID_PACKETNUM.PACKETN, typeof(PacketN))]
+        [Subtype(nameof(NID_PACKET), NID_PACKETNUM.PACKET1, typeof(Packet1), BindingMode = BindingMode.OneWay)]
+        [Subtype(nameof(NID_PACKET), NID_PACKETNUM.PACKETN, typeof(PacketN), BindingMode = BindingMode.OneWay)]
         //L_PACKET = bit length of PacketBody + bit length of NID_PACKET(10)+ bit length of L_PACKET(13)
         [FieldBitLength(nameof(L_PACKET))]
         public PacketBody PacketBody { get; set; }
