@@ -61,9 +61,9 @@ namespace BinarySerialization.Graph.ValueGraph
                    TypeNode.SerializeWhenBindings.Any(binding => binding.IsSatisfiedBy(bindingValueSelector(binding)));
         }
 
-        private bool ShouldSerialize => ShouldSerializeImpl(binding => binding.GetBoundValue(this));
+        internal bool ShouldSerialize => ShouldSerializeImpl(binding => binding.GetBoundValue(this));
 
-        private bool ShouldDeserialize => ShouldSerializeImpl(binding => binding.GetValue(this));
+        internal bool ShouldDeserialize => ShouldSerializeImpl(binding => binding.GetValue(this));
 
         public virtual void Bind()
         {

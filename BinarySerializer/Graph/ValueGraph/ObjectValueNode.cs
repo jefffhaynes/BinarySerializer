@@ -160,7 +160,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in serializableChildren)
             {
-                if (!child.ShouldSerialize())
+                if (!child.ShouldSerialize)
                 {
                     continue;
                 }
@@ -194,7 +194,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in serializableChildren)
             {
-                if (!child.ShouldSerialize())
+                if (!child.ShouldSerialize)
                 {
                     continue;
                 }
@@ -224,7 +224,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in GetSerializableChildren())
             {
-                if (!child.ShouldDeserialize())
+                if (!child.ShouldDeserialize)
                 {
                     continue;
                 }
@@ -256,7 +256,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
             foreach (var child in GetSerializableChildren())
             {
-                if (!child.ShouldDeserialize())
+                if (!child.ShouldDeserialize)
                 {
                     continue;
                 }
