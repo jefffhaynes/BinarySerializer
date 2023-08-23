@@ -50,7 +50,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             var rootStream = GetRootStream(stream);
 
@@ -71,7 +71,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             var rootStream = GetRootStream(stream);

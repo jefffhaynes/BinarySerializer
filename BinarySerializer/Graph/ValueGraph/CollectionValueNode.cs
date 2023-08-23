@@ -58,7 +58,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 .ConfigureAwait(false);
         }
 
-        internal override void DeserializeOverride(BoundedStream stream, EventShuttle eventShuttle)
+        internal override void DeserializeOverride(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle)
         {
             var terminationValue = GetTerminationValue();
             var terminationChild = GetTerminationChild();
@@ -71,7 +71,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 for (long i = 0; i < count && !EndOfStream(stream); i++)
                 {
-                    if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
+                    if (IsTerminated(stream, terminationChild, terminationValue, options, eventShuttle))
                     {
                         break;
                     }
@@ -89,7 +89,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     using (var streamResetter = new StreamResetter(childStream))
                     {
-                        child.Deserialize(childStream, eventShuttle);
+                        child.Deserialize(childStream, options, eventShuttle);
 
                         if (child.Value == null)
                         {
@@ -110,7 +110,7 @@ namespace BinarySerialization.Graph.ValueGraph
             }
         }
 
-        internal override async Task DeserializeOverrideAsync(BoundedStream stream, EventShuttle eventShuttle,
+        internal override async Task DeserializeOverrideAsync(BoundedStream stream, SerializationOptions options, EventShuttle eventShuttle,
             CancellationToken cancellationToken)
         {
             var terminationValue = GetTerminationValue();
@@ -124,7 +124,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 for (long i = 0; i < count && !EndOfStream(stream); i++)
                 {
-                    if (IsTerminated(stream, terminationChild, terminationValue, eventShuttle))
+                    if (IsTerminated(stream, terminationChild, terminationValue, options, eventShuttle))
                     {
                         break;
                     }
@@ -142,7 +142,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                     using (var streamResetter = new StreamResetter(childStream))
                     {
-                        await child.DeserializeAsync(childStream, eventShuttle, cancellationToken)
+                        await child.DeserializeAsync(childStream, options, eventShuttle, cancellationToken)
                             .ConfigureAwait(false);
 
                         if (child.Value == null)

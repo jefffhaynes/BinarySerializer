@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Misc
 {
@@ -6,7 +7,7 @@ namespace BinarySerialization.Test.Misc
     public class MiscTests : TestBase
     {
         [TestMethod]
-        public async void DontFlushTooMuchTest()
+        public async Task DontFlushTooMuchTest()
         {
             var serializer = new BinarySerializer();
             var expected = new DontFlushTooMuchClass();

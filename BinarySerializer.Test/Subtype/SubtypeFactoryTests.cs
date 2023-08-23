@@ -59,5 +59,22 @@ namespace BinarySerialization.Test.Subtype
             var actual = Deserialize<SubtypeMixedWithDefaultClass>(data);
             Assert.AreEqual(typeof(DefaultSubtypeClass), actual.Value.GetType());
         }
+
+        [TestMethod]
+        public void InterfaceSubtypeTest()
+        {
+            var expected = new InterfaceSubtype
+            {
+                Value = new InterfaceSubclassA
+                {
+                    Value = "hello",
+                    MoreStuff = 4
+                }
+            };
+
+            var actual = Roundtrip(expected);
+
+            Assert.IsInstanceOfType(actual.Value, typeof(InterfaceSubclassA));
+        }
     }
 }
