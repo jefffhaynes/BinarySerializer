@@ -77,6 +77,12 @@ namespace BinarySerialization.Graph
 
             CheckSource(source);
 
+            // When using a calculated Ignore field, the evaluation of the value is not
+            // deferred until required non-Ignore fields are calculated.
+            // This is a hack, but if the value is null, we will re-evaluate the getter
+            if (source.Value == null && source.TypeNode.ValueGetter != null)
+                source.Value = source.TypeNode.ValueGetter.Invoke(source.Parent.Value);
+
             return ValueConverter == null
                 ? source.Value
                 : Convert(source.Value, target.CreateLazySerializationContext());
