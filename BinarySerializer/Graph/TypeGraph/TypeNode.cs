@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -140,6 +141,13 @@ namespace BinarySerialization.Graph.TypeGraph
             if (fieldOrderAttribute != null)
             {
                 Order = fieldOrderAttribute.Order;
+            }
+
+            var offsetAttribute = attributes.OfType<FieldOffsetAttribute>().SingleOrDefault();
+            if (offsetAttribute != null)
+            {
+                OffsetSeekOrigin = offsetAttribute.SeekOrigin;
+                OffsetRewind = offsetAttribute.Rewind;
             }
 
             var serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
@@ -361,6 +369,9 @@ namespace BinarySerialization.Graph.TypeGraph
         public bool IsIgnored { get; }
 
         public int? Order { get; }
+
+        public SeekOrigin OffsetSeekOrigin { get; } = SeekOrigin.Begin;
+        public bool OffsetRewind { get; } = true;
 
         public bool AreStringsTerminated { get; }
 
