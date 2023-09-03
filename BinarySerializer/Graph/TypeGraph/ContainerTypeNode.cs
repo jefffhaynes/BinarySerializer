@@ -1,6 +1,8 @@
-using System;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
@@ -45,7 +47,7 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 ThrowOnBadType(memberType);
 
-                var nodeType = GetNodeType(memberType);
+                var nodeType = GetNodeType(memberType, memberInfo.GetCustomAttributes());
 
                 return (TypeNode) Activator.CreateInstance(nodeType, this, parentType, memberInfo);
             }
@@ -80,7 +82,8 @@ namespace BinarySerialization.Graph.TypeGraph
         }
 // ReSharper restore UnusedParameter.Local
 
-        private static Type GetNodeType(Type type)
+        private static Type GetNodeType(Type type) => GetNodeType(type, Enumerable.Empty<Attribute>());
+        private static Type GetNodeType(Type type, IEnumerable<Attribute> attributes)
         {
             var nullableType = Nullable.GetUnderlyingType(type);
 
@@ -96,6 +99,14 @@ namespace BinarySerialization.Graph.TypeGraph
                 return typeof(ValueTypeNode);
             }
 
+            if (attributes.OfType<PackAttribute>().Any())
+            {
+                if (type == typeof(bool[]))
+                    return typeof(PackedBooleanArrayTypeNode);
+
+                throw new InvalidOperationException($"Cannot use the Pack attribute on member of type {type.Name}.");
+            }
+                
             if (type.IsArray)
             {
                 return typeof(ArrayTypeNode);
