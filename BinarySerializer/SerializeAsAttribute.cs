@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinarySerialization.Graph;
+using System;
 
 namespace BinarySerialization
 {
@@ -11,14 +12,17 @@ namespace BinarySerialization
         /// <summary>
         ///     Initializes a new instance of the <see cref="SerializeAsAttribute" /> class.
         /// </summary>
-        public SerializeAsAttribute()
+        public SerializeAsAttribute(Type converterType=null, object converterParameter = null)
         {
+            ConverterType = converterType;
+            ConverterParameter = converterParameter;
         }
 
         /// <summary>
         ///     Initializes a new instance of the SerializeAs class with a specified <see cref="SerializedType" />.
         /// </summary>
-        public SerializeAsAttribute(SerializedType serializedType)
+        public SerializeAsAttribute(SerializedType serializedType, Type converterType = null, object converterParameter = null) 
+            : this(converterType, converterParameter)
         {
             SerializedType = serializedType;
         }
@@ -37,5 +41,14 @@ namespace BinarySerialization
         /// Specifies padding value to be used when serializing fixed-size fields.
         /// </summary>
         public byte PaddingValue { get; set; }
+        /// <summary>
+        ///     An optional converter to be used converting from the source value to the target binding.
+        /// </summary>
+        public Type ConverterType { get; set; }
+
+        /// <summary>
+        ///     An optional converter parameter to be passed to the converter.
+        /// </summary>
+        public object ConverterParameter { get; set; }
     }
 }

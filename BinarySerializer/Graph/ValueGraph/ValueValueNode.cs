@@ -89,7 +89,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     }
                 }
 
-                return ConvertToFieldType(value);
+                return ConvertToFieldType(value,false);
             }
         }
 
@@ -489,7 +489,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     throw new NotSupportedException(TypeNotSupportedMessage);
             }
 
-            _value = ConvertToFieldType(value);
+            _value = ConvertToFieldType(value,true);
 
             // check computed values (CRCs, etc.)
             CheckComputedValues();
@@ -565,7 +565,7 @@ namespace BinarySerialization.Graph.ValueGraph
                     throw new NotSupportedException(TypeNotSupportedMessage);
             }
 
-            _value = ConvertToFieldType(value);
+            _value = ConvertToFieldType(value,true);
 
             // check computed values (CRCs, etc.)
             CheckComputedValues();
@@ -834,6 +834,37 @@ namespace BinarySerialization.Graph.ValueGraph
             return value;
         }
 
+        private object ConvertToFieldType(object value,bool isDeserialize)
+        {
+            if (TypeNode.SerializeAsAttribute?.ConverterType!=null)
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+                var   valueConverter = Activator.CreateInstance(TypeNode.SerializeAsAttribute.ConverterType) as IValueConverter;
+
+                if (valueConverter == null)
+                {
+                    var message = $"{TypeNode.SerializeAsAttribute.ConverterType} does not implement IValueConverter.";
+                    throw new InvalidOperationException(message);
+                }
+
+                var  converterParameter = TypeNode.SerializeAsAttribute.ConverterParameter;
+             
+                if (isDeserialize)
+                {
+                    return valueConverter.Convert(value, converterParameter, CreateLazySerializationContext());
+                }
+                else
+                {
+                    return valueConverter.ConvertBack(value, converterParameter, CreateLazySerializationContext());
+                }
+                
+            }
+
+            return ConvertToFieldType(value);
+        }
         private object ConvertToFieldType(object value)
         {
             return value.ConvertTo(TypeNode.Type);

@@ -142,10 +142,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 Order = fieldOrderAttribute.Order;
             }
 
-            var serializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
-            if (serializeAsAttribute != null)
+            SerializeAsAttribute = attributes.OfType<SerializeAsAttribute>().SingleOrDefault();
+            if (SerializeAsAttribute != null)
             {
-                _serializedType = serializeAsAttribute.SerializedType;
+                _serializedType = SerializeAsAttribute.SerializedType;
 
 #pragma warning disable 618
                 if (_serializedType == SerializedType.NullTerminatedString)
@@ -157,10 +157,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 if (_serializedType.Value == SerializedType.TerminatedString)
                 {
                     AreStringsTerminated = true;
-                    StringTerminator = serializeAsAttribute.StringTerminator;
+                    StringTerminator = SerializeAsAttribute.StringTerminator;
                 }
 
-                PaddingValue = serializeAsAttribute.PaddingValue;
+                PaddingValue = SerializeAsAttribute.PaddingValue;
             }
 
             IsNullable = NullableUnderlyingType != null;
@@ -313,6 +313,7 @@ namespace BinarySerialization.Graph.TypeGraph
         }
 
 
+
         public MemberInfo MemberInfo { get; }
         public Type Type { get; }
         public Type NullableUnderlyingType { get; }
@@ -347,6 +348,7 @@ namespace BinarySerialization.Graph.TypeGraph
         public ReadOnlyCollection<FieldValueAttributeBase> FieldValueAttributes { get; }
         public ReadOnlyCollection<SubtypeBaseAttribute> SubtypeAttributes { get; }
         public SubtypeDefaultAttribute SubtypeDefaultAttribute { get; }
+        public SerializeAsAttribute SerializeAsAttribute { get; }
         public ISubtypeFactory SubtypeFactory { get; }
         public ISubtypeFactory ItemSubtypeFactory { get; }
         public ReadOnlyCollection<SubtypeBaseAttribute> ItemSubtypeAttributes { get; }

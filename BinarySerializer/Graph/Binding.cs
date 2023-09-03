@@ -60,7 +60,7 @@ namespace BinarySerialization.Graph
                 return _constValue;
             }
         }
-
+        
         public object GetValue(ValueNode target)
         {
             if (IsConst)
