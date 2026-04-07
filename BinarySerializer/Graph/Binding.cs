@@ -77,9 +77,11 @@ namespace BinarySerialization.Graph
 
             CheckSource(source);
 
+            var sourceValue = GetSourceValue(source, false);
+
             return ValueConverter == null
-                ? source.Value
-                : Convert(source.Value, target.CreateLazySerializationContext());
+                ? sourceValue
+                : Convert(sourceValue, target.CreateLazySerializationContext());
         }
 
         public object GetBoundValue(ValueNode target)
@@ -93,9 +95,11 @@ namespace BinarySerialization.Graph
 
             CheckSource(source);
 
+            var sourceValue = GetSourceValue(source, true);
+
             return ValueConverter == null
-                ? source.BoundValue
-                : Convert(source.BoundValue, target.CreateLazySerializationContext());
+                ? sourceValue
+                : Convert(sourceValue, target.CreateLazySerializationContext());
         }
 
         public void Bind(ValueNode target, Func<object> callback)
@@ -178,6 +182,21 @@ namespace BinarySerialization.Graph
         private object ConvertBack(object value, BinarySerializationContext context)
         {
             return ValueConverter.ConvertBack(value, ConverterParameter, context);
+        }
+
+        private static object GetSourceValue(ValueNode source, bool bound)
+        {
+            if (source.TypeNode.IsIgnored && source.TypeNode.ValueGetter != null && source.Parent != null)
+            {
+                var parentValue = bound ? source.Parent.BoundValue : source.Parent.Value;
+
+                if (parentValue != null)
+                {
+                    return source.TypeNode.ValueGetter(parentValue);
+                }
+            }
+
+            return bound ? source.BoundValue : source.Value;
         }
         
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
