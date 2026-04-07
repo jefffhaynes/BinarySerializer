@@ -46,7 +46,8 @@ namespace BinarySerialization.Graph.TypeGraph
             if (enumAttributes.Any(enumAttribute => enumAttribute.Value != null) ||
                 serializedType == SerializedType.TerminatedString ||
                 serializedType == SerializedType.SizedString ||
-                serializedType == SerializedType.LengthPrefixedString)
+                serializedType == SerializedType.LengthPrefixedString ||
+                serializedType == SerializedType.TerminatedSizedString)
             {
                 EnumInfo.EnumValues = enumAttributes.ToDictionary(enumAttribute => enumAttribute.Key,
                     enumAttribute =>
