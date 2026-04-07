@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -71,7 +72,7 @@ namespace BinarySerialization.Test.BitLength
             Assert.AreEqual(expectedMsbBits.Value3 & 0b11, actualMsbBits.Value3);
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void LengthTestBE()
         {
             var expected = new BitLengthClass
@@ -89,6 +90,19 @@ namespace BinarySerialization.Test.BitLength
             Assert.AreEqual(expected.C, actual.C);
             Assert.AreEqual(expected.Internal.Value, actual.Internal.Value);
             Assert.AreEqual(0b1010, actual.Internal2.Value);
+        }
+
+        [TestMethod]
+        public void LengthDeserializeTestBE()
+        {
+            var actual = DeserializeBe<BitLengthClass>(new MemoryStream(new byte[] { 0x7d, 0xef, 0xf6, 0xfd, 0x5a }));
+
+            Assert.AreEqual(0b1_0110_1110_1111_0111_1101, actual.A);
+            Assert.AreEqual(0b111, actual.B);
+            Assert.AreEqual((TypeCode)0b1101, actual.C);
+            Assert.AreEqual(0b1111, actual.Internal.Value);
+            Assert.AreEqual(0b1010, actual.Internal2.Value);
+            Assert.AreEqual(0b0101, actual.Internal2.Value2);
         }
 
         [TestMethod]

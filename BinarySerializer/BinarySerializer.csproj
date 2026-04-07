@@ -18,10 +18,10 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Update package for .NET 10</PackageReleaseNotes>
-    <AssemblyVersion>10.0.0.0</AssemblyVersion>
-    <Version>10.0.0</Version>
-    <FileVersion>10.0.0.0</FileVersion>
+    <PackageReleaseNotes>Update package for .NET 10. Fix big-endian handling for bit fields and partial-width primitive serialization.</PackageReleaseNotes>
+    <AssemblyVersion>10.1.0.0</AssemblyVersion>
+    <Version>10.1.0</Version>
+    <FileVersion>10.1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -11,6 +11,7 @@ namespace BinarySerialization.Graph.ValueGraph
     internal class ValueValueNode : ValueNode
     {
         private object _cachedValue;
+        private Endianness? _deserializedPrimitiveEndianness;
         private object _value;
 
         private const string LengthPrefixedStringsCannotHaveConstLengthMessage =
@@ -108,7 +109,7 @@ namespace BinarySerialization.Graph.ValueGraph
         public void Serialize(BoundedStream stream, object value, SerializedType serializedType,
             FieldLength length = null)
         {
-            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), GetFieldPaddingValue());
+            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), GetFieldPaddingValue(), GetFieldEndianness());
             Serialize(writer, value, serializedType, length);
         }
 
@@ -260,7 +261,7 @@ namespace BinarySerialization.Graph.ValueGraph
         public Task SerializeAsync(BoundedStream stream, object value, SerializedType serializedType,
             FieldLength length = null, CancellationToken cancellationToken = default)
         {
-            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), GetFieldPaddingValue());
+            var writer = new AsyncBinaryWriter(stream, GetFieldEncoding(), GetFieldPaddingValue(), GetFieldEndianness());
             return SerializeAsync(writer, value, serializedType, length, cancellationToken);
         }
 
@@ -413,53 +414,55 @@ namespace BinarySerialization.Graph.ValueGraph
 
         public void Deserialize(BoundedStream stream, SerializedType serializedType, FieldLength length = null)
         {
-            var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
+            var reader = new AsyncBinaryReader(stream, GetFieldEncoding(), GetFieldEndianness());
             Deserialize(reader, serializedType, length);
         }
 
         public Task DeserializeAsync(BoundedStream stream, SerializedType serializedType, FieldLength length,
             CancellationToken cancellationToken)
         {
-            var reader = new AsyncBinaryReader(stream, GetFieldEncoding());
+            var reader = new AsyncBinaryReader(stream, GetFieldEncoding(), GetFieldEndianness());
             return DeserializeAsync(reader, serializedType, length, cancellationToken);
         }
 
         public void Deserialize(BinaryReader reader, SerializedType serializedType, FieldLength length = null)
         {
+            var primitiveLength = length ?? GetFieldLength() ?? GetFieldCount();
             var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
+            var asyncReader = reader as AsyncBinaryReader;
 
             object value;
             switch (serializedType)
             {
                 case SerializedType.Int1:
-                    value = reader.ReadSByte();
+                    value = asyncReader?.ReadSByte(primitiveLength) ?? reader.ReadSByte();
                     break;
                 case SerializedType.UInt1:
-                    value = reader.ReadByte();
+                    value = asyncReader?.ReadByte(primitiveLength) ?? reader.ReadByte();
                     break;
                 case SerializedType.Int2:
-                    value = reader.ReadInt16();
+                    value = asyncReader?.ReadInt16(primitiveLength) ?? reader.ReadInt16();
                     break;
                 case SerializedType.UInt2:
-                    value = reader.ReadUInt16();
+                    value = asyncReader?.ReadUInt16(primitiveLength) ?? reader.ReadUInt16();
                     break;
                 case SerializedType.Int4:
-                    value = reader.ReadInt32();
+                    value = asyncReader?.ReadInt32(primitiveLength) ?? reader.ReadInt32();
                     break;
                 case SerializedType.UInt4:
-                    value = reader.ReadUInt32();
+                    value = asyncReader?.ReadUInt32(primitiveLength) ?? reader.ReadUInt32();
                     break;
                 case SerializedType.Int8:
-                    value = reader.ReadInt64();
+                    value = asyncReader?.ReadInt64(primitiveLength) ?? reader.ReadInt64();
                     break;
                 case SerializedType.UInt8:
-                    value = reader.ReadUInt64();
+                    value = asyncReader?.ReadUInt64(primitiveLength) ?? reader.ReadUInt64();
                     break;
                 case SerializedType.Float4:
-                    value = reader.ReadSingle();
+                    value = asyncReader?.ReadSingle(primitiveLength) ?? reader.ReadSingle();
                     break;
                 case SerializedType.Float8:
-                    value = reader.ReadDouble();
+                    value = asyncReader?.ReadDouble(primitiveLength) ?? reader.ReadDouble();
                     break;
                 case SerializedType.ByteArray:
                 {
@@ -490,6 +493,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             _value = ConvertToFieldType(value);
+            _deserializedPrimitiveEndianness = asyncReader != null && primitiveLength == null && RequiresByteOrder(serializedType)
+                ? asyncReader.Endianness
+                : null;
 
             // check computed values (CRCs, etc.)
             CheckComputedValues();
@@ -498,40 +504,41 @@ namespace BinarySerialization.Graph.ValueGraph
         public async Task DeserializeAsync(AsyncBinaryReader reader, SerializedType serializedType, FieldLength length,
             CancellationToken cancellationToken)
         {
+            var primitiveLength = length ?? GetFieldLength() ?? GetFieldCount();
             var effectiveLengthValue = GetEffectiveLengthValue(reader, serializedType, length);
 
             object value;
             switch (serializedType)
             {
                 case SerializedType.Int1:
-                    value = await reader.ReadSByteAsync(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadSByteAsync(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.UInt1:
-                    value = await reader.ReadByteAsync(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadByteAsync(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.Int2:
-                    value = await reader.ReadInt16Async(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadInt16Async(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.UInt2:
-                    value = await reader.ReadUInt16Async(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadUInt16Async(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.Int4:
-                    value = await reader.ReadInt32Async(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadInt32Async(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.UInt4:
-                    value = await reader.ReadUInt32Async(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadUInt32Async(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.Int8:
-                    value = await reader.ReadInt64Async(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadInt64Async(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.UInt8:
-                    value = await reader.ReadUInt64Async(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadUInt64Async(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.Float4:
-                    value = await reader.ReadSingleAsync(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadSingleAsync(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.Float8:
-                    value = await reader.ReadDoubleAsync(cancellationToken).ConfigureAwait(false);
+                    value = await reader.ReadDoubleAsync(primitiveLength, cancellationToken).ConfigureAwait(false);
                     break;
                 case SerializedType.ByteArray:
                 {
@@ -566,6 +573,9 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             _value = ConvertToFieldType(value);
+            _deserializedPrimitiveEndianness = primitiveLength == null && RequiresByteOrder(serializedType)
+                ? reader.Endianness
+                : null;
 
             // check computed values (CRCs, etc.)
             CheckComputedValues();
@@ -796,25 +806,15 @@ namespace BinarySerialization.Graph.ValueGraph
                 return null;
             }
 
-            // only resolve endianness if it matters
-            if (serializedType == SerializedType.Int2 || serializedType == SerializedType.UInt2 ||
-                serializedType == SerializedType.Int4 || serializedType == SerializedType.UInt4 ||
-                serializedType == SerializedType.Int8 || serializedType == SerializedType.UInt8 ||
-                serializedType == SerializedType.Float4 || serializedType == SerializedType.Float8)
+            if (_deserializedPrimitiveEndianness != null && _deserializedPrimitiveEndianness != GetFieldEndianness() &&
+                RequiresByteOrder(serializedType))
             {
-                if (GetFieldEndianness() != Endianness.Big)
-                {
-                    return value;
-                }
-
                 switch (serializedType)
                 {
                     case SerializedType.Int2:
                         return Bytes.Reverse(Convert.ToInt16(value));
                     case SerializedType.UInt2:
                         var value2 = Bytes.Reverse(Convert.ToUInt16(value));
-
-                        // handle special case of char
                         return ConvertToFieldType(value2);
                     case SerializedType.Int4:
                         return Bytes.Reverse(Convert.ToInt32(value));
@@ -832,6 +832,14 @@ namespace BinarySerialization.Graph.ValueGraph
             }
 
             return value;
+        }
+
+        private static bool RequiresByteOrder(SerializedType serializedType)
+        {
+            return serializedType == SerializedType.Int2 || serializedType == SerializedType.UInt2 ||
+                   serializedType == SerializedType.Int4 || serializedType == SerializedType.UInt4 ||
+                   serializedType == SerializedType.Int8 || serializedType == SerializedType.UInt8 ||
+                   serializedType == SerializedType.Float4 || serializedType == SerializedType.Float8;
         }
 
         private object ConvertToFieldType(object value)
