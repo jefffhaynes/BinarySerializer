@@ -9,8 +9,10 @@ namespace BinarySerialization.Test.Custom
             BinarySerializationContext serializationContext)
         {
             Assert.AreEqual(typeof(CustomWithContextContainerClass), serializationContext.ParentType);
-            //Assert.AreEqual("context", serializationContext.ParentContext.ParentValue);
-            // TODO check root context
+
+
+            Assert.AreEqual(typeof(CustomWithContextContainerContextClass), serializationContext.ParentContext.ParentContext.ParentType);
+            Assert.AreEqual("context", (serializationContext.ParentContext.ParentContext.ParentValue as CustomWithContextContainerContextClass).Value);
         }
 
         public void Deserialize(Stream stream, BinarySerialization.Endianness endianness,

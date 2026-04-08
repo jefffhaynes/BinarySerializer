@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -99,6 +100,13 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override Encoding GetFieldEncoding()
         {
             return EncodingCallback();
+        }
+
+        protected override BinarySerializationContext CreateSerializationContext()
+        {
+            var parent = Children.FirstOrDefault()?.Parent;
+            return new BinarySerializationContext(Value, parent?.Value, parent?.TypeNode.Type,
+                null, TypeNode.MemberInfo);
         }
 
         private static RootTypeNode GetContextGraph(Type valueType)

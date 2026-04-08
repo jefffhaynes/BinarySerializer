@@ -28,11 +28,12 @@ namespace BinarySerialization.Test.Custom
         public void CustomWithContextTest()
         {
             var expected = new CustomWithContextContainerClass {Value = new CustomWithContextClass()};
+            var context = new CustomWithContextContainerContextClass { Value = "context" };
 
             var serializer = new BinarySerializer();
             var stream = new MemoryStream();
 
-            serializer.Serialize(stream, expected, "context");
+            serializer.Serialize(stream, expected, context);
             stream.Position = 0;
             serializer.Deserialize<CustomWithContextContainerClass>(stream);
         }

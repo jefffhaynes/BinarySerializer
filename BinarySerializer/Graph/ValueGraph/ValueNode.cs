@@ -960,7 +960,7 @@ namespace BinarySerialization.Graph.ValueGraph
             return Convert.ToInt64(binding.ConstValue);
         }
 
-        private BinarySerializationContext CreateSerializationContext()
+        protected virtual BinarySerializationContext CreateSerializationContext()
         {
             var parent = Parent;
             return new BinarySerializationContext(Value, parent?.Value, parent?.TypeNode.Type,
