@@ -25,7 +25,9 @@ namespace BinarySerialization.Test.Issues.Issue124
             };
 
             var actual = Roundtrip(expected);
-
+            Assert.AreEqual(expected.Packets.Count, actual.Packets.Count);
+            Assert.IsInstanceOfType(actual.Packets[0].PacketBody, typeof(Packet1));
+            Assert.IsInstanceOfType(actual.Packets[1].PacketBody, typeof(Packet1));
         }
     }
 }

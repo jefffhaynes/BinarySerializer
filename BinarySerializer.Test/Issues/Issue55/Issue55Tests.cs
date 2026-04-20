@@ -37,16 +37,15 @@ namespace BinarySerialization.Test.Issues.Issue55
 
             outputStream.Seek(0, SeekOrigin.Begin);
             var inputStream = new LooksLikeANetworkStream(outputStream); //non-seekable stream
-            //var inputStream = outputStream; //successful
 
             var roundtrip = serializer.Deserialize<ChunkContainer>(inputStream);
-            //Assert.That(roundtrip.Chunk, Is.InstanceOf<TestChunk>());
-
-            //var sourceChunk = (TestChunk)source.Chunk;
-            //var testChunk = (TestChunk)roundtrip.Chunk;
-            //Assert.That(testChunk.Customs.Length, Is.EqualTo(sourceChunk.Customs.Length));
-            //Assert.That(testChunk.Customs.ElementAt(0).Value, Is.EqualTo(sourceChunk.Customs.ElementAt(0).Value));
-            //Assert.That(testChunk.Customs.ElementAt(1).Value, Is.EqualTo(sourceChunk.Customs.ElementAt(1).Value));
+            Assert.IsInstanceOfType<TestChunk>(roundtrip.Chunk);
+            var sourceChunk = (TestChunk)source.Chunk;
+            var testChunk = (TestChunk)roundtrip.Chunk;
+            Assert.AreEqual(testChunk.Customs.Length, sourceChunk.Customs.Length);
+            
+            Assert.AreEqual(testChunk.Customs[0].Value, sourceChunk.Customs[0].Value);
+            Assert.AreEqual(testChunk.Customs[1].Value, sourceChunk.Customs[1].Value);
         }
     }
 }
