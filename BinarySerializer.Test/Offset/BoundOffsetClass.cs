@@ -3,10 +3,13 @@
     public class BoundOffsetClass
     {
         [FieldOrder(0)]
-        public int FieldOffsetField { get; set; }
+        public uint FieldOffsetField { get; set; }
 
         [FieldOrder(1)]
-        [FieldOffset("FieldOffsetField")]
-        public string Field { get; set; }
+        [FieldOffset(nameof(FieldOffsetField))]
+        public string FieldString { get; set; }
+
+        [FieldOrder(2)]
+        public uint FieldUint { get; set; }
     }
 }
