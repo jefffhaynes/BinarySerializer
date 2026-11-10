@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,7 +56,22 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override object CreateCollection(long size)
         {
             var typeNode = (ListTypeNode) TypeNode;
-            var array = Array.CreateInstance(typeNode.ChildType, (int) size);
+            var array = TypeExtensions.CreateArray(typeNode.ChildType, (int) size);
+
+            var isList = typeNode.Type.IsGenericType && typeNode.Type.GetGenericTypeDefinition() == typeof(List<>);
+
+            if (isList && typeNode.CompiledConstructor != null)
+            {
+                /* AOT-safe path for List<T>: construct empty and add rather than using generic constructor reflection. */
+                var created = (IList) typeNode.CompiledConstructor();
+                foreach (var item in array)
+                {
+                    created.Add(item);
+                }
+
+                return created;
+            }
+
             return Activator.CreateInstance(typeNode.Type, array);
         }
 

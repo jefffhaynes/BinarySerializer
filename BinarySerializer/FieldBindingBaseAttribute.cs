@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BinarySerialization
 {
@@ -82,6 +83,7 @@ namespace BinarySerialization
         /// <summary>
         ///     Gets or sets the type of converter to use.
         /// </summary>
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
         public Type ConverterType
         {
             get => Binding.ConverterType;

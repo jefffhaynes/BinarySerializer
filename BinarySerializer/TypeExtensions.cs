@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace BinarySerialization
 {
@@ -65,6 +67,165 @@ namespace BinarySerialization
             }
 
             return value;
+        }
+
+
+        /// <summary>
+        ///     Creates an array of the specified element type and size.  Primitive element types are created with
+        ///     statically referenced array code so this works when AOT compiling; other element types fall back to
+        ///     <see cref="Array.CreateInstance(Type, int)" /> and require the array type to be statically rooted in
+        ///     trimmed or AOT-compiled applications (see README, AOT support).
+        /// </summary>
+        [UnconditionalSuppressMessage("AOT", "IL3050",
+            Justification =
+                "Primitive element arrays take the statically linked path.  Array.CreateInstance is only used for other element types, whose array types are preserved when the owning serialized types are rooted (see README, AOT support).")]
+        internal static Array CreateArray(Type elementType, int size)
+        {
+            switch (Type.GetTypeCode(elementType))
+            {
+                case TypeCode.Boolean:
+                    return new bool[size];
+                case TypeCode.Byte:
+                    return new byte[size];
+                case TypeCode.SByte:
+                    return new sbyte[size];
+                case TypeCode.Char:
+                    return new char[size];
+                case TypeCode.Int16:
+                    return new short[size];
+                case TypeCode.UInt16:
+                    return new ushort[size];
+                case TypeCode.Int32:
+                    return new int[size];
+                case TypeCode.UInt32:
+                    return new uint[size];
+                case TypeCode.Int64:
+                    return new long[size];
+                case TypeCode.UInt64:
+                    return new ulong[size];
+                case TypeCode.Single:
+                    return new float[size];
+                case TypeCode.Double:
+                    return new double[size];
+                case TypeCode.String:
+                    return new string[size];
+                case TypeCode.Decimal:
+                    return new decimal[size];
+                case TypeCode.DateTime:
+                    return new DateTime[size];
+            }
+
+            if (elementType == typeof(IntPtr))
+            {
+                return new IntPtr[size];
+            }
+
+            if (elementType == typeof(UIntPtr))
+            {
+                return new UIntPtr[size];
+            }
+
+            return Array.CreateInstance(elementType, size);
+        }
+
+        /// <summary>
+        ///     Gets the public parameterless constructor for a type.  Falls back to a constructor scan because
+        ///     <see cref="Type.GetConstructor(Type[])" /> can miss parameterless constructors of constructed
+        ///     generic types when AOT compiling.
+        /// </summary>
+        [UnconditionalSuppressMessage("Trimming", "IL2067",
+            Justification = "The scan only inspects constructors preserved by the parameter annotation; it is a reliability fallback for GetConstructor(Type.EmptyTypes) under AOT.")]
+        [UnconditionalSuppressMessage("Trimming", "IL2070",
+            Justification = "The scan only inspects constructors preserved by the parameter annotation; it is a reliability fallback for GetConstructor(Type.EmptyTypes) under AOT.")]
+        [UnconditionalSuppressMessage("Trimming", "IL2075",
+            Justification = "The scan only inspects constructors preserved by the parameter annotation; it is a reliability fallback for GetConstructor(Type.EmptyTypes) under AOT.")]
+        internal static ConstructorInfo GetParameterlessConstructor(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type)
+        {
+            var constructor = type.GetConstructor(Type.EmptyTypes);
+
+            if (constructor != null)
+            {
+                return constructor;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Creates a constructor delegate for an empty <see cref="List{T}" /> without relying on constructor
+        ///     reflection metadata, which is not reliably populated for constructed generic types when AOT
+        ///     compiling.  Primitive element types use statically referenced factories; other reference type
+        ///     elements use a shared-code generic helper.  Returns null for other collection types so callers
+        ///     can fall back to constructor reflection.
+        /// </summary>
+        internal static Func<object> CreateListConstructor(Type type)
+        {
+            if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(List<>))
+            {
+                return null;
+            }
+
+            var elementType = type.GetGenericArguments()[0];
+
+            if (PrimitiveListFactories.TryGetValue(elementType, out var factory))
+            {
+                return factory;
+            }
+
+            if (!elementType.IsValueType)
+            {
+                /* Reference type element: shared code makes this instantiation available when AOT compiling. */
+                return MakeGenericListFactory(elementType);
+            }
+
+            return null;
+        }
+
+        private static readonly Dictionary<Type, Func<object>> PrimitiveListFactories =
+            new Dictionary<Type, Func<object>>
+            {
+                {typeof(bool), () => new List<bool>()},
+                {typeof(byte), () => new List<byte>()},
+                {typeof(sbyte), () => new List<sbyte>()},
+                {typeof(char), () => new List<char>()},
+                {typeof(short), () => new List<short>()},
+                {typeof(ushort), () => new List<ushort>()},
+                {typeof(int), () => new List<int>()},
+                {typeof(uint), () => new List<uint>()},
+                {typeof(long), () => new List<long>()},
+                {typeof(ulong), () => new List<ulong>()},
+                {typeof(float), () => new List<float>()},
+                {typeof(double), () => new List<double>()},
+                {typeof(string), () => new List<string>()},
+                {typeof(decimal), () => new List<decimal>()},
+                {typeof(DateTime), () => new List<DateTime>()},
+                {typeof(object), () => new List<object>()}
+            };
+
+        [UnconditionalSuppressMessage("AOT", "IL3050",
+            Justification =
+                "MakeGenericMethod is used with reference type arguments, which are supported on Native AOT through shared code.  Failures for uncompiled value type instantiations are caught and fall back to constructor reflection.")]
+        private static Func<object> MakeGenericListFactory(Type elementType)
+        {
+            try
+            {
+                var helper = typeof(TypeExtensions).GetMethod(nameof(CreateListHelper),
+                    BindingFlags.Static | BindingFlags.NonPublic);
+                return (Func<object>) helper.MakeGenericMethod(elementType)
+                    .Invoke(null, null);
+            }
+            catch (Exception)
+            {
+                /* Value type instantiations may not be compiled in; callers fall back to constructor reflection. */
+                return null;
+            }
+        }
+
+        // ReSharper disable once UnusedMember.Local
+        private static Func<object> CreateListHelper<T>()
+        {
+            return () => new List<T>();
         }
 
         public static IEnumerable<Type> GetHierarchyGenericArguments(this Type type)

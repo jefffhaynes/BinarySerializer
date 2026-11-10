@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,7 +14,10 @@ namespace BinarySerialization.Graph.ValueGraph
     internal class ObjectValueNode : ValueNode
     {
         private object _cachedValue;
+
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         private Type _valueType;
+
         private TypeNode _subTypeNode;
 
         public ObjectValueNode(ValueNode parent, string name, TypeNode typeNode)
@@ -26,6 +30,15 @@ namespace BinarySerialization.Graph.ValueGraph
             get { return GetValue(child => child.BoundValue); }
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2067",
+            Justification =
+                "Runtime type discovery over the user object graph; users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2072",
+            Justification =
+                "Runtime type discovery over the user object graph; users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2074",
+            Justification =
+                "Runtime type discovery over the user object graph; users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
         public override object Value
         {
             get
@@ -45,7 +58,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var valueType = value.GetType();
 
-                // always check for user-defined subtypes, whether they exist or not. 
+                // always check for user-defined subtypes, whether they exist or not.
                 // In the trivial case we get the value type node back.
                 _subTypeNode = typeNode.GetSubTypeNode(valueType);
 

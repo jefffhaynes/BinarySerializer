@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Trimmer root descriptor template for BinarySerializer applications.
+
+  The serializer discovers object graphs via reflection at runtime (Serialize(stream, value) uses
+  value.GetType()), so the trimmer cannot infer which types and members are needed.  Root every
+  assembly whose types are serialized and deserialized.  This keeps all members (fields, properties,
+  constructors, attributes) that the serializer reflects over.
+
+  In your application either:
+    1. Add an equivalent descriptor and reference it from your project:
+         <ItemGroup><TrimmerRootDescriptor Include="TrimmerRoots.xml" /></ItemGroup>
+    2. Or annotate the entry point, e.g.:
+         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MyPacket))]
+-->
+<linker>
+  <assembly fullname="BinarySerializer.AotTest" preserve="all" />
+</linker>

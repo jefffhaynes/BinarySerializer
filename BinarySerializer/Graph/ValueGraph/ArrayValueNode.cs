@@ -23,7 +23,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 var typeNode = (ArrayTypeNode) TypeNode;
-                var array = Array.CreateInstance(typeNode.ChildType, Children.Count);
+                var array = TypeExtensions.CreateArray(typeNode.ChildType, Children.Count);
                 var childValues = Children.Select(child => child.Value).ToArray();
                 Array.Copy(childValues, array, childValues.Length);
                 return array;
@@ -50,7 +50,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (count != null)
                 {
                     /* Pad out const-sized array */
-                    var valueArray = Array.CreateInstance(typeNode.ChildType, (int) count);
+                    var valueArray = TypeExtensions.CreateArray(typeNode.ChildType, (int) count);
                     Array.Copy(array, valueArray, array.Length);
                     array = valueArray;
                 }

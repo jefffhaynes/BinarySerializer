@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using BinarySerialization.Graph.ValueGraph;
@@ -19,17 +20,19 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private bool _isConstructed;
 
-        public ObjectTypeNode(TypeNode parent, Type type) : base(parent, type)
+        public ObjectTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type) : base(parent, type)
         {
             Construct();
         }
 
-        public ObjectTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) :
+        public ObjectTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType,
+            MemberInfo memberInfo) :
             this(parent, parentType, memberInfo, null)
         {
         }
 
-        public ObjectTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType)
+        public ObjectTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType,
+            MemberInfo memberInfo, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type subType)
             : base(parent, parentType, memberInfo, subType)
         {
             Construct(subType != null);
@@ -45,7 +48,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public List<TypeNode> UnorderedChildren { get; private set; }
         
-        public ObjectTypeNode GetSubTypeNode(Type type)
+        public ObjectTypeNode GetSubTypeNode([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type)
         {
             // trivial case, nothing to do
             if (type == Type)
@@ -99,7 +102,7 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-        private void GenerateSubtype(Type type)
+        private void GenerateSubtype([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type)
         {
             if (_subTypesLazy.Value.ContainsKey(type))
             {
@@ -146,18 +149,22 @@ namespace BinarySerialization.Graph.TypeGraph
 
         private void ConstructSubtypes(ReadOnlyCollection<SubtypeBaseAttribute> attributes)
         {
-            // Get subtype keys 
-            SubTypeKeys = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay)
-                .ToDictionary(attribute => attribute.Subtype, attribute => attribute.Value);
+            // Get subtype keys and generate subtype children.  A plain loop keeps type annotations flowing
+            // to GenerateSubtype for the trimmer (LINQ enumerators erase them).
+            var keys = new Dictionary<Type, object>();
 
-            // Generate subtype children 
-            var subTypes = attributes.Where(attribute => attribute.BindingMode != BindingMode.OneWay)
-                .Select(attribute => attribute.Subtype);
-
-            foreach (var subType in subTypes)
+            foreach (var attribute in attributes)
             {
-                GenerateSubtype(subType);
+                if (attribute.BindingMode == BindingMode.OneWay)
+                {
+                    continue;
+                }
+
+                keys[attribute.Subtype] = attribute.Value;
+                GenerateSubtype(attribute.Subtype);
             }
+
+            SubTypeKeys = keys;
         }
 
         /// <summary>
@@ -219,15 +226,21 @@ namespace BinarySerialization.Graph.TypeGraph
             // get corresponding parameter names
             ConstructorParameterNames = bestConstructor.Value.Select(child => child.Name).ToArray();
 
-            // if this is a nonparametric constructor, go ahead and compile it.  
+            // if this is a nonparametric constructor, go ahead and compile it.
             // we can't compile constructors with parameters since we don't have them yet.
             if (ConstructorParameterNames.Length == 0)
             {
-                CompiledConstructor = CreateCompiledConstructor(Constructor);
+                // prefer a source-generated factory when available (BinarySerializer.SourceGeneration)
+                CompiledConstructor = GeneratedTypeRegistry.TryGetParameterlessConstructor(Type, out var factory)
+                    ? factory
+                    : CreateCompiledConstructor(Constructor);
             }
         }
 
-        private IEnumerable<TypeNode> GenerateChildren(Type parentType)
+        [UnconditionalSuppressMessage("Trimming", "IL2072",
+            Justification =
+                "Base types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        private IEnumerable<TypeNode> GenerateChildren([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType)
         {
             if (parentType == typeof(object) || parentType.GetTypeInfo().IsInterface)
             {

@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 
@@ -9,26 +10,24 @@ namespace BinarySerialization.Graph.TypeGraph
     {
         protected const BindingFlags ConstructorBindingFlags = BindingFlags.Instance | BindingFlags.Public;
 
-        protected ContainerTypeNode(TypeNode parent, Type type)
+        protected ContainerTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type)
             : base(parent, type)
         {
         }
 
-        protected ContainerTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType = null)
+        protected ContainerTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType,
+            MemberInfo memberInfo, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type subType = null)
             : base(parent, parentType, memberInfo, subType)
         {
         }
 
-        protected TypeNode GenerateChild(Type type)
+        protected TypeNode GenerateChild([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type)
         {
             try
             {
                 ThrowOnBadType(type);
 
-                var nodeType = GetNodeType(type);
-
-                var child = (TypeNode) Activator.CreateInstance(nodeType, this, type);
-                return child;
+                return CreateNode(type, type, null);
             }
             catch (Exception exception)
             {
@@ -37,7 +36,8 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
-        protected TypeNode GenerateChild(Type parentType, MemberInfo memberInfo)
+        protected TypeNode GenerateChild([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType,
+            MemberInfo memberInfo)
         {
             var memberType = GetMemberType(memberInfo);
 
@@ -45,9 +45,7 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 ThrowOnBadType(memberType);
 
-                var nodeType = GetNodeType(memberType);
-
-                return (TypeNode) Activator.CreateInstance(nodeType, this, parentType, memberInfo);
+                return CreateNode(memberType, parentType, memberInfo);
             }
             catch (Exception exception)
             {
@@ -56,6 +54,16 @@ namespace BinarySerialization.Graph.TypeGraph
             }
         }
 
+        [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        [UnconditionalSuppressMessage("Trimming", "IL2063",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2073",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2075",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
         protected static Type GetMemberType(MemberInfo memberInfo)
         {
             switch (memberInfo)
@@ -80,48 +88,72 @@ namespace BinarySerialization.Graph.TypeGraph
         }
 // ReSharper restore UnusedParameter.Local
 
-        private static Type GetNodeType(Type type)
+        /// <summary>
+        ///     Creates the type node for <paramref name="memberType" />.  This is a static factory instead of
+        ///     <c>Activator.CreateInstance</c> so that all node constructors are statically referenced and
+        ///     preserved when trimming or AOT compiling.
+        /// </summary>
+        private TypeNode CreateNode(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type memberType,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType,
+            MemberInfo memberInfo)
         {
-            var nullableType = Nullable.GetUnderlyingType(type);
+            var nullableType = Nullable.GetUnderlyingType(memberType);
 
-            var effectiveType = nullableType ?? type;
+            var effectiveType = nullableType ?? memberType;
 
             if (effectiveType.GetTypeInfo().IsEnum)
             {
-                return typeof(EnumTypeNode);
+                return memberInfo == null
+                    ? new EnumTypeNode(this, parentType)
+                    : new EnumTypeNode(this, parentType, memberInfo);
             }
 
             if (IsValueType(effectiveType))
             {
-                return typeof(ValueTypeNode);
+                return memberInfo == null
+                    ? new ValueTypeNode(this, parentType)
+                    : new ValueTypeNode(this, parentType, memberInfo);
             }
 
-            if (type.IsArray)
+            if (memberType.IsArray)
             {
-                return typeof(ArrayTypeNode);
+                return memberInfo == null
+                    ? new ArrayTypeNode(this, parentType)
+                    : new ArrayTypeNode(this, parentType, memberInfo);
             }
 
-            if (typeof(IList).IsAssignableFrom(type))
+            if (typeof(IList).IsAssignableFrom(memberType))
             {
-                return typeof(ListTypeNode);
+                return memberInfo == null
+                    ? new ListTypeNode(this, parentType)
+                    : new ListTypeNode(this, parentType, memberInfo);
             }
 
-            if (typeof(Stream).IsAssignableFrom(type))
+            if (typeof(Stream).IsAssignableFrom(memberType))
             {
-                return typeof(StreamTypeNode);
+                return memberInfo == null
+                    ? new StreamTypeNode(this, parentType)
+                    : new StreamTypeNode(this, parentType, memberInfo);
             }
 
-            if (typeof(IBinarySerializable).IsAssignableFrom(type))
+            if (typeof(IBinarySerializable).IsAssignableFrom(memberType))
             {
-                return typeof(CustomTypeNode);
+                return memberInfo == null
+                    ? new CustomTypeNode(this, parentType)
+                    : new CustomTypeNode(this, parentType, memberInfo);
             }
 
-            if (type == typeof(object))
+            if (memberType == typeof(object))
             {
-                return typeof(UnknownTypeNode);
+                return memberInfo == null
+                    ? new UnknownTypeNode(this, parentType)
+                    : new UnknownTypeNode(this, parentType, memberInfo);
             }
 
-            return typeof(ObjectTypeNode);
+            return memberInfo == null
+                ? new ObjectTypeNode(this, parentType)
+                : new ObjectTypeNode(this, parentType, memberInfo);
         }
     }
 }

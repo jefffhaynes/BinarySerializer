@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 3.1.101
+        dotnet-version: 10.0.x
 
     - name: Install dependencies
       run: dotnet restore
@@ -29,6 +29,27 @@ jobs:
 
     - name: Test (inc Code Coverage)
       run: dotnet test --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+    - name: AOT smoke (JIT)
+      run: dotnet run --project BinarySerializer.AotTest/BinarySerializer.AotTest.csproj --configuration Release
+
+    - name: Source-generated AOT smoke (JIT, no TrimmerRoots)
+      run: |
+        dotnet restore BinarySerializer.AotGeneratedTest/BinarySerializer.AotGeneratedTest.csproj
+        dotnet run --project BinarySerializer.AotGeneratedTest/BinarySerializer.AotGeneratedTest.csproj --configuration Release --no-restore
+
+    - name: Install Native AOT prerequisites
+      run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
+    - name: AOT smoke (Native AOT)
+      run: |
+        dotnet publish BinarySerializer.AotTest/BinarySerializer.AotTest.csproj --configuration Release --runtime linux-x64
+        ./BinarySerializer.AotTest/bin/Release/net10.0/linux-x64/publish/BinarySerializer.AotTest
+
+    - name: Source-generated AOT smoke (Native AOT, no TrimmerRoots)
+      run: |
+        dotnet publish BinarySerializer.AotGeneratedTest/BinarySerializer.AotGeneratedTest.csproj --configuration Release --runtime linux-x64 --no-restore
+        ./BinarySerializer.AotGeneratedTest/bin/Release/net10.0/linux-x64/publish/BinarySerializer.AotGeneratedTest
 
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0

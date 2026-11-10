@@ -57,7 +57,7 @@ namespace BinarySerialization.Graph.ValueGraph
         protected override object CreateCollection(long size)
         {
             var typeNode = (ArrayTypeNode) TypeNode;
-            return Array.CreateInstance(typeNode.ChildType, (int) size);
+            return TypeExtensions.CreateArray(typeNode.ChildType, (int) size);
         }
 
         protected override object CreateCollection(IEnumerable enumerable)

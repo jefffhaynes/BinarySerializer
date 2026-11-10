@@ -922,6 +922,55 @@ During the first and most expensive stage reflection information is cached in me
 
 When serializing an object graph it is possible to defer type resolution by simply specifying object or an abstract type for which no corresponding SubtypeAttributes exist.  The serializer will defer reflection in these cases but will not store the results.  As such, it is best to avoid this approach and specify type information in a way that can be resolved prior to serialization, either explicitly or by using the SubtypeAttribute.  This approach is also desirable as it guarantees the serializer can deserialize serialized data.
 
+### AOT and Trimming ###
+
+BinarySerializer supports Native AOT and assembly trimming.  The package declares `IsAotCompatible` and the serializer falls back to AOT-safe reflection paths automatically when dynamic code generation is unavailable (JIT-compiled applications are unaffected and keep the fast compiled paths).
+
+Because object graphs are discovered via reflection at runtime, trimmed and AOT-compiled applications must root the types that are serialized.  There are two options:
+
+**Option 1 (recommended): the `BinarySerializer.SourceGeneration` source generator.**
+
+Reference the generator from your application project and rooting becomes fully automatic:
+
+```xml
+<ItemGroup>
+  <ProjectReference Include="BinarySerializer.SourceGeneration\BinarySerializer.SourceGeneration.csproj"
+                    OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+</ItemGroup>
+```
+
+The generator discovers every reachable serializable type (any type carrying BinarySerializer attributes, everything referenced from their members, subtype/converter/factory types, closed generic instantiations such as `List<MyItem>`, and so on) and emits a module initializer that:
+
+* roots the complete type closure for trimming and AOT compilation — no `TrimmerRoots.xml` or `[DynamicDependency]` is required;
+* registers statically compiled member accessor delegates, so type graph construction needs neither reflection nor dynamic code generation;
+* registers parameterless constructor factories where available.
+
+Attribute-free root types (for example a single-member packet serialized directly) can be opted in explicitly with `[BinarySerializerRoot]`.
+
+Types without generated registration fall back to the reflection discovery path, so behavior is byte-identical with or without the generator.  `BinarySerializer.AotGeneratedTest` runs the same golden scenarios as `BinarySerializer.AotTest` but without a trimmer root descriptor, proving the generator removes the manual rooting requirement.  When publishing on Windows, restore first without publish properties and then publish with `--no-restore` (the restore of the `netstandard2.0` generator project must not see `PublishTrimmed`).
+
+**Option 2: manual rooting.**
+
+1. Preserve your serialized types and their members, for example with a trimmer root descriptor referenced from your project:
+
+```xml
+<ItemGroup>
+  <TrimmerRootDescriptor Include="TrimmerRoots.xml" />
+</ItemGroup>
+```
+
+```xml
+<linker>
+  <assembly fullname="MyApplication" preserve="all" />
+</linker>
+```
+
+2. Generic collection types used as members (for example `List<MyItem>`) are created by the serializer without reflection, so no extra steps are required for `List<T>`, arrays, and the primitive collection types.  For custom `IList` implementations and other exotic shapes, also root those types explicitly, e.g. with `[DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MyCollection))]`.
+
+Types passed as `typeof(T)` to the `Deserialize` overloads are annotated so their members are preserved automatically; types passed as `object` to `Serialize` are discovered at runtime and covered by the rooting above.
+
+The `BinarySerializer.AotTest` project is a self-contained smoke application that exercises the supported shapes (properties, fields, enums, bindings, lists, subtypes, immutable types, converters, contexts) and verifies identical bytes under JIT, trimming, and Native AOT.
+
 ### Enums ###
 Enums can be used to create expressive definitions.  Depending on what attributes are specified enums will be interpreted by the serializer as either the underlying value, the literal value of the enum, or a value specified with the SerializeAsEnum attribute.  In the following example, the field will be serialized as the underlying byte.
 
