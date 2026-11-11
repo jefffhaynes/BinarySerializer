@@ -120,6 +120,19 @@ namespace BinarySerialization
         }
 
         /// <summary>
+        ///     Roots an enum type so its constant fields survive trimming.  Only fields are preserved:
+        ///     rooting all members of an enum would also keep <c>System.Enum.GetValues(Type)</c>
+        ///     (annotated RequiresDynamicCode) and produce IL3050 warnings at publish.
+        /// </summary>
+        /// <param name="type">The enum type to root.</param>
+        public static void KeepEnum(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type)
+        {
+            /* Static reference only: the annotation on the parameter makes the trimmer or AOT
+               compiler preserve the enum constants of the type supplied at the call site. */
+        }
+
+        /// <summary>
         ///     Attempts to get source-generated accessor delegates for a member.
         /// </summary>
         /// <param name="type">The declaring type of the member.</param>

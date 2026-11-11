@@ -177,5 +177,9 @@ namespace BinarySerialization.SourceGeneration.Test
     public class FieldNullProbe
     {
         public string Label;
+
+        public int Count;
+
+        public int? Maybe;
     }
 }

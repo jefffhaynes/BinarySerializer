@@ -129,27 +129,12 @@ namespace BinarySerialization
         }
 
         /// <summary>
-        ///     Gets the public parameterless constructor for a type.  Falls back to a constructor scan because
-        ///     <see cref="Type.GetConstructor(Type[])" /> can miss parameterless constructors of constructed
-        ///     generic types when AOT compiling.
+        ///     Gets the public parameterless constructor for a type, or null if none exists.
         /// </summary>
-        [UnconditionalSuppressMessage("Trimming", "IL2067",
-            Justification = "The scan only inspects constructors preserved by the parameter annotation; it is a reliability fallback for GetConstructor(Type.EmptyTypes) under AOT.")]
-        [UnconditionalSuppressMessage("Trimming", "IL2070",
-            Justification = "The scan only inspects constructors preserved by the parameter annotation; it is a reliability fallback for GetConstructor(Type.EmptyTypes) under AOT.")]
-        [UnconditionalSuppressMessage("Trimming", "IL2075",
-            Justification = "The scan only inspects constructors preserved by the parameter annotation; it is a reliability fallback for GetConstructor(Type.EmptyTypes) under AOT.")]
         internal static ConstructorInfo GetParameterlessConstructor(
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type)
         {
-            var constructor = type.GetConstructor(Type.EmptyTypes);
-
-            if (constructor != null)
-            {
-                return constructor;
-            }
-
-            return null;
+            return type.GetConstructor(Type.EmptyTypes);
         }
 
         /// <summary>

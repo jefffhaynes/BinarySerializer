@@ -280,5 +280,3 @@ __pycache__/
 
 ### VisualStudio Patch ###
 build/
-# WorkBuddy workspace data
-.workbuddy/

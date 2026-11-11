@@ -81,6 +81,32 @@ namespace BinarySerialization.SourceGeneration.Test
         }
 
         [TestMethod]
+        public void ValueTypedFieldSetterStoresDefaultOnNull()
+        {
+            // FieldInfo.SetValue(obj, null) stores default(T) on value-type fields; the generated
+            // setter must not throw on unboxing (regression: 7 suite failures with the generator on).
+            Assert.IsTrue(GeneratedTypeRegistry.TryGetAccessors(typeof(FieldNullProbe), "Count", out var getter, out var setter));
+
+            var probe = new FieldNullProbe {Count = 5};
+            setter(probe, null);
+            Assert.AreEqual(0, probe.Count);
+            Assert.AreEqual(0, getter(probe));
+
+            setter(probe, 7);
+            Assert.AreEqual(7, probe.Count);
+        }
+
+        [TestMethod]
+        public void NullableFieldSetterStoresNullOnNull()
+        {
+            Assert.IsTrue(GeneratedTypeRegistry.TryGetAccessors(typeof(FieldNullProbe), "Maybe", out _, out var setter));
+
+            var probe = new FieldNullProbe {Maybe = 3};
+            setter(probe, null);
+            Assert.IsNull(probe.Maybe);
+        }
+
+        [TestMethod]
         public void RegistersParameterlessFactory()
         {
             Assert.IsTrue(GeneratedTypeRegistry.TryGetParameterlessConstructor(typeof(SimplePacket), out var factory));

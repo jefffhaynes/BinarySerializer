@@ -30,6 +30,9 @@ jobs:
     - name: Test (inc Code Coverage)
       run: dotnet test --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
 
+    - name: Test with source generator enabled
+      run: dotnet test BinarySerializer.Test/BinarySerializer.Test.csproj -p:EnableSourceGeneration=true --nologo
+
     - name: AOT smoke (JIT)
       run: dotnet run --project BinarySerializer.AotTest/BinarySerializer.AotTest.csproj --configuration Release
 
@@ -48,7 +51,7 @@ jobs:
 
     - name: Source-generated AOT smoke (Native AOT, no TrimmerRoots)
       run: |
-        dotnet publish BinarySerializer.AotGeneratedTest/BinarySerializer.AotGeneratedTest.csproj --configuration Release --runtime linux-x64 --no-restore
+        dotnet publish BinarySerializer.AotGeneratedTest/BinarySerializer.AotGeneratedTest.csproj --configuration Release --runtime linux-x64
         ./BinarySerializer.AotGeneratedTest/bin/Release/net10.0/linux-x64/publish/BinarySerializer.AotGeneratedTest
 
     - name: Code Coverage Report

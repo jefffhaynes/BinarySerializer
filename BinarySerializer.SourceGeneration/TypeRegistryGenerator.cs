@@ -174,6 +174,11 @@ namespace BinarySerializer.SourceGeneration
                     continue;
                 }
 
+                if (!CanEmit(symbol))
+                {
+                    continue;
+                }
+
                 var display = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
                 if (!Keeps.ContainsKey(display) && !Registrations.ContainsKey(display))
                 {
@@ -183,7 +188,7 @@ namespace BinarySerializer.SourceGeneration
 
             foreach (var symbol in _attributeKeepSet)
             {
-                if (symbol.SpecialType != SpecialType.None)
+                if (symbol.SpecialType != SpecialType.None || !CanEmit(symbol))
                 {
                     continue;
                 }
@@ -320,7 +325,9 @@ namespace BinarySerializer.SourceGeneration
                 return;
             }
 
-            if (IsRegistrable(type))
+            // types not accessible from the generated class (e.g. private nested classes) cannot be
+            // referenced by name; leave them to the reflection discovery path entirely.
+            if (IsRegistrable(type) && CanEmit(type))
             {
                 Registrations[type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)] = BuildRegistration(type);
                 _registeredSet.Add(type);
@@ -415,6 +422,42 @@ namespace BinarySerializer.SourceGeneration
             _keepSet.Add(type);
         }
 
+        /// <summary>
+        ///     True when the generated class can legally reference the type by name (typeof, casts,
+        ///     construction).  Private or protected nested types fail this check and fall back to the
+        ///     reflection path without any generated code.
+        /// </summary>
+        private bool CanEmit(ITypeSymbol type)
+        {
+            switch (type)
+            {
+                case IArrayTypeSymbol arrayType:
+                    return CanEmit(arrayType.ElementType);
+
+                case ITypeParameterSymbol:
+                    return false;
+
+                case INamedTypeSymbol named:
+                    if (!_compilation.IsSymbolAccessibleWithin(named, _compilation.Assembly))
+                    {
+                        return false;
+                    }
+
+                    foreach (var argument in named.TypeArguments)
+                    {
+                        if (!CanEmit(argument))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
         private static bool IsConcrete(INamedTypeSymbol type)
         {
             if (type.IsUnboundGenericType || type.IsGenericType && type.TypeArguments.Any(argument => argument is ITypeParameterSymbol))
@@ -488,7 +531,7 @@ namespace BinarySerializer.SourceGeneration
             return model;
         }
 
-        private static void AddProperty(RegistrationModel model, IPropertySymbol property)
+        private void AddProperty(RegistrationModel model, IPropertySymbol property)
         {
             if (property.DeclaredAccessibility != Accessibility.Public || property.IsIndexer)
             {
@@ -508,12 +551,23 @@ namespace BinarySerializer.SourceGeneration
                 return;
             }
 
+            // the generated lambdas cast to the member type, so it must be emittable as well
+            if (!CanEmit(property.Type))
+            {
+                return;
+            }
+
             model.Members.Add(new MemberModel(property.Name, property.Type, false, true, hasPublicSetter));
         }
 
-        private static void AddField(RegistrationModel model, IFieldSymbol field)
+        private void AddField(RegistrationModel model, IFieldSymbol field)
         {
             if (field.DeclaredAccessibility != Accessibility.Public || field.IsReadOnly || field.IsConst)
+            {
+                return;
+            }
+
+            if (!CanEmit(field.Type))
             {
                 return;
             }
@@ -559,7 +613,12 @@ namespace BinarySerializer.SourceGeneration
 
             foreach (var keep in keeps)
             {
-                builder.Append("            global::BinarySerialization.GeneratedTypeRegistry.Keep(typeof(")
+                // enums only need their constant fields rooted; rooting all members would also keep
+                // System.Enum.GetValues (RequiresDynamicCode) and trigger IL3050 at publish.
+                var method = keep.TypeKind == TypeKind.Enum ? "KeepEnum" : "Keep";
+
+                builder.Append("            global::BinarySerialization.GeneratedTypeRegistry.").Append(method)
+                    .Append("(typeof(")
                     .Append(keep.ToDisplayString(TypeFormat))
                     .AppendLine("));");
             }
@@ -620,10 +679,12 @@ namespace BinarySerializer.SourceGeneration
                 }
                 else if (member.IsField)
                 {
-                    // fields assign unconditionally (mirrors FieldInfo.SetValue semantics)
+                    // fields assign unconditionally (mirrors FieldInfo.SetValue semantics, which
+                    // stores default(T) when passed null on a value-type field)
+                    var memberTypeDisplay = member.Type.ToDisplayString(TypeFormat);
                     builder.Append("static (o, v) => { ((").Append(typeDisplay).Append(")o).@")
-                        .Append(member.Name).Append(" = (").Append(member.Type.ToDisplayString(TypeFormat))
-                        .Append(")v; }");
+                        .Append(member.Name).Append(" = v == null ? default(").Append(memberTypeDisplay)
+                        .Append(") : (").Append(memberTypeDisplay).Append(")v; }");
                 }
                 else
                 {
