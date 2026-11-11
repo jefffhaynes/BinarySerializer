@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BinarySerialization
 {
@@ -12,7 +13,7 @@ namespace BinarySerialization
         ///     Initializes a new instance of <see cref="SubtypeDefaultBaseAttribute" />.
         /// </summary>
         /// <param name="subtype">The default subtype.</param>
-        protected SubtypeDefaultBaseAttribute(Type subtype)
+        protected SubtypeDefaultBaseAttribute([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type subtype)
         {
             Subtype = subtype;
         }
@@ -20,6 +21,7 @@ namespace BinarySerialization
         /// <summary>
         ///     The default subtype.  This type must be assignable to the field type.
         /// </summary>
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         public Type Subtype { get; }
     }
 }

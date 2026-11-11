@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace BinarySerialization.Graph.TypeGraph
@@ -7,12 +8,13 @@ namespace BinarySerialization.Graph.TypeGraph
     {
         private Lazy<TypeNode> _lazyChild;
 
-        protected CollectionTypeNode(TypeNode parent, Type type) : base(parent, type)
+        protected CollectionTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type) : base(parent, type)
         {
             Construct();
         }
 
-        protected CollectionTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+        protected CollectionTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType,
+            MemberInfo memberInfo) : base(parent, parentType,
             memberInfo)
         {
             Construct();
@@ -20,6 +22,7 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public Func<object> CompiledConstructor { get; private set; }
 
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         public Type ChildType { get; set; }
 
         public TypeNode Child => _lazyChild.Value;
@@ -30,11 +33,15 @@ namespace BinarySerialization.Graph.TypeGraph
 
         public object TerminationValue { get; private set; }
 
+        [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         protected abstract Type GetChildType();
 
+        [UnconditionalSuppressMessage("Trimming", "IL2072",
+            Justification =
+                "Termination values are user constants provided via attributes; users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
         private void Construct()
         {
-            CompiledConstructor = CreateCompiledConstructor();
+            CompiledConstructor = TypeExtensions.CreateListConstructor(Type) ?? CreateCompiledConstructor();
 
             ChildType = GetChildType();
             CompiledChildConstructor = CreateCompiledConstructor(ChildType);
@@ -45,6 +52,9 @@ namespace BinarySerialization.Graph.TypeGraph
             _lazyChild = new Lazy<TypeNode>(() => GenerateChild(ChildType));
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2072",
+            Justification =
+                "Termination values are user constants provided via attributes; users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
         private TypeNode GetTerminationChild(out object terminationValue)
         {
             if (SerializeUntilAttribute == null)

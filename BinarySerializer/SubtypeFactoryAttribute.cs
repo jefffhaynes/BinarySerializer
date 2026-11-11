@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BinarySerialization
 {
@@ -8,7 +9,7 @@ namespace BinarySerialization
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public sealed class SubtypeFactoryAttribute : SubtypeFactoryBaseAttribute
     {
-        public SubtypeFactoryAttribute(string path, Type factoryType) : base(path, factoryType)
+        public SubtypeFactoryAttribute(string path, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type factoryType) : base(path, factoryType)
         {
         }
     }

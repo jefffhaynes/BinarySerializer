@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BinarySerialization
 {
@@ -38,6 +39,7 @@ namespace BinarySerialization
         /// <summary>
         ///     The optional IValueConverter to use when converting from the binding source.
         /// </summary>
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
         Type ConverterType { get; set; }
 
         /// <summary>

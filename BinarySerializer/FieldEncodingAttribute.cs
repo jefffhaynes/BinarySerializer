@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace BinarySerialization
@@ -30,7 +31,7 @@ namespace BinarySerialization
         ///         valid Encoding.
         ///     </param>
         /// </summary>
-        public FieldEncodingAttribute(string path, Type converterType) : base(path)
+        public FieldEncodingAttribute(string path, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type converterType) : base(path)
         {
             ConverterType = converterType;
             BindingMode = BindingMode.OneWay;

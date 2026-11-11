@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace BinarySerialization
@@ -9,7 +10,7 @@ namespace BinarySerialization
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public abstract class SubtypeFactoryBaseAttribute : FieldBindingBaseAttribute
     {
-        protected SubtypeFactoryBaseAttribute(string path, Type factoryType) : base(path)
+        protected SubtypeFactoryBaseAttribute(string path, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type factoryType) : base(path)
         {
             if (!typeof(ISubtypeFactory).IsAssignableFrom(factoryType))
             {
@@ -19,6 +20,7 @@ namespace BinarySerialization
             FactoryType = factoryType;
         }
 
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
         public Type FactoryType { get; }
     }
 }

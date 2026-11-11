@@ -22,6 +22,7 @@
     <AssemblyVersion>10.1.0.0</AssemblyVersion>
     <Version>10.1.0</Version>
     <FileVersion>10.1.0.0</FileVersion>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>

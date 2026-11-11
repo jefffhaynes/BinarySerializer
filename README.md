@@ -922,6 +922,34 @@ During the first and most expensive stage reflection information is cached in me
 
 When serializing an object graph it is possible to defer type resolution by simply specifying object or an abstract type for which no corresponding SubtypeAttributes exist.  The serializer will defer reflection in these cases but will not store the results.  As such, it is best to avoid this approach and specify type information in a way that can be resolved prior to serialization, either explicitly or by using the SubtypeAttribute.  This approach is also desirable as it guarantees the serializer can deserialize serialized data.
 
+### AOT and Trimming ###
+
+BinarySerializer supports Native AOT and assembly trimming.  The package declares `IsAotCompatible` and the serializer falls back to AOT-safe reflection paths automatically when dynamic code generation is unavailable (JIT-compiled applications are unaffected and keep the fast compiled paths).
+
+Because object graphs are discovered via reflection at runtime, trimmed and AOT-compiled applications must root the types that are serialized.
+
+> **Warning:** forgetting to root a serialized type produces *silent* data corruption or runtime failures — the trimmed build compiles and publishes without errors, then throws or drops members at the first serialize/deserialize.
+
+1. Preserve your serialized types and their members, for example with a trimmer root descriptor referenced from your project:
+
+```xml
+<ItemGroup>
+  <TrimmerRootDescriptor Include="TrimmerRoots.xml" />
+</ItemGroup>
+```
+
+```xml
+<linker>
+  <assembly fullname="MyApplication" preserve="all" />
+</linker>
+```
+
+2. Generic collection types used as members (for example `List<MyItem>`) are created by the serializer without reflection, so no extra steps are required for `List<T>`, arrays, and the primitive collection types.  For custom `IList` implementations and other exotic shapes, also root those types explicitly, e.g. with `[DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MyCollection))]`.
+
+Types passed as `typeof(T)` to the `Deserialize` overloads are annotated so their members are preserved automatically; types passed as `object` to `Serialize` are discovered at runtime and covered by the rooting above.
+
+The `BinarySerializer.AotTest` project is a self-contained smoke application that exercises the supported shapes (properties, fields, enums, bindings, lists, subtypes, immutable types, converters, contexts) and verifies identical bytes under JIT, trimming, and Native AOT.
+
 ### Enums ###
 Enums can be used to create expressive definitions.  Depending on what attributes are specified enums will be interpreted by the serializer as either the underlying value, the literal value of the enum, or a value specified with the SerializeAsEnum attribute.  In the following example, the field will be serialized as the underlying byte.
 
