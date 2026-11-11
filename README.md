@@ -926,9 +926,43 @@ When serializing an object graph it is possible to defer type resolution by simp
 
 BinarySerializer supports Native AOT and assembly trimming.  The package declares `IsAotCompatible` and the serializer falls back to AOT-safe reflection paths automatically when dynamic code generation is unavailable (JIT-compiled applications are unaffected and keep the fast compiled paths).
 
-Because object graphs are discovered via reflection at runtime, trimmed and AOT-compiled applications must root the types that are serialized.
+Because object graphs are discovered via reflection at runtime, trimmed and AOT-compiled applications must root the types that are serialized.  There are two options:
 
-> **Warning:** forgetting to root a serialized type produces *silent* data corruption or runtime failures — the trimmed build compiles and publishes without errors, then throws or drops members at the first serialize/deserialize.
+**Option 1 (recommended): the `BinarySerializer.SourceGeneration` source generator.**
+
+Add the generator package to your application project and rooting becomes fully automatic:
+
+```xml
+<ItemGroup>
+  <PackageReference Include="BinarySerializer.SourceGeneration" Version="10.1.0" PrivateAssets="all" />
+</ItemGroup>
+```
+
+The generator discovers every reachable serializable type (any type carrying BinarySerializer attributes, everything referenced from their members, subtype/converter/factory types, closed generic instantiations such as `List<MyItem>`, and so on) and emits a module initializer that:
+
+* roots the complete type closure for trimming and AOT compilation — no `TrimmerRoots.xml` or `[DynamicDependency]` is required;
+* registers statically compiled member accessor delegates, so type graph construction needs neither reflection nor dynamic code generation;
+* registers parameterless constructor factories where available.
+
+Attribute-free root types (for example a single-member packet serialized directly) can be opted in explicitly with `[BinarySerializerRoot]`.
+
+Types without generated registration fall back to the reflection discovery path, so behavior is byte-identical with or without the generator.  `BinarySerializer.AotGeneratedTest` runs the same golden scenarios as `BinarySerializer.AotTest` but without a trimmer root descriptor, proving the generator removes the manual rooting requirement.
+
+To use a locally built generator instead of the package (for example from this repository), reference the project directly:
+
+```xml
+<ItemGroup>
+  <ProjectReference Include="BinarySerializer.SourceGeneration\BinarySerializer.SourceGeneration.csproj"
+                    OutputItemType="Analyzer" ReferenceOutputAssembly="false"
+                    GlobalPropertiesToRemove="PublishAot;PublishTrimmed;TrimMode;SelfContained;RuntimeIdentifier" />
+</ItemGroup>
+```
+
+When publishing on Windows with a project reference, restore first without publish properties and then publish with `--no-restore` (the restore of the `netstandard2.0` generator project must not see `PublishTrimmed`).
+
+**Option 2: manual rooting.**
+
+> **Warning:** forgetting to root a serialized type produces *silent* data corruption or runtime failures — the trimmed build compiles and publishes without errors, then throws or drops members at the first serialize/deserialize.  Prefer Option 1, which roots the complete type closure automatically.
 
 1. Preserve your serialized types and their members, for example with a trimmer root descriptor referenced from your project:
 

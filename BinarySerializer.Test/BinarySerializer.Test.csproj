@@ -37,6 +37,12 @@
   <ItemGroup>
     <ProjectReference Include="..\BinarySerializer\BinarySerializer.csproj" />
   </ItemGroup>
+  <!-- Opt-in: run the main suite with the source generator active (-p:EnableSourceGeneration=true). -->
+  <ItemGroup Condition="'$(EnableSourceGeneration)' == 'true'">
+    <ProjectReference Include="..\BinarySerializer.SourceGeneration\BinarySerializer.SourceGeneration.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false"
+                      GlobalPropertiesToRemove="PublishAot;PublishTrimmed;TrimMode;SelfContained;RuntimeIdentifier" />
+  </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
