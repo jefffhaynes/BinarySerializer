@@ -27,6 +27,15 @@ namespace BinarySerializer.SourceGeneration
         private const string BinarySerializerNamespace = "BinarySerialization";
         private const string MarkerAttributeName = "BinarySerializerRootAttribute";
 
+        private static readonly DiagnosticDescriptor VersionMismatch = new(
+            id: "BSG001",
+            title: "BinarySerializer package too old",
+            messageFormat:
+            "The referenced BinarySerializer package does not include GeneratedTypeRegistry (it predates version 10.2.0), so source-generated registration is skipped. Update the BinarySerializer package to 10.2.0 or later to enable it.",
+            category: "BinarySerializer.SourceGeneration",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true);
+
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             context.RegisterSourceOutput(context.CompilationProvider,
@@ -35,6 +44,20 @@ namespace BinarySerializer.SourceGeneration
 
         private static void Execute(SourceProductionContext context, Compilation compilation)
         {
+            if (compilation.GetTypeByMetadataName($"{BinarySerializerNamespace}.GeneratedTypeRegistry") == null)
+            {
+                /* Missing either because BinarySerializer is not referenced at all (nothing to do) or
+                   because the referenced package predates GeneratedTypeRegistry (10.2.0).  Emit nothing
+                   rather than generated code that fails with opaque CS0234 errors, and report a readable
+                   diagnostic for the version mismatch case. */
+                if (compilation.GetTypeByMetadataName($"{BinarySerializerNamespace}.BinarySerializer") != null)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(VersionMismatch, Location.None));
+                }
+
+                return;
+            }
+
             var collector = new TypeCollector(compilation);
             collector.Collect();
 
@@ -424,8 +447,8 @@ namespace BinarySerializer.SourceGeneration
 
         /// <summary>
         ///     True when the generated class can legally reference the type by name (typeof, casts,
-        ///     construction).  Private or protected nested types fail this check and fall back to the
-        ///     reflection path without any generated code.
+        ///     construction).  Private or protected nested types and C# 11 file-local types fail this
+        ///     check and fall back to the reflection path without any generated code.
         /// </summary>
         private bool CanEmit(ITypeSymbol type)
         {
@@ -438,7 +461,8 @@ namespace BinarySerializer.SourceGeneration
                     return false;
 
                 case INamedTypeSymbol named:
-                    if (!_compilation.IsSymbolAccessibleWithin(named, _compilation.Assembly))
+                    if (IsFileLocal(named) ||
+                        !_compilation.IsSymbolAccessibleWithin(named, _compilation.Assembly))
                     {
                         return false;
                     }
@@ -456,6 +480,24 @@ namespace BinarySerializer.SourceGeneration
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        ///     True for C# 11 file-local (<c>file class</c>) types, which cannot be referenced from
+        ///     the generated file even though they are "accessible" within the compilation.  Any type
+        ///     contained in a file-local type is effectively file-local as well.
+        /// </summary>
+        private static bool IsFileLocal(INamedTypeSymbol type)
+        {
+            for (var current = type; current != null; current = current.ContainingType)
+            {
+                if (current.IsFileLocal)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static bool IsConcrete(INamedTypeSymbol type)

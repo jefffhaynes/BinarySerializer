@@ -934,9 +934,11 @@ Add the generator package to your application project and rooting becomes fully 
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="BinarySerializer.SourceGeneration" Version="10.1.0" PrivateAssets="all" />
+  <PackageReference Include="BinarySerializer.SourceGeneration" Version="10.2.0" PrivateAssets="all" />
 </ItemGroup>
 ```
+
+The generator requires the `BinarySerializer` package 10.2.0 or later (it emits a `BSG001` warning and generates nothing when an older `BinarySerializer` without `GeneratedTypeRegistry` is referenced).
 
 The generator discovers every reachable serializable type (any type carrying BinarySerializer attributes, everything referenced from their members, subtype/converter/factory types, closed generic instantiations such as `List<MyItem>`, and so on) and emits a module initializer that:
 
