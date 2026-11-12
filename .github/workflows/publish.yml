@@ -1,0 +1,125 @@
+name: Publish to NuGet
+
+# Builds, tests and publishes the BinarySerializer and BinarySerializer.SourceGeneration
+# packages to nuget.org.
+#
+# How to release:
+#   1. Set the same <Version> in BinarySerializer/BinarySerializer.csproj and
+#      BinarySerializer.SourceGeneration/BinarySerializer.SourceGeneration.csproj and merge to master.
+#   2. Publish a GitHub Release whose tag is that version, with or without a leading "v"
+#      (for example v10.2.0).  Publishing the release starts this workflow.
+#
+# The workflow can also be started by hand from the Actions tab.  By default a manual run is a
+# dry run: it builds, tests and uploads the packages as a workflow artifact without pushing them.
+#
+# One-time setup (nuget.org Trusted Publishing, so no long-lived API key is stored in GitHub):
+#   - On nuget.org, add a Trusted Publishing policy for this repository with the workflow file
+#     set to "publish.yml" and no environment.
+#   - In this repository's Actions secrets, add NUGET_USER containing the nuget.org user name
+#     (the profile name, not the email address) that owns the policy.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Push the packages to nuget.org (leave unchecked for a dry run)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Build, test and publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Lets the NuGet login step exchange a GitHub OIDC token for a short-lived nuget.org API key.
+      id-token: write
+
+    env:
+      # True when this run should push to nuget.org rather than only build the packages.
+      PUBLISH: ${{ github.event_name == 'release' || inputs.publish }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    # nuget.org versions are permanent, so a manual publish is only allowed from master.
+    - name: Require master for a manual publish
+      if: github.event_name == 'workflow_dispatch' && inputs.publish && github.ref != 'refs/heads/master'
+      run: |
+        echo "::error::A manual publish must be run from master, not ${GITHUB_REF}."
+        exit 1
+
+    # The two packages are released together under one version: the generator emits code that
+    # calls into the library, so a generator release always has a matching library release.
+    - name: Read package version
+      id: version
+      run: |
+        library=$(dotnet msbuild BinarySerializer/BinarySerializer.csproj -getProperty:Version)
+        generator=$(dotnet msbuild BinarySerializer.SourceGeneration/BinarySerializer.SourceGeneration.csproj -getProperty:Version)
+        echo "BinarySerializer: ${library}"
+        echo "BinarySerializer.SourceGeneration: ${generator}"
+        if [ -z "${library}" ] || [ "${library}" != "${generator}" ]; then
+          echo "::error::BinarySerializer (${library}) and BinarySerializer.SourceGeneration (${generator}) must have the same <Version>."
+          exit 1
+        fi
+        echo "version=${library}" >> "${GITHUB_OUTPUT}"
+
+    - name: Check the release tag matches the package version
+      if: github.event_name == 'release'
+      env:
+        TAG: ${{ github.event.release.tag_name }}
+        VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        if [ "${TAG#v}" != "${VERSION}" ]; then
+          echo "::error::Release tag ${TAG} does not match the package version ${VERSION} in the project files."
+          exit 1
+        fi
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    # Both package projects set GeneratePackageOnBuild, so the build itself produces the packages.
+    # ContinuousIntegrationBuild makes the build deterministic and gives SourceLink stable paths.
+    - name: Build and pack
+      run: >
+        dotnet build --configuration Release --no-restore
+        -p:ContinuousIntegrationBuild=true
+        -p:PackageOutputPath=${{ github.workspace }}/artifacts
+
+    - name: Test
+      run: dotnet test --configuration Release --no-build
+
+    - name: Upload packages as a workflow artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages-${{ steps.version.outputs.version }}
+        path: artifacts/*
+        if-no-files-found: error
+
+    - name: NuGet login
+      id: login
+      if: env.PUBLISH == 'true'
+      uses: NuGet/login@v1
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
+    # The symbol package (.snupkg) next to BinarySerializer's .nupkg is pushed along with it.
+    # --skip-duplicate lets a run be repeated after a partial failure without erroring on the
+    # package that was already accepted.
+    - name: Push to nuget.org
+      if: env.PUBLISH == 'true'
+      run: >
+        dotnet nuget push "artifacts/*.nupkg"
+        --source https://api.nuget.org/v3/index.json
+        --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
+        --skip-duplicate
