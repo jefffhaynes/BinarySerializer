@@ -230,7 +230,10 @@ namespace BinarySerialization.Graph.TypeGraph
             // we can't compile constructors with parameters since we don't have them yet.
             if (ConstructorParameterNames.Length == 0)
             {
-                CompiledConstructor = CreateCompiledConstructor(Constructor);
+                // prefer a source-generated factory when available (BinarySerializer.SourceGeneration)
+                CompiledConstructor = GeneratedTypeRegistry.TryGetParameterlessConstructor(Type, out var factory)
+                    ? factory
+                    : CreateCompiledConstructor(Constructor);
             }
         }
 

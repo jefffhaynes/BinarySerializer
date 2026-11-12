@@ -564,6 +564,7 @@ namespace BinarySerialization.AotTest
 
         private static readonly byte[] S11Golden = {0x01, 0x02};
 
+        [BinarySerializerRoot]
         public class ContextInfo
         {
             public bool IncludeTail { get; set; }

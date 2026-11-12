@@ -53,6 +53,12 @@ namespace BinarySerialization.Graph.ValueGraph
 
         private IBinarySerializable CreateBinarySerializable()
         {
+            // prefer a source-generated factory when available (BinarySerializer.SourceGeneration)
+            if (GeneratedTypeRegistry.TryGetParameterlessConstructor(TypeNode.Type, out var factory))
+            {
+                return (IBinarySerializable) factory();
+            }
+
             var binarySerializable = (IBinarySerializable) Activator.CreateInstance(TypeNode.Type);
             return binarySerializable;
         }

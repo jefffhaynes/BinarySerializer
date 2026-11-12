@@ -114,27 +114,37 @@ namespace BinarySerialization.Graph.TypeGraph
                 // ignore custom indexers
                 if (indexParameters.Length == 0)
                 {
-                    var getMethod = propertyInfo.GetGetMethod();
-
-#if NETSTANDARD1_3
-                    ValueGetter = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-                        ? target => getMethod.Invoke(target, null)
-                        : MagicMethods.MagicFunc(parentType, getMethod);
-#else
-                    ValueGetter = MagicMethods.MagicFunc(parentType, getMethod);
-#endif
-
-                    var setMethod = propertyInfo.GetSetMethod();
-
-                    if (setMethod != null)
+                    if (GeneratedTypeRegistry.TryGetAccessors(parentType, Name, out var generatedGetter,
+                        out var generatedSetter))
                     {
+                        /* Source-generated accessors (BinarySerializer.SourceGeneration). */
+                        ValueGetter = generatedGetter;
+                        ValueSetter = generatedSetter;
+                    }
+                    else
+                    {
+                        var getMethod = propertyInfo.GetGetMethod();
+
 #if NETSTANDARD1_3
-                        ValueSetter = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-                            ? ((target, value) => setMethod.Invoke(target, new[] {value}))
-                            : MagicMethods.MagicAction(parentType, setMethod);
+                        ValueGetter = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                            ? target => getMethod.Invoke(target, null)
+                            : MagicMethods.MagicFunc(parentType, getMethod);
 #else
-                        ValueSetter = MagicMethods.MagicAction(parentType, setMethod);
+                        ValueGetter = MagicMethods.MagicFunc(parentType, getMethod);
 #endif
+
+                        var setMethod = propertyInfo.GetSetMethod();
+
+                        if (setMethod != null)
+                        {
+#if NETSTANDARD1_3
+                            ValueSetter = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                                ? ((target, value) => setMethod.Invoke(target, new[] {value}))
+                                : MagicMethods.MagicAction(parentType, setMethod);
+#else
+                            ValueSetter = MagicMethods.MagicAction(parentType, setMethod);
+#endif
+                        }
                     }
                 }
             }
@@ -142,8 +152,18 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 Type = subType ?? fieldInfo.FieldType;
 
-                ValueGetter = fieldInfo.GetValue;
-                ValueSetter = fieldInfo.SetValue;
+                if (GeneratedTypeRegistry.TryGetAccessors(parentType, Name, out var generatedGetter,
+                    out var generatedSetter))
+                {
+                    /* Source-generated accessors (BinarySerializer.SourceGeneration). */
+                    ValueGetter = generatedGetter;
+                    ValueSetter = generatedSetter;
+                }
+                else
+                {
+                    ValueGetter = fieldInfo.GetValue;
+                    ValueSetter = fieldInfo.SetValue;
+                }
             }
             else
             {

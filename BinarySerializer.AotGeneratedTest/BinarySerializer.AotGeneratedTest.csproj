@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>BinarySerialization.AotTest</RootNamespace>
+    <AssemblyName>BinarySerializer.AotGeneratedTest</AssemblyName>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <IsPackable>false</IsPackable>
+    <!-- Native AOT smoke for the source generator: same golden scenarios as BinarySerializer.AotTest
+         but WITHOUT a TrimmerRoots.xml descriptor.  Rooting and static accessors come exclusively
+         from the BinarySerializer.SourceGeneration registration, proving the generator removes the
+         manual rooting requirement. -->
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Reuse the exact scenarios and golden bytes of the reflection-path smoke. -->
+    <Compile Include="..\BinarySerializer.AotTest\Program.cs" Link="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BinarySerializer\BinarySerializer.csproj" />
+    <ProjectReference Include="..\BinarySerializer.SourceGeneration\BinarySerializer.SourceGeneration.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false"
+                      GlobalPropertiesToRemove="PublishAot;PublishTrimmed;TrimMode;SelfContained;RuntimeIdentifier" />
+  </ItemGroup>
+
+</Project>
