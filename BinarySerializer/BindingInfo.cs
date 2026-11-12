@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BinarySerialization
 {
@@ -24,7 +25,7 @@ namespace BinarySerialization
         /// <param name="converterType">An optional converter.</param>
         /// <param name="converterParameter">An optional converter parameter.</param>
         internal BindingInfo(string path, BindingMode bindingMode, RelativeSourceMode relativeSourceMode,
-            Type converterType = null,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type converterType = null,
             object converterParameter = null)
         {
             Path = path;
@@ -41,7 +42,7 @@ namespace BinarySerialization
         /// <param name="path">The path to the source member.</param>
         /// <param name="converterType">An optional converter.</param>
         /// <param name="converterParameter">An optional converter parameter.</param>
-        internal BindingInfo(string path, Type converterType = null, object converterParameter = null)
+        internal BindingInfo(string path, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type converterType = null, object converterParameter = null)
             : this(path, BindingMode.TwoWay, RelativeSourceMode.Self, converterType, converterParameter)
         {
         }
@@ -77,6 +78,7 @@ namespace BinarySerialization
         /// <summary>
         ///     An optional converter to be used converting from the source value to the target binding.
         /// </summary>
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
         public Type ConverterType { get; set; }
 
         /// <summary>

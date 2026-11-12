@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>BinarySerialization.AotTest</RootNamespace>
+    <AssemblyName>BinarySerializer.AotTest</AssemblyName>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <IsPackable>false</IsPackable>
+    <!-- Native AOT smoke application: validates that the serializer works after publish with PublishAot.
+         Run normally (dotnet run) for the JIT baseline; publish with -p:PublishAot=true for the AOT run. -->
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Template for consumers: keep every serialized type and its members when trimming or AOT compiling.
+         Types entered through Serialize(object) are discovered via reflection and cannot be seen by the
+         trimmer without an explicit descriptor like this (or DynamicDependency annotations). -->
+    <TrimmerRootDescriptor Include="TrimmerRoots.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BinarySerializer\BinarySerializer.csproj" />
+  </ItemGroup>
+
+</Project>

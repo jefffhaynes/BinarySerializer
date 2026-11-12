@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace BinarySerialization
 {
@@ -10,6 +12,38 @@ namespace BinarySerialization
     internal static class MagicMethods
     {
         public static Func<object, object> MagicFunc(Type targetType, MethodInfo method)
+        {
+            if (RuntimeFeature.IsDynamicCodeSupported)
+            {
+                return MagicFuncDynamic(targetType, method);
+            }
+
+            /* AOT fallback: invoke directly without constructing closed generic delegates.
+               DoNotWrapExceptions keeps exception behavior identical to the dynamic path
+               (no TargetInvocationException wrapper). */
+            return target => method.Invoke(target, BindingFlags.DoNotWrapExceptions, null, null, null);
+        }
+
+        public static Action<object, object> MagicAction(Type targetType, MethodInfo method)
+        {
+            if (RuntimeFeature.IsDynamicCodeSupported)
+            {
+                return MagicActionDynamic(targetType, method);
+            }
+
+            /* AOT fallback; mirrors MagicActionHelper semantics (null values are ignored).
+               DoNotWrapExceptions keeps exception behavior identical to the dynamic path. */
+            return (target, value) =>
+            {
+                if (value != null)
+                {
+                    method.Invoke(target, BindingFlags.DoNotWrapExceptions, null, new[] {value}, null);
+                }
+            };
+        }
+
+        [RequiresDynamicCode("MakeGenericMethod is not supported when AOT compiling.")]
+        private static Func<object, object> MagicFuncDynamic(Type targetType, MethodInfo method)
         {
             // First fetch the generic form
             var genericHelper = typeof(MagicMethods).GetMethod(nameof(MagicFuncHelper),
@@ -26,7 +60,8 @@ namespace BinarySerialization
             return (Func<object, object>) ret;
         }
 
-        public static Action<object, object> MagicAction(Type targetType, MethodInfo method)
+        [RequiresDynamicCode("MakeGenericMethod is not supported when AOT compiling.")]
+        private static Action<object, object> MagicActionDynamic(Type targetType, MethodInfo method)
         {
             // First fetch the generic form
             var genericHelper = typeof(MagicMethods).GetMethod(nameof(MagicActionHelper),
@@ -42,7 +77,7 @@ namespace BinarySerialization
             // Cast the result to the right kind of delegate and return it
             return (Action<object, object>) ret;
         }
-        
+
         // ReSharper disable once UnusedMember.Local
         private static Func<object, object> MagicFuncHelper<TTarget, TReturn>(MethodInfo method)
         {
@@ -57,7 +92,7 @@ namespace BinarySerialization
 
             return Func;
         }
-        
+
         // ReSharper disable once UnusedMember.Local
         private static Action<object, object> MagicActionHelper<TTarget, TValue>(MethodInfo method)
         {

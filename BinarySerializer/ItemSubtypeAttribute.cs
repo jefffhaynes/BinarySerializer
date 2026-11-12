@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BinarySerialization
 {
@@ -14,7 +15,7 @@ namespace BinarySerialization
         /// <param name="valuePath">The path to the binding source.</param>
         /// <param name="value">The value to be used in determining if the subtype should be used.</param>
         /// <param name="subtype">The subtype to be used.</param>
-        public ItemSubtypeAttribute(string valuePath, object value, Type subtype)
+        public ItemSubtypeAttribute(string valuePath, object value, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type subtype)
             : base(valuePath, value, subtype)
         {
         }

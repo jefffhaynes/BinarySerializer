@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using BinarySerialization.Graph.ValueGraph;
 
@@ -58,14 +60,39 @@ namespace BinarySerialization.Graph.TypeGraph
         {
         }
 
-        protected TypeNode(TypeNode parent, Type type)
+        [UnconditionalSuppressMessage("Trimming", "IL2067",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2072",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2073",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2074",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        protected TypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type)
             : this(parent)
         {
             Type = type;
             NullableUnderlyingType = Nullable.GetUnderlyingType(Type);
         }
 
-        protected TypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo, Type subType = null)
+        [UnconditionalSuppressMessage("Trimming", "IL2067",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2072",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2073",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        [UnconditionalSuppressMessage("Trimming", "IL2074",
+            Justification =
+                "Member types are discovered via reflection over the user object graph.  Users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        protected TypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType,
+            MemberInfo memberInfo, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type subType = null)
             : this(parent)
         {
             if (memberInfo == null)
@@ -252,7 +279,7 @@ namespace BinarySerialization.Graph.TypeGraph
                 {
                     SubtypeFactoryBinding = GetBinding(subtypeFactoryAttribute);
                     SubtypeFactory =
-                        (ISubtypeFactory) subtypeFactoryAttribute.FactoryType.GetConstructor(Type.EmptyTypes)?.Invoke(null);
+                        (ISubtypeFactory) TypeExtensions.GetParameterlessConstructor(subtypeFactoryAttribute.FactoryType)?.Invoke(null);
                 }
             }
 
@@ -291,7 +318,7 @@ namespace BinarySerialization.Graph.TypeGraph
             {
                 ItemSubtypeFactoryBinding = GetBinding(itemSubtypeFactoryAttribute);
                 ItemSubtypeFactory =
-                    (ISubtypeFactory) itemSubtypeFactoryAttribute.FactoryType.GetConstructor(Type.EmptyTypes)?.Invoke(null);
+                    (ISubtypeFactory) TypeExtensions.GetParameterlessConstructor(itemSubtypeFactoryAttribute.FactoryType)?.Invoke(null);
             }
 
             ItemSubtypeDefaultAttribute = attributes.OfType<ItemSubtypeDefaultAttribute>().SingleOrDefault();
@@ -314,9 +341,14 @@ namespace BinarySerialization.Graph.TypeGraph
 
 
         public MemberInfo MemberInfo { get; }
+
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         public Type Type { get; }
+
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         public Type NullableUnderlyingType { get; }
 
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         public Type BaseSerializedType => NullableUnderlyingType ?? Type;
 
         public Action<object, object> ValueSetter { get; }
@@ -458,20 +490,40 @@ namespace BinarySerialization.Graph.TypeGraph
             return CreateCompiledConstructor(Type);
         }
 
-        protected static Func<object> CreateCompiledConstructor(Type type)
+        protected static Func<object> CreateCompiledConstructor(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type)
         {
             if (type == typeof(string))
             {
                 return () => string.Empty;
             }
 
-            var constructor = type.GetConstructor(Type.EmptyTypes);
+            var constructor = TypeExtensions.GetParameterlessConstructor(type);
             return CreateCompiledConstructor(constructor);
         }
 
         protected static Func<object> CreateCompiledConstructor(ConstructorInfo constructor)
         {
-            return constructor == null ? null : Expression.Lambda<Func<object>>(Expression.New(constructor)).Compile();
+            if (constructor == null)
+            {
+                return null;
+            }
+
+            if (RuntimeFeature.IsDynamicCodeSupported)
+            {
+                return CreateCompiledConstructorDynamic(constructor);
+            }
+
+            /* AOT fallback: invoke the constructor without emitting a dynamic method.
+               DoNotWrapExceptions keeps exception behavior identical to the dynamic path
+               (no TargetInvocationException wrapper). */
+            return () => constructor.Invoke(BindingFlags.DoNotWrapExceptions, null, null, null);
+        }
+
+        [RequiresDynamicCode("Expression compilation is not supported when AOT compiling.")]
+        private static Func<object> CreateCompiledConstructorDynamic(ConstructorInfo constructor)
+        {
+            return Expression.Lambda<Func<object>>(Expression.New(constructor)).Compile();
         }
 
         private Binding GetBinding(FieldBindingBaseAttribute attribute)

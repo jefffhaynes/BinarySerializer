@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using BinarySerialization.Graph.TypeGraph;
 
@@ -24,7 +25,7 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 var typeNode = (ListTypeNode) TypeNode;
 
-                var list = (IList) typeNode.CompiledConstructor();
+                var list = CreateList(typeNode);
 
                 foreach (var child in Children)
                 {
@@ -80,7 +81,7 @@ namespace BinarySerialization.Graph.ValueGraph
             {
                 var typeNode = (ListTypeNode) TypeNode;
 
-                var list = (IList) typeNode.CompiledConstructor();
+                var list = CreateList(typeNode);
 
                 foreach (var child in Children)
                 {
@@ -89,6 +90,20 @@ namespace BinarySerialization.Graph.ValueGraph
 
                 return list;
             }
+        }
+
+        private static IList CreateList(ListTypeNode typeNode)
+        {
+            if (typeNode.CompiledConstructor == null)
+            {
+                throw new InvalidOperationException(
+                    $"No public parameterless constructor is available for collection type '{typeNode.Type}'.  " +
+                    "In trimmed or AOT-compiled applications the closed generic instantiation may have been removed " +
+                    "(for example List<TEnum> over an enum element type); root the collection type explicitly, " +
+                    "e.g. [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(List<MyEnum>))].");
+            }
+
+            return (IList) typeNode.CompiledConstructor();
         }
     }
 }

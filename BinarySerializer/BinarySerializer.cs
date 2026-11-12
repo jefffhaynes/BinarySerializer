@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -127,7 +128,7 @@ namespace BinarySerialization
                 return;
             }
 
-            var serializer = CreateSerializer(value.GetType(), context);
+            var serializer = CreateSerializer(GetRootType(value), context);
             serializer.Value = value;
             serializer.Bind();
 
@@ -153,7 +154,7 @@ namespace BinarySerialization
                 return;
             }
 
-            var serializer = CreateSerializer(value.GetType(), context);
+            var serializer = CreateSerializer(GetRootType(value), context);
             serializer.Value = value;
             serializer.Bind();
 
@@ -179,7 +180,7 @@ namespace BinarySerialization
                 return;
             }
 
-            var serializer = CreateSerializer(value.GetType(), null);
+            var serializer = CreateSerializer(GetRootType(value), null);
             serializer.Value = value;
             serializer.Bind();
 
@@ -221,7 +222,7 @@ namespace BinarySerialization
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public object Deserialize(Stream stream, Type type, object context = null)
+        public object Deserialize(Stream stream, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, object context = null)
         {
             var serializer = CreateSerializer(type, context);
             serializer.Deserialize(new BoundedStream(stream, "root"), Options, _eventShuttle);
@@ -237,7 +238,7 @@ namespace BinarySerialization
         /// <param name="context">An optional serialization context.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <returns>The deserialized object graph.</returns>
-        public async Task<object> DeserializeAsync(Stream stream, Type type, object context,
+        public async Task<object> DeserializeAsync(Stream stream, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, object context,
             CancellationToken cancellationToken)
         {
             var serializer = CreateSerializer(type, context);
@@ -247,7 +248,20 @@ namespace BinarySerialization
             return serializer.Value;
         }
 
-        private RootValueNode CreateSerializer(Type type, object context)
+
+        /// <summary>
+        ///     Gets the root type of a value to be serialized.  The graph for this type is discovered via reflection at
+        ///     runtime, so trimmed and AOT-compiled applications must root their serialized types (see README, AOT support).
+        /// </summary>
+        [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        [UnconditionalSuppressMessage("Trimming", "IL2073",
+            Justification = "Runtime type discovery for the serialization entry point; users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        private static Type GetRootType(object value)
+        {
+            return value.GetType();
+        }
+
+        private RootValueNode CreateSerializer([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, object context)
         {
             var graph = GraphGenerator.GenerateGraph(type);
 
@@ -265,7 +279,7 @@ namespace BinarySerialization
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public Task<object> DeserializeAsync(Stream stream, Type type, object context = null)
+        public Task<object> DeserializeAsync(Stream stream, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, object context = null)
         {
             return DeserializeAsync(stream, type, context, CancellationToken.None);
         }
@@ -277,7 +291,7 @@ namespace BinarySerialization
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <returns>The deserialized object graph.</returns>
-        public Task<object> DeserializeAsync(Stream stream, Type type, CancellationToken cancellationToken)
+        public Task<object> DeserializeAsync(Stream stream, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, CancellationToken cancellationToken)
         {
             return DeserializeAsync(stream, type, null, cancellationToken);
         }
@@ -289,7 +303,7 @@ namespace BinarySerialization
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public async Task<T> DeserializeAsync<T>(Stream stream, object context = null)
+        public async Task<T> DeserializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(Stream stream, object context = null)
         {
             return (T) await DeserializeAsync(stream, typeof(T), context)
                 .ConfigureAwait(false);
@@ -303,7 +317,7 @@ namespace BinarySerialization
         /// <param name="context">An optional serialization context.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <returns>The deserialized object graph.</returns>
-        public async Task<T> DeserializeAsync<T>(Stream stream, object context, CancellationToken cancellationToken)
+        public async Task<T> DeserializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(Stream stream, object context, CancellationToken cancellationToken)
         {
             return (T) await DeserializeAsync(stream, typeof(T), context, cancellationToken)
                 .ConfigureAwait(false);
@@ -316,7 +330,7 @@ namespace BinarySerialization
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <returns>The deserialized object graph.</returns>
-        public async Task<T> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken)
+        public async Task<T> DeserializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(Stream stream, CancellationToken cancellationToken)
         {
             return (T) await DeserializeAsync(stream, typeof(T), cancellationToken)
                 .ConfigureAwait(false);
@@ -329,7 +343,7 @@ namespace BinarySerialization
         /// <param name="type">The type of the root of the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public object Deserialize(byte[] data, Type type, object context = null)
+        public object Deserialize(byte[] data, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, object context = null)
         {
             return Deserialize(new MemoryStream(data), type, context);
         }
@@ -342,7 +356,7 @@ namespace BinarySerialization
         /// <param name="context">An optional serialization context.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The deserialized object graph.</returns>
-        public Task<object> DeserializeAsync(byte[] data, Type type, object context = null, CancellationToken cancellationToken = default)
+        public Task<object> DeserializeAsync(byte[] data, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, object context = null, CancellationToken cancellationToken = default)
         {
             return DeserializeAsync(new MemoryStream(data), type, context, cancellationToken);
         }
@@ -354,7 +368,7 @@ namespace BinarySerialization
         /// <param name="stream">The stream from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(Stream stream, object context = null)
+        public T Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(Stream stream, object context = null)
         {
             return (T) Deserialize(stream, typeof(T), context);
         }
@@ -366,7 +380,7 @@ namespace BinarySerialization
         /// <param name="data">The byte array from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public T Deserialize<T>(byte[] data, object context = null)
+        public T Deserialize<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(byte[] data, object context = null)
         {
             return Deserialize<T>(new MemoryStream(data), context);
         }
@@ -378,7 +392,7 @@ namespace BinarySerialization
         /// <param name="data">The byte array from which to deserialize the object graph.</param>
         /// <param name="context">An optional serialization context.</param>
         /// <returns>The deserialized object graph.</returns>
-        public Task<T> DeserializeAsync<T>(byte[] data, object context = null)
+        public Task<T> DeserializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(byte[] data, object context = null)
         {
             return DeserializeAsync<T>(new MemoryStream(data), context);
         }

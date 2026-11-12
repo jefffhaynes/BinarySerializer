@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -41,7 +42,7 @@ namespace BinarySerialization.Graph.ValueGraph
                 }
 
                 // We have to dynamically generate a type graph for this new type
-                var contextGraph = GetContextGraph(value.GetType());
+                var contextGraph = GetContextGraph(GetRuntimeType(value));
                 var contextSerializer = (RootValueNode) contextGraph.CreateSerializer(this);
                 contextSerializer.EncodingCallback = EncodingCallback;
                 contextSerializer.EndiannessCallback = EndiannessCallback;
@@ -101,7 +102,16 @@ namespace BinarySerialization.Graph.ValueGraph
             return EncodingCallback();
         }
 
-        private static RootTypeNode GetContextGraph(Type valueType)
+
+        [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        [UnconditionalSuppressMessage("Trimming", "IL2073",
+            Justification = "Runtime type discovery for the serialization context; users of trimmed or AOT-compiled applications must root their serialized types (see README, AOT support).")]
+        private static Type GetRuntimeType(object value)
+        {
+            return value.GetType();
+        }
+
+        private static RootTypeNode GetContextGraph([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type valueType)
         {
             lock (ContextCacheLock)
             {

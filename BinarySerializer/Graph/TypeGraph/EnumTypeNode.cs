@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using BinarySerialization.Graph.ValueGraph;
@@ -7,12 +9,13 @@ namespace BinarySerialization.Graph.TypeGraph
 {
     internal class EnumTypeNode : ValueTypeNode
     {
-        public EnumTypeNode(TypeNode parent, Type type) : base(parent, type)
+        public EnumTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type) : base(parent, type)
         {
             InitializeEnumValues();
         }
 
-        public EnumTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+        public EnumTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType,
+            MemberInfo memberInfo) : base(parent, parentType,
             memberInfo)
         {
             InitializeEnumValues();
@@ -29,7 +32,14 @@ namespace BinarySerialization.Graph.TypeGraph
         {
             var serializedType = GetSerializedType();
 
-            var values = Enum.GetValues(BaseSerializedType).Cast<Enum>();
+            /* Enum.GetValuesAsUnderlyingType is AOT-safe unlike Enum.GetValues which requires dynamic array creation. */
+            var underlyingValues = Enum.GetValuesAsUnderlyingType(BaseSerializedType);
+            var values = new Enum[underlyingValues.Length];
+
+            for (var i = 0; i < underlyingValues.Length; i++)
+            {
+                values[i] = (Enum) Enum.ToObject(BaseSerializedType, underlyingValues.GetValue(i));
+            }
 
             /* Get enum attributes */
             var enumAttributes = values.ToDictionary(value => value, value =>

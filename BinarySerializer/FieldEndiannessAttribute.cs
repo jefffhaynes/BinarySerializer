@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BinarySerialization
 {
@@ -28,7 +29,7 @@ namespace BinarySerialization
         ///         valid Endianness.
         ///     </param>
         /// </summary>
-        public FieldEndiannessAttribute(string path, Type converterType) : base(path)
+        public FieldEndiannessAttribute(string path, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type converterType) : base(path)
         {
             ConverterType = converterType;
             BindingMode = BindingMode.OneWay;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using BinarySerialization.Graph.ValueGraph;
 
@@ -6,11 +7,12 @@ namespace BinarySerialization.Graph.TypeGraph
 {
     internal class UnknownTypeNode : ObjectTypeNode
     {
-        public UnknownTypeNode(TypeNode parent, Type type) : base(parent, type)
+        public UnknownTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type) : base(parent, type)
         {
         }
 
-        public UnknownTypeNode(TypeNode parent, Type parentType, MemberInfo memberInfo) : base(parent, parentType,
+        public UnknownTypeNode(TypeNode parent, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type parentType,
+            MemberInfo memberInfo) : base(parent, parentType,
             memberInfo)
         {
         }
