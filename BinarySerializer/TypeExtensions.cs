@@ -81,7 +81,10 @@ namespace BinarySerialization
                 "Primitive element arrays take the statically linked path.  Array.CreateInstance is only used for other element types, whose array types are preserved when the owning serialized types are rooted (see README, AOT support).")]
         internal static Array CreateArray(Type elementType, int size)
         {
-            switch (Type.GetTypeCode(elementType))
+            /* GetTypeCode returns the underlying type's code for enums (e.g. Int32 for an int-backed
+               enum), which would create the wrong array type (int[] instead of MyEnum[]) and break
+               Array.Copy on deserialize.  Treat enums as non-primitive so they take Array.CreateInstance. */
+            switch (elementType.IsEnum ? TypeCode.Object : Type.GetTypeCode(elementType))
             {
                 case TypeCode.Boolean:
                     return new bool[size];

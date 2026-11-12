@@ -944,7 +944,7 @@ Because object graphs are discovered via reflection at runtime, trimmed and AOT-
 </linker>
 ```
 
-2. Generic collection types used as members (for example `List<MyItem>`) are created by the serializer without reflection, so no extra steps are required for `List<T>`, arrays, and the primitive collection types.  For custom `IList` implementations and other exotic shapes, also root those types explicitly, e.g. with `[DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MyCollection))]`.
+2. Generic collection types used as members (for example `List<MyItem>`) are created by the serializer without reflection, so no extra steps are required for `List<T>`, arrays, and the primitive collection types.  **Exception:** `List<TEnum>` members over an enum element type fall back to constructor reflection and must be rooted explicitly, e.g. with `[DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(List<Color>))]` (array members such as `Color[]` need nothing beyond the rooting in step 1).  If no constructor is available for a collection type at runtime, the serializer throws a descriptive `InvalidOperationException` rather than failing with an opaque error.  For custom `IList` implementations and other exotic shapes, also root those types explicitly, e.g. with `[DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(MyCollection))]`.
 
 Types passed as `typeof(T)` to the `Deserialize` overloads are annotated so their members are preserved automatically; types passed as `object` to `Serialize` are discovered at runtime and covered by the rooting above.
 

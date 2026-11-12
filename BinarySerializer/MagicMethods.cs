@@ -18,8 +18,10 @@ namespace BinarySerialization
                 return MagicFuncDynamic(targetType, method);
             }
 
-            /* AOT fallback: invoke directly without constructing closed generic delegates. */
-            return target => method.Invoke(target, null);
+            /* AOT fallback: invoke directly without constructing closed generic delegates.
+               DoNotWrapExceptions keeps exception behavior identical to the dynamic path
+               (no TargetInvocationException wrapper). */
+            return target => method.Invoke(target, BindingFlags.DoNotWrapExceptions, null, null, null);
         }
 
         public static Action<object, object> MagicAction(Type targetType, MethodInfo method)
@@ -29,12 +31,13 @@ namespace BinarySerialization
                 return MagicActionDynamic(targetType, method);
             }
 
-            /* AOT fallback; mirrors MagicActionHelper semantics (null values are ignored). */
+            /* AOT fallback; mirrors MagicActionHelper semantics (null values are ignored).
+               DoNotWrapExceptions keeps exception behavior identical to the dynamic path. */
             return (target, value) =>
             {
                 if (value != null)
                 {
-                    method.Invoke(target, new[] {value});
+                    method.Invoke(target, BindingFlags.DoNotWrapExceptions, null, new[] {value}, null);
                 }
             };
         }

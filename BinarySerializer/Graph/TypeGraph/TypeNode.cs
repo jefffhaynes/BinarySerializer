@@ -514,8 +514,10 @@ namespace BinarySerialization.Graph.TypeGraph
                 return CreateCompiledConstructorDynamic(constructor);
             }
 
-            /* AOT fallback: invoke the constructor without emitting a dynamic method. */
-            return () => constructor.Invoke(null);
+            /* AOT fallback: invoke the constructor without emitting a dynamic method.
+               DoNotWrapExceptions keeps exception behavior identical to the dynamic path
+               (no TargetInvocationException wrapper). */
+            return () => constructor.Invoke(BindingFlags.DoNotWrapExceptions, null, null, null);
         }
 
         [RequiresDynamicCode("Expression compilation is not supported when AOT compiling.")]

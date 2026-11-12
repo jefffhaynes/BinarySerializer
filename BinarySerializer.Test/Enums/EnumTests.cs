@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Enums
 {
@@ -75,6 +76,58 @@ namespace BinarySerialization.Test.Enums
             var actual = Roundtrip(expected, new[] {(byte) 0xff, (byte) 0xff});
 
             Assert.AreEqual(expected.Value, actual.Value);
+        }
+
+        [TestMethod]
+        public void EnumArrayBoundCountTest()
+        {
+            var expected = new EnumArrayClass
+            {
+                Count = 2,
+                Colors = new[] {ColorValues.Red, ColorValues.Blue}
+            };
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Count, actual.Count);
+            CollectionAssert.AreEqual(expected.Colors, actual.Colors);
+        }
+
+        [TestMethod]
+        public void EnumArrayRawDeserializeTest()
+        {
+            /* Red = 1, Blue = 3 as little-endian int32 (int-backed enum elements). */
+            var data = new byte[] {2, 1, 0, 0, 0, 3, 0, 0, 0};
+            var actual = Deserialize<EnumArrayClass>(new MemoryStream(data));
+
+            Assert.AreEqual((byte) 2, actual.Count);
+            CollectionAssert.AreEqual(new[] {ColorValues.Red, ColorValues.Blue}, actual.Colors);
+        }
+
+        [TestMethod]
+        public void ByteEnumArrayConstCountTest()
+        {
+            var expected = new ByteEnumArrayClass
+            {
+                Field = new[] {BaseTypeEnumValues.A, BaseTypeEnumValues.C, BaseTypeEnumValues.B}
+            };
+            var actual = Roundtrip(expected, 3);
+
+            CollectionAssert.AreEqual(expected.Field, actual.Field);
+        }
+
+        [TestMethod]
+        public void EnumListTest()
+        {
+            var expected = new EnumListClass
+            {
+                Count = 2,
+                Colors = new System.Collections.Generic.List<ColorValues>
+                    {ColorValues.Green, ColorValues.Red}
+            };
+            var actual = Roundtrip(expected);
+
+            Assert.AreEqual(expected.Count, actual.Count);
+            CollectionAssert.AreEqual(expected.Colors, actual.Colors);
         }
     }
 }
