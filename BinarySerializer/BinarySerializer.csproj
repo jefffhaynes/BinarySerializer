@@ -20,9 +20,9 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- Per-version notes are kept on the GitHub Releases page, so this text never goes stale. -->
     <PackageReleaseNotes>Release notes: https://github.com/jefffhaynes/BinarySerializer/releases</PackageReleaseNotes>
-    <AssemblyVersion>10.2.0.0</AssemblyVersion>
-    <Version>10.2.0</Version>
-    <FileVersion>10.2.0.0</FileVersion>
+    <AssemblyVersion>10.2.1.0</AssemblyVersion>
+    <Version>10.2.1</Version>
+    <FileVersion>10.2.1.0</FileVersion>
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
