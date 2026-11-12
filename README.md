@@ -934,7 +934,7 @@ Add the generator package to your application project and rooting becomes fully 
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="BinarySerializer.SourceGeneration" Version="10.2.0" PrivateAssets="all" />
+  <PackageReference Include="BinarySerializer.SourceGeneration" Version="10.2.1" PrivateAssets="all" />
 </ItemGroup>
 ```
 
